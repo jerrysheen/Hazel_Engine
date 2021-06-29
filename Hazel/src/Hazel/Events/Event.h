@@ -79,6 +79,8 @@ namespace Hazel {
 			if (m_Event.GetEventType() == T::GetStaticType())
 			{
 				// 用这个function call 这个event handler，还有一个Cast
+				// 执行这个函数，并且回传执行结果
+				// this 就是这个func， m_event是placeholder_1
 				m_Event.m_Handled = func(*(T*)&m_Event);
 				return true;
 			}
