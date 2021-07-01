@@ -14,10 +14,12 @@ outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 IncludeDir = {}
 IncludeDir["GLFW"] = "Hazel/vendor/GLFW/include"
 IncludeDir["Glad"] = "Hazel/vendor/Glad/include"
+IncludeDir["imgui"] = "Hazel/vendor/imgui"
 
 -- This include file include the GLFW premake5.lua.
 include "Hazel/vendor/GLFW"
 include "Hazel/vendor/Glad"
+include "Hazel/vendor/imgui"
 
 project "Hazel"
     location "Hazel"
@@ -35,14 +37,15 @@ project "Hazel"
     {
         "%{prj.name}/src/**.h",
         "%{prj.name}/src/**.cpp"
-    }
+    }   
 
     includedirs
     {
         "%{prj.name}/src",
 		"%{prj.name}/vendor/spdlog/include",
 		"%{IncludeDir.GLFW}",
-		"%{IncludeDir.Glad}"
+		"%{IncludeDir.Glad}",
+		"%{IncludeDir.imgui}"
 	}
 -- 这个感觉就像我们在MSVS linker里面输入additional dependency一样，
 -- 因为hazel是一个dll lib， 我们include了一个static lib， 就像sanbox include了hazel一样
@@ -50,6 +53,7 @@ project "Hazel"
 	{ 
 		"GLFW",
 		"Glad",
+		"ImGui",
 		"opengl32.lib"
 	}
 
