@@ -65,17 +65,20 @@ project "Hazel"
             ("{COPY} %{cfg.buildtarget.relpath} ../bin/" .. outputdir .. "/Sandbox")
         }
 
-    filter "configurations:Debug"
-        defines "HZ_DEBUG"
-        symbols "On"
+	filter "configurations:Debug"
+		defines "HZ_DEBUG"
+		buildoptions "/MDd"
+		symbols "On"
 
-    filter "configurations:Release"
-        defines "HZ_RELEASE"
-        optimize "On"
-    
-    filter "configurations:Dist"
-        defines "HZ_DIST"
-        optimize "On"
+	filter "configurations:Release"
+		defines "HZ_RELEASE"
+		buildoptions "/MD"
+		optimize "On"
+
+	filter "configurations:Dist"
+		defines "HZ_DIST"
+		buildoptions "/MD"
+		optimize "On"
 
 project "Sandbox"
     location "Sandbox"
@@ -113,15 +116,17 @@ project "Sandbox"
              "HZ_PLATFORM_WINDOWS",
         }
 
-    filter "configurations:Debug"
-        defines "HZ_DEBUG"
-        symbols "On"
+	filter "configurations:Debug"
+		defines "HZ_DEBUG"
+		buildoptions "/MDd"
+		symbols "On"
 
-    filter "configurations:Release"
-        defines "HZ_RELEASE"
-        optimize "On"
-    
-    filter "configurations:Dist"
-        defines "HZ_DIST"
-        optimize "On"
-    
+	filter "configurations:Release"
+		defines "HZ_RELEASE"
+		buildoptions "/MD"
+		optimize "On"
+
+	filter "configurations:Dist"
+		defines "HZ_DIST"
+		buildoptions "/MD"
+		optimize "On"

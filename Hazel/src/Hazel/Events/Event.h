@@ -47,6 +47,9 @@ namespace Hazel {
 	{
 		friend class EventDispatcher;
 	public:
+		// 用来在某一层layout处理事件，然后停止它的传递
+		bool Handled = false;
+
 		virtual EventType GetEventType() const = 0;
 		virtual const char* GetName() const = 0;
 		virtual int GetCategoryFlags() const = 0;
@@ -58,8 +61,7 @@ namespace Hazel {
 			return GetCategoryFlags() & category;
 		}
 	protected:
-		// 用来在某一层layout处理事件，然后停止它的传递
-		bool m_Handled = false;
+		
 	};
 
 	class EventDispatcher
@@ -81,7 +83,7 @@ namespace Hazel {
 				// 用这个function call 这个event handler，还有一个Cast
 				// 执行这个函数，并且回传执行结果
 				// this 就是这个func， m_event是placeholder_1
-				m_Event.m_Handled = func(*(T*)&m_Event);
+				m_Event.Handled = func(*(T*)&m_Event);
 				return true;
 			}
 			return false;
