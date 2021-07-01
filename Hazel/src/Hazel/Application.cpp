@@ -1,6 +1,6 @@
 #include "hzpch.h"
 #include "Application.h"
-#include <GLFW/glfw3.h>
+#include <glad/glad.h>
 #include "Hazel/Log.h"
 
 namespace Hazel{
