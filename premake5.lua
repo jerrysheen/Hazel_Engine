@@ -20,6 +20,7 @@ IncludeDir["imgui"] = "Hazel/vendor/imgui"
 include "Hazel/vendor/GLFW"
 include "Hazel/vendor/Glad"
 include "Hazel/vendor/imgui"
+startproject "Sandbox"
 
 project "Hazel"
     location "Hazel"
