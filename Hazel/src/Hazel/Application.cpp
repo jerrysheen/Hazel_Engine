@@ -3,6 +3,7 @@
 #include <glad/glad.h>
 #include "Hazel/Log.h"
 
+#include "Input.h"
 namespace Hazel{
 
 	// 这个this就是同一个函数下面和现在这个函数绑定的那个东西，也就是
@@ -61,6 +62,9 @@ namespace Hazel{
 
 			for (Layer* layer : m_LayerStack)
 				layer->OnUpdate();
+
+			auto [x, y] = Input::GetMousePosition();
+			HZ_CORE_TRACE("{0}, {1}", x, y);
 			m_Window->OnUpdate();
 		};
 	}
