@@ -15,10 +15,11 @@ namespace Hazel {
 		virtual void OnAttach() {}
 		// pop...
 		virtual void OnDetach() {}
-		// updated, every frame
+
 		virtual void OnUpdate() {}
-		// event get sent to layer
+		virtual void OnImGuiRender() {}
 		virtual void OnEvent(Event& event) {}
+
 
 		inline const std::string& GetName() const { return m_DebugName; }
 	protected:
