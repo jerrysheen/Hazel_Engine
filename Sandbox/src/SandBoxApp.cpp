@@ -1,6 +1,7 @@
 #include "Hazel.h"
 
 #include "imgui/imgui.h"
+#include "Hazel/Events/Event.h"
 
 class ExampleLayer : public Hazel::Layer
 {
@@ -12,8 +13,8 @@ public:
 
 	void OnUpdate() override
 	{
-		HZ_INFO("ExampleLayer::Update");
 	}
+
 
 	virtual void OnImGuiRender() override
 	{
