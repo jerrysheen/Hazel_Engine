@@ -19,7 +19,7 @@ public:
 	virtual void OnImGuiRender() override
 	{
 		ImGui::Begin("Test");
-		ImGui::Text("Hello World");
+		ImGui::Text("This is the imgui layer added by user");
 		ImGui::End();
 
 	}

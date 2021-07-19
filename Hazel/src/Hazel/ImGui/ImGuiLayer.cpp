@@ -91,6 +91,12 @@ namespace Hazel {
 	{
 		static bool show = true;
 		ImGui::ShowDemoWindow(&show);
+		ImGui::Begin("Renderer");
+		ImGui::Text("Hello World");
+		ImGui::Text("Vendor:  (%s)", glGetString(GL_VENDOR));
+		ImGui::Text("Renderer:  (%s)", glGetString(GL_RENDERER));
+		ImGui::Text("Version:  (%s)", glGetString(GL_VERSION));
+		ImGui::End();
 	}
 
 
