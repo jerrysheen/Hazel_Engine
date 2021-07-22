@@ -3,12 +3,6 @@
 
 #include "Hazel/Log.h"
 
-#include "Input.h"
-#include "Hazel/Renderer/Renderer.h"
-#include "Hazel/Renderer/RendererCommand.h"
-
-#include "glm/glm.hpp"
-#include "glm/gtc/matrix_transform.hpp"
 
 namespace Hazel{
 
