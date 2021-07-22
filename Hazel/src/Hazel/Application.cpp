@@ -7,6 +7,9 @@
 #include "Hazel/Renderer/Renderer.h"
 #include "Hazel/Renderer/RendererCommand.h"
 
+#include "glm/glm.hpp"
+#include "glm/gtc/matrix_transform.hpp"
+
 namespace Hazel{
 
 	// 这个this就是同一个函数下面和现在这个函数绑定的那个东西，也就是
@@ -19,6 +22,7 @@ namespace Hazel{
 	
 
 	Application::Application()
+		:m_Camera(-1.6f, 1.6f, -0.9f, 0.9f)
 	{
 		HZ_CORE_ASSERT(!s_Instance, "Application already exists");
 		s_Instance = this;
@@ -78,11 +82,17 @@ namespace Hazel{
 
 			layout(location = 0) in vec4 a_Position;
 			layout(location = 1) in vec4 a_Color;
-			out vec4 v_color;
+			
+			uniform mat4 u_ViewProjection;
+
+			out vec4 v_Color;
+			out vec4 v_Position;
+
 			void main()
 			{
-				gl_Position = a_Position;
-				v_color = a_Color;
+				v_Position = a_Position;
+				v_Color = a_Color;
+				gl_Position = u_ViewProjection * a_Position;
 			}	
 
 		)";
@@ -90,11 +100,11 @@ namespace Hazel{
 		std::string fragmentSrc = R"(
 			#version 330 core
 			
-			in vec4 v_color;
+			in vec4 v_Color;
 			layout(location = 0) out vec4 color;
 			void main()
 			{
-				color = v_color;
+				color = v_Color;
 			}	
 
 		)";
@@ -104,11 +114,12 @@ namespace Hazel{
 			#version 330 core
 			
 			layout(location = 0) in vec3 a_Position;
+			uniform mat4 u_ViewProjection;
 			out vec3 v_Position;
 			void main()
 			{
 				v_Position = a_Position;
-				gl_Position = vec4(a_Position, 1.0);	
+				gl_Position = u_ViewProjection * vec4(a_Position, 1.0);	
 			}
 		)";
 
@@ -146,6 +157,7 @@ namespace Hazel{
 	// window 和event 完全分离了，只有event相互连接
 	void Application::OnEvent(Event& e)
 	{
+		
 		EventDispatcher dispatcher(e);
 		dispatcher.Dispatch<WindowCloseEvent>(BIND_EVENT_FN(OnWindowClose));
 		HZ_CORE_INFO("{0}", e);
@@ -166,14 +178,12 @@ namespace Hazel{
 			RendererCommand::SetClearColor({ 0.1, 0.1, 0.1, 1 });
 			RendererCommand::Clear();
 
+			//m_Camera.SetRotation(0.5);
+			Renderer::BeginScene(m_Camera);
 
-			Renderer::BeginScene();
+			Renderer::Submit(m_BlueShader, m_SquareVA);
 
-			m_BlueShader->Bind();
-			Renderer::Submit(m_SquareVA);
-
-			m_Shader->Bind();
-			Renderer::Submit(m_VertexArray);
+			Renderer::Submit(m_Shader, m_VertexArray);
 
 			Renderer::EndScene();
 
