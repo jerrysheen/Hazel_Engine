@@ -11,6 +11,7 @@
 #include "Hazel/KeyCode.h"
 #include "Hazel/MouseButtonCode.h"
 
+#include "Hazel/Core/Timestep.h"
 
 #include "Hazel/ImGui/ImGuiLayer.h"
 

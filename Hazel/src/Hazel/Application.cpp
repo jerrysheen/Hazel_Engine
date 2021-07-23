@@ -3,6 +3,7 @@
 
 #include "Hazel/Log.h"
 
+#include "Glfw/glfw3.h"
 
 namespace Hazel{
 
@@ -64,13 +65,14 @@ namespace Hazel{
 	void Application::Run()
 	{
 
-		while (m_Running) {
-
-			
-
+		while (m_Running) 
+		{
+			float time = (float)glfwGetTime();		// platform gettime();
+			Timestep timestep = time - m_LastFrameTime;
+			m_LastFrameTime = time;
 
 			for (Layer* layer : m_LayerStack)
-				layer->OnUpdate();
+				layer->OnUpdate(timestep);
 
 			// 每一层上如果有ImGui层，就渲染？
 			m_ImGuiLayer->Begin();
