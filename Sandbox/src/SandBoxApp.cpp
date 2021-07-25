@@ -169,6 +169,7 @@ public:
 		std::dynamic_pointer_cast<Hazel::OpenGLShader>(m_TextureShader)->UploadUniformInt("u_Texture", 0);
 
 		m_Texture = Hazel::Texture2D::Create("assets/textures/Checkerboard.png");
+		m_ChernoLogo = Hazel::Texture2D::Create("assets/textures/ChernoLogo.png");
 	}
 
 	void OnUpdate(Hazel::Timestep ts) override
@@ -219,6 +220,8 @@ public:
 
 		m_Texture->Bind(0);
 		Hazel::Renderer::Submit(m_TextureShader, m_SquareVA, glm::scale(glm::mat4(1.0f), glm::vec3(1.5f)));
+		m_ChernoLogo->Bind(0);
+		Hazel::Renderer::Submit(m_TextureShader, m_SquareVA, glm::scale(glm::mat4(1.0f), glm::vec3(1.5f)));
 		//Hazel::Renderer::Submit(m_Shader, m_VertexArray);
 
 		Hazel::Renderer::EndScene();
@@ -245,7 +248,7 @@ private:
 
 	Hazel::Ref<Hazel::Shader> m_TextureShader;
 
-	Hazel::Ref<Hazel::Texture2D> m_Texture;
+	Hazel::Ref<Hazel::Texture2D> m_Texture, m_ChernoLogo;
 
 	Hazel::OrthographicCamera m_Camera;
 	glm::vec3 m_CameraPosition;
