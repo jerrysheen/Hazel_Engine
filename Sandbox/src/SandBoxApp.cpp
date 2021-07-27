@@ -1,12 +1,12 @@
 #include "Hazel.h"
-
+#include "Hazel/Core/EntryPoint.h"
 #include "imgui/imgui.h"
 #include "Hazel/Events/Event.h"
 
 #include "glm/gtc/matrix_transform.hpp"
 #include "glm/gtc/type_ptr.hpp"
 #include "Platform/OpenGL/OpenGLShader.h"
-
+#include "Sandbox2D.h"
 
 class ExampleLayer : public Hazel::Layer
 {
@@ -15,7 +15,7 @@ public:
 		: Layer("Example"),
 		m_CameraController(1280.0f / 720.0f)
 	{
-		m_VertexArray.reset(Hazel::VertexArray::Create());
+		m_VertexArray = Hazel::VertexArray::Create();
 		m_VertexArray->Bind();
 
 
@@ -41,7 +41,7 @@ public:
 		m_IndexBuffer.reset(Hazel::IndexBuffer::Create(indices, sizeof(indices) / sizeof(uint32_t)));
 		m_VertexArray->SetIndexBuffer(m_IndexBuffer);
 
-		m_SquareVA.reset(Hazel::VertexArray::Create());
+		m_SquareVA = Hazel::VertexArray::Create();
 		float squareVertices[5 * 4] = {
 			-0.5f, -0.5f, 0.0f, 0.0f, 0.0f,
 			 0.5f, -0.5f, 0.0f, 1.0f, 0.0f,
@@ -222,7 +222,9 @@ class Sandbox : public Hazel::Application
 public:
 	Sandbox() 
 	{
-		PushLayer(new ExampleLayer());
+		// ExapleLayer helps us to see the effect imediately.
+		// PushLayer(new ExampleLayer());
+		PushLayer(new Sandbox2D());
 	}
 	~Sandbox() {
 	}
