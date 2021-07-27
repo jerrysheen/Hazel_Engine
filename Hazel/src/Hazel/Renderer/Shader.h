@@ -1,7 +1,7 @@
 #pragma once
 
 #include <string>
-#include "Hazel/Core.h"
+#include "Hazel/Core/Core.h"
 #include <unordered_map>
 
 namespace Hazel {
