@@ -52,6 +52,7 @@ namespace Hazel{
 		
 		EventDispatcher dispatcher(e);
 		dispatcher.Dispatch<WindowCloseEvent>(BIND_EVENT_FN(OnWindowClose));
+		dispatcher.Dispatch<WindowResizeEvent>(BIND_EVENT_FN(OnWindowResize));
 		HZ_CORE_INFO("{0}", e);
 
 		for (auto it = m_LayerStack.end(); it != m_LayerStack.begin(); )
@@ -71,9 +72,11 @@ namespace Hazel{
 			Timestep timestep = time - m_LastFrameTime;
 			m_LastFrameTime = time;
 
-			for (Layer* layer : m_LayerStack)
-				layer->OnUpdate(timestep);
-
+			if (!m_Minimized) 
+			{
+				for (Layer* layer : m_LayerStack)
+					layer->OnUpdate(timestep);
+			}
 			// 每一层上如果有ImGui层，就渲染？
 			m_ImGuiLayer->Begin();
 			for (Layer* layer : m_LayerStack)
@@ -88,6 +91,19 @@ namespace Hazel{
 	{
 		m_Running = false;
 		return true;
+	}
+
+	bool Application::OnWindowResize(WindowResizeEvent& e)
+	{
+		if (!e.GetHeight()|| !e.GetWidth()) 
+		{
+			m_Minimized = true;
+			return false;
+		}
+		m_Minimized = false;
+		Renderer::OnWindowResize(e.GetWidth(), e.GetHeight());
+		// since we want all other layout know this event;
+		return false;
 	}
 }
 
