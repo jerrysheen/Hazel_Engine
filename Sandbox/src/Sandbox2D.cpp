@@ -57,20 +57,20 @@ void Sandbox2D::OnUpdate(Hazel::Timestep ts)
 	}
 	HZ_INFO("{0},  {1}", particleXdir, particleYdir);
 
-	//Hazel::Renderer2D::DrawQuad({ -0.3f, -0.7f, 0.6f }, { 0.5f, 1.0f }, { 0.8f, 0.2f,0.3f,1.0f });
+	Hazel::Renderer2D::DrawQuad({ -0.3f, -0.7f, 0.6f }, { 0.5f, 1.0f }, { 0.8f, 0.2f,0.3f,1.0f });
 	Hazel::Renderer2D::DrawQuad(glm::vec3( playerPosition, 0.1f ), { 0.3f, 0.3f }, *m_Texture);
 	
 		
-		m_ParticleProps.Position = playerPosition;
-		m_ParticleProps.Velocity = glm::vec2(particleXdir, particleYdir);
-		for (int i = 0; i < 1; i++) {
-			particleSystem.Emit(m_ParticleProps);
-		}
+	//	m_ParticleProps.Position = playerPosition;
+	//	m_ParticleProps.Velocity = glm::vec2(particleXdir, particleYdir);
+	//	for (int i = 0; i < 1; i++) {
+	//		particleSystem.Emit(m_ParticleProps);
+	//	}
 
-	
+	//
 
-	particleSystem.Update(ts);
-	particleSystem.Render();
+	//particleSystem.Update(ts);
+	//particleSystem.Render();
 
 	Hazel::Renderer2D::EndScene();
 
