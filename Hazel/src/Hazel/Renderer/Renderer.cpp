@@ -34,6 +34,7 @@ namespace Hazel {
 		const glm::mat4& transform)
 	{
 		shader->Bind();
+		//shader->SetFloat4("u_ViewProjection", m_SceneData->ViewProjectionMatrix);
 		std::dynamic_pointer_cast<OpenGLShader>(shader)->UploadUniformMat4("u_ViewProjection" ,m_SceneData->ViewProjectionMatrix);
 		std::dynamic_pointer_cast<OpenGLShader>(shader)->UploadUniformMat4("u_Transform", transform);
 		vertexArray->Bind();

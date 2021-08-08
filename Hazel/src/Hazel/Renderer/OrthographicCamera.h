@@ -28,6 +28,7 @@ namespace Hazel {
 		private:
 			void RecalculateViewMatrix();
 		private:
+
 			glm::mat4 m_ProjectionMatrix;
 			glm::mat4 m_ViewMatrix;
 			glm::mat4 m_ViewProjectionMatrix;

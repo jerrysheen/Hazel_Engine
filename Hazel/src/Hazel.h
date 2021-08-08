@@ -28,3 +28,7 @@
 
 #include "Hazel/Renderer/OrthographicCamera.h"
 // -----------------------------------
+
+// ---Utility------------------------
+#include "Hazel/Utility/Random.h"
+// -----------------------------------

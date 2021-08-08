@@ -224,7 +224,8 @@ public:
 	{
 		// ExapleLayer helps us to see the effect imediately.
 		// PushLayer(new ExampleLayer());
-		PushLayer(new Sandbox2D());
+		PushLayer(new Sandbox2D(GetWindow()));
+		
 	}
 	~Sandbox() {
 	}

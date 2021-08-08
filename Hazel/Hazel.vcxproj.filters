@@ -1411,6 +1411,7 @@
       <Filter>vendor\stb_image</Filter>
     </ClInclude>
     <ClInclude Include="src\Hazel\Renderer\Renderer2D.h" />
+    <ClInclude Include="src\Hazel\Utility\Random.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Hazel\Core\Application.cpp">
@@ -1489,5 +1490,6 @@
       <Filter>vendor\stb_image</Filter>
     </ClCompile>
     <ClCompile Include="src\Hazel\Renderer\Renderer2D.cpp" />
+    <ClCompile Include="src\Hazel\Utility\Random.cpp" />
   </ItemGroup>
 </Project>
