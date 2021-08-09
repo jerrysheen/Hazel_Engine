@@ -23,6 +23,7 @@ private:
 	Hazel::Window& m_window;
 	ParticleSystem particleSystem;
 	ParticleProps m_ParticleProps;
+
 	Hazel::Ref<Hazel::Shader> m_FlatColorShader;
 	Hazel::Ref<Hazel::VertexArray> m_SquareVA;
 	Hazel::Ref<Hazel::Texture2D> m_Texture;
