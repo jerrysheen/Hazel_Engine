@@ -7,6 +7,7 @@
 #include "glm/gtc/type_ptr.hpp"
 #include "Platform/OpenGL/OpenGLShader.h"
 #include "Sandbox2D.h"
+#include "TestLayer/ThreeDLayer.h"
 
 class ExampleLayer : public Hazel::Layer
 {
@@ -224,7 +225,8 @@ public:
 	{
 		// ExapleLayer helps us to see the effect imediately.
 		// PushLayer(new ExampleLayer());
-		PushLayer(new Sandbox2D(GetWindow()));
+		//PushLayer(new Sandbox2D(GetWindow()));
+		PushLayer(new ThreeDLayer(GetWindow()));
 		
 	}
 	~Sandbox() {

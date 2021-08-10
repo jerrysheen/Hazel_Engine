@@ -134,6 +134,7 @@
     <ClCompile Include="src\ParticleSystem.cpp" />
     <ClCompile Include="src\Sandbox2D.cpp" />
     <ClCompile Include="src\SandboxApp.cpp" />
+    <ClCompile Include="src\TestLayer\ThreeDLayer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Hazel\Hazel.vcxproj">
@@ -143,6 +144,7 @@
   <ItemGroup>
     <ClInclude Include="src\ParticleSystem.h" />
     <ClInclude Include="src\Sandbox2D.h" />
+    <ClInclude Include="src\TestLayer\ThreeDLayer.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="assets\shaders\FlatColor.glsl" />

@@ -207,6 +207,14 @@ namespace Hazel {
 		glUniform2f(location, value.x, value.y);
 	}
 
+	void OpenGLShader::SetFloat(const std::string& name, float value)
+	{
+		HZ_PROFILE_FUNCTION();
+
+		UploadUniformFloat(name, value);
+	}
+
+
 	void OpenGLShader::UploadUniformFloat3(const std::string& name, const glm::vec3& value)
 	{
 		GLint location = glGetUniformLocation(m_RendererID, name.c_str());
