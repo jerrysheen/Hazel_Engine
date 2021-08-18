@@ -43,7 +43,10 @@ void ThreeDLayer::OnImGuiRender()
 {
 	ImGui::Begin("Settings");
 	//ImGui::ColorEdit3("Square Color", glm::value_ptr(m_SquareColor));
-
+	if (ImGui::Button("reset camPos")) 
+	{
+		m_CameraController.ResetCamera();
+	}
 	ImGui::End();
 }
 

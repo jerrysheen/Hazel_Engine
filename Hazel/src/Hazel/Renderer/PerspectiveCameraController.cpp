@@ -50,38 +50,51 @@ namespace Hazel {
 			if (pitch < -89.0f)
 				pitch = -89.0f;
 
-			glm::vec3 front;
-			front.z = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
-			front.y = -sin(glm::radians(pitch));
-			front.x = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
-			front = glm::normalize(front);
-			HZ_CORE_INFO("x : {0}  y:{1}  z{2}", front.x, front.y, front.z);
-			m_Camera.SetCameraFront(front);
+			
+			m_front.z = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
+			m_front.y = -sin(glm::radians(pitch));
+			m_front.x = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
+			m_front = glm::normalize(m_front);
+			HZ_CORE_INFO("x : {0}  y:{1}  z{2}", m_front.x, m_front.y, m_front.z);
+			m_Camera.SetCameraFront(m_front);
 
 		}
 		else {
 			FirstTimeTriggerCameraDirectionMove = true;
 		}
 
+		glm::vec3 up = glm::dot(m_up, m_front)* m_front - m_up;
+		glm::vec3 right = glm::normalize(glm::cross(m_front, up));
+
 		if (Input::IsKeyPressed(HZ_KEY_A))
-			m_CameraPosition.x -= m_CameraTranslationSpeed * ts;
+			m_CameraPosition -= m_CameraTranslationSpeed * ts * right;
 		else if (Input::IsKeyPressed(HZ_KEY_D))
-			m_CameraPosition.x += m_CameraTranslationSpeed * ts;
+			m_CameraPosition += m_CameraTranslationSpeed * ts * right;
 
 		if (Input::IsKeyPressed(HZ_KEY_W))
-			m_CameraPosition.y -= m_CameraTranslationSpeed * ts;
+			m_CameraPosition -= m_CameraTranslationSpeed * ts * up;
 		else if (Input::IsKeyPressed(HZ_KEY_S))
-			m_CameraPosition.y += m_CameraTranslationSpeed * ts;
+			m_CameraPosition += m_CameraTranslationSpeed * ts * up;
 
 		m_Camera.SetPosition(m_CameraPosition);
 	}
 
 	
 
+	void PerspectiveCameraController::ResetCamera()
+	{
+		m_Camera.ResetCamera();
+		FirstTimeTriggerCameraDirectionMove = true;
+		m_front = {0, 0, -1};
+		m_CameraPosition = { 0, 0, -10 };
+		yaw = 0;
+		pitch = 0;
+	}
+
 	bool PerspectiveCameraController::OnMouseScrolled(MouseScrolledEvent& e)
 	{
 		float diff = e.GetYOffset();
-		m_CameraPosition.z += diff;
+		m_CameraPosition += diff * m_front;
 		m_Camera.SetPosition(m_CameraPosition);
 		return false;
 	}

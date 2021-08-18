@@ -16,6 +16,14 @@ namespace Hazel {
 		m_ViewProjectionMatrix = m_ProjectionMatrix * m_ViewMatrix;
 	}
 
+	void PerspectiveCamera::ResetCamera()
+	{
+		m_Position = { 0, 0,10 };
+		m_Front = { 0, 0, 1 };
+		m_up = { 0, 1.0f, 0.0f };
+		RecalculateViewMatrix();
+	}
+
 	void PerspectiveCamera::RecalculateViewMatrix()
 	{
 		glm::mat4 transform = glm::lookAt(m_Position, m_Position + m_Front, m_up);
@@ -23,4 +31,6 @@ namespace Hazel {
 		m_ViewMatrix = transform;
 		m_ViewProjectionMatrix = m_ProjectionMatrix * m_ViewMatrix;
 	}
+
+
 }

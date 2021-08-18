@@ -24,8 +24,7 @@ namespace Hazel {
 		void SetCameraProjection() {
 		}
 
-		void SetCamera() {
-		}
+		void ResetCamera();
 	private:
 		bool OnMouseClicked(MouseButtonPressedEvent& e);
 
@@ -33,6 +32,8 @@ namespace Hazel {
 	private:
 		PerspectiveCamera m_Camera;
 		glm::vec3 m_CameraPosition = { 0, 0, -10 };
+		glm::vec3 m_front = { 0,0,-1 };
+		glm::vec3 m_up = { 0, 1, 0 };
 		glm::mat4 m_viewMatrix;
 		float m_CameraTranslationSpeed = 5;
 		float m_Width, m_Height;
