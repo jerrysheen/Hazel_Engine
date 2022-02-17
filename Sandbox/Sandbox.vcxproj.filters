@@ -1,18 +1,23 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="src\SandboxApp.cpp" />
-    <ClCompile Include="src\Sandbox2D.cpp" />
-    <ClCompile Include="src\ParticleSystem.cpp" />
-    <ClCompile Include="src\TestLayer\ThreeDLayer.cpp" />
+    <Filter Include="TestLayer">
+      <UniqueIdentifier>{A2D68009-0E41-3580-577F-E625C32813D5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\Sandbox2D.h" />
     <ClInclude Include="src\ParticleSystem.h" />
-    <ClInclude Include="src\TestLayer\ThreeDLayer.h" />
+    <ClInclude Include="src\Sandbox2D.h" />
+    <ClInclude Include="src\TestLayer\ThreeDLayer.h">
+      <Filter>TestLayer</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="assets\shaders\Texture.glsl" />
-    <None Include="assets\shaders\FlatColor.glsl" />
+    <ClCompile Include="src\ParticleSystem.cpp" />
+    <ClCompile Include="src\SandBoxApp.cpp" />
+    <ClCompile Include="src\Sandbox2D.cpp" />
+    <ClCompile Include="src\TestLayer\ThreeDLayer.cpp">
+      <Filter>TestLayer</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
