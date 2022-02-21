@@ -8,47 +8,21 @@
 namespace Hazel {
 
 
-	static std::vector<Renderer3D::Renderer3DStorage>* m_ObjData;
-
-	Renderer3D::Renderer3D() : m_ViewProjection(0.0f)
-	{
-	
-	}
+	static std::vector<Renderer3D::Renderer3DStorage*> *s_ObjData;
+	static glm::mat4 m_ViewProjection;
+	static Renderer3D::Renderer3DStorage* s_Data;
 
 	void Renderer3D::Init()
 	{
 		
-		m_ObjData = new std::vector<Renderer3D::Renderer3DStorage>();
+		s_ObjData = new std::vector<Renderer3D::Renderer3DStorage*>();
 		s_Data = new Renderer3DStorage();
-		s_Data->QuadVertexArray = VertexArray::Create();
-
-
-		Ref<VertexBuffer> squareVB;
-		squareVB.reset(VertexBuffer::Create(Renderer3D::m_squareVertices, sizeof(m_squareVertices)));
-		squareVB->SetLayout({
-				{ ShaderDataType::Float3, "a_Position" },
-				{ ShaderDataType::Float2, "a_TexCoord" }
-
-			});
-		s_Data->QuadVertexArray->AddVertexBuffer(squareVB);
-
-		uint32_t squareIndices[6] = { 0, 1, 2, 2, 3, 0 };
-		Ref<IndexBuffer> squareIB;
-		squareIB.reset(IndexBuffer::Create(squareIndices, sizeof(squareIndices) / sizeof(uint32_t)));
-		s_Data->QuadVertexArray->SetIndexBuffer(squareIB);
-
-		s_Data->WhiteTexture = Texture2D::Create(1, 1);
-		uint32_t whiteTextureData = 0xffffffff;
-		s_Data->WhiteTexture->SetData(&whiteTextureData, sizeof(uint32_t));
-
-		s_Data->TextureShader = Shader::Create("assets/shaders/Texture.glsl");
-		s_Data->TextureShader->Bind();
-		s_Data->TextureShader->SetInt("u_Texture", 0);
 
 	}
 	void Renderer3D::Shutdown()
 	{
-		delete m_ObjData;
+		delete s_ObjData;
+		delete s_Data;
 	}
 	void Renderer3D::BeginScene(const OrthographicCamera& camera)
 	{
@@ -87,7 +61,7 @@ namespace Hazel {
 
 		uint32_t squareIndices[6] = { 0, 1, 2, 2, 3, 0 };
 		Ref<IndexBuffer> squareIB;
-		squareIB.reset(IndexBuffer::Create(squareIndices, sizeof(squareIndices) / sizeof(uint32_t)));
+		squareIB.reset(IndexBuffer::Create(m_squareIndices, sizeof(m_squareIndices) / sizeof(uint32_t)));
 		s_Data->QuadVertexArray->SetIndexBuffer(squareIB);
 
 		s_Data->WhiteTexture = Texture2D::Create(1, 1);
@@ -97,7 +71,27 @@ namespace Hazel {
 		s_Data->TextureShader = Shader::Create("assets/shaders/Texture.glsl");
 		s_Data->TextureShader->Bind();
 		s_Data->TextureShader->SetInt("u_Texture", 0);
+		s_Data->TextureShader->SetMat4("u_ViewProjection", m_ViewProjection);
 
+		s_ObjData->push_back(s_Data);
+	}
+
+	void Renderer3D::DrawPrimitives()
+	{
+		for (int i = 0; i < s_ObjData->size(); i++)
+		{
+			Renderer3D::Renderer3DStorage* curr = (*s_ObjData)[i];
+			curr->TextureShader->Bind();
+			curr->TextureShader->SetFloat4("u_Color", glm::vec4(0.0f, 0.0f, 1.0f, 1.0f));
+			curr->TextureShader->SetFloat("u_TilingFactor", 1.0f);
+			curr->WhiteTexture->Bind(0);
+			glm::mat4 transform = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f))
+				* glm::scale(glm::mat4(1.0f), glm::vec3(1.0f, 1.0f, 1.0f));
+			curr->TextureShader->SetMat4("u_Transform", transform);
+
+			curr->QuadVertexArray->Bind();
+			RendererCommand::DrawIndexed(curr->QuadVertexArray);
+		}
 	}
 
 	void Renderer3D::DrawQuad(const glm::vec2& position, const glm::vec2& size, const glm::vec4& color)

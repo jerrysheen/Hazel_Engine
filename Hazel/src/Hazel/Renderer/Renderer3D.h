@@ -25,6 +25,8 @@ namespace Hazel {
 		static void CreatePlane(const glm::vec3& position);
 
 		// Primitives
+		static void DrawPrimitives();
+
 		static void DrawQuad(const glm::vec2& position, const glm::vec2& size, const glm::vec4& color);
 		static void DrawQuad(const glm::vec3& position, const glm::vec2& size, const glm::vec4& color);
 		static void DrawQuad(const glm::vec2& position, const glm::vec2& size, const Ref<Texture2D>& texture, float tilingFactor = 1.0f, const glm::vec4& tintColor = glm::vec4(1.0f));
@@ -35,12 +37,12 @@ namespace Hazel {
 		static void DrawRotatedQuad(const glm::vec2& position, const glm::vec2& size, float rotation, const Ref<Texture2D>& texture, float tilingFactor = 1.0f, const glm::vec4& tintColor = glm::vec4(1.0f));
 		static void DrawRotatedQuad(const glm::vec3& position, const glm::vec2& size, float rotation, const Ref<Texture2D>& texture, float tilingFactor = 1.0f, const glm::vec4& tintColor = glm::vec4(1.0f));
 
-		/*struct Renderer3DStorage
+		struct Renderer3DStorage
 		{
 			Ref<VertexArray> QuadVertexArray;
 			Ref<Shader> TextureShader;
 			Ref<Texture2D> WhiteTexture;
-		};*/
+		};
 	private:
 		inline static  float m_squareVertices[5 * 4] = {
 			-0.5f, -0.5f, 0.0f, 0.0f, 0.0f,
@@ -48,8 +50,7 @@ namespace Hazel {
 			 0.5f,  0.5f, 0.0f, 1.0f, 1.0f,
 			-0.5f,  0.5f, 0.0f, 0.0f, 1.0f
 		};
-		glm::mat4 m_ViewProjection;
-
+		inline static uint32_t m_squareIndices[6] = { 0, 1, 2, 2, 3, 0 };
 			//static std::vector<Renderer3DStorage>* m_ObjData;
 			//Scope<std::unordered_map<int, std::pair<int, int>>>; 
 	};
