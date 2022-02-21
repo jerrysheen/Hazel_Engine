@@ -165,7 +165,7 @@
     <ClInclude Include="src\Hazel\Renderer\PerspectiveCamera.h" />
     <ClInclude Include="src\Hazel\Renderer\PerspectiveCameraController.h" />
     <ClInclude Include="src\Hazel\Renderer\Renderer.h" />
-    <ClInclude Include="src\Hazel\Renderer\Renderer2D.h" />
+    <ClInclude Include="src\Hazel\Renderer\Renderer3D.h" />
     <ClInclude Include="src\Hazel\Renderer\RendererAPI.h" />
     <ClInclude Include="src\Hazel\Renderer\RendererCommand.h" />
     <ClInclude Include="src\Hazel\Renderer\Shader.h" />
@@ -611,7 +611,7 @@
     <ClCompile Include="src\Hazel\Renderer\PerspectiveCamera.cpp" />
     <ClCompile Include="src\Hazel\Renderer\PerspectiveCameraController.cpp" />
     <ClCompile Include="src\Hazel\Renderer\Renderer.cpp" />
-    <ClCompile Include="src\Hazel\Renderer\Renderer2D.cpp" />
+    <ClCompile Include="src\Hazel\Renderer\Renderer3D.cpp" />
     <ClCompile Include="src\Hazel\Renderer\RendererAPI.cpp" />
     <ClCompile Include="src\Hazel\Renderer\RendererCommand.cpp" />
     <ClCompile Include="src\Hazel\Renderer\Shader.cpp" />

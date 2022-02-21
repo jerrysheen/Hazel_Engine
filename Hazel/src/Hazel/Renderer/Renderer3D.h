@@ -4,10 +4,13 @@
 #include "PerspectiveCamera.h"
 #include "glm/gtc/matrix_transform.hpp"
 #include "Texture.h"
+#include "hzpch.h"
+#include "VertexArray.h"
+#include "Shader.h"
 
 namespace Hazel {
 	
-	class Renderer2D 
+	class Renderer3D
 	{
 	public:
 		static void Init();
@@ -15,7 +18,11 @@ namespace Hazel {
 
 		static void BeginScene(const OrthographicCamera& camera);
 		static void BeginScene(const PerspectiveCamera& camera);
+
 		static void EndScene();
+
+		static void CreatePlane();
+		static void CreatePlane(const glm::vec3& position);
 
 		// Primitives
 		static void DrawQuad(const glm::vec2& position, const glm::vec2& size, const glm::vec4& color);
@@ -28,6 +35,23 @@ namespace Hazel {
 		static void DrawRotatedQuad(const glm::vec2& position, const glm::vec2& size, float rotation, const Ref<Texture2D>& texture, float tilingFactor = 1.0f, const glm::vec4& tintColor = glm::vec4(1.0f));
 		static void DrawRotatedQuad(const glm::vec3& position, const glm::vec2& size, float rotation, const Ref<Texture2D>& texture, float tilingFactor = 1.0f, const glm::vec4& tintColor = glm::vec4(1.0f));
 
+		/*struct Renderer3DStorage
+		{
+			Ref<VertexArray> QuadVertexArray;
+			Ref<Shader> TextureShader;
+			Ref<Texture2D> WhiteTexture;
+		};*/
+	private:
+		inline static  float m_squareVertices[5 * 4] = {
+			-0.5f, -0.5f, 0.0f, 0.0f, 0.0f,
+			 0.5f, -0.5f, 0.0f, 1.0f, 0.0f,
+			 0.5f,  0.5f, 0.0f, 1.0f, 1.0f,
+			-0.5f,  0.5f, 0.0f, 0.0f, 1.0f
+		};
+		glm::mat4 m_ViewProjection;
+
+			//static std::vector<Renderer3DStorage>* m_ObjData;
+			//Scope<std::unordered_map<int, std::pair<int, int>>>; 
 	};
 
 }

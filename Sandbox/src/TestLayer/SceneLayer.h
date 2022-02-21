@@ -4,11 +4,11 @@
 #include "Hazel.h"
 #include "imgui/imgui.h"
 
-class ThreeDLayer : public Hazel::Layer
+class SceneLayer : public Hazel::Layer
 {
 public:
-	ThreeDLayer(Hazel::Window& window);
-	virtual ~ThreeDLayer() = default;
+	SceneLayer(Hazel::Window& window);
+	virtual ~SceneLayer() = default;
 	virtual void OnAttach() override;
 	virtual void OnDetach() override;
 	void OnUpdate(Hazel::Timestep ts) override;

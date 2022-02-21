@@ -39,7 +39,7 @@ void ParticleSystem::Render()
 
 		float size = glm::lerp(particle.SizeBegin, particle.SizeEnd, life);
 
-		Hazel::Renderer2D::DrawQuad(particle.Position, {size, size}, color);
+		Hazel::Renderer3D::DrawQuad(particle.Position, {size, size}, color);
 	}
 }
 

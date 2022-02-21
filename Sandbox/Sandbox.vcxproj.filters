@@ -8,7 +8,7 @@
   <ItemGroup>
     <ClInclude Include="src\ParticleSystem.h" />
     <ClInclude Include="src\Sandbox2D.h" />
-    <ClInclude Include="src\TestLayer\ThreeDLayer.h">
+    <ClInclude Include="src\TestLayer\SceneLayer.h">
       <Filter>TestLayer</Filter>
     </ClInclude>
   </ItemGroup>
@@ -16,7 +16,7 @@
     <ClCompile Include="src\ParticleSystem.cpp" />
     <ClCompile Include="src\SandBoxApp.cpp" />
     <ClCompile Include="src\Sandbox2D.cpp" />
-    <ClCompile Include="src\TestLayer\ThreeDLayer.cpp">
+    <ClCompile Include="src\TestLayer\SceneLayer.cpp">
       <Filter>TestLayer</Filter>
     </ClCompile>
   </ItemGroup>
