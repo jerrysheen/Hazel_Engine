@@ -7,9 +7,9 @@
 
 namespace Hazel {
 
+	std::vector<Renderer3D::Renderer3DStorage*>* Renderer3D::s_ObjData = new std::vector<Renderer3D::Renderer3DStorage*>();
+	glm::mat4  Renderer3D::m_ViewProjection;
 
-	static std::vector<Renderer3D::Renderer3DStorage*> *s_ObjData;
-	static glm::mat4 m_ViewProjection;
 	static Renderer3D::Renderer3DStorage* s_Data;
 
 	void Renderer3D::Init()
