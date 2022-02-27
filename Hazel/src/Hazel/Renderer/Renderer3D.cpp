@@ -32,6 +32,7 @@ namespace Hazel {
 	void Renderer3D::BeginScene(const PerspectiveCamera& camera)
 	{
 		m_ViewProjection = camera.GetViewProjectionMatrix();
+		HZ_CORE_INFO("x: {0}, y :  {1} " , m_ViewProjection[0][0], m_ViewProjection[1][1]);
 	}
 
 	void Renderer3D::EndScene()
@@ -67,12 +68,13 @@ namespace Hazel {
 		s_Data->WhiteTexture = Texture2D::Create(1, 1);
 		uint32_t whiteTextureData = 0xffffffff;
 		s_Data->WhiteTexture->SetData(&whiteTextureData, sizeof(uint32_t));
-
+	
+		HZ_CORE_INFO("x : {0}", s_ObjData->size());
 		s_Data->TextureShader = Shader::Create("assets/shaders/Texture.glsl");
 		s_Data->TextureShader->Bind();
 		s_Data->TextureShader->SetInt("u_Texture", 0);
 		s_Data->TextureShader->SetMat4("u_ViewProjection", m_ViewProjection);
-
+		
 		s_ObjData->push_back(s_Data);
 	}
 
@@ -88,7 +90,8 @@ namespace Hazel {
 			glm::mat4 transform = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f))
 				* glm::scale(glm::mat4(1.0f), glm::vec3(1.0f, 1.0f, 1.0f));
 			curr->TextureShader->SetMat4("u_Transform", transform);
-
+			curr->TextureShader->SetInt("u_Texture", 0);
+			curr->TextureShader->SetMat4("u_ViewProjection", m_ViewProjection);
 			curr->QuadVertexArray->Bind();
 			RendererCommand::DrawIndexed(curr->QuadVertexArray);
 		}

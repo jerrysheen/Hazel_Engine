@@ -45,10 +45,10 @@ namespace Hazel {
 		};
 	private:
 		inline static  float m_squareVertices[5 * 4] = {
-			-0.5f, -0.5f, 0.0f, 0.0f, 0.0f,
-			 0.5f, -0.5f, 0.0f, 1.0f, 0.0f,
-			 0.5f,  0.5f, 0.0f, 1.0f, 1.0f,
-			-0.5f,  0.5f, 0.0f, 0.0f, 1.0f
+			-0.5f, 0.0f, -0.5f, 0.0f, 0.0f,
+			 0.5f, 0.0f, -0.5f, 1.0f, 0.0f,
+			 0.5f,  0.0f, 0.5f, 1.0f, 1.0f,
+			-0.5f,  0.0f, 0.5f, 0.0f, 1.0f
 		};
 		inline static uint32_t m_squareIndices[6] = { 0, 1, 2, 2, 3, 0 };
 		static std::vector<Renderer3D::Renderer3DStorage*>* s_ObjData;
