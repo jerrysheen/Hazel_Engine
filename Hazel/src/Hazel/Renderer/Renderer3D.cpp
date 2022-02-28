@@ -71,10 +71,9 @@ namespace Hazel {
 	
 		HZ_CORE_INFO("x : {0}", s_ObjData->size());
 		s_Data->TextureShader = Shader::Create("assets/shaders/Texture.glsl");
-		s_Data->TextureShader->Bind();
-		s_Data->TextureShader->SetInt("u_Texture", 0);
-		s_Data->TextureShader->SetMat4("u_ViewProjection", m_ViewProjection);
-		
+
+		s_Data->Color = std::make_shared<glm::vec4>(1.0, 1.0, 1.0, 1.0);
+		s_Data->Scale = std::make_shared<glm::vec3>(1.0, 1.0, 1.0);
 		s_ObjData->push_back(s_Data);
 	}
 
@@ -84,11 +83,12 @@ namespace Hazel {
 		{
 			Renderer3D::Renderer3DStorage* curr = (*s_ObjData)[i];
 			curr->TextureShader->Bind();
-			curr->TextureShader->SetFloat4("u_Color", glm::vec4(0.0f, 0.0f, 1.0f, 1.0f));
+			curr->TextureShader->SetFloat4("u_Color", *curr->Color);
 			curr->TextureShader->SetFloat("u_TilingFactor", 1.0f);
 			curr->WhiteTexture->Bind(0);
-			glm::mat4 transform = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f))
-				* glm::scale(glm::mat4(1.0f), glm::vec3(1.0f, 1.0f, 1.0f));
+			// transform 里面有 translate 和 scale了
+			glm::mat4 transform = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f)) 
+				* glm::scale(glm::mat4(1.0f), *curr->Scale);
 			curr->TextureShader->SetMat4("u_Transform", transform);
 			curr->TextureShader->SetInt("u_Texture", 0);
 			curr->TextureShader->SetMat4("u_ViewProjection", m_ViewProjection);

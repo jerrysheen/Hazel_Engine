@@ -33,7 +33,6 @@ void SceneLayer::OnUpdate(Hazel::Timestep ts)
 	Hazel::Renderer3D::BeginScene(m_CameraController.GetCamera());
 	Hazel::Renderer3D::DrawPrimitives();
 	
-	//Hazel::Renderer3D::DrawQuad({ 0.0f, 0.0f, -0.1f }, { 10.0f, 10.0f }, m_Texture);
 	Hazel::Renderer3D::EndScene();
 
 	m_CameraController.OnUpdate(ts);

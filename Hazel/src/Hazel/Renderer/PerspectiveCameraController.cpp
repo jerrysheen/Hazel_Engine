@@ -12,7 +12,7 @@ namespace Hazel {
 		lastX(width/2),
 		lastY(height/2),
 		m_viewMatrix(glm::mat4(1.0f)),
-		m_CameraPosition(0.0, 5.0, -10.0)
+		m_CameraPosition(0.0, 3.0, -10.0)
 	{
 
 	}

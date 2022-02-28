@@ -42,6 +42,8 @@ namespace Hazel {
 			Ref<VertexArray> QuadVertexArray;
 			Ref<Shader> TextureShader;
 			Ref<Texture2D> WhiteTexture;
+			Ref<glm::vec3> Scale;
+			Ref<glm::vec4> Color;
 		};
 	private:
 		inline static  float m_squareVertices[5 * 4] = {
