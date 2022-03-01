@@ -38,7 +38,8 @@ namespace Hazel {
 		float m_CameraTranslationSpeed = 5;
 		float m_Width, m_Height;
 		bool FirstTimeTriggerCameraDirectionMove = true;
-		float lastX, lastY;
+		float lastRotationX, lastRotationY;
+		float lastMoveX, lastMoveY;
 		float yaw = 0, pitch = 0;
 	};
 }

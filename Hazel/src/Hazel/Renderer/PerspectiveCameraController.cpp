@@ -9,8 +9,8 @@ namespace Hazel {
 		:m_Camera(fov, width, height, nearPlane, farPlane),
 		m_Width(width),
 		m_Height(height),
-		lastX(width/2),
-		lastY(height/2),
+		lastRotationX(width/2),
+		lastRotationY(height/2),
 		m_viewMatrix(glm::mat4(1.0f)),
 		m_CameraPosition(0.0, 5.0, -10.0)
 	{
@@ -26,18 +26,22 @@ namespace Hazel {
 
 	void PerspectiveCameraController::OnUpdate(Timestep ts)
 	{
-		if (Input::IsMouseButtonPressed(HZ_MOUSE_BUTTON_2)) {
+
+		glm::vec3 up = glm::dot(m_up, m_front) * m_front - m_up;
+		glm::vec3 right = glm::normalize(glm::cross(m_front, up));
+
+		/*if (Input::IsMouseButtonPressed(HZ_MOUSE_BUTTON_2)) {
 			auto [xpos, ypos] = Input::GetMousePosition();
-			float xoffset = xpos - lastX;
-			float yoffset = lastY - ypos;
+			float xoffset = xpos - lastRotationX;
+			float yoffset = lastRotationY - ypos;
 			if (FirstTimeTriggerCameraDirectionMove) {
 				FirstTimeTriggerCameraDirectionMove = false;
 				xoffset = 0;
 				yoffset = 0;
 			}
 
-			lastX = xpos;
-			lastY = ypos;
+			lastRotationX = xpos;
+			lastRotationY = ypos;
 
 			float sensitivity = 0.05;
 			xoffset *= sensitivity;
@@ -59,13 +63,53 @@ namespace Hazel {
 			HZ_CORE_INFO("x : {0}  y:{1}  z{2}", m_front.x, m_front.y, m_front.z);
 			m_Camera.SetCameraFront(m_front);
 
+
 		}
 		else {
 			FirstTimeTriggerCameraDirectionMove = true;
 		}
+		up = glm::dot(m_up, m_front) * m_front - m_up;
+		right = glm::normalize(glm::cross(m_front, up));*/
 
-		glm::vec3 up = glm::dot(m_up, m_front)* m_front - m_up;
-		glm::vec3 right = glm::normalize(glm::cross(m_front, up));
+
+		if (Input::IsMouseButtonPressed(HZ_MOUSE_BUTTON_3)) {
+			auto [xpos, ypos] = Input::GetMousePosition();
+			float xoffset = xpos - lastRotationX;
+			float yoffset = lastRotationY - ypos;
+			if (FirstTimeTriggerCameraDirectionMove) {
+				FirstTimeTriggerCameraDirectionMove = false;
+				xoffset = 0;
+				yoffset = 0;
+			}
+
+			lastRotationX = xpos;
+			lastRotationY = ypos;
+
+			float sensitivity = 0.05;
+			xoffset *= sensitivity;
+			yoffset *= sensitivity;
+
+			yaw += xoffset;
+			pitch += yoffset;
+
+			if (pitch > 89.0f)
+				pitch = 89.0f;
+			if (pitch < -89.0f)
+				pitch = -89.0f;
+
+
+			m_front.z = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
+			m_front.y = -sin(glm::radians(pitch));
+			m_front.x = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
+			m_front = glm::normalize(m_front);
+			HZ_CORE_INFO("x : {0}  y:{1}  z{2}", m_front.x, m_front.y, m_front.z);
+			m_Camera.SetCameraFront(m_front);
+
+
+		}
+		else {
+			FirstTimeTriggerCameraDirectionMove = true;
+		}
 
 		if (Input::IsKeyPressed(HZ_KEY_A))
 			m_CameraPosition -= m_CameraTranslationSpeed * ts * right;
