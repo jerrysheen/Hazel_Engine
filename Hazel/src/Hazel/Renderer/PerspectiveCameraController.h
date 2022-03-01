@@ -32,12 +32,13 @@ namespace Hazel {
 	private:
 		PerspectiveCamera m_Camera;
 		glm::vec3 m_CameraPosition = { 0, 3, -10 };
-		glm::vec3 m_front = { 0,0,-1 };
+		glm::vec3 m_front = { 0,0,1 };
 		glm::vec3 m_up = { 0, 1, 0 };
 		glm::mat4 m_viewMatrix;
-		float m_CameraTranslationSpeed = 5;
+		float m_CameraTranslationSpeed = 2.5;
 		float m_Width, m_Height;
-		bool FirstTimeTriggerCameraDirectionMove = true;
+		bool m_FirstTimeTriggerCameraDirectionMove = true;
+		bool m_FirstTimeTriggerCameraDirectionRotation = true;
 		float lastRotationX, lastRotationY;
 		float lastMoveX, lastMoveY;
 		float yaw = 0, pitch = 0;

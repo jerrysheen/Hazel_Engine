@@ -25,7 +25,7 @@ void SceneLayer::OnDetach()
 void SceneLayer::OnUpdate(Hazel::Timestep ts)
 {
 
-	Hazel::RendererCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1 });
+	Hazel::RendererCommand::SetClearColor({ 104.0/256.0, 97.0 / 256.0, 92.0 / 256.0, 1 });
 	Hazel::RendererCommand::Clear();
 
 

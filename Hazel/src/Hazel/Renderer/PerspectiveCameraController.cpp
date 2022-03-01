@@ -11,6 +11,8 @@ namespace Hazel {
 		m_Height(height),
 		lastRotationX(width/2),
 		lastRotationY(height/2),
+		lastMoveX(width/2),
+		lastMoveY(height/2),
 		m_viewMatrix(glm::mat4(1.0f)),
 		m_CameraPosition(0.0, 3.0, -10.0)
 	{
@@ -30,12 +32,12 @@ namespace Hazel {
 		glm::vec3 up = glm::dot(m_up, m_front) * m_front - m_up;
 		glm::vec3 right = glm::normalize(glm::cross(m_front, up));
 
-		/*if (Input::IsMouseButtonPressed(HZ_MOUSE_BUTTON_2)) {
+		if (Input::IsMouseButtonPressed(HZ_MOUSE_BUTTON_2)) {
 			auto [xpos, ypos] = Input::GetMousePosition();
 			float xoffset = xpos - lastRotationX;
 			float yoffset = lastRotationY - ypos;
-			if (FirstTimeTriggerCameraDirectionMove) {
-				FirstTimeTriggerCameraDirectionMove = false;
+			if (m_FirstTimeTriggerCameraDirectionRotation) {
+				m_FirstTimeTriggerCameraDirectionRotation = false;
 				xoffset = 0;
 				yoffset = 0;
 			}
@@ -47,8 +49,8 @@ namespace Hazel {
 			xoffset *= sensitivity;
 			yoffset *= sensitivity;
 
-			yaw += xoffset;
-			pitch += yoffset;
+			yaw -= xoffset;
+			pitch -= yoffset;
 
 			if (pitch > 89.0f)
 				pitch = 89.0f;
@@ -66,62 +68,50 @@ namespace Hazel {
 
 		}
 		else {
-			FirstTimeTriggerCameraDirectionMove = true;
+			m_FirstTimeTriggerCameraDirectionRotation = true;
 		}
 		up = glm::dot(m_up, m_front) * m_front - m_up;
-		right = glm::normalize(glm::cross(m_front, up));*/
+		right = glm::normalize(glm::cross(m_front, up));
 
 
-		if (Input::IsMouseButtonPressed(HZ_MOUSE_BUTTON_3)) {
+		if (Input::IsMouseButtonPressed(HZ_MOUSE_BUTTON_MIDDLE)) {
 			auto [xpos, ypos] = Input::GetMousePosition();
-			float xoffset = xpos - lastRotationX;
-			float yoffset = lastRotationY - ypos;
-			if (FirstTimeTriggerCameraDirectionMove) {
-				FirstTimeTriggerCameraDirectionMove = false;
+			float xoffset = xpos - lastMoveX;
+			float yoffset = lastMoveY - ypos;
+			if (m_FirstTimeTriggerCameraDirectionMove) {
+				m_FirstTimeTriggerCameraDirectionMove = false;
 				xoffset = 0;
 				yoffset = 0;
 			}
 
-			lastRotationX = xpos;
-			lastRotationY = ypos;
+			lastMoveX = xpos;
+			lastMoveY = ypos;
 
 			float sensitivity = 0.05;
 			xoffset *= sensitivity;
 			yoffset *= sensitivity;
 
-			yaw += xoffset;
-			pitch += yoffset;
-
-			if (pitch > 89.0f)
-				pitch = 89.0f;
-			if (pitch < -89.0f)
-				pitch = -89.0f;
-
-
-			m_front.z = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
-			m_front.y = -sin(glm::radians(pitch));
-			m_front.x = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
-			m_front = glm::normalize(m_front);
-			HZ_CORE_INFO("x : {0}  y:{1}  z{2}", m_front.x, m_front.y, m_front.z);
-			m_Camera.SetCameraFront(m_front);
-
-
+			m_CameraPosition += m_CameraTranslationSpeed * ts * right * xoffset + m_CameraTranslationSpeed * ts * up * yoffset;
 		}
 		else {
-			FirstTimeTriggerCameraDirectionMove = true;
+			m_FirstTimeTriggerCameraDirectionMove = true;
 		}
 
-		if (Input::IsKeyPressed(HZ_KEY_A))
-			m_CameraPosition -= m_CameraTranslationSpeed * ts * right;
-		else if (Input::IsKeyPressed(HZ_KEY_D))
-			m_CameraPosition += m_CameraTranslationSpeed * ts * right;
+		if (Input::IsMouseButtonPressed(HZ_MOUSE_BUTTON_2)) 
+		{
+			if (Input::IsKeyPressed(HZ_KEY_A))
+				m_CameraPosition += m_CameraTranslationSpeed * ts * right;
+			else if (Input::IsKeyPressed(HZ_KEY_D))
+				m_CameraPosition -= m_CameraTranslationSpeed * ts * right;
 
-		if (Input::IsKeyPressed(HZ_KEY_W))
-			m_CameraPosition -= m_CameraTranslationSpeed * ts * up;
-		else if (Input::IsKeyPressed(HZ_KEY_S))
-			m_CameraPosition += m_CameraTranslationSpeed * ts * up;
+			if (Input::IsKeyPressed(HZ_KEY_W))
+				m_CameraPosition += m_CameraTranslationSpeed * ts * m_front;
+			else if (Input::IsKeyPressed(HZ_KEY_S))
+				m_CameraPosition -= m_CameraTranslationSpeed * ts * m_front;
+		}
 
 		m_Camera.SetPosition(m_CameraPosition);
+	
 	}
 
 	
@@ -129,7 +119,8 @@ namespace Hazel {
 	void PerspectiveCameraController::ResetCamera()
 	{
 		m_Camera.ResetCamera();
-		FirstTimeTriggerCameraDirectionMove = true;
+		m_FirstTimeTriggerCameraDirectionRotation = true;
+		m_FirstTimeTriggerCameraDirectionMove = true;
 		m_front = {0, 0, -1};
 		m_CameraPosition = { 0, 0, -10 };
 		yaw = 0;
@@ -139,7 +130,7 @@ namespace Hazel {
 	bool PerspectiveCameraController::OnMouseScrolled(MouseScrolledEvent& e)
 	{
 		float diff = e.GetYOffset();
-		m_CameraPosition += diff * m_front;
+		m_CameraPosition += diff * m_front * 0.2f;
 		m_Camera.SetPosition(m_CameraPosition);
 		return false;
 	}
