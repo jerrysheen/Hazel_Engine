@@ -24,6 +24,8 @@ namespace Hazel {
 		static void CreatePlane();
 		static void CreatePlane(const glm::vec3& position);
 
+		static void RenderGround();
+
 		// Primitives
 		static void DrawPrimitives();
 

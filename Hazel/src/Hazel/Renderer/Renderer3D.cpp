@@ -17,7 +17,7 @@ namespace Hazel {
 		
 		s_ObjData = new std::vector<Renderer3D::Renderer3DStorage*>();
 		s_Data = new Renderer3DStorage();
-
+		RenderGround();
 	}
 	void Renderer3D::Shutdown()
 	{
@@ -27,12 +27,15 @@ namespace Hazel {
 	void Renderer3D::BeginScene(const OrthographicCamera& camera)
 	{
 		m_ViewProjection = camera.GetViewProjectionMatrix();
+		
 	}
 
 	void Renderer3D::BeginScene(const PerspectiveCamera& camera)
 	{
 		m_ViewProjection = camera.GetViewProjectionMatrix();
 		HZ_CORE_INFO("x: {0}, y :  {1} " , m_ViewProjection[0][0], m_ViewProjection[1][1]);
+
+		
 	}
 
 	void Renderer3D::EndScene()
@@ -43,6 +46,40 @@ namespace Hazel {
 	{
 		CreatePlane({0.0f, 0.0f, 0.0f});
 	}
+
+	void Renderer3D::RenderGround() 
+	{
+		Renderer3D::Renderer3DStorage* s_Data = new Renderer3DStorage();
+
+		s_Data->QuadVertexArray = VertexArray::Create();
+
+
+		Ref<VertexBuffer> squareVB;
+		squareVB.reset(VertexBuffer::Create(Renderer3D::m_squareVertices, sizeof(m_squareVertices)));
+		squareVB->SetLayout({
+				{ ShaderDataType::Float3, "a_Position" },
+				{ ShaderDataType::Float2, "a_TexCoord" }
+
+			});
+		s_Data->QuadVertexArray->AddVertexBuffer(squareVB);
+
+		uint32_t squareIndices[6] = { 0, 1, 2, 2, 3, 0 };
+		Ref<IndexBuffer> squareIB;
+		squareIB.reset(IndexBuffer::Create(m_squareIndices, sizeof(m_squareIndices) / sizeof(uint32_t)));
+		s_Data->QuadVertexArray->SetIndexBuffer(squareIB);
+
+		s_Data->WhiteTexture = Texture2D::Create(1, 1);
+		uint32_t whiteTextureData = 0xffffffff;
+		s_Data->WhiteTexture->SetData(&whiteTextureData, sizeof(uint32_t));
+
+		HZ_CORE_INFO("x : {0}", s_ObjData->size());
+		s_Data->TextureShader = Shader::Create("assets/shaders/Ground.glsl");
+
+		s_Data->Color = std::make_shared<glm::vec4>(1.0, 1.0, 1.0, 1.0);
+		s_Data->Scale = std::make_shared<glm::vec3>(300, 1.0, 300);
+		s_ObjData->push_back(s_Data);
+	}
+
 
 	void Renderer3D::CreatePlane(const glm::vec3& position)
 	{

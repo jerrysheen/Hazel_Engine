@@ -5,7 +5,7 @@
 
 SceneLayer::SceneLayer(Hazel::Window& window)
 	:Layer("3Dlayer"),
-	m_CameraController(45.0f, window.GetWidth(), window.GetHeight(), 0.1f, 100.0f),
+	m_CameraController(45.0f, window.GetWidth(), window.GetHeight(), 0.1f, 100000.0f),
 	m_window(window)
 {
 	HZ_INFO("{0}, {1}", window.GetWidth(), window.GetHeight());
