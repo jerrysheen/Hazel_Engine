@@ -57,6 +57,7 @@ namespace Hazel {
 		inline static uint32_t m_squareIndices[6] = { 0, 1, 2, 2, 3, 0 };
 		static std::vector<Renderer3D::Renderer3DStorage*>* s_ObjData;
 		static glm::mat4 m_ViewProjection;
+		static glm::vec3 m_CameraPos;
 	};
 
 }

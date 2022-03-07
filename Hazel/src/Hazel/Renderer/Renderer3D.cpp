@@ -9,6 +9,7 @@ namespace Hazel {
 
 	std::vector<Renderer3D::Renderer3DStorage*>* Renderer3D::s_ObjData = new std::vector<Renderer3D::Renderer3DStorage*>();
 	glm::mat4  Renderer3D::m_ViewProjection;
+	glm::vec3  Renderer3D::m_CameraPos;
 
 	static Renderer3D::Renderer3DStorage* s_Data;
 
@@ -32,7 +33,9 @@ namespace Hazel {
 
 	void Renderer3D::BeginScene(const PerspectiveCamera& camera)
 	{
+
 		m_ViewProjection = camera.GetViewProjectionMatrix();
+		m_CameraPos = camera.GetCamPos();
 		HZ_CORE_INFO("x: {0}, y :  {1} " , m_ViewProjection[0][0], m_ViewProjection[1][1]);
 
 		
@@ -129,6 +132,7 @@ namespace Hazel {
 			curr->TextureShader->SetMat4("u_Transform", transform);
 			curr->TextureShader->SetInt("u_Texture", 0);
 			curr->TextureShader->SetMat4("u_ViewProjection", m_ViewProjection);
+			curr->TextureShader->SetFloat3("u_CameraPos", m_CameraPos);
 			curr->QuadVertexArray->Bind();
 			RendererCommand::DrawIndexed(curr->QuadVertexArray);
 		}

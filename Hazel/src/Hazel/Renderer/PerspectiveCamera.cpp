@@ -6,6 +6,7 @@ namespace Hazel {
 	PerspectiveCamera::PerspectiveCamera(float fov, float width, float height, float nearPlane, float farPlane)
 		:m_ProjectionMatrix(glm::perspective(fov, width/height, nearPlane, farPlane))
 		,m_ViewMatrix(1.0f)
+		,m_Position(1.0f)
 	{
 		m_ViewProjectionMatrix = m_ProjectionMatrix * m_ViewMatrix;
 	}
