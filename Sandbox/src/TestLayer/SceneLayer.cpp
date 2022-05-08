@@ -28,8 +28,6 @@ void SceneLayer::OnUpdate(Hazel::Timestep ts)
 	Hazel::RendererCommand::SetClearColor({ 104.0/256.0, 97.0 / 256.0, 92.0 / 256.0, 1 });
 	Hazel::RendererCommand::Clear();
 
-
-
 	Hazel::Renderer3D::BeginScene(m_CameraController.GetCamera());
 	Hazel::Renderer3D::DrawPrimitives();
 	

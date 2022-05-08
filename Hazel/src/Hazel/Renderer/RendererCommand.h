@@ -29,6 +29,12 @@ namespace Hazel {
 		{
 			s_RendererAPI->DrawIndexed(vertexArray);
 		}
+
+		inline static void DrawLines(const Ref<VertexArray>& vertexArray) 
+		{
+			s_RendererAPI->DrawLines(vertexArray);
+		}
+
 	private:
 		static RendererAPI* s_RendererAPI;
 	};

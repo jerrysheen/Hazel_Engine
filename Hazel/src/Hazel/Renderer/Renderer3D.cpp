@@ -53,22 +53,18 @@ namespace Hazel {
 	void Renderer3D::RenderGround() 
 	{
 		Renderer3D::Renderer3DStorage* s_Data = new Renderer3DStorage();
-
 		s_Data->QuadVertexArray = VertexArray::Create();
-
-
 		Ref<VertexBuffer> squareVB;
-		squareVB.reset(VertexBuffer::Create(Renderer3D::m_squareVertices, sizeof(m_squareVertices)));
+		squareVB.reset(VertexBuffer::Create(Renderer3D::m_ground, sizeof(m_ground)));
 		squareVB->SetLayout({
 				{ ShaderDataType::Float3, "a_Position" },
-				{ ShaderDataType::Float2, "a_TexCoord" }
+				//{ ShaderDataType::	Float2, "a_TexCoord" }
 
 			});
 		s_Data->QuadVertexArray->AddVertexBuffer(squareVB);
 
-		uint32_t squareIndices[6] = { 0, 1, 2, 2, 3, 0 };
 		Ref<IndexBuffer> squareIB;
-		squareIB.reset(IndexBuffer::Create(m_squareIndices, sizeof(m_squareIndices) / sizeof(uint32_t)));
+		squareIB.reset(IndexBuffer::Create(m_groundIndices, sizeof(m_groundIndices) / sizeof(uint32_t)));
 		s_Data->QuadVertexArray->SetIndexBuffer(squareIB);
 
 		s_Data->WhiteTexture = Texture2D::Create(1, 1);
@@ -79,7 +75,8 @@ namespace Hazel {
 		s_Data->TextureShader = Shader::Create("assets/shaders/Ground.glsl");
 
 		s_Data->Color = std::make_shared<glm::vec4>(1.0, 1.0, 1.0, 1.0);
-		s_Data->Scale = std::make_shared<glm::vec3>(300, 1.0, 300);
+		s_Data->Scale = std::make_shared<glm::vec3>(1.0, 1.0, 1.0);
+		s_Data->DrawType = DRAW_TYPE::HZ_LINES;
 		s_ObjData->push_back(s_Data);
 	}
 
@@ -114,29 +111,10 @@ namespace Hazel {
 
 		s_Data->Color = std::make_shared<glm::vec4>(1.0, 1.0, 1.0, 1.0);
 		s_Data->Scale = std::make_shared<glm::vec3>(1.0, 1.0, 1.0);
+		s_Data->DrawType = DRAW_TYPE::HZ_TRIANGLES;
 		s_ObjData->push_back(s_Data);
 	}
 
-	void Renderer3D::DrawPrimitives()
-	{
-		for (int i = 0; i < s_ObjData->size(); i++)
-		{
-			Renderer3D::Renderer3DStorage* curr = (*s_ObjData)[i];
-			curr->TextureShader->Bind();
-			curr->TextureShader->SetFloat4("u_Color", *curr->Color);
-			curr->TextureShader->SetFloat("u_TilingFactor", 1.0f);
-			curr->WhiteTexture->Bind(0);
-			// transform 里面有 translate 和 scale了
-			glm::mat4 transform = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f)) 
-				* glm::scale(glm::mat4(1.0f), *curr->Scale);
-			curr->TextureShader->SetMat4("u_Transform", transform);
-			curr->TextureShader->SetInt("u_Texture", 0);
-			curr->TextureShader->SetMat4("u_ViewProjection", m_ViewProjection);
-			curr->TextureShader->SetFloat3("u_CameraPos", m_CameraPos);
-			curr->QuadVertexArray->Bind();
-			RendererCommand::DrawIndexed(curr->QuadVertexArray);
-		}
-	}
 
 	void Renderer3D::DrawQuad(const glm::vec2& position, const glm::vec2& size, const glm::vec4& color)
 	{
@@ -154,7 +132,7 @@ namespace Hazel {
 		s_Data->TextureShader->SetMat4("u_Transform", transform);
 
 		s_Data->QuadVertexArray->Bind();
-		RendererCommand::DrawIndexed(s_Data->QuadVertexArray);
+		//RendererCommand::DrawIndexed(s_Data->QuadVertexArray);
 	}
 
 	void Renderer3D::DrawQuad(const glm::vec2& position, const glm::vec2& size, const Ref<Texture2D>& texture, float tilingFactor, const glm::vec4& tintColor)
@@ -172,7 +150,6 @@ namespace Hazel {
 		s_Data->TextureShader->SetMat4("u_Transform", transform);
 
 		s_Data->QuadVertexArray->Bind();
-		RendererCommand::DrawIndexed(s_Data->QuadVertexArray);
 	}
 
 	void Renderer3D::DrawRotatedQuad(const glm::vec2& position, const glm::vec2& size, float rotation, const glm::vec4& color)
@@ -193,7 +170,6 @@ namespace Hazel {
 			* glm::scale(glm::mat4(1.0f), { size.x, size.y, 1.0f });
 		s_Data->TextureShader->SetMat4("u_Transform", transform);
 		s_Data->QuadVertexArray->Bind();
-		RendererCommand::DrawIndexed(s_Data->QuadVertexArray);
 	}
 
 	void Renderer3D::DrawRotatedQuad(const glm::vec2& position, const glm::vec2& size, float rotation, const Ref<Texture2D>& texture, float tilingFactor, const glm::vec4& tintColor)
@@ -215,7 +191,39 @@ namespace Hazel {
 		s_Data->TextureShader->SetMat4("u_Transform", transform);
 
 		
-		RendererCommand::DrawIndexed(s_Data->QuadVertexArray);
+	}
+
+
+	void Renderer3D::DrawPrimitives()
+	{
+		for (int i = 0; i < s_ObjData->size(); i++)
+		{
+			Renderer3D::Renderer3DStorage* curr = (*s_ObjData)[i];
+			curr->TextureShader->Bind();
+			curr->TextureShader->SetFloat4("u_Color", *curr->Color);
+			curr->TextureShader->SetFloat("u_TilingFactor", 1.0f);
+			curr->WhiteTexture->Bind(0);
+			// transform 里面有 translate 和 scale了
+			glm::mat4 transform = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f))
+				* glm::scale(glm::mat4(1.0f), *curr->Scale);
+			curr->TextureShader->SetMat4("u_Transform", transform);
+			curr->TextureShader->SetInt("u_Texture", 0);
+			curr->TextureShader->SetMat4("u_ViewProjection", m_ViewProjection);
+			curr->TextureShader->SetFloat3("u_CameraPos", m_CameraPos);
+			curr->QuadVertexArray->Bind();
+			switch (curr->DrawType)
+			{
+			case Renderer3D::DRAW_TYPE::HZ_TRIANGLES:
+				RendererCommand::DrawIndexed(curr->QuadVertexArray);
+				break;
+			case Renderer3D::DRAW_TYPE::HZ_LINES:
+				RendererCommand::DrawLines(curr->QuadVertexArray);
+				break;
+			default:
+				RendererCommand::DrawIndexed(curr->QuadVertexArray);
+				break;
+			}
+		}
 	}
 
 }

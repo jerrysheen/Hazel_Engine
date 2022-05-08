@@ -34,19 +34,5 @@ uniform sampler2D u_Texture;
 uniform vec4 u_Color;
 void main()
 {
-	vec2 temp;
-	// log10(height);
-	float height = (1 / 3.3219) * log(v_camPos.y);
-	float raction = height - fract(height);
-	temp = fract(v_worldPos.xz / (pow(10, raction)));
-	
-	if(temp.x < 0.01f || temp.y < 0.01f)
-	{
-		color = vec4(116.0/255.0, 113.0/255.0, 116.0/255.0, 1.0);
-	}
-	else
-	{
-		discard;
-	}
-	//color = vec4(v_camPos.y);
+	color = u_Color;
 }
