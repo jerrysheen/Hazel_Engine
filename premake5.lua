@@ -19,11 +19,13 @@ IncludeDir["Glad"] = "Hazel/vendor/Glad/include"
 IncludeDir["ImGui"] = "Hazel/vendor/imgui"
 IncludeDir["glm"] = "Hazel/vendor/glm"
 IncludeDir["stb_image"] = "Hazel/vendor/stb_image"
+IncludeDir["assimp"] = "Hazel/vendor/assimp/include"
 
 -- This include file include the GLFW premake5.lua.
 include "Hazel/vendor/GLFW"
 include "Hazel/vendor/Glad"
 include "Hazel/vendor/imgui"
+include "Hazel/vendor/assimp"
 
 project "Hazel"
 	location "Hazel"
@@ -57,7 +59,8 @@ project "Hazel"
 		"%{IncludeDir.Glad}",
 		"%{IncludeDir.ImGui}",
 		"%{IncludeDir.glm}",
-		"%{IncludeDir.stb_image}"
+		"%{IncludeDir.stb_image}",
+		"%{IncludeDir.assimp}"
 	}
 -- ����о�����������MSVS linker��������additional dependencyһ����
 -- ��Ϊhazel��һ��dll lib�� ����include��һ��static lib�� ����sanbox include��hazelһ��
@@ -66,7 +69,8 @@ project "Hazel"
 		"GLFW",
 		"Glad",
 		"ImGui",
-		"opengl32.lib"
+		"opengl32.lib",
+		"assimp"
 	}
 
   	filter "system:windows"
@@ -82,6 +86,7 @@ project "Hazel"
 	filter "configurations:Debug"
 		defines "HZ_DEBUG"
 		runtime "Debug"
+		staticruntime "on"
 		symbols "on"
 
 	filter "configurations:Release"
@@ -134,6 +139,7 @@ project "Sandbox"
 	filter "configurations:Debug"
 		defines "HZ_DEBUG"
 		runtime "Debug"
+		staticruntime "on"
 		symbols "On"
 
 	filter "configurations:Release"
