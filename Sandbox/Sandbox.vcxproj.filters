@@ -20,7 +20,4 @@
       <Filter>TestLayer</Filter>
     </ClCompile>
   </ItemGroup>
-  <ItemGroup>
-    <None Include="assets\shaders\Ground.glsl" />
-  </ItemGroup>
 </Project>
