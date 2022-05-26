@@ -1,3 +1,4 @@
+#include "hzpch.h"
 #include "Mesh.h"
 
 namespace Hazel 
@@ -6,13 +7,13 @@ namespace Hazel
 	{
 		this->vertices = vertices;
 		this->indices = indices;
-		this->textures = textures;
+		//this->textures = textures;
 
 		this->setupMesh();
 	}
-	Ref<Mesh> Mesh::Create(const std::vector<Vertex>& vertices, const std::vector<int>& indices, const std::vector<Texture>& texture)
-	{
+	//Ref<Mesh> Mesh::Create(const std::vector<Vertex>& vertices, const std::vector<int>& indices, const std::vector<Texture>& texture)
+	//{
 
-		return Ref<Mesh>();
-	}
+	//	//return Ref<Mesh>();
+	//}
 }

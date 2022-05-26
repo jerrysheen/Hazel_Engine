@@ -16,7 +16,7 @@ namespace Hazel
     public:
         std::vector<Vertex> vertices;
         std::vector<int> indices;
-        std::vector<Texture> textures;
+        //std::vector<Texture> textures;
         Mesh(const std::vector<Vertex>& vertices, const std::vector<int>& indices, const std::vector<Texture>& texture);
         void Draw(Shader shader);
 

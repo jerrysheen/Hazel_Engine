@@ -38,6 +38,11 @@ namespace Hazel{
 	{
 		m_LayerStack.PushLayer(layer);
 		layer->OnAttach();
+	}	
+	
+	void Application::Close()
+	{
+		m_Running = false;
 	}
 
 	void Application::PushOverlay(Layer* layer)
