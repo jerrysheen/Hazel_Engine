@@ -36,7 +36,7 @@ namespace Hazel {
 
 		m_ViewProjection = camera.GetViewProjectionMatrix();
 		m_CameraPos = camera.GetCamPos();
-		HZ_CORE_INFO("x: {0}, y :  {1} " , m_ViewProjection[0][0], m_ViewProjection[1][1]);
+		//HZ_CORE_INFO("x: {0}, y :  {1} " , m_ViewProjection[0][0], m_ViewProjection[1][1]);
 
 		
 	}
@@ -71,7 +71,7 @@ namespace Hazel {
 		uint32_t whiteTextureData = 0xffffffff;
 		s_Data->WhiteTexture->SetData(&whiteTextureData, sizeof(uint32_t));
 
-		HZ_CORE_INFO("x : {0}", s_ObjData->size());
+		//HZ_CORE_INFO("x : {0}", s_ObjData->size());
 		s_Data->TextureShader = Shader::Create("assets/shaders/Ground.glsl");
 
 		s_Data->Color = std::make_shared<glm::vec4>(1.0, 1.0, 1.0, 1.0);
@@ -106,7 +106,7 @@ namespace Hazel {
 		uint32_t whiteTextureData = 0xffffffff;
 		s_Data->WhiteTexture->SetData(&whiteTextureData, sizeof(uint32_t));
 	
-		HZ_CORE_INFO("x : {0}", s_ObjData->size());
+		//HZ_CORE_INFO("x : {0}", s_ObjData->size());
 		s_Data->TextureShader = Shader::Create("assets/shaders/Texture.glsl");
 
 		s_Data->Color = std::make_shared<glm::vec4>(1.0, 1.0, 1.0, 1.0);

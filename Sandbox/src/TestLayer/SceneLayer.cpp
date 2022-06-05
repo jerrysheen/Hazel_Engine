@@ -14,7 +14,11 @@ SceneLayer::SceneLayer(Hazel::Window& window)
 void SceneLayer::OnAttach()
 {
 	m_Texture = Hazel::Texture2D::Create("assets/textures/Checkerboard.png");
-
+    
+    Hazel::FramebufferSpecification fbSpec;
+    fbSpec.Width = 1280;
+    fbSpec.Height = 720;
+    m_FrameBuffer = Hazel::Framebuffer::Create(fbSpec);
 }
 
 void SceneLayer::OnDetach()
@@ -24,6 +28,11 @@ void SceneLayer::OnDetach()
 
 void SceneLayer::OnUpdate(Hazel::Timestep ts)
 {
+    {
+        m_FrameBuffer->Bind();
+        Hazel::RendererCommand::SetClearColor({0.5f, 0.5f, 0.5f, 1});
+        Hazel::RendererCommand::Clear();
+    }
 
 	Hazel::RendererCommand::SetClearColor({ 104.0/256.0, 97.0 / 256.0, 92.0 / 256.0, 1 });
 	Hazel::RendererCommand::Clear();
@@ -34,6 +43,8 @@ void SceneLayer::OnUpdate(Hazel::Timestep ts)
 	Hazel::Renderer3D::EndScene();
 
 	m_CameraController.OnUpdate(ts);
+
+    m_FrameBuffer->Unbind();
 }
 
 void SceneLayer::OnImGuiRender()
@@ -106,8 +117,6 @@ void SceneLayer::OnImGuiRender()
         }
 
         ImGui::EndMenuBar();
-
-
     }
 
 #pragma region  Settings panel
@@ -121,8 +130,8 @@ void SceneLayer::OnImGuiRender()
     ImGui::End();
 
     ImGui::Begin("ViewPort");
-    uint32_t textureID = m_Texture->GetRendererID();
-    ImGui::Image((void*)textureID, ImVec2(64.0f, 64.0f));
+    uint32_t textureID = m_FrameBuffer->GetColorAttachmentRendererID();
+    ImGui::Image((void*)textureID, ImVec2(1280.0f, 720.0f));
 
     ImGui::End();
 #pragma endregion

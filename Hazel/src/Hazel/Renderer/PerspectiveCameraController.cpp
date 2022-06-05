@@ -62,7 +62,7 @@ namespace Hazel {
 			m_front.y = -sin(glm::radians(pitch));
 			m_front.x = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
 			m_front = glm::normalize(m_front);
-			HZ_CORE_INFO("x : {0}  y:{1}  z{2}", m_front.x, m_front.y, m_front.z);
+			//HZ_CORE_INFO("x : {0}  y:{1}  z{2}", m_front.x, m_front.y, m_front.z);
 			m_Camera.SetCameraFront(m_front);
 
 
