@@ -12,4 +12,4 @@
 	url = https://github.com/g-truc/glm
 [submodule "Hazel/vendor/assimp"]
 	path = Hazel/vendor/assimp
-	url = https://github.com/AminAliari/assimp
+	url = https://github.com/AminAliari/assimp.git
