@@ -1,6 +1,6 @@
  workspace "Hazel"
 	architecture "x64"
-	startproject "Sandbox"
+	startproject "Hazelnut"
 
 	configurations
 	{
@@ -156,8 +156,8 @@ project "Sandbox"
 		runtime "Release"
 		optimize "On"
 
-project "Hazel-Editor"
-	location "Hazel-Editor"
+project "Hazelnut"
+	location "Hazelnut"
 	kind "ConsoleApp"
 	language "C++"
 	cppdialect "C++17"
