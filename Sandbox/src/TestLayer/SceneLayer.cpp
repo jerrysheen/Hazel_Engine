@@ -13,7 +13,7 @@ SceneLayer::SceneLayer(Hazel::Window& window)
 
 void SceneLayer::OnAttach()
 {
-	m_Texture = Hazel::Texture2D::Create("assets/textures/Checkerboard.png");
+	//m_Texture = Hazel::Texture2D::Create("assets/textures/Checkerboard.png");
     
     Hazel::FramebufferSpecification fbSpec;
     fbSpec.Width = 1280;

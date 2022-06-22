@@ -21,6 +21,8 @@ namespace Hazel
 		glm::vec2 playerPosition = { 0.0f, 0.0f };
 		float playerMoveSpeed = 1;
 		Window& m_window;
+		Ref<Framebuffer> m_FrameBuffer;
+		PerspectiveCameraController m_CameraController;
 
 	};
 }

@@ -10,10 +10,10 @@
 
 namespace Hazel 
 {
-	class HazelEditor : public Application
+	class Hazelnut : public Application
 	{
 	public:
-		HazelEditor()
+		Hazelnut()
 		{
 			// ExapleLayer helps us to see the effect imediately.
 			// PushLayer(new ExampleLayer());
@@ -21,13 +21,13 @@ namespace Hazel
 			PushLayer(new EditorLayer(GetWindow()));
 
 		}
-		~HazelEditor() {
+		~Hazelnut() {
 		}
 	};
 
 	Application* CreateApplication()
 	{
-		return new HazelEditor();
+		return new Hazelnut();
 	}
 }
 
