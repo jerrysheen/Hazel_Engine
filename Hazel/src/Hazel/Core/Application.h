@@ -18,7 +18,7 @@ namespace Hazel
 	class HAZEL_API Application
 	{
 	public:
-		Application();
+		Application(std::string title);
 		virtual ~Application();
 
 		void Run();
@@ -31,6 +31,7 @@ namespace Hazel
 
 		inline static Application& Get() { return *s_Instance; }
 		inline Window& GetWindow() { return *m_Window; }
+		std::string m_title;
 	private:
 		bool OnWindowClose(WindowCloseEvent& e);
 		bool OnWindowResize(WindowResizeEvent& e);

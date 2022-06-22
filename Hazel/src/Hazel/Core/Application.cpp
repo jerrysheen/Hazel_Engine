@@ -14,11 +14,14 @@ namespace Hazel{
 	
 	Application* Application::s_Instance = nullptr;
 
-	Application::Application()
+	Application::Application(std::string title) : m_title(title)
 	{
 		HZ_CORE_ASSERT(!s_Instance, "Application already exists");
 		s_Instance = this;
-		m_Window = std::unique_ptr<Window>(Window::Create());
+		s_Instance = this;
+		WindowProps props;
+		props.Title = title;
+		m_Window = std::unique_ptr<Window>(Window::Create(props));
 		m_Window->SetEventCallback(BIND_EVENT_FN(OnEvent));
 
 		Renderer::Init();

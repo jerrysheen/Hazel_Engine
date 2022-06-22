@@ -13,11 +13,10 @@ namespace Hazel
 	class Hazelnut : public Application
 	{
 	public:
-		Hazelnut()
+		Hazelnut() : Application("Editor")
 		{
 			// ExapleLayer helps us to see the effect imediately.
 			// PushLayer(new ExampleLayer());
-			//PushLayer(new Sandbox2D(GetWindow()));
 			PushLayer(new EditorLayer(GetWindow()));
 
 		}

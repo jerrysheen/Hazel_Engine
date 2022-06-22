@@ -13,6 +13,8 @@ namespace Hazel
 	OpenGLFramebuffer::~OpenGLFramebuffer()
 	{
 		glDeleteFramebuffers(1, &m_RendererID);
+		glDeleteFramebuffers(1, &m_ColorAttachment);
+		glDeleteFramebuffers(1, &m_DepthAttachment);
 	}
 
 	void OpenGLFramebuffer::Invalidate()
@@ -48,5 +50,9 @@ namespace Hazel
 	void OpenGLFramebuffer::Unbind()
 	{
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	}
+	void OpenGLFramebuffer::Resize(const glm::vec2& viewportSize)
+	{
+		glresize
 	}
 }

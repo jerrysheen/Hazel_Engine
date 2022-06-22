@@ -37,8 +37,6 @@ namespace Hazel {
 		m_ViewProjection = camera.GetViewProjectionMatrix();
 		m_CameraPos = camera.GetCamPos();
 		//HZ_CORE_INFO("x: {0}, y :  {1} " , m_ViewProjection[0][0], m_ViewProjection[1][1]);
-
-		
 	}
 
 	void Renderer3D::EndScene()
