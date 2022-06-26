@@ -19,6 +19,12 @@ namespace Hazel
 
 	void OpenGLFramebuffer::Invalidate()
 	{
+		if (!m_RendererID) 
+		{
+			glDeleteFramebuffers(1, &m_RendererID);
+			glDeleteFramebuffers(1, &m_ColorAttachment);
+			glDeleteFramebuffers(1, &m_DepthAttachment);
+		}
 		glCreateFramebuffers(1, &m_RendererID);
 		glBindFramebuffer(GL_FRAMEBUFFER, m_RendererID);
 
@@ -53,6 +59,8 @@ namespace Hazel
 	}
 	void OpenGLFramebuffer::Resize(const glm::vec2& viewportSize)
 	{
-		glresize
+		m_Specifications.Width = viewportSize.x;
+		m_Specifications.Height = viewportSize.y;
+		Invalidate();
 	}
 }

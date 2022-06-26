@@ -1,6 +1,8 @@
 #pragma once
 
 #include "Hazel/Core/Core.h"
+#include "glm/gtc/type_ptr.hpp"
+
 namespace Hazel {
 
 	struct FramebufferSpecification

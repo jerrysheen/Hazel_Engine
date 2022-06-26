@@ -132,17 +132,23 @@ namespace Hazel
         }
         ImGui::End();
 
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
         ImGui::Begin("ViewPort");
         ImVec2 viewPortSize = ImGui::GetContentRegionAvail();
+        //  HZ_CORE_INFO("Viewport size X: {0};  : {1}", viewPortSize.x, viewPortSize.y);
         if (m_viewPortPanelSize != *((glm::vec2*)&viewPortSize)) 
         {
             m_viewPortPanelSize = { viewPortSize.x, viewPortSize.y };
             m_FrameBuffer->Resize(m_viewPortPanelSize);
+            RendererCommand::SetViewPort(0,0,m_viewPortPanelSize.x, m_viewPortPanelSize.y);
+            m_CameraController.ResetAspectRatio(m_viewPortPanelSize.x, m_viewPortPanelSize.y);
         }
         uint32_t textureID = m_FrameBuffer->GetColorAttachmentRendererID();
-        ImGui::Image((void*)textureID, ImVec2(1280.0f, 720.0f));
+        ImGui::Image((void*)textureID, ImVec2(m_viewPortPanelSize.x, m_viewPortPanelSize.y));
 
         ImGui::End();
+        ImGui::PopStyleVar();
+
 #pragma endregion
 
 

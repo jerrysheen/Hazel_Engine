@@ -31,6 +31,7 @@ namespace Hazel {
 		}
 
 		void ResetCamera();
+		void ResetAspectRatio(float width, float height);
 
 		const glm::mat4& GetProjectionMatrix() const { return m_ProjectionMatrix; };
 		const  glm::vec3& GetCamPos() const { return m_Position; };
@@ -45,7 +46,11 @@ namespace Hazel {
 		glm::mat4 m_ViewProjectionMatrix;
 		glm::vec3 m_Position;
 		
-
+		float m_Fov;
+		float m_Width;
+		float m_Height;
+		float m_NearPlane;
+		float m_FarPlane;
 		glm::mat4 m_Translation = glm::mat4(1.0f);
 		float m_Rotation = 0.0f;
 		glm::vec3 m_Front = { 0, 0, 1 };

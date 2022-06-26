@@ -7,6 +7,11 @@ namespace Hazel {
 		:m_ProjectionMatrix(glm::perspective(fov, width/height, nearPlane, farPlane))
 		,m_ViewMatrix(1.0f)
 		,m_Position(1.0f)
+		,m_Fov(fov)
+		,m_Width(width)
+		,m_Height(height)
+		,m_NearPlane(nearPlane)
+		,m_FarPlane(farPlane)
 	{
 		m_ViewProjectionMatrix = m_ProjectionMatrix * m_ViewMatrix;
 	}
@@ -19,8 +24,8 @@ namespace Hazel {
 
 	void PerspectiveCamera::ResetCamera()
 	{
-		m_Position = { 0, 0,10 };
-		m_Front = { 0, 0, 1 };
+		m_Position = { 0, 10,0 };
+		m_Front = { 0, 0, -1 };
 		m_up = { 0, 1.0f, 0.0f };
 		RecalculateViewMatrix();
 	}
@@ -33,5 +38,10 @@ namespace Hazel {
 		m_ViewProjectionMatrix = m_ProjectionMatrix * m_ViewMatrix;
 	}
 
+	void PerspectiveCamera::ResetAspectRatio(float width, float height)
+	{
+		m_ProjectionMatrix = glm::perspective(m_Fov, width / height, m_NearPlane, m_FarPlane);
+		m_ViewProjectionMatrix = m_ProjectionMatrix * m_ViewMatrix;
+	}
 
 }

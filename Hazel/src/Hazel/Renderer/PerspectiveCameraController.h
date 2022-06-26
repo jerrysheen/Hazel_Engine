@@ -25,14 +25,18 @@ namespace Hazel {
 		}
 
 		void ResetCamera();
+		void ResetAspectRatio(float width, float height);
+
 	private:
 		bool OnMouseClicked(MouseButtonPressedEvent& e);
 
 		bool OnMouseScrolled(MouseScrolledEvent& e);
+
+		bool OnMouseMoved(MouseMovedEvent& e);
 	private:
 		PerspectiveCamera m_Camera;
-		glm::vec3 m_CameraPosition = { 0, 3, -10 };
-		glm::vec3 m_front = { 0,0,1 };
+		glm::vec3 m_CameraPosition = { 0.0, 3.0, -10.0 };
+		glm::vec3 m_front = {0.0, 0.0, 1.0 };
 		glm::vec3 m_up = { 0, 1, 0 };
 		glm::mat4 m_viewMatrix;
 		float m_CameraTranslationSpeed = 2.5;
