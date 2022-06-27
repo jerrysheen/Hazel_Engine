@@ -144,7 +144,7 @@ namespace Hazel
             m_CameraController.ResetAspectRatio(m_viewPortPanelSize.x, m_viewPortPanelSize.y);
         }
         uint32_t textureID = m_FrameBuffer->GetColorAttachmentRendererID();
-        ImGui::Image((void*)textureID, ImVec2(m_viewPortPanelSize.x, m_viewPortPanelSize.y));
+        ImGui::Image((void*)textureID, ImVec2(m_viewPortPanelSize.x, m_viewPortPanelSize.y), ImVec2(0, 1), ImVec2(1,0));
 
         ImGui::End();
         ImGui::PopStyleVar();

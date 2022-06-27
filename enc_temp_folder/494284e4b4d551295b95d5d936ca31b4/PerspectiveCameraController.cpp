@@ -30,7 +30,7 @@ namespace Hazel {
 	void PerspectiveCameraController::OnUpdate(Timestep ts)
 	{
 
-		//HZ_CORE_INFO("{0}, {1}, {2}", m_CameraPosition.x, m_CameraPosition.y, m_CameraPosition.z);
+		HZ_CORE_INFO("{0}, {1}, {2}", m_CameraPosition.x, m_CameraPosition.y, m_CameraPosition.z);
 		glm::vec3 up = glm::dot(m_up, m_front) * m_front - m_up;
 		glm::vec3 right = glm::normalize(glm::cross(m_front, up));
 
