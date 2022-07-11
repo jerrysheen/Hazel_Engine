@@ -142,6 +142,26 @@
       <Project>{99294D0D-053E-75BE-CEBF-181E3A9371EF}</Project>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="assets\Resources\Models\Survival_BackPack_2.fbx" />
+    <None Include="assets\shaders\FlatColor.glsl" />
+    <None Include="assets\shaders\Ground.glsl" />
+    <None Include="assets\shaders\Texture.glsl" />
+    <None Include="HazelProfile-Runtime.json" />
+    <None Include="HazelProfile-Shutdown.json" />
+    <None Include="HazelProfile-Startup.json" />
+    <None Include="imgui.ini" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="assets\game\textures\RPGpack_sheet_2X.png" />
+    <Image Include="assets\Resources\Textures\1001_albedo.jpg" />
+    <Image Include="assets\Resources\Textures\1001_AO.jpg" />
+    <Image Include="assets\Resources\Textures\1001_metallic.jpg" />
+    <Image Include="assets\Resources\Textures\1001_normal.png" />
+    <Image Include="assets\Resources\Textures\1001_roughness.jpg" />
+    <Image Include="assets\textures\Checkerboard.png" />
+    <Image Include="assets\textures\ChernoLogo.png" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

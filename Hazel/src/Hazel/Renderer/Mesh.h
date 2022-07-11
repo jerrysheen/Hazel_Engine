@@ -3,6 +3,8 @@
 #include "glm/glm.hpp"
 #include "Texture.h"
 #include "Shader.h"
+#include "VertexArray.h"
+
 namespace Hazel 
 {
     struct Vertex
@@ -14,16 +16,18 @@ namespace Hazel
     class Mesh
     {
     public:
-        std::vector<Vertex> vertices;
-        std::vector<int> indices;
+        
         //std::vector<Texture> textures;
-        Mesh(const std::vector<Vertex>& vertices, const std::vector<int>& indices, const std::vector<Texture>& texture);
+        //Mesh(const std::vector<Vertex>& vertices, const std::vector<int>& indices, const std::vector<Texture>& texture);
         void Draw(Shader shader);
 
-        static Ref<Mesh> Create(const std::vector<Vertex>& vertices, const std::vector<int>& indices, const std::vector<Texture>& texture);
+        static Ref<Mesh> Create();
+        Ref<VertexArray> VertexArray;
+        Ref<Texture2D> Texture;
+
+        bool SetupMesh();
 
     private:
         int VAO, VBO, EBO;
-        void setupMesh();
     };
 }

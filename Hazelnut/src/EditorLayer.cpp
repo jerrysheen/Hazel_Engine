@@ -42,6 +42,40 @@ namespace Hazel
         Renderer3D::BeginScene(m_CameraController.GetCamera());
         Renderer3D::DrawPrimitives();
 
+
+        // draw mesh
+        {
+
+            Ref<Mesh> mesh = Mesh::Create();
+            mesh->SetupMesh();
+            
+            //mesh->Texture
+            //curr->TextureShader->Bind();
+            //curr->TextureShader->SetFloat4("u_Color", *curr->Color);
+            //curr->TextureShader->SetFloat("u_TilingFactor", 1.0f);
+            //curr->WhiteTexture->Bind(0);
+            //// transform 里面有 translate 和 scale了
+            //glm::mat4 transform = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f))
+            //    * glm::scale(glm::mat4(1.0f), *curr->Scale);
+            //curr->TextureShader->SetMat4("u_Transform", transform);
+            //curr->TextureShader->SetInt("u_Texture", 0);
+            //curr->TextureShader->SetMat4("u_ViewProjection", m_ViewProjection);
+            //curr->TextureShader->SetFloat3("u_CameraPos", m_CameraPos);
+            //curr->QuadVertexArray->Bind();
+            //switch (curr->DrawType)
+            //{
+            //case Renderer3D::DRAW_TYPE::HZ_TRIANGLES:
+            //    RendererCommand::DrawIndexed(curr->QuadVertexArray);
+            //    break;
+            //case Renderer3D::DRAW_TYPE::HZ_LINES:
+            //    RendererCommand::DrawLines(curr->QuadVertexArray);
+            //    break;
+            //default:
+            //    RendererCommand::DrawIndexed(curr->QuadVertexArray);
+            //    break;
+            //}
+        }
+
         Renderer3D::EndScene();
 
 

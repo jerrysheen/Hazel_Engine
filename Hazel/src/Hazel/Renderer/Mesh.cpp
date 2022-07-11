@@ -3,17 +3,17 @@
 
 namespace Hazel 
 {
-	Mesh::Mesh(const std::vector<Vertex>& vertices, const std::vector<int>& indices, const std::vector<Texture>& texture)
+
+	Ref<Mesh> Mesh::Create()
 	{
-		this->vertices = vertices;
-		this->indices = indices;
-		//this->textures = textures;
-
-		this->setupMesh();
+		return std::make_shared<Mesh>();
 	}
-	//Ref<Mesh> Mesh::Create(const std::vector<Vertex>& vertices, const std::vector<int>& indices, const std::vector<Texture>& texture)
-	//{
+	
 
-	//	//return Ref<Mesh>();
-	//}
+	bool Mesh::SetupMesh()
+	{
+		return true;
+	}
+
+
 }
