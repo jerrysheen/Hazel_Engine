@@ -29,6 +29,7 @@
 #include "Hazel/Renderer/Texture.h"
 
 #include "Hazel/Renderer/Mesh.h"
+#include "Hazel/Renderer/Model.h"
 
 #include "Hazel/Renderer/OrthographicCamera.h"
 // -----------------------------------

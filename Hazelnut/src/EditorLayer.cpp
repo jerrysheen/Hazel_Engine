@@ -46,9 +46,10 @@ namespace Hazel
         // draw mesh
         {
 
-            Ref<Mesh> mesh = Mesh::Create();
-            mesh->SetupMesh();
+            //Ref<Mesh> mesh = Mesh::Create();
+            //mesh->SetupMesh();
             
+            Model* model = new Model("../assets/Resources/Models/Survival_BackPack_2.fbx");
             //mesh->Texture
             //curr->TextureShader->Bind();
             //curr->TextureShader->SetFloat4("u_Color", *curr->Color);
