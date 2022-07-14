@@ -8,7 +8,8 @@ namespace Hazel
 	EditorLayer::EditorLayer(Window& window)
 		:Layer("EditorLayer"),
         m_CameraController(45.0f, window.GetWidth(), window.GetHeight(), 0.1f, 100000.0f),
-		m_window(window)
+		m_window(window),
+        model(new Model("C:/Users/st961115/Desktop/Hazel_Engine/Hazelnut/assets/Resources/Models/RivetGun/source/Rivet_Gun.obj"))
 	{
 
 	}
@@ -20,6 +21,7 @@ namespace Hazel
         fbSpec.Width = 1280;
         fbSpec.Height = 720;
         m_FrameBuffer = Framebuffer::Create(fbSpec);
+
 	}
 
 	void EditorLayer::OnDetach()
@@ -48,8 +50,8 @@ namespace Hazel
 
             //Ref<Mesh> mesh = Mesh::Create();
             //mesh->SetupMesh();
-            
-            Model* model = new Model("../assets/Resources/Models/Survival_BackPack_2.fbx");
+           
+
             //mesh->Texture
             //curr->TextureShader->Bind();
             //curr->TextureShader->SetFloat4("u_Color", *curr->Color);
