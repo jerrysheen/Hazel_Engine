@@ -178,7 +178,10 @@ project "Hazelnut"
 		"Hazel/src",
 		"Hazel/vendor",
 		"%{IncludeDir.glm}",
-		"%{IncludeDir.assimp}"
+		"%{IncludeDir.assimp}",
+		"%{IncludeDir.GLFW}",
+		"%{IncludeDir.Glad}",
+		"%{IncludeDir.ImGui}",
 	}
 
 	links

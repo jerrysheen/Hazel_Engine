@@ -8,10 +8,11 @@ namespace Hazel
 	EditorLayer::EditorLayer(Window& window)
 		:Layer("EditorLayer"),
         m_CameraController(45.0f, window.GetWidth(), window.GetHeight(), 0.1f, 100000.0f),
-		m_window(window),
-        model(new Model("C:/Users/st961115/Desktop/Hazel_Engine/Hazelnut/assets/Resources/Models/RivetGun/source/Rivet_Gun.obj"))
+		m_window(window)
 	{
-
+        std::string abpath = std::filesystem::current_path().u8string();
+        std::string curr = abpath.append(std::string("/assets/Resources/Models/RivetGun/source/Rivet_Gun.obj"));
+        model = new Model(curr);
 	}
 
 	void EditorLayer::OnAttach()
@@ -26,7 +27,7 @@ namespace Hazel
 
 	void EditorLayer::OnDetach()
 	{
-
+        delete model;
 	}
 
 	void EditorLayer::OnUpdate(Timestep ts)
@@ -47,11 +48,9 @@ namespace Hazel
 
         // draw mesh
         {
-
             //Ref<Mesh> mesh = Mesh::Create();
             //mesh->SetupMesh();
-           
-
+            //HZ_ASSERT("ab path: {0}", std::filesystem::current_path);
             //mesh->Texture
             //curr->TextureShader->Bind();
             //curr->TextureShader->SetFloat4("u_Color", *curr->Color);

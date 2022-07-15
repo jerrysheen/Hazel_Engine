@@ -15,6 +15,8 @@
 #include <unordered_set>
 #include "Hazel/Core/Log.h"
 
+#include <filesystem>
+
 #include "Hazel/Debug/Instrumentor.h"
 
 
