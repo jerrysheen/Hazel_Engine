@@ -13,6 +13,7 @@ namespace Hazel
         std::string abpath = std::filesystem::current_path().u8string();
         std::string curr = abpath.append(std::string("/assets/Resources/Models/RivetGun/source/Rivet_Gun.obj"));
         model = new Model(curr);
+        m_Texture = Texture2D::Create("assets/Resources/Models/RivetGun/textures/initialShadingGroup_Diffuse.tga.png");
 	}
 
 	void EditorLayer::OnAttach()
@@ -48,34 +49,32 @@ namespace Hazel
 
         // draw mesh
         {
-            //Ref<Mesh> mesh = Mesh::Create();
-            //mesh->SetupMesh();
-            //HZ_ASSERT("ab path: {0}", std::filesystem::current_path);
-            //mesh->Texture
-            //curr->TextureShader->Bind();
-            //curr->TextureShader->SetFloat4("u_Color", *curr->Color);
-            //curr->TextureShader->SetFloat("u_TilingFactor", 1.0f);
-            //curr->WhiteTexture->Bind(0);
-            //// transform 里面有 translate 和 scale了
-            //glm::mat4 transform = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f))
-            //    * glm::scale(glm::mat4(1.0f), *curr->Scale);
-            //curr->TextureShader->SetMat4("u_Transform", transform);
-            //curr->TextureShader->SetInt("u_Texture", 0);
-            //curr->TextureShader->SetMat4("u_ViewProjection", m_ViewProjection);
-            //curr->TextureShader->SetFloat3("u_CameraPos", m_CameraPos);
-            //curr->QuadVertexArray->Bind();
-            //switch (curr->DrawType)
-            //{
-            //case Renderer3D::DRAW_TYPE::HZ_TRIANGLES:
-            //    RendererCommand::DrawIndexed(curr->QuadVertexArray);
-            //    break;
-            //case Renderer3D::DRAW_TYPE::HZ_LINES:
-            //    RendererCommand::DrawLines(curr->QuadVertexArray);
-            //    break;
-            //default:
-            //    RendererCommand::DrawIndexed(curr->QuadVertexArray);
-            //    break;
-            //}
+
+            model->baseMap = Texture2D::Create(1, 1);
+            uint32_t whiteTextureData = 0xffffffff;
+            
+            model->baseMap->SetData(&m_Texture, sizeof(uint32_t));
+
+            model->shader = Shader::Create("assets/shaders/Texture.glsl");
+            model->color = std::make_shared<glm::vec4>(1.0, 1.0, 1.0, 1.0);
+            model->scale = std::make_shared<glm::vec3>(1.0, 1.0, 1.0);
+            model->drawType = Renderer3D::DRAW_TYPE::HZ_TRIANGLES;
+            
+
+            model->shader->Bind();
+            model->shader->SetFloat4("u_Color", *model->color);
+            model->shader->SetFloat("u_TilingFactor", 1.0f);
+            model->baseMap->Bind(0);
+            // transform 里面有 translate 和 scale了
+            glm::mat4 transform = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f))
+                * glm::scale(glm::mat4(1.0f), *model->scale);
+            model->shader->SetMat4("u_Transform", transform);
+            model->shader->SetInt("u_Texture", 0);
+            model->shader->SetMat4("u_ViewProjection", m_CameraController.GetCamera().GetViewProjectionMatrix());
+            model->shader->SetFloat3("u_CameraPos", m_CameraController.GetCamera().GetCamPos());
+            model->mesh->Bind();
+            RendererCommand::DrawIndexed(model->mesh);
+
         }
 
         Renderer3D::EndScene();

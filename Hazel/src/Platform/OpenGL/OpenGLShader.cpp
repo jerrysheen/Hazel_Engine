@@ -9,7 +9,7 @@
 namespace Hazel {
 	static GLenum ShaderTypeFromString(const std::string& type) 
 	{
-		HZ_CORE_INFO(type);
+		//HZ_CORE_INFO(type);
 		if (type == "vertex")
 			return GL_VERTEX_SHADER;
 		if (type == "fragment" || type == "pixel")

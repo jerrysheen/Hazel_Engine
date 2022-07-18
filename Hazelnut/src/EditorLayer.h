@@ -3,6 +3,7 @@
 #include "Hazel.h"
 #include "imgui/imgui.h"
 #include "glm/gtc/type_ptr.hpp"
+#include "glm/gtc/matrix_transform.hpp"
 
 namespace Hazel 
 {
@@ -24,7 +25,7 @@ namespace Hazel
 		Window& m_window;
 		Ref<Framebuffer> m_FrameBuffer;
 		PerspectiveCameraController m_CameraController;
-
+		Ref<Texture2D> m_Texture;
 		glm::vec2 m_viewPortPanelSize;
 	};
 }

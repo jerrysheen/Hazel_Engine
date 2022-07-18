@@ -23,6 +23,27 @@ namespace Hazel
 		//directory = path.substr(0, path.find_last_of('/'));
 
 		processNode(scene->mRootNode, scene);
+
+
+		Ref<VertexBuffer> squareVB;
+		float* p = &vertexBuffer[0];
+		HZ_CORE_INFO("{0}", vertexBuffer.size());
+		squareVB.reset(VertexBuffer::Create(p, vertexBuffer.size()));
+		squareVB->SetLayout({
+				{ ShaderDataType::Float3, "a_Position" },
+				{ ShaderDataType::Float3, "a_Normal" },
+				{ ShaderDataType::Float2, "a_TexCoord" }
+
+			});
+		mesh->AddVertexBuffer(squareVB);
+
+
+
+		Ref<IndexBuffer> squareIB;
+		uint32_t* indexP = &indexBuffer[0];
+		//squareIB.reset(IndexBuffer::Create(indexP, sizeof(indexBuffer) / sizeof(uint32_t)));
+		squareIB.reset(IndexBuffer::Create(indexP, indexBuffer.size()));
+		mesh->SetIndexBuffer(squareIB);
 	}
 
 	void Model::processNode(aiNode* node, const aiScene* scene)
@@ -46,7 +67,7 @@ namespace Hazel
 		// 对于里面每一个节点， 都有Vertex, Normal, TexCoords
 		// add vertexbuffer to mesh.
 
-		std::vector<float> vertexBuffer;
+		
 		for (unsigned int i = 0; i < aiMesh->mNumVertices; i++)
 		{
 			vertexBuffer.push_back(aiMesh->mVertices[i].x);
@@ -67,32 +88,18 @@ namespace Hazel
 			}
 		}
 
-		Ref<VertexBuffer> squareVB;
-		float* p = &vertexBuffer[0];
-		squareVB.reset(VertexBuffer::Create(p, sizeof(vertexBuffer)));
-		squareVB->SetLayout({
-				{ ShaderDataType::Float3, "a_Position" },
-				{ ShaderDataType::Float3, "a_Normal" },
-				{ ShaderDataType::Float2, "a_TexCoord" }
 
-			});
-		mesh->AddVertexBuffer(squareVB);
-
-
-		std::vector<uint32_t> indexBuffer;
+		//int step = indexBuffer.size()
 		for (unsigned int i = 0; i < aiMesh->mNumFaces; i++)
 		{
 			aiFace face = aiMesh->mFaces[i];
-			for (unsigned int j = 0; j < face.mNumIndices; j++) 
+			for (unsigned int j = 0; j < face.mNumIndices; j++)
 			{
 				indexBuffer.push_back(face.mIndices[j]);
 			}
 		}
 
-		Ref<IndexBuffer> squareIB;
-		uint32_t* indexP = &indexBuffer[0];
-		squareIB.reset(IndexBuffer::Create(indexP, sizeof(indexBuffer) / sizeof(uint32_t)));
-		mesh->SetIndexBuffer(squareIB);
+
 	
 	}
 }
