@@ -25,7 +25,6 @@ namespace Hazel
 		Window& m_window;
 		Ref<Framebuffer> m_FrameBuffer;
 		PerspectiveCameraController m_CameraController;
-		Ref<Texture2D> m_Texture;
 		glm::vec2 m_viewPortPanelSize;
 	};
 }

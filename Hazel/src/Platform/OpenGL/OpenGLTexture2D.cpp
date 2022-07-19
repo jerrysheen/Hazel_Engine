@@ -32,7 +32,7 @@ namespace Hazel {
 
 		m_Width = width;
 		m_Height = height;
-
+		//HZ_CORE_INFO("image info Height: {0}, Width: {1}", width, height);
 		GLenum internalFormat = 0, dataFormat = 0;
 		if (chanels == 4) 
 		{
@@ -68,6 +68,7 @@ namespace Hazel {
 	void OpenGLTexture2D::SetData(void* data, uint32_t size) const
 	{
 		uint32_t bpp = m_DataFormat == GL_RGBA ? 4 : 3;
+		HZ_CORE_INFO("{0}, {1}" ,m_Width, m_Height);
 		HZ_CORE_ASSERT(size == m_Width * m_Height * bpp, "Data must be entire texture!");
 		glTextureSubImage2D(m_RendererID, 0, 0, 0, m_Width, m_Height, m_DataFormat, GL_UNSIGNED_BYTE, data);
 	}

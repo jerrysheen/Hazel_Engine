@@ -14,7 +14,9 @@ namespace Hazel
         std::string curr = abpath.append(std::string("/assets/Resources/Models/RivetGun/source/Rivet_Gun.obj"));
         //std::string curr = abpath.append(std::string("/assets/Resources/Models/OldHelmet/source/helmet.obj"));
         model = new Model(curr);
-        m_Texture = Texture2D::Create("assets/Resources/Models/RivetGun/textures/initialShadingGroup_Diffuse.tga.png");
+        model->baseMap = Texture2D::Create("assets/Resources/Models/RivetGun/textures/initialShadingGroup_Diffuse.tga.png");
+        model->shader = Shader::Create("assets/shaders/Texture.glsl");
+
 	}
 
 	void EditorLayer::OnAttach()
@@ -52,11 +54,11 @@ namespace Hazel
         {
 
             model->baseMap = Texture2D::Create(1, 1);
-            uint32_t whiteTextureData = 0xffffffff;
             
-            model->baseMap->SetData(&m_Texture, sizeof(uint32_t));
+            //int width = model->baseMap->GetWidth();
+            //int height = model->baseMap->GetHeight();
+            //model->baseMap->SetData(&model->baseMap,width * height * 3);
 
-            model->shader = Shader::Create("assets/shaders/Texture.glsl");
             model->color = std::make_shared<glm::vec4>(1.0, 1.0, 1.0, 1.0);
             model->scale = std::make_shared<glm::vec3>(1.0, 1.0, 1.0);
             model->drawType = Renderer3D::DRAW_TYPE::HZ_TRIANGLES;
