@@ -27,8 +27,8 @@ namespace Hazel
 
 		Ref<VertexBuffer> squareVB;
 		float* p = &vertexBuffer[0];
-		HZ_CORE_INFO("{0}", vertexBuffer.size());
-		squareVB.reset(VertexBuffer::Create(p, vertexBuffer.size()));
+		//HZ_CORE_INFO("vertexBuffer size : {0}", vertexBuffer.size());
+		squareVB.reset(VertexBuffer::Create(p, vertexBuffer.size() * sizeof(float)));
 		squareVB->SetLayout({
 				{ ShaderDataType::Float3, "a_Position" },
 				{ ShaderDataType::Float3, "a_Normal" },
@@ -38,7 +38,7 @@ namespace Hazel
 		mesh->AddVertexBuffer(squareVB);
 
 
-
+		//HZ_CORE_INFO("indexBuffer size : {0}", indexBuffer.size());
 		Ref<IndexBuffer> squareIB;
 		uint32_t* indexP = &indexBuffer[0];
 		//squareIB.reset(IndexBuffer::Create(indexP, sizeof(indexBuffer) / sizeof(uint32_t)));
@@ -49,6 +49,7 @@ namespace Hazel
 	void Model::processNode(aiNode* node, const aiScene* scene)
 	{
 		// 处理节点所有的网格（如果有的话）
+		//HZ_CORE_INFO("{0}, {1}", node->mNumMeshes, node->mNumChildren);
 		for (unsigned int i = 0; i < node->mNumMeshes; i++)
 		{
 			aiMesh* aimesh = scene->mMeshes[node->mMeshes[i]];
@@ -67,7 +68,7 @@ namespace Hazel
 		// 对于里面每一个节点， 都有Vertex, Normal, TexCoords
 		// add vertexbuffer to mesh.
 
-		
+		HZ_CORE_INFO("{0}", aiMesh->mNumVertices);
 		for (unsigned int i = 0; i < aiMesh->mNumVertices; i++)
 		{
 			vertexBuffer.push_back(aiMesh->mVertices[i].x);

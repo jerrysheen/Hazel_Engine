@@ -12,6 +12,7 @@ namespace Hazel
 	{
         std::string abpath = std::filesystem::current_path().u8string();
         std::string curr = abpath.append(std::string("/assets/Resources/Models/RivetGun/source/Rivet_Gun.obj"));
+        //std::string curr = abpath.append(std::string("/assets/Resources/Models/OldHelmet/source/helmet.obj"));
         model = new Model(curr);
         m_Texture = Texture2D::Create("assets/Resources/Models/RivetGun/textures/initialShadingGroup_Diffuse.tga.png");
 	}
