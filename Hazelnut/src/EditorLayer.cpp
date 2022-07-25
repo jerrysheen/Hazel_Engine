@@ -14,7 +14,6 @@ namespace Hazel
         std::string curr = abpath.append(std::string("/assets/Resources/Models/RivetGun/source/Rivet_Gun.obj"));
         //std::string curr = abpath.append(std::string("/assets/Resources/Models/OldHelmet/source/helmet.obj"));
         model = new Model(curr);
-        model->baseMap = Texture2D::Create("assets/Resources/Models/RivetGun/textures/initialShadingGroup_Diffuse.tga.png");
         model->shader = Shader::Create("assets/shaders/Texture.glsl");
 
 	}
@@ -26,7 +25,7 @@ namespace Hazel
         fbSpec.Width = 1280;
         fbSpec.Height = 720;
         m_FrameBuffer = Framebuffer::Create(fbSpec);
-
+        model->baseMap = Texture2D::Create("assets/Resources/Models/RivetGun/textures/initialShadingGroup_Diffuse.tga.png");
 	}
 
 	void EditorLayer::OnDetach()
@@ -53,7 +52,7 @@ namespace Hazel
         // draw mesh
         {
 
-            model->baseMap = Texture2D::Create(1, 1);
+            //model->baseMap = Texture2D::Create(1, 1);
             
             //int width = model->baseMap->GetWidth();
             //int height = model->baseMap->GetHeight();
