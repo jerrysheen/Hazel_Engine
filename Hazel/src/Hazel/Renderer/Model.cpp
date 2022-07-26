@@ -13,7 +13,7 @@ namespace Hazel
 	void Model::LoadModel(const std::string& path)
 	{
 		Assimp::Importer import;
-		const aiScene* scene = import.ReadFile(path, aiProcess_Triangulate);
+		const aiScene* scene = import.ReadFile(path, aiProcess_Triangulate | aiProcess_CalcTangentSpace);
 
 		if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
 		{
@@ -32,6 +32,7 @@ namespace Hazel
 		squareVB->SetLayout({
 				{ ShaderDataType::Float3, "a_Position" },
 				{ ShaderDataType::Float3, "a_Normal" },
+				{ ShaderDataType::Float3, "a_Tangent" },
 				{ ShaderDataType::Float2, "a_TexCoord" }
 
 			});
@@ -77,6 +78,10 @@ namespace Hazel
 			vertexBuffer.push_back(aiMesh->mNormals[i].x);
 			vertexBuffer.push_back(aiMesh->mNormals[i].y);
 			vertexBuffer.push_back(aiMesh->mNormals[i].z);
+			vertexBuffer.push_back(aiMesh->mTangents[i].x);
+			vertexBuffer.push_back(aiMesh->mTangents[i].y);
+			vertexBuffer.push_back(aiMesh->mTangents[i].z);
+
 			if (aiMesh->mTextureCoords[0]) // 网格是否有纹理坐标？
 			{
 				vertexBuffer.push_back(aiMesh->mTextureCoords[0][i].x);

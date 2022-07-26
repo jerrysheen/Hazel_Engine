@@ -26,6 +26,13 @@ namespace Hazel
         fbSpec.Height = 720;
         m_FrameBuffer = Framebuffer::Create(fbSpec);
         model->baseMap = Texture2D::Create("assets/Resources/Models/RivetGun/textures/initialShadingGroup_Diffuse.tga.png");
+        model->bumpMap = Texture2D::Create("assets/Resources/Models/RivetGun/textures/initialShadingGroup_Normal.tga.png");
+       
+        model->color = std::make_shared<glm::vec4>(1.0, 1.0, 1.0, 1.0);
+        
+        model->translate = std::make_shared<glm::mat4>(glm::translate(glm::mat4(1.0f), glm::vec3(0.5f, 0.5f, 0.0f)));
+        model->rotate = std::make_shared<glm::mat4>(glm::rotate(glm::mat4(1.0f), 90.0f, glm::vec3(0.0f, 0.0f, 1.0f)));
+        model->scale = std::make_shared<glm::mat4>(glm::scale(glm::mat4(1.0f), glm::vec3(0.5f, 0.5f, 1.0f)));
 	}
 
 	void EditorLayer::OnDetach()
@@ -58,20 +65,26 @@ namespace Hazel
             //int height = model->baseMap->GetHeight();
             //model->baseMap->SetData(&model->baseMap,width * height * 3);
 
-            model->color = std::make_shared<glm::vec4>(1.0, 1.0, 1.0, 1.0);
-            model->scale = std::make_shared<glm::vec3>(1.0, 1.0, 1.0);
+
             model->drawType = Renderer3D::DRAW_TYPE::HZ_TRIANGLES;
             
 
             model->shader->Bind();
             model->shader->SetFloat4("u_Color", *model->color);
             model->shader->SetFloat("u_TilingFactor", 1.0f);
+            
+            // bind Texture
             model->baseMap->Bind(0);
+            model->shader->SetInt("u_DiffuseMap", 0);
+            
+            model->bumpMap->Bind(1);
+            model->shader->SetInt("u_NormalMap", 1);
+
+
+            // Lighting config
+
             // transform 里面有 translate 和 scale了
-            glm::mat4 transform = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f))
-                * glm::scale(glm::mat4(1.0f), *model->scale);
-            model->shader->SetMat4("u_Transform", transform);
-            model->shader->SetInt("u_Texture", 0);
+            model->shader->SetMat4("u_Transform", *model->GetModelMatrix());
             model->shader->SetMat4("u_ViewProjection", m_CameraController.GetCamera().GetViewProjectionMatrix());
             model->shader->SetFloat3("u_CameraPos", m_CameraController.GetCamera().GetCamPos());
             model->mesh->Bind();

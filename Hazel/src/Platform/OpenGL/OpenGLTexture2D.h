@@ -17,6 +17,7 @@ namespace Hazel {
 		virtual uint32_t GetRendererID() const override { return m_RendererID; }
 
 		virtual void SetData(void* data, uint32_t size) const override;
+		
 		virtual void Bind(uint32_t slot) const override;
 
 	private:

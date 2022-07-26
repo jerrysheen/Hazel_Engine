@@ -17,14 +17,21 @@ namespace Hazel
     public:
         Model(const std::string& path);
         void Draw(Shader& shader);
+        Ref<glm::mat4> GetModelMatrix() { return std::make_shared<glm::mat4>((*translate) * (*rotate) * (*scale)); };
     public:
         // model data
         Ref<VertexArray> mesh;
         Ref<Shader> shader;
         Ref<Texture2D> baseMap;
-        Ref<glm::vec3> scale;
+        Ref<Texture2D> bumpMap;
         Ref<glm::vec4> color;
         Renderer3D::DRAW_TYPE drawType;
+        
+        Ref<glm::mat4> modelMatrix;
+        Ref<glm::mat4> translate;
+        Ref<glm::mat4> rotate;
+        Ref<glm::mat4> scale;
+
     private:
         std::vector<float> vertexBuffer;
         std::vector<uint32_t> indexBuffer;
