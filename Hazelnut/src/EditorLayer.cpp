@@ -14,7 +14,7 @@ namespace Hazel
         std::string curr = abpath.append(std::string("/assets/Resources/Models/RivetGun/source/Rivet_Gun.obj"));
         //std::string curr = abpath.append(std::string("/assets/Resources/Models/OldHelmet/source/helmet.obj"));
         model = new Model(curr);
-        model->shader = Shader::Create("assets/shaders/Texture.glsl");
+        model->shader = Shader::Create("assets/shaders/Standard.glsl");
 
 	}
 
@@ -30,6 +30,9 @@ namespace Hazel
        
         model->color = std::make_shared<glm::vec4>(1.0, 1.0, 1.0, 1.0);
         
+        model->SetPosition(glm::vec3(0.5f, 0.5f, 0.0f));
+        model->SetRotation(glm::vec3(0.0f, 0.0f, 90.0f));
+        model->SetScale(glm::vec3(1.0f, 1.0f, 1.0f));
         model->translate = std::make_shared<glm::mat4>(glm::translate(glm::mat4(1.0f), glm::vec3(0.5f, 0.5f, 0.0f)));
         model->rotate = std::make_shared<glm::mat4>(glm::rotate(glm::mat4(1.0f), 90.0f, glm::vec3(0.0f, 0.0f, 1.0f)));
         model->scale = std::make_shared<glm::mat4>(glm::scale(glm::mat4(1.0f), glm::vec3(0.5f, 0.5f, 1.0f)));
@@ -84,7 +87,7 @@ namespace Hazel
             // Lighting config
 
             // transform 里面有 translate 和 scale了
-            model->shader->SetMat4("u_Transform", *model->GetModelMatrix());
+            model->shader->SetMat4("u_ModelMatrix", *model->GetModelMatrix());
             model->shader->SetMat4("u_ViewProjection", m_CameraController.GetCamera().GetViewProjectionMatrix());
             model->shader->SetFloat3("u_CameraPos", m_CameraController.GetCamera().GetCamPos());
             model->mesh->Bind();
@@ -180,6 +183,9 @@ namespace Hazel
         {
             Renderer3D::CreatePlane();
         }
+
+        
+        ImGui::SliderFloat3("position", model->, INT_MIN, INT_MAX);
         ImGui::End();
 
         ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));

@@ -10,6 +10,19 @@ namespace Hazel
 		LoadModel(path);
 	}
 
+	void Model::SetPosition(const glm::vec3& pos)
+	{
+		if (translate == nullptr) 
+		{
+			translate = std::make_shared<glm::mat4>(glm::translate(glm::mat4(1.0f), pos));
+		}
+		else 
+		{
+			*translate = glm::translate(glm::mat4(1.0f), pos);
+		}
+
+	}
+
 	void Model::LoadModel(const std::string& path)
 	{
 		Assimp::Importer import;

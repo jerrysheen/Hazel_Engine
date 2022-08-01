@@ -17,6 +17,9 @@ namespace Hazel
     public:
         Model(const std::string& path);
         void Draw(Shader& shader);
+        void SetPosition(const glm::vec3& pos);
+        void SetRotation(const glm::vec3& rotation);
+        void SetScale(const glm::vec3& scale);
         Ref<glm::mat4> GetModelMatrix() { return std::make_shared<glm::mat4>((*translate) * (*rotate) * (*scale)); };
     public:
         // model data
