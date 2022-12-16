@@ -27,6 +27,10 @@ namespace Hazel
         Ref<Shader> shader;
         Ref<Texture2D> baseMap;
         Ref<Texture2D> bumpMap;
+        Ref<Texture2D> glossnessMap;
+        Ref<Texture2D> specularMap;
+        Ref<Texture2D> aoMap;
+
         Ref<glm::vec4> color;
         Renderer3D::DRAW_TYPE drawType;
         

@@ -23,6 +23,14 @@ namespace Hazel
 
 	}
 
+	void Model::SetRotation(const glm::vec3& rotation)
+	{
+	}
+
+	void Model::SetScale(const glm::vec3& scale)
+	{
+	}
+
 	void Model::LoadModel(const std::string& path)
 	{
 		Assimp::Importer import;

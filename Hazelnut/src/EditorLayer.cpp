@@ -27,6 +27,9 @@ namespace Hazel
         m_FrameBuffer = Framebuffer::Create(fbSpec);
         model->baseMap = Texture2D::Create("assets/Resources/Models/RivetGun/textures/initialShadingGroup_Diffuse.tga.png");
         model->bumpMap = Texture2D::Create("assets/Resources/Models/RivetGun/textures/initialShadingGroup_Normal.tga.png");
+        model->aoMap = Texture2D::Create("assets/Resources/Models/RivetGun/textures/internal_ground_ao_texture.jpeg");
+        model->glossnessMap = Texture2D::Create("assets/Resources/Models/RivetGun/textures/initialShadingGroup_Glossiness.tga.png");
+        model->specularMap = Texture2D::Create("assets/Resources/Models/RivetGun/textures/initialShadingGroup_Specular.tga.png");
        
         model->color = std::make_shared<glm::vec4>(1.0, 1.0, 1.0, 1.0);
         
@@ -82,6 +85,16 @@ namespace Hazel
             
             model->bumpMap->Bind(1);
             model->shader->SetInt("u_NormalMap", 1);
+
+            model->aoMap->Bind(2);
+            model->shader->SetInt("u_AoMap", 2); 
+            
+            model->glossnessMap->Bind(3);
+            model->shader->SetInt("u_GlossnessMap", 3);            
+            
+            model->specularMap->Bind(4);
+            model->shader->SetInt("u_SpecularMap", 4);
+
 
 
             // Lighting config
@@ -184,8 +197,9 @@ namespace Hazel
             Renderer3D::CreatePlane();
         }
 
-        
-        ImGui::SliderFloat3("position", model->, INT_MIN, INT_MAX);
+        float position[3] = {0.0, 0.0, 0.0};
+        ImGui::SliderFloat3("position", position, INT_MIN, INT_MAX);
+        model->SetPosition(*((glm::vec3*)&position));
         ImGui::End();
 
         ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
