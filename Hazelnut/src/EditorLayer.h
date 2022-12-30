@@ -26,6 +26,7 @@ namespace Hazel
 		Ref<Framebuffer> m_FrameBuffer;
 		PerspectiveCameraController m_CameraController;
 		glm::vec2 m_viewPortPanelSize;
+		bool m_ViewPortFocused;
 	};
 }
 

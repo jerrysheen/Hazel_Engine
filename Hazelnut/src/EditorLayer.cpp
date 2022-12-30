@@ -111,7 +111,7 @@ namespace Hazel
         Renderer3D::EndScene();
 
 
-        m_CameraController.OnUpdate(ts);
+        if(m_ViewPortFocused)m_CameraController.OnUpdate(ts);
 
         m_FrameBuffer->Unbind();
 	}
@@ -204,6 +204,7 @@ namespace Hazel
 
         ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
         ImGui::Begin("ViewPort");
+        m_ViewPortFocused = ImGui::IsWindowFocused();
         ImVec2 viewPortSize = ImGui::GetContentRegionAvail();
         //  HZ_CORE_INFO("Viewport size X: {0};  : {1}", viewPortSize.x, viewPortSize.y);
         if (m_viewPortPanelSize != *((glm::vec2*)&viewPortSize)) 
