@@ -4,6 +4,11 @@
 #include <glm/glm.hpp>
 namespace Hazel {
 
+
+	static void OnTransformConstruct() 
+	{
+	}
+
 	Scene::Scene() 
 	{
 		struct MeshComponent {};
@@ -44,7 +49,11 @@ namespace Hazel {
 
 			//Rrenderer::submit(mesh, transform);
 		}
+
+		// add a callback to Transform constructor. when every time an TransformComponent added
+		m_Registry.on_construct<TransformComponent>().connect<&OnTransformConstruct>();
 	}
+
 
 	Scene::~Scene() 
 	{
