@@ -20,6 +20,7 @@ IncludeDir["ImGui"] = "Hazel/vendor/imgui"
 IncludeDir["glm"] = "Hazel/vendor/glm"
 IncludeDir["stb_image"] = "Hazel/vendor/stb_image"
 IncludeDir["assimp"] = "Hazel/vendor/assimp/include"
+IncludeDir["entt"] = "Hazel/vendor/entt/include"
 
 group "Dependencies"
 	-- This include file include the GLFW premake5.lua.
@@ -64,7 +65,8 @@ project "Hazel"
 		"%{IncludeDir.ImGui}",
 		"%{IncludeDir.glm}",
 		"%{IncludeDir.stb_image}",
-		"%{IncludeDir.assimp}"
+		"%{IncludeDir.assimp}",
+		"%{IncludeDir.entt}"
 	}
 -- ����о�����������MSVS linker��������additional dependencyһ����
 -- ��Ϊhazel��һ��dll lib�� ����include��һ��static lib�� ����sanbox include��hazelһ��
@@ -124,7 +126,8 @@ project "Sandbox"
 		"Hazel/vendor/spdlog/include",
 		"Hazel/src",
 		"Hazel/vendor",
-		"%{IncludeDir.glm}"
+		"%{IncludeDir.glm}",
+		"%{IncludeDir.entt}"
 	}
 
 	links
@@ -182,6 +185,7 @@ project "Hazelnut"
 		"%{IncludeDir.GLFW}",
 		"%{IncludeDir.Glad}",
 		"%{IncludeDir.ImGui}",
+		"%{IncludeDir.entt}"
 	}
 
 	links
