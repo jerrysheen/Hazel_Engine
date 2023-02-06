@@ -6,6 +6,7 @@ namespace Hazel {
 
 	Scene::Scene() 
 	{
+		struct MeshComponent {};
 		struct TransformComponent 
 		{
 			glm::mat4 Transform;
@@ -21,6 +22,28 @@ namespace Hazel {
 		entt::entity entity = m_Registry.create();
 
 		m_Registry.emplace<TransformComponent>(entity, glm::mat4(1.0f));
+
+		//  entity.GetComponent<>();
+		//if(m_Registry.has<TransformComponent>(entity))
+		TransformComponent& transform = m_Registry.get<TransformComponent>(entity);
+
+		// get all entity's that has mesh component
+		auto view = m_Registry.view<TransformComponent>();
+		for (auto entity : view) 
+		{
+			// can directly do your job inside view
+			TransformComponent& transform = view.get<TransformComponent>(entity);
+		}
+
+		// Group two component <Mesh & Transform>
+		// But don't know why group.get not working
+		auto group = m_Registry.group<TransformComponent>(entt::get<MeshComponent>);
+		for (auto entity : group) 
+		{
+			auto&[a, b] = m_Registry.get<TransformComponent, MeshComponent>(entity);
+
+			//Rrenderer::submit(mesh, transform);
+		}
 	}
 
 	Scene::~Scene() 
