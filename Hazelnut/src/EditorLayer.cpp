@@ -16,6 +16,10 @@ namespace Hazel
         model = new Model(curr);
         model->shader = Shader::Create("assets/shaders/Standard.glsl");
 
+        m_ActiveScene = CreateRef <Scene>();
+        auto square = m_ActiveScene->CreateEntity();
+        m_ActiveScene->Reg().emplace<HAZEL::TransformComponent>(square);
+        m_ActiveScene->Reg().emplace<HAZEL::SpriteRendererComponent>(square, glm::vec4{0.0f, 1.0f, 0.0f, 1.0f});
 	}
 
 	void EditorLayer::OnAttach()
@@ -61,6 +65,8 @@ namespace Hazel
         Renderer3D::BeginScene(m_CameraController.GetCamera());
         Renderer3D::DrawPrimitives();
 
+        // update Scene
+        m_ActiveScene->OnUpdate(ts);
 
         // draw mesh
         {

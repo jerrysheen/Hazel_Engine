@@ -27,6 +27,8 @@ namespace Hazel
 		PerspectiveCameraController m_CameraController;
 		glm::vec2 m_viewPortPanelSize;
 		bool m_ViewPortFocused;
+
+		Ref<Scene> m_ActiveScene;
 	};
 }
 

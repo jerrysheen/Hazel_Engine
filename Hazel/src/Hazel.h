@@ -37,3 +37,8 @@
 // ---Utility------------------------
 #include "Hazel/Utility/Random.h"
 // -----------------------------------
+
+// ---Scene------------------------
+#include "Hazel/Scene/Scene.h"
+#include "Hazel/Scene/Component.h"
+// -----------------------------------
