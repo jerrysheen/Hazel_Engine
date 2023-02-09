@@ -2,9 +2,9 @@
 
 #include "hzpch.h"
 #include "glm/glm.hpp"
-#include "Texture.h"
-#include "Shader.h"
-#include "VertexArray.h"
+#include "../Renderer/Texture.h"
+#include "../Renderer/Shader.h"
+#include "../Renderer/VertexArray.h"
 
 namespace Hazel 
 {
