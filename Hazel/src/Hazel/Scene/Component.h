@@ -1,6 +1,9 @@
 #pragma once
 
+#include "hzpch.h"
 #include <glm/glm.hpp>
+#include "Hazel/Model/Mesh.h"
+#include "Hazel/Model/Material.h"
 
 namespace HAZEL {
 	
@@ -23,5 +26,26 @@ namespace HAZEL {
 		SpriteRendererComponent(const SpriteRendererComponent&) = default;
 		SpriteRendererComponent(const glm::vec4& color)
 			: Color(color) {} 
+	};
+
+	//struct TransformComponent
+	//{
+	//	glm::vec3 position;
+	//};
+
+
+	struct MeshFilterComponent
+	{
+		Hazel::Mesh* mesh;
+		MeshFilterComponent(const std::string& meshAddress)
+		{
+			mesh->Create();
+			mesh->LoadMesh(meshAddress);
+		}
+	};
+
+	struct MeshRendererComponent
+	{
+		std::vector<Hazel::Material> Materials;
 	};
 }

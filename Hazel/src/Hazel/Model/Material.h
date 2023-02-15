@@ -4,6 +4,7 @@ namespace Hazel
 {
 	class Material 
 	{
-	
+	public : 
+		class Material() = default;
 	};
 }

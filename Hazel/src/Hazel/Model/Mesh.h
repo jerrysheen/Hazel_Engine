@@ -5,6 +5,9 @@
 #include "../Renderer/Texture.h"
 #include "../Renderer/Shader.h"
 #include "../Renderer/VertexArray.h"
+#include <assimp/Importer.hpp>      // C++ importer interface
+#include <assimp/scene.h>           // Output data structure
+#include <assimp/postprocess.h>     // Post processing flags
 
 namespace Hazel 
 {
@@ -19,16 +22,23 @@ namespace Hazel
     public:
         
         //std::vector<Texture> textures;
-        //Mesh(const std::vector<Vertex>& vertices, const std::vector<int>& indices, const std::vector<Texture>& texture);
+        Mesh() = default;
         void Draw(Shader shader);
 
         static Ref<Mesh> Create();
-        Ref<VertexArray> VertexArray;
+        //Ref<VertexArray> VertexArray;
         Ref<Texture2D> Texture;
 
-        bool SetupMesh();
+        bool LoadMesh(const std::string& path);
+        Ref<VertexArray> meshData;
 
     private:
-        int VAO, VBO, EBO;
+        std::vector<float> vertexBuffer;
+        std::vector<uint32_t> indexBuffer;
+        //void LoadModel(const std::string& path);
+        void processNode(aiNode* node, const aiScene* scene);
+
+        void processMesh(aiMesh* mesh, const aiScene* scene);
+
     };
 }

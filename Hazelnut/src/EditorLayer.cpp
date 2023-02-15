@@ -11,15 +11,17 @@ namespace Hazel
 		m_window(window)
 	{
         std::string abpath = std::filesystem::current_path().u8string();
-        std::string curr = abpath.append(std::string("/assets/Resources/Models/RivetGun/source/Rivet_Gun.obj"));
+        std::string modelPath = abpath.append(std::string("/assets/Resources/Models/RivetGun/source/Rivet_Gun.obj"));
         //std::string curr = abpath.append(std::string("/assets/Resources/Models/OldHelmet/source/helmet.obj"));
-        model = new Model(curr);
-        model->shader = Shader::Create("assets/shaders/Standard.glsl");
+        //model = new Model(modelPath);
+        //model->shader = Shader::Create("assets/shaders/Standard.glsl");
 
         m_ActiveScene = CreateRef <Scene>();
-        auto square = m_ActiveScene->CreateEntity();
-        m_ActiveScene->Reg().emplace<HAZEL::TransformComponent>(square);
-        m_ActiveScene->Reg().emplace<HAZEL::SpriteRendererComponent>(square, glm::vec4{0.0f, 1.0f, 0.0f, 1.0f});
+        m_GameObject = m_ActiveScene->CreateEntity();
+        m_ActiveScene->Reg().emplace<HAZEL::TransformComponent>(m_GameObject);
+        m_ActiveScene->Reg().emplace<HAZEL::SpriteRendererComponent>(m_GameObject, glm::vec4{0.0f, 1.0f, 0.0f, 1.0f});
+        m_ActiveScene->Reg().emplace<HAZEL::MeshFilterComponent>(m_GameObject, modelPath);
+        m_ActiveScene->Reg().emplace<HAZEL::MeshRendererComponent>(m_GameObject);
 	}
 
 	void EditorLayer::OnAttach()
@@ -29,20 +31,20 @@ namespace Hazel
         fbSpec.Width = 1280;
         fbSpec.Height = 720;
         m_FrameBuffer = Framebuffer::Create(fbSpec);
-        model->baseMap = Texture2D::Create("assets/Resources/Models/RivetGun/textures/initialShadingGroup_Diffuse.tga.png");
-        model->bumpMap = Texture2D::Create("assets/Resources/Models/RivetGun/textures/initialShadingGroup_Normal.tga.png");
-        model->aoMap = Texture2D::Create("assets/Resources/Models/RivetGun/textures/internal_ground_ao_texture.jpeg");
-        model->glossnessMap = Texture2D::Create("assets/Resources/Models/RivetGun/textures/initialShadingGroup_Glossiness.tga.png");
-        model->specularMap = Texture2D::Create("assets/Resources/Models/RivetGun/textures/initialShadingGroup_Specular.tga.png");
+        //model->baseMap = Texture2D::Create("assets/Resources/Models/RivetGun/textures/initialShadingGroup_Diffuse.tga.png");
+        //model->bumpMap = Texture2D::Create("assets/Resources/Models/RivetGun/textures/initialShadingGroup_Normal.tga.png");
+        //model->aoMap = Texture2D::Create("assets/Resources/Models/RivetGun/textures/internal_ground_ao_texture.jpeg");
+        //model->glossnessMap = Texture2D::Create("assets/Resources/Models/RivetGun/textures/initialShadingGroup_Glossiness.tga.png");
+        //model->specularMap = Texture2D::Create("assets/Resources/Models/RivetGun/textures/initialShadingGroup_Specular.tga.png");
        
-        model->color = std::make_shared<glm::vec4>(1.0, 1.0, 1.0, 1.0);
-        
-        model->SetPosition(glm::vec3(0.5f, 0.5f, 0.0f));
-        model->SetRotation(glm::vec3(0.0f, 0.0f, 90.0f));
-        model->SetScale(glm::vec3(1.0f, 1.0f, 1.0f));
-        model->translate = std::make_shared<glm::mat4>(glm::translate(glm::mat4(1.0f), glm::vec3(0.5f, 0.5f, 0.0f)));
-        model->rotate = std::make_shared<glm::mat4>(glm::rotate(glm::mat4(1.0f), 90.0f, glm::vec3(0.0f, 0.0f, 1.0f)));
-        model->scale = std::make_shared<glm::mat4>(glm::scale(glm::mat4(1.0f), glm::vec3(0.5f, 0.5f, 1.0f)));
+        //model->color = std::make_shared<glm::vec4>(1.0, 1.0, 1.0, 1.0);
+        //
+        //model->SetPosition(glm::vec3(0.5f, 0.5f, 0.0f));
+        //model->SetRotation(glm::vec3(0.0f, 0.0f, 90.0f));
+        //model->SetScale(glm::vec3(1.0f, 1.0f, 1.0f));
+        //model->translate = std::make_shared<glm::mat4>(glm::translate(glm::mat4(1.0f), glm::vec3(0.5f, 0.5f, 0.0f)));
+        //model->rotate = std::make_shared<glm::mat4>(glm::rotate(glm::mat4(1.0f), 90.0f, glm::vec3(0.0f, 0.0f, 1.0f)));
+        //model->scale = std::make_shared<glm::mat4>(glm::scale(glm::mat4(1.0f), glm::vec3(0.5f, 0.5f, 1.0f)));
 	}
 
 	void EditorLayer::OnDetach()
@@ -78,40 +80,45 @@ namespace Hazel
             //model->baseMap->SetData(&model->baseMap,width * height * 3);
 
 
-            model->drawType = Renderer3D::DRAW_TYPE::HZ_TRIANGLES;
-            
+            //model->drawType = Renderer3D::DRAW_TYPE::HZ_TRIANGLES;
+            //
 
-            model->shader->Bind();
-            model->shader->SetFloat4("u_Color", *model->color);
-            model->shader->SetFloat("u_TilingFactor", 1.0f);
-            
-            // bind Texture
-            model->baseMap->Bind(0);
-            model->shader->SetInt("u_DiffuseMap", 0);
-            
-            model->bumpMap->Bind(1);
-            model->shader->SetInt("u_NormalMap", 1);
+            //model->shader->Bind();
+            //model->shader->SetFloat4("u_Color", *model->color);
+            //model->shader->SetFloat("u_TilingFactor", 1.0f);
+            //
+            //// bind Texture
+            //model->baseMap->Bind(0);
+            //model->shader->SetInt("u_DiffuseMap", 0);
+            //
+            //model->bumpMap->Bind(1);
+            //model->shader->SetInt("u_NormalMap", 1);
 
-            model->aoMap->Bind(2);
-            model->shader->SetInt("u_AoMap", 2); 
-            
-            model->glossnessMap->Bind(3);
-            model->shader->SetInt("u_GlossnessMap", 3);            
-            
-            model->specularMap->Bind(4);
-            model->shader->SetInt("u_SpecularMap", 4);
+            //model->aoMap->Bind(2);
+            //model->shader->SetInt("u_AoMap", 2); 
+            //
+            //model->glossnessMap->Bind(3);
+            //model->shader->SetInt("u_GlossnessMap", 3);            
+            //
+            //model->specularMap->Bind(4);
+            //model->shader->SetInt("u_SpecularMap", 4);
 
 
 
-            // Lighting config
+            //// Lighting config
 
-            // transform 里面有 translate 和 scale了
-            model->shader->SetMat4("u_ModelMatrix", *model->GetModelMatrix());
-            model->shader->SetMat4("u_ViewProjection", m_CameraController.GetCamera().GetViewProjectionMatrix());
-            model->shader->SetFloat3("u_CameraPos", m_CameraController.GetCamera().GetCamPos());
-            model->mesh->Bind();
-            RendererCommand::DrawIndexed(model->mesh);
+            //// transform 里面有 translate 和 scale了
+            //model->shader->SetMat4("u_ModelMatrix", *model->GetModelMatrix());
+            //model->shader->SetMat4("u_ViewProjection", m_CameraController.GetCamera().GetViewProjectionMatrix());
+            //model->shader->SetFloat3("u_CameraPos", m_CameraController.GetCamera().GetCamPos());
+            //model->mesh->Bind();
+            ////auto group = m_ActiveScene->Reg().group<HAZEL::TransformComponent>(entt::get<HAZEL::MeshFilterComponent>);
+            ////{
+            ////    auto& [transform, modelTemp] = group.get<HAZEL::TransformComponent, HAZEL::MeshFilterComponent>(m_GameObject);
+            ////    modelTemp.mesh->meshData->Bind();
+            ////}
 
+            //    RendererCommand::DrawIndexed(model->mesh);
         }
 
         Renderer3D::EndScene();
