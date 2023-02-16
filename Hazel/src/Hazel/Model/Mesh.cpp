@@ -8,15 +8,16 @@ namespace Hazel
 
 	Ref<Mesh> Mesh::Create()
 	{
-
+		
 		return std::make_shared<Mesh>();
 	}
 	
 
 	bool Mesh::LoadMesh(const std::string& path)
 	{
-		std::vector<float> vertexBuffer;
-		std::vector<uint32_t> indexBuffer;
+		//std::vector<float> vertexBuffer;
+		//vertexBuffer.push_back(0.0);
+		//std::vector<uint32_t> indexBuffer;
 		Assimp::Importer import;
 		const aiScene* scene = import.ReadFile(path, aiProcess_Triangulate | aiProcess_CalcTangentSpace);
 
@@ -74,8 +75,6 @@ namespace Hazel
 		//VertexArray
 		// 对于里面每一个节点， 都有Vertex, Normal, TexCoords
 		// add vertexbuffer to mesh.
-		std::vector<float> vertexBuffer;
-		std::vector<uint32_t> indexBuffer;
 		HZ_CORE_INFO("{0}", aiMesh->mNumVertices);
 		for (unsigned int i = 0; i < aiMesh->mNumVertices; i++)
 		{

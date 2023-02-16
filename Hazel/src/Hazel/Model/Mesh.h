@@ -16,13 +16,17 @@ namespace Hazel
         glm::vec3 Position;
         glm::vec3 Normal;
         glm::vec2 TexCoords;
+
     };
     class Mesh
     {
     public:
         
         //std::vector<Texture> textures;
-        Mesh() = default;
+        Mesh() 
+        {
+            meshData = VertexArray::Create();;
+        };
         void Draw(Shader shader);
 
         static Ref<Mesh> Create();

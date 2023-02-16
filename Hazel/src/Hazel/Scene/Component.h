@@ -4,6 +4,8 @@
 #include <glm/glm.hpp>
 #include "Hazel/Model/Mesh.h"
 #include "Hazel/Model/Material.h"
+#include <Hazel/Model/Mesh.h>
+
 
 namespace HAZEL {
 	
@@ -39,8 +41,14 @@ namespace HAZEL {
 		Hazel::Mesh* mesh;
 		MeshFilterComponent(const std::string& meshAddress)
 		{
+			mesh = new Hazel::Mesh();
 			mesh->Create();
 			mesh->LoadMesh(meshAddress);
+		}
+
+		~MeshFilterComponent() 
+		{
+			delete mesh;
 		}
 	};
 

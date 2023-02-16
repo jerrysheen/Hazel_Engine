@@ -49,7 +49,7 @@ namespace Hazel
 
 	void EditorLayer::OnDetach()
 	{
-        delete model;
+       // delete model;
 	}
 
 	void EditorLayer::OnUpdate(Timestep ts)
@@ -112,13 +112,17 @@ namespace Hazel
             //model->shader->SetMat4("u_ViewProjection", m_CameraController.GetCamera().GetViewProjectionMatrix());
             //model->shader->SetFloat3("u_CameraPos", m_CameraController.GetCamera().GetCamPos());
             //model->mesh->Bind();
-            ////auto group = m_ActiveScene->Reg().group<HAZEL::TransformComponent>(entt::get<HAZEL::MeshFilterComponent>);
-            ////{
-            ////    auto& [transform, modelTemp] = group.get<HAZEL::TransformComponent, HAZEL::MeshFilterComponent>(m_GameObject);
-            ////    modelTemp.mesh->meshData->Bind();
-            ////}
+            
 
-            //    RendererCommand::DrawIndexed(model->mesh);
+            auto view = m_ActiveScene->Reg().view<HAZEL::MeshFilterComponent>();
+            for (auto entity : view)
+            {
+                // can directly do your job inside view
+                HAZEL::MeshFilterComponent& meshFilter = view.get<HAZEL::MeshFilterComponent>(entity);
+                meshFilter.mesh->meshData->Bind();
+                RendererCommand::DrawIndexed(meshFilter.mesh->meshData);
+            }
+
         }
 
         Renderer3D::EndScene();
@@ -212,7 +216,7 @@ namespace Hazel
 
         float position[3] = {0.0, 0.0, 0.0};
         ImGui::SliderFloat3("position", position, INT_MIN, INT_MAX);
-        model->SetPosition(*((glm::vec3*)&position));
+        //model->SetPosition(*((glm::vec3*)&position));
         ImGui::End();
 
         ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
