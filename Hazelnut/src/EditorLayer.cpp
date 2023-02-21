@@ -16,12 +16,23 @@ namespace Hazel
         //model = new Model(modelPath);
         //model->shader = Shader::Create("assets/shaders/Standard.glsl");
 
+
+
         m_ActiveScene = CreateRef <Scene>();
         m_GameObject = m_ActiveScene->CreateEntity();
         m_ActiveScene->Reg().emplace<HAZEL::TransformComponent>(m_GameObject);
         m_ActiveScene->Reg().emplace<HAZEL::SpriteRendererComponent>(m_GameObject, glm::vec4{0.0f, 1.0f, 0.0f, 1.0f});
         m_ActiveScene->Reg().emplace<HAZEL::MeshFilterComponent>(m_GameObject, modelPath);
         m_ActiveScene->Reg().emplace<HAZEL::MeshRendererComponent>(m_GameObject);
+
+        auto view = m_ActiveScene->Reg().view<HAZEL::MeshRendererComponent>();
+        for (auto entity : view)
+        {
+            // can directly do your job inside view
+            HAZEL::MeshRendererComponent& meshRenderer = view.get<HAZEL::MeshRendererComponent>(entity);
+
+            meshRenderer.material->shader = Shader::Create("assets/shaders/Standard.glsl");
+        }
 	}
 
 	void EditorLayer::OnAttach()
@@ -33,7 +44,7 @@ namespace Hazel
         m_FrameBuffer = Framebuffer::Create(fbSpec);
         //model->baseMap = Texture2D::Create("assets/Resources/Models/RivetGun/textures/initialShadingGroup_Diffuse.tga.png");
         //model->bumpMap = Texture2D::Create("assets/Resources/Models/RivetGun/textures/initialShadingGroup_Normal.tga.png");
-        //model->aoMap = Texture2D::Create("assets/Resources/Models/RivetGun/textures/internal_ground_ao_texture.jpeg");
+        //model->aoMap = Texture2D::Create("assets/Resources/Models/RivetGun/textures/ internal_ground_ao_texture.jpeg");
         //model->glossnessMap = Texture2D::Create("assets/Resources/Models/RivetGun/textures/initialShadingGroup_Glossiness.tga.png");
         //model->specularMap = Texture2D::Create("assets/Resources/Models/RivetGun/textures/initialShadingGroup_Specular.tga.png");
        
@@ -45,6 +56,20 @@ namespace Hazel
         //model->translate = std::make_shared<glm::mat4>(glm::translate(glm::mat4(1.0f), glm::vec3(0.5f, 0.5f, 0.0f)));
         //model->rotate = std::make_shared<glm::mat4>(glm::rotate(glm::mat4(1.0f), 90.0f, glm::vec3(0.0f, 0.0f, 1.0f)));
         //model->scale = std::make_shared<glm::mat4>(glm::scale(glm::mat4(1.0f), glm::vec3(0.5f, 0.5f, 1.0f)));
+
+        auto view = m_ActiveScene->Reg().view<HAZEL::MeshRendererComponent>();
+        for (auto entity : view)
+        {
+            // can directly do your job inside view
+            HAZEL::MeshRendererComponent& meshRenderer = view.get<HAZEL::MeshRendererComponent>(entity);
+            meshRenderer.material->baseMap = Texture2D::Create("assets/Resources/Models/RivetGun/textures/initialShadingGroup_Diffuse.tga.png");
+            meshRenderer.material->bumpMap = Texture2D::Create("assets/Resources/Models/RivetGun/textures/initialShadingGroup_Normal.tga.png");
+            meshRenderer.material->aoMap = Texture2D::Create("assets/Resources/Models/RivetGun/textures/internal_ground_ao_texture.jpeg");
+            meshRenderer.material-> glossnessMap = Texture2D::Create("assets/Resources/Models/RivetGun/textures/initialShadingGroup_Glossiness.tga.png");
+            meshRenderer.material->specularMap = Texture2D::Create("assets/Resources/Models/RivetGun/textures/initialShadingGroup_Specular.tga.png");
+            //model->color = std::make_shared<glm::vec4>(1.0, 1.0, 1.0, 1.0);
+            //
+        }
 	}
 
 	void EditorLayer::OnDetach()
@@ -102,7 +127,34 @@ namespace Hazel
             //
             //model->specularMap->Bind(4);
             //model->shader->SetInt("u_SpecularMap", 4);
+            auto view = m_ActiveScene->Reg().view<HAZEL::MeshRendererComponent>();
+            for (auto entity : view)
+            {
+                // can directly do your job inside view
+                HAZEL::MeshRendererComponent& meshRenderer = view.get<HAZEL::MeshRendererComponent>(entity);
 
+                meshRenderer.material->shader->Bind();
+                meshRenderer.material->shader->SetFloat4("u_Color", glm::vec4(1.0, 1.0, 1.0, 1.0));
+                meshRenderer.material->shader->SetFloat("u_TilingFactor", 1.0f);
+                
+                // bind Texture
+                meshRenderer.material->baseMap->Bind(0);
+                meshRenderer.material->shader->SetInt("u_DiffuseMap", 0);
+                
+                meshRenderer.material->bumpMap->Bind(1);
+                meshRenderer.material->shader->SetInt("u_NormalMap", 1);
+
+                meshRenderer.material->aoMap->Bind(2);
+                meshRenderer.material->shader->SetInt("u_AoMap", 2);
+                
+                meshRenderer.material->glossnessMap->Bind(3);
+                meshRenderer.material->shader->SetInt("u_GlossnessMap", 3);
+                
+                meshRenderer.material->specularMap->Bind(4);
+                meshRenderer.material->shader->SetInt("u_SpecularMap", 4);
+
+                //
+            }
 
 
             //// Lighting config
@@ -114,11 +166,11 @@ namespace Hazel
             //model->mesh->Bind();
             
 
-            auto view = m_ActiveScene->Reg().view<HAZEL::MeshFilterComponent>();
-            for (auto entity : view)
+            auto view_Filter = m_ActiveScene->Reg().view<HAZEL::MeshFilterComponent>();
+            for (auto entity : view_Filter)
             {
                 // can directly do your job inside view
-                HAZEL::MeshFilterComponent& meshFilter = view.get<HAZEL::MeshFilterComponent>(entity);
+                HAZEL::MeshFilterComponent& meshFilter = view_Filter.get<HAZEL::MeshFilterComponent>(entity);
                 meshFilter.mesh->meshData->Bind();
                 RendererCommand::DrawIndexed(meshFilter.mesh->meshData);
             }

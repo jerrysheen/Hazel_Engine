@@ -30,6 +30,7 @@
 
 #include "Hazel/Model/Mesh.h"
 #include "Hazel/Model/Model.h"
+#include "Hazel/Model/Material.h"
 
 #include "Hazel/Renderer/OrthographicCamera.h"
 // -----------------------------------

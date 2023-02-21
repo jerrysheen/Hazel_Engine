@@ -3,7 +3,7 @@
 #include "hzpch.h"
 #include <glm/glm.hpp>
 #include "Hazel/Model/Mesh.h"
-#include "Hazel/Model/Material.h"
+#include <Hazel/Model/Material.h>
 #include <Hazel/Model/Mesh.h>
 
 
@@ -38,22 +38,22 @@ namespace HAZEL {
 
 	struct MeshFilterComponent
 	{
-		Hazel::Mesh* mesh;
+		Hazel::Ref<Hazel::Mesh> mesh;
 		MeshFilterComponent(const std::string& meshAddress)
 		{
-			mesh = new Hazel::Mesh();
+			mesh = Hazel::Mesh::Create();
 			mesh->Create();
 			mesh->LoadMesh(meshAddress);
-		}
-
-		~MeshFilterComponent() 
-		{
-			delete mesh;
 		}
 	};
 
 	struct MeshRendererComponent
 	{
-		std::vector<Hazel::Material> Materials;
+		Hazel::Ref<Hazel::Material> material;
+
+		MeshRendererComponent()
+		{
+			material = Hazel::Material::Create();
+		}
 	};
 }

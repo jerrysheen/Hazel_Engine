@@ -3,4 +3,9 @@
 
 namespace Hazel 
 {
+	Ref<Material> Material::Create()
+	{
+		return std::make_shared<Material>();
+	}
+
 }
