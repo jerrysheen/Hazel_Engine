@@ -153,6 +153,12 @@ namespace Hazel
                 meshRenderer.material->specularMap->Bind(4);
                 meshRenderer.material->shader->SetInt("u_SpecularMap", 4);
 
+
+                meshRenderer.material->shader->SetMat4("u_ModelMatrix", *(std::make_shared<glm::mat4>(glm::mat4(1.0f))));
+                meshRenderer.material->shader->SetMat4("u_ViewProjection", m_CameraController.GetCamera().GetViewProjectionMatrix());
+                meshRenderer.material->shader->SetFloat3("u_CameraPos", m_CameraController.GetCamera().GetCamPos());
+                //model->mesh->Bind();
+                HZ_CORE_INFO("{0}", view.size());
                 //
             }
 
