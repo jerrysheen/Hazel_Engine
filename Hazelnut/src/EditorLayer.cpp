@@ -19,20 +19,13 @@ namespace Hazel
 
 
         m_ActiveScene = CreateRef <Scene>();
-        m_GameObject = m_ActiveScene->CreateEntity();
-        m_ActiveScene->Reg().emplace<HAZEL::TransformComponent>(m_GameObject);
-        m_ActiveScene->Reg().emplace<HAZEL::SpriteRendererComponent>(m_GameObject, glm::vec4{0.0f, 1.0f, 0.0f, 1.0f});
-        m_ActiveScene->Reg().emplace<HAZEL::MeshFilterComponent>(m_GameObject, modelPath);
-        m_ActiveScene->Reg().emplace<HAZEL::MeshRendererComponent>(m_GameObject);
+        Entity m_GameObject = m_ActiveScene->CreateEntity();
+        m_GameObject.HasComponent<HAZEL::TransformComponent>();
+        m_GameObject.AddComponent<HAZEL::MeshFilterComponent>(modelPath);
+        m_GameObject.AddComponent<HAZEL::MeshRendererComponent>();
+        HAZEL::MeshRendererComponent& meshRenderer =  m_GameObject.GetComponent<HAZEL::MeshRendererComponent>();
+        meshRenderer.material->shader = Shader::Create("assets/shaders/Standard.glsl");
 
-        auto view = m_ActiveScene->Reg().view<HAZEL::MeshRendererComponent>();
-        for (auto entity : view)
-        {
-            // can directly do your job inside view
-            HAZEL::MeshRendererComponent& meshRenderer = view.get<HAZEL::MeshRendererComponent>(entity);
-
-            meshRenderer.material->shader = Shader::Create("assets/shaders/Standard.glsl");
-        }
 	}
 
 	void EditorLayer::OnAttach()
@@ -56,7 +49,7 @@ namespace Hazel
         //model->translate = std::make_shared<glm::mat4>(glm::translate(glm::mat4(1.0f), glm::vec3(0.5f, 0.5f, 0.0f)));
         //model->rotate = std::make_shared<glm::mat4>(glm::rotate(glm::mat4(1.0f), 90.0f, glm::vec3(0.0f, 0.0f, 1.0f)));
         //model->scale = std::make_shared<glm::mat4>(glm::scale(glm::mat4(1.0f), glm::vec3(0.5f, 0.5f, 1.0f)));
-
+        HZ_CORE_INFO("EditorLayer On attach!");
         auto view = m_ActiveScene->Reg().view<HAZEL::MeshRendererComponent>();
         for (auto entity : view)
         {
@@ -158,7 +151,7 @@ namespace Hazel
                 meshRenderer.material->shader->SetMat4("u_ViewProjection", m_CameraController.GetCamera().GetViewProjectionMatrix());
                 meshRenderer.material->shader->SetFloat3("u_CameraPos", m_CameraController.GetCamera().GetCamPos());
                 //model->mesh->Bind();
-                HZ_CORE_INFO("{0}", view.size());
+                //HZ_CORE_INFO("{0}", view.size());
                 //
             }
 

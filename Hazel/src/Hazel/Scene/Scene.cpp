@@ -1,5 +1,6 @@
 #include "hzpch.h"
 #include "Scene.h"
+#include "Entity.h"
 
 #include <glm/glm.hpp>
 namespace Hazel {
@@ -65,11 +66,15 @@ namespace Hazel {
 
 	void Scene::OnUpdate(float ts) 
 	{
-		HZ_CORE_INFO("{0} test test test");
+		//HZ_CORE_INFO("{0} test test test");
 	}	
 	
-	entt::entity Scene::CreateEntity()
+	Entity Scene::CreateEntity(const std::string& name)
 	{
-		return m_Registry.create();
+		Entity entity = { m_Registry.create(),this };
+		entity.AddComponent<HAZEL::TransformComponent>();
+		auto& tag = entity.AddComponent<HAZEL::TagComponent>();
+		tag.Tag = name.empty() ? "Entity" : name;
+		return entity;
 	}
 }

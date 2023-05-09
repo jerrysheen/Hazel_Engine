@@ -30,7 +30,7 @@ namespace Hazel
 		bool m_ViewPortFocused;
 
 		Ref<Scene> m_ActiveScene;
-		entt::entity m_GameObject;
+		
 	};
 }
 
