@@ -4,11 +4,12 @@
 #include <glm/glm.hpp>
 #include "Hazel/Model/Mesh.h"
 #include <Hazel/Model/Material.h>
-#include <Hazel/Model/Mesh.h>
+#include <Hazel/Model/Model.h>
+#include <Hazel/Renderer/PerspectiveCamera.h>
 
 
 namespace HAZEL {
-	
+
 	struct TransformComponent 
 	{
 		glm::mat4 Transform{1.0};
@@ -66,5 +67,10 @@ namespace HAZEL {
 		TagComponent(const std::string& tag)
 			: Tag(tag) {}
 	
+	};
+
+	struct CameraComponent 
+	{
+		Hazel::PerspectiveCamera camera;
 	};
 }
