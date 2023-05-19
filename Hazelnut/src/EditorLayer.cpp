@@ -8,24 +8,39 @@ namespace Hazel
 	EditorLayer::EditorLayer(Window& window)
 		:Layer("EditorLayer"),
         m_CameraController(45.0f, window.GetWidth(), window.GetHeight(), 0.1f, 100000.0f),
-		m_window(window)
+		m_window(window), m_GunObj(entt::null, nullptr), m_Plane(entt::null, nullptr)
 	{
         std::string abpath = std::filesystem::current_path().u8string();
-        std::string modelPath = abpath.append(std::string("/assets/Resources/Models/RivetGun/source/Rivet_Gun.obj"));
+        std::string gunModelPath = abpath.append(std::string("/assets/Resources/Models/RivetGun/source/Rivet_Gun.obj"));
+        std::string planeModelPath = abpath.append(std::string("/assets/Resources/Models/Plane/Plane.obj"));
         //std::string curr = abpath.append(std::string("/assets/Resources/Models/OldHelmet/source/helmet.obj"));
         //model = new Model(modelPath);
         //model->shader = Shader::Create("assets/shaders/Standard.glsl");
 
 
 
-        m_ActiveScene = CreateRef <Scene>();
-        Entity m_GameObject = m_ActiveScene->CreateEntity();
-        m_GameObject.HasComponent<HAZEL::TransformComponent>();
-        m_GameObject.AddComponent<HAZEL::MeshFilterComponent>(modelPath);
-        m_GameObject.AddComponent<HAZEL::MeshRendererComponent>();
-        HAZEL::MeshRendererComponent& meshRenderer =  m_GameObject.GetComponent<HAZEL::MeshRendererComponent>();
-        meshRenderer.material->shader = Shader::Create("assets/shaders/Standard.glsl");
 
+
+        m_ActiveScene = CreateRef <Scene>();
+        m_GunObj = m_ActiveScene->CreateEntity();
+        //Entity m_GameObject = m_ActiveScene->CreateEntity();
+        m_GunObj.HasComponent<HAZEL::TransformComponent>();
+        m_GunObj.AddComponent<HAZEL::MeshFilterComponent>(gunModelPath);
+        m_GunObj.AddComponent<HAZEL::MeshRendererComponent>();
+        
+        //m_Plane = m_ActiveScene->CreateEntity();
+        //m_Plane.HasComponent<HAZEL::TransformComponent>();
+        //m_Plane.AddComponent<HAZEL::MeshFilterComponent>(planeModelPath);
+        //m_Plane.AddComponent<HAZEL::MeshRendererComponent>();
+        //HAZEL::MeshRendererComponent& meshRenderer = m_Plane.GetComponent<HAZEL::MeshRendererComponent>();
+        
+        auto view = m_ActiveScene->Reg().view<HAZEL::MeshRendererComponent>();
+        for (auto entity : view)
+        {
+            // can directly do your job inside view
+            HAZEL::MeshRendererComponent& meshRenderer = view.get<HAZEL::MeshRendererComponent>(entity);
+            meshRenderer.material->shader = Shader::Create("assets/shaders/Standard.glsl");
+        }
 	}
 
 	void EditorLayer::OnAttach()
@@ -120,11 +135,11 @@ namespace Hazel
             //
             //model->specularMap->Bind(4);
             //model->shader->SetInt("u_SpecularMap", 4);
-            auto view = m_ActiveScene->Reg().view<HAZEL::MeshRendererComponent>();
-            for (auto entity : view)
-            {
+            //auto view = m_ActiveScene->Reg().view<HAZEL::MeshRendererComponent>();
+            //for (auto entity : view)
+            //{
                 // can directly do your job inside view
-                HAZEL::MeshRendererComponent& meshRenderer = view.get<HAZEL::MeshRendererComponent>(entity);
+                HAZEL::MeshRendererComponent& meshRenderer = m_GunObj.GetComponent<HAZEL::MeshRendererComponent>();
 
                 meshRenderer.material->shader->Bind();
                 meshRenderer.material->shader->SetFloat4("u_Color", glm::vec4(1.0, 1.0, 1.0, 1.0));
@@ -153,7 +168,7 @@ namespace Hazel
                 //model->mesh->Bind();
                 //HZ_CORE_INFO("{0}", view.size());
                 //
-            }
+           // }
 
 
             //// Lighting config

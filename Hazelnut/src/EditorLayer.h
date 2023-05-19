@@ -30,6 +30,8 @@ namespace Hazel
 		bool m_ViewPortFocused;
 
 		Ref<Scene> m_ActiveScene;
+		Entity m_GunObj;
+		Entity m_Plane;
 		
 	};
 }

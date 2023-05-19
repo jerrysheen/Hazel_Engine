@@ -7,6 +7,7 @@ namespace Hazel
 	class Entity 
 	{
 	public: 
+		//Entity() = default;
 		Entity(entt::entity handle, Scene* scnee);
 		Entity(const Entity& other) = default;
 		template<typename T>
