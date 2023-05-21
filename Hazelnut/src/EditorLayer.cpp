@@ -1,7 +1,7 @@
 #include "EditorLayer.h"
 #include "Platform/OpenGL/OpenGLShader.h"
 
-
+#include "Platform/OpenGL/OpenGLTexture2D.h"
 
 namespace Hazel
 {
@@ -34,22 +34,23 @@ namespace Hazel
         //m_Plane.AddComponent<HAZEL::MeshRendererComponent>();
         //HAZEL::MeshRendererComponent& meshRenderer = m_Plane.GetComponent<HAZEL::MeshRendererComponent>();
         
-        auto view = m_ActiveScene->Reg().view<HAZEL::MeshRendererComponent>();
-        for (auto entity : view)
-        {
-            // can directly do your job inside view
-            HAZEL::MeshRendererComponent& meshRenderer = view.get<HAZEL::MeshRendererComponent>(entity);
-            meshRenderer.material->shader = Shader::Create("assets/shaders/Standard.glsl");
-        }
+
+            m_MainLightShader =    Shader::Create("assets/shaders/Standard.glsl");
+            m_PBRshader = Shader::Create("assets/shaders/Standard.glsl");
+       
 	}
 
 	void EditorLayer::OnAttach()
 	{
 
-        FramebufferSpecification fbSpec;
-        fbSpec.Width = 1280;
-        fbSpec.Height = 720;
-        m_FrameBuffer = Framebuffer::Create(fbSpec);
+        m_fbSpec.Width = 3300;
+        m_fbSpec.Height = 2880;
+        m_FrameBuffer = Framebuffer::Create(m_fbSpec);
+
+        m_shadowMapSpec.Width = 2048;
+        m_shadowMapSpec.Height = 2048;
+        m_ShadowMapRenderTarget = Framebuffer::Create(m_shadowMapSpec);
+
         //model->baseMap = Texture2D::Create("assets/Resources/Models/RivetGun/textures/initialShadingGroup_Diffuse.tga.png");
         //model->bumpMap = Texture2D::Create("assets/Resources/Models/RivetGun/textures/initialShadingGroup_Normal.tga.png");
         //model->aoMap = Texture2D::Create("assets/Resources/Models/RivetGun/textures/ internal_ground_ao_texture.jpeg");
@@ -78,6 +79,13 @@ namespace Hazel
             //model->color = std::make_shared<glm::vec4>(1.0, 1.0, 1.0, 1.0);
             //
         }
+
+        //for (auto entity : view)
+        //{
+        //    // can directly do your job inside view
+        //    HAZEL::MeshRendererComponent& meshRenderer = view.get<HAZEL::MeshRendererComponent>(entity);
+        //    meshRenderer.material->shader =
+        //}
 	}
 
 	void EditorLayer::OnDetach()
@@ -87,8 +95,119 @@ namespace Hazel
 
 	void EditorLayer::OnUpdate(Timestep ts)
 	{
+#pragma region RENDER SHADOWMAP
+        // render shadowmap
+        {
+            {
+                m_ShadowMapRenderTarget->Bind();
+                
+                RendererCommand::SetClearColor({ 1.0f, 0.0f, 0.0f, 1 });
+                RendererCommand::Clear();
+            }
+
+
+            RendererCommand::SetViewPort(0, 0, m_shadowMapSpec.Width, m_shadowMapSpec.Height);
+            m_viewPortPanelSize = { m_shadowMapSpec.Width, m_shadowMapSpec.Height };
+            Renderer3D::BeginScene(m_CameraController.GetCamera());
+
+
+        //    // draw mesh
+        //    {
+
+        //        //model->baseMap = Texture2D::Create(1, 1);
+
+        //        //int width = model->baseMap->GetWidth();
+        //        //int height = model->baseMap->GetHeight();
+        //        //model->baseMap->SetData(&model->baseMap,width * height * 3);
+
+
+        //        //model->drawType = Renderer3D::DRAW_TYPE::HZ_TRIANGLES;
+        //        //
+
+        //        //model->shader->Bind();
+        //        //model->shader->SetFloat4("u_Color", *model->color);
+        //        //model->shader->SetFloat("u_TilingFactor", 1.0f);
+        //        //
+        //        //// bind Texture
+        //        //model->baseMap->Bind(0);
+        //        //model->shader->SetInt("u_DiffuseMap", 0);
+        //        //
+        //        //model->bumpMap->Bind(1);
+        //        //model->shader->SetInt("u_NormalMap", 1);
+
+        //        //model->aoMap->Bind(2);
+        //        //model->shader->SetInt("u_AoMap", 2); 
+        //        //
+        //        //model->glossnessMap->Bind(3);
+        //        //model->shader->SetInt("u_GlossnessMap", 3);            
+        //        //
+        //        //model->specularMap->Bind(4);
+        //        //model->shader->SetInt("u_SpecularMap", 4);
+        //        //auto view = m_ActiveScene->Reg().view<HAZEL::MeshRendererComponent>();
+        //        //for (auto entity : view)
+        //        //{
+        //            // can directly do your job inside view
+        //        HAZEL::MeshRendererComponent& meshRenderer = m_GunObj.GetComponent<HAZEL::MeshRendererComponent>();
+
+        //        meshRenderer.material->shader = m_MainLightShader;
+        //        meshRenderer.material->shader->Bind();
+        //        meshRenderer.material->shader->SetFloat4("u_Color", glm::vec4(1.0, 1.0, 1.0, 1.0));
+        //        meshRenderer.material->shader->SetFloat("u_TilingFactor", 1.0f);
+
+        //        // bind Texture
+        //        meshRenderer.material->baseMap->Bind(0);
+        //        meshRenderer.material->shader->SetInt("u_DiffuseMap", 0);
+
+        //        meshRenderer.material->bumpMap->Bind(1);
+        //        meshRenderer.material->shader->SetInt("u_NormalMap", 1);
+
+        //        meshRenderer.material->aoMap->Bind(2);
+        //        meshRenderer.material->shader->SetInt("u_AoMap", 2);
+
+        //        meshRenderer.material->glossnessMap->Bind(3);
+        //        meshRenderer.material->shader->SetInt("u_GlossnessMap", 3);
+
+        //        meshRenderer.material->specularMap->Bind(4);
+        //        meshRenderer.material->shader->SetInt("u_SpecularMap", 4);
+
+
+        //        meshRenderer.material->shader->SetMat4("u_ModelMatrix", *(std::make_shared<glm::mat4>(glm::mat4(1.0f))));
+        //        meshRenderer.material->shader->SetMat4("u_ViewProjection", m_CameraController.GetCamera().GetViewProjectionMatrix());
+        //        meshRenderer.material->shader->SetFloat3("u_CameraPos", m_CameraController.GetCamera().GetCamPos());
+        //        //model->mesh->Bind();
+        //        //HZ_CORE_INFO("{0}", view.size());
+        //        //
+        //   // }
+
+
+        //    //// Lighting config
+
+        //    //// transform 里面有 translate 和 scale了
+        //    //model->shader->SetMat4("u_ModelMatrix", *model->GetModelMatrix());
+        //    //model->shader->SetMat4("u_ViewProjection", m_CameraController.GetCamera().GetViewProjectionMatrix());
+        //    //model->shader->SetFloat3("u_CameraPos", m_CameraController.GetCamera().GetCamPos());
+        //    //model->mesh->Bind();
+
+
+        //        auto view_Filter = m_ActiveScene->Reg().view<HAZEL::MeshFilterComponent>();
+        //        for (auto entity : view_Filter)
+        //        {
+        //            // can directly do your job inside view
+        //            HAZEL::MeshFilterComponent& meshFilter = view_Filter.get<HAZEL::MeshFilterComponent>(entity);
+        //            meshFilter.mesh->meshData->Bind();
+        //            RendererCommand::DrawIndexed(meshFilter.mesh->meshData);
+        //        }
+
+        //}
+#pragma endregion
+
+
+
+
         {
             m_FrameBuffer->Bind();
+            RendererCommand::SetViewPort(0, 0, m_fbSpec.Width, m_fbSpec.Height);
+            // m_viewPortPanelSize = { m_fbSpec.Width, m_fbSpec.Height };
             RendererCommand::SetClearColor({ 0.5f, 0.5f, 0.5f, 1 });
             RendererCommand::Clear();
         }
@@ -98,7 +217,7 @@ namespace Hazel
 
 
         Renderer3D::BeginScene(m_CameraController.GetCamera());
-        Renderer3D::DrawPrimitives();
+        //Renderer3D::DrawPrimitives();
 
         // update Scene
         m_ActiveScene->OnUpdate(ts);
@@ -138,15 +257,21 @@ namespace Hazel
             //auto view = m_ActiveScene->Reg().view<HAZEL::MeshRendererComponent>();
             //for (auto entity : view)
             //{
+            //         auto view = m_ActiveScene->Reg().view<HAZEL::MeshRendererComponent>();
+
                 // can directly do your job inside view
                 HAZEL::MeshRendererComponent& meshRenderer = m_GunObj.GetComponent<HAZEL::MeshRendererComponent>();
+                meshRenderer.material->shader = m_PBRshader;
 
                 meshRenderer.material->shader->Bind();
                 meshRenderer.material->shader->SetFloat4("u_Color", glm::vec4(1.0, 1.0, 1.0, 1.0));
                 meshRenderer.material->shader->SetFloat("u_TilingFactor", 1.0f);
                 
                 // bind Texture
-                meshRenderer.material->baseMap->Bind(0);
+                
+                //meshRenderer.material->baseMap->Bind(0);
+                glBindTextureUnit(0, m_ShadowMapRenderTarget->GetColorAttachmentRendererID());
+                //m_ShadowMapRenderTarget->GetColorAttachmentRendererID();
                 meshRenderer.material->shader->SetInt("u_DiffuseMap", 0);
                 
                 meshRenderer.material->bumpMap->Bind(1);
@@ -168,7 +293,7 @@ namespace Hazel
                 //model->mesh->Bind();
                 //HZ_CORE_INFO("{0}", view.size());
                 //
-           // }
+        }
 
 
             //// Lighting config
@@ -197,12 +322,16 @@ namespace Hazel
         if(m_ViewPortFocused)m_CameraController.OnUpdate(ts);
 
         m_FrameBuffer->Unbind();
+
+
+        
 	}
 
     void EditorLayer::OnImGuiRender()
     {
         static bool p_open = true;
         static bool opt_fullscreen = true;
+        static bool opt_renderResult = true;
         static bool opt_padding = false;
         static ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_None;
 
@@ -268,6 +397,21 @@ namespace Hazel
                 ImGui::EndMenu();
             }
 
+            if (ImGui::BeginMenu("RenderTarget"))
+            {
+                // Disabling fullscreen would allow the window to be moved to the front of other windows,
+                // which we can't undo at the moment without finer window depth/z control.
+                ImGui::MenuItem("Result", NULL, &opt_renderResult);
+
+                if (ImGui::MenuItem("ShadowMap"))
+                {
+                    opt_renderResult = false; 
+                }
+                ImGui::EndMenu();
+            }
+
+
+
             ImGui::EndMenuBar();
         }
 
@@ -288,17 +432,26 @@ namespace Hazel
         ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
         ImGui::Begin("ViewPort");
         m_ViewPortFocused = ImGui::IsWindowFocused();
-        ImVec2 viewPortSize = ImGui::GetContentRegionAvail();
-        //  HZ_CORE_INFO("Viewport size X: {0};  : {1}", viewPortSize.x, viewPortSize.y);
-        if (m_viewPortPanelSize != *((glm::vec2*)&viewPortSize)) 
+        // 这个地方应该不能每一帧resize， resize之后相当于清空了屏幕。
+        //ImVec2 viewPortSize = ImGui::GetContentRegionAvail();
+        ////HZ_CORE_INFO("Viewport size X: {0};  : {1}", viewPortSize.x, viewPortSize.y);
+        //if (m_viewPortPanelSize != *((glm::vec2*)&viewPortSize)) 
+        //{
+        //    m_viewPortPanelSize = { viewPortSize.x, viewPortSize.y };
+        //    m_FrameBuffer->Resize(m_viewPortPanelSize);
+        //    RendererCommand::SetViewPort(0,0,m_viewPortPanelSize.x, m_viewPortPanelSize.y);
+        //    m_CameraController.ResetAspectRatio(m_viewPortPanelSize.x, m_viewPortPanelSize.y);
+        //}
+        if (opt_renderResult)
         {
-            m_viewPortPanelSize = { viewPortSize.x, viewPortSize.y };
-            m_FrameBuffer->Resize(m_viewPortPanelSize);
-            RendererCommand::SetViewPort(0,0,m_viewPortPanelSize.x, m_viewPortPanelSize.y);
-            m_CameraController.ResetAspectRatio(m_viewPortPanelSize.x, m_viewPortPanelSize.y);
+            uint32_t textureID = m_FrameBuffer->GetColorAttachmentRendererID();
+            ImGui::Image((void*)textureID, ImVec2(m_viewPortPanelSize.x, m_viewPortPanelSize.y), ImVec2(0, 1), ImVec2(1,0));
         }
-        uint32_t textureID = m_FrameBuffer->GetColorAttachmentRendererID();
-        ImGui::Image((void*)textureID, ImVec2(m_viewPortPanelSize.x, m_viewPortPanelSize.y), ImVec2(0, 1), ImVec2(1,0));
+        else 
+        {
+            uint32_t textureID = m_ShadowMapRenderTarget->GetColorAttachmentRendererID();
+            ImGui::Image((void*)textureID, ImVec2(m_viewPortPanelSize.x, m_viewPortPanelSize.y), ImVec2(0, 1), ImVec2(1, 0));
+        }
 
         ImGui::End();
         ImGui::PopStyleVar();

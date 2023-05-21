@@ -25,9 +25,17 @@ namespace Hazel
 		float playerMoveSpeed = 1;
 		Window& m_window;
 		Ref<Framebuffer> m_FrameBuffer;
+		Ref<Framebuffer> m_ShadowMapRenderTarget;
+		Ref<Shader> m_MainLightShader;
+		Ref<Shader> m_PBRshader;
 		PerspectiveCameraController m_CameraController;
+
+		//OrthographicCameraController m_ShadowCameraController;
 		glm::vec2 m_viewPortPanelSize;
 		bool m_ViewPortFocused;
+
+		FramebufferSpecification m_fbSpec;
+		FramebufferSpecification m_shadowMapSpec;
 
 		Ref<Scene> m_ActiveScene;
 		Entity m_GunObj;
