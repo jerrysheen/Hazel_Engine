@@ -28,11 +28,14 @@ namespace Hazel
 		Ref<Framebuffer> m_ShadowMapRenderTarget;
 		Ref<Shader> m_MainLightShader;
 		Ref<Shader> m_PBRshader;
+		Ref<Shader> m_UnLit;
 		PerspectiveCameraController m_CameraController;
 
 		//OrthographicCameraController m_ShadowCameraController;
 		glm::vec2 m_viewPortPanelSize;
 		bool m_ViewPortFocused;
+
+		float m_LightPos[3] = { 0.0, 3.0, -10.0 };
 
 		FramebufferSpecification m_fbSpec;
 		FramebufferSpecification m_shadowMapSpec;

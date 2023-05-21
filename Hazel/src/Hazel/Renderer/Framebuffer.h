@@ -21,6 +21,7 @@ namespace Hazel {
 		
 		virtual void Resize(const glm::vec2& viewportSize) = 0;
 		virtual uint32_t GetColorAttachmentRendererID() const = 0;
+		virtual uint32_t GetDepthAttachmentRendererID() const = 0;
 
 		virtual const FramebufferSpecification& GetSpecification() const = 0;
 
