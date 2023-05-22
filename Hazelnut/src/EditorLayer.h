@@ -35,7 +35,7 @@ namespace Hazel
 		glm::vec2 m_viewPortPanelSize;
 		bool m_ViewPortFocused;
 
-		float m_LightPos[3] = { 0.0, 3.0, -10.0 };
+		float m_LightPos[3] = { 13.75, 12, 10 };
 
 		FramebufferSpecification m_fbSpec;
 		FramebufferSpecification m_shadowMapSpec;

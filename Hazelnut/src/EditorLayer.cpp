@@ -46,12 +46,12 @@ namespace Hazel
 	void EditorLayer::OnAttach()
 	{
 
-        m_fbSpec.Width = 1920;
-        m_fbSpec.Height = 1080;
+        m_fbSpec.Width = 1024;
+        m_fbSpec.Height = 1024;
         m_FrameBuffer = Framebuffer::Create(m_fbSpec);
 
-        m_shadowMapSpec.Width = 2048;
-        m_shadowMapSpec.Height = 2048;
+        m_shadowMapSpec.Width = 1024;
+        m_shadowMapSpec.Height = 1024;
         m_ShadowMapRenderTarget = Framebuffer::Create(m_shadowMapSpec);
 
         //model->baseMap = Texture2D::Create("assets/Resources/Models/RivetGun/textures/initialShadingGroup_Diffuse.tga.png");
@@ -113,8 +113,8 @@ namespace Hazel
             m_viewPortPanelSize = { m_shadowMapSpec.Width, m_shadowMapSpec.Height };
             Renderer3D::BeginScene(m_CameraController.GetCamera());
 
-            GLfloat near_plane =0.1f, far_plane = 7.5f;
-            glm::mat4 lightProjection = glm::ortho(-5.0f, 5.0f, -5.0f, 5.0f, near_plane, far_plane);
+            GLfloat near_plane =0.1f, far_plane = 57.5f;
+            glm::mat4 lightProjection = glm::ortho(-35.0f, 35.0f, -35.0f, 35.0f, near_plane, far_plane);
             glm::mat4 lightView = glm::lookAt(glm::vec3(m_LightPos[0], m_LightPos[1], m_LightPos[2]), glm::vec3(0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
             glm::mat4 lightSpaceMatrix = lightProjection * lightView;
 
@@ -153,7 +153,7 @@ namespace Hazel
             m_FrameBuffer->Bind();
             RendererCommand::SetViewPort(0, 0, m_fbSpec.Width, m_fbSpec.Height);
             // m_viewPortPanelSize = { m_fbSpec.Width, m_fbSpec.Height };
-            RendererCommand::SetClearColor({ 0.5f, 0.5f, 0.5f, 1 });
+            RendererCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1 });
             RendererCommand::Clear();
         }
 
@@ -179,9 +179,7 @@ namespace Hazel
                 
                 // bind Texture
                 
-                //meshRenderer.material->baseMap->Bind(0);
-                glBindTextureUnit(0, m_ShadowMapRenderTarget->GetColorAttachmentRendererID());
-                //m_ShadowMapRenderTarget->GetColorAttachmentRendererID();
+                meshRenderer.material->baseMap->Bind(0);
                 meshRenderer.material->shader->SetInt("u_DiffuseMap", 0);
                 
                 meshRenderer.material->bumpMap->Bind(1);
@@ -196,10 +194,13 @@ namespace Hazel
                 meshRenderer.material->specularMap->Bind(4);
                 meshRenderer.material->shader->SetInt("u_SpecularMap", 4);
 
+                glBindTextureUnit(5, m_ShadowMapRenderTarget->GetColorAttachmentRendererID());
+                meshRenderer.material->shader->SetInt("u_ShadowMap", 5);
 
                 meshRenderer.material->shader->SetMat4("u_ModelMatrix", *(std::make_shared<glm::mat4>(glm::mat4(1.0f))));
                 meshRenderer.material->shader->SetMat4("u_ViewProjection", m_CameraController.GetCamera().GetViewProjectionMatrix());
                 meshRenderer.material->shader->SetFloat3("u_CameraPos", m_CameraController.GetCamera().GetCamPos());
+                meshRenderer.material->shader->SetMat4("u_LightSpaceViewProjection", lightSpaceMatrix);
 
                 HAZEL::MeshFilterComponent& meshFilter = m_GunObj.GetComponent<HAZEL::MeshFilterComponent>();
                 meshFilter.mesh->meshData->Bind();
@@ -222,6 +223,10 @@ namespace Hazel
                 meshRenderer.material->shader->SetMat4("u_ViewProjection", m_CameraController.GetCamera().GetViewProjectionMatrix());
                 meshRenderer.material->shader->SetFloat3("u_CameraPos", m_CameraController.GetCamera().GetCamPos());
 
+                glBindTextureUnit(0, m_ShadowMapRenderTarget->GetColorAttachmentRendererID());
+                meshRenderer.material->shader->SetInt("u_ShadowMap", 0);
+
+                meshRenderer.material->shader->SetMat4("u_LightSpaceViewProjection", lightSpaceMatrix);
                 HAZEL::MeshFilterComponent& meshFilter = m_Plane.GetComponent<HAZEL::MeshFilterComponent>();
                 meshFilter.mesh->meshData->Bind();
                 RendererCommand::DrawIndexed(meshFilter.mesh->meshData);

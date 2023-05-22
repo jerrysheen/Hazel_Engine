@@ -10,18 +10,20 @@ layout(location = 3) in vec2 a_TexCoord;
 
 uniform mat4 u_ViewProjection;
 uniform mat4 u_ModelMatrix;
-
+uniform mat4 u_LightSpaceViewProjection;
 
 out VS_OUT {
     vec2 v_TexCoord;
     mat3 TBN;
 	vec3 WorldPos;
+    vec4 FragPosLightSpace;
 } vs_out;  
 
 
 void main()
 {
 	gl_Position = u_ViewProjection * u_ModelMatrix * vec4(a_Position, 1.0);
+    //gl_Position = u_LightSpaceViewProjection * u_ModelMatrix * vec4(a_Position, 1.0);
 	vs_out.v_TexCoord = a_TexCoord;
 
 	vec3 T = normalize(vec3(u_ModelMatrix * vec4(a_Tangent,   0.0)));
@@ -31,7 +33,7 @@ void main()
 	
 	vs_out.WorldPos = (u_ModelMatrix * vec4(a_Position, 1.0)).xyz;
 	vs_out.TBN = mat3(T, B, N);
-
+    vs_out.FragPosLightSpace = u_LightSpaceViewProjection * vec4(vs_out.WorldPos, 1.0);;
 }
 
 
@@ -49,6 +51,7 @@ in VS_OUT {
     vec2 v_TexCoord;
     mat3 TBN;
 	vec3 WorldPos;
+    vec4 FragPosLightSpace;
 } fs_in;
 
 // texture.
@@ -57,6 +60,7 @@ uniform sampler2D u_NormalMap;
 uniform sampler2D u_AoMap;
 uniform sampler2D u_GlossnessMap;
 uniform sampler2D u_SpecularMap;
+uniform sampler2D u_ShadowMap;
 
 
 
@@ -105,10 +109,29 @@ float GeometrySmith(vec3 N, vec3 V, vec3 L, float roughness)
 }
 
 
+float ShadowCalculation(vec4 fragPosLightSpace)
+{
+    // 执行透视除法
+    vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
+    // 变换到[0,1]的范围
+    projCoords = projCoords * 0.5 + 0.5;
+    // 取得最近点的深度(使用[0,1]范围下的fragPosLight当坐标)
+    float closestDepth = texture(u_ShadowMap, projCoords.xy).r; 
+    // 取得当前片段在光源视角下的深度
+    float currentDepth = projCoords.z;
+    // 检查当前片段是否在阴影中
+    float shadow = currentDepth > closestDepth  ? 1.0 : 0.0;
+
+    return shadow;
+}
+
 
 void main()
 {
 	//color = vec4(v_TexCoord.x, v_TexCoord.y, 0.0, 1.0);
+   
+    
+
 	vec3 normal = texture(u_NormalMap, fs_in.v_TexCoord *  u_TilingFactor).rgb;
 	vec3 albedo = texture(u_DiffuseMap, fs_in.v_TexCoord *  u_TilingFactor).rgb;
 	float metallic = texture(u_GlossnessMap, fs_in.v_TexCoord *  u_TilingFactor).r;
@@ -156,10 +179,12 @@ void main()
     vec3 ambient = vec3(0.1) * albedo * ao;
     vec3 totalColor = ambient + Lo;
 
+    float Inshadow = ShadowCalculation(fs_in.FragPosLightSpace);
+    totalColor *= (1.0 - Inshadow);
 //    totalColor = totalColor / (totalColor + vec3(1.0));
 //  color = pow(color, vec3(1.0/2.2));  
 
-    color = vec4(totalColor, 1.0);
+    color = vec4(totalColor, 0.0);
 
 }
 
