@@ -43,6 +43,7 @@ namespace Hazel
 		Ref<Scene> m_ActiveScene;
 		Entity m_GunObj;
 		Entity m_Plane;
+		Entity m_SkyBox;
 		
 	};
 }

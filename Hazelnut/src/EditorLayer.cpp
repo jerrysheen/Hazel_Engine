@@ -9,12 +9,12 @@ namespace Hazel
 	EditorLayer::EditorLayer(Window& window)
 		:Layer("EditorLayer"),
         m_CameraController(45.0f, window.GetWidth(), window.GetHeight(), 0.1f, 100000.0f),
-		m_window(window), m_GunObj(entt::null, nullptr), m_Plane(entt::null, nullptr)
+		m_window(window), m_GunObj(entt::null, nullptr), m_Plane(entt::null, nullptr), m_SkyBox(entt::null, nullptr)
 	{
         std::string abpath = std::filesystem::current_path().u8string();
-        std::string gunModelPath = abpath.append(std::string("/assets/Resources/Models/RivetGun/source/Rivet_Gun.obj"));
-        std::string abpath00 = std::filesystem::current_path().u8string();
-        std::string planeModelPath = abpath00.append(std::string("/assets/Resources/Models/Plane/Plane.obj"));
+        std::string gunModelPath = abpath + std::string("/assets/Resources/Models/RivetGun/source/Rivet_Gun.obj");
+        std::string planeModelPath = abpath + std::string("/assets/Resources/Models/Plane/Plane.obj");
+        std::string cubeModelPath = abpath + std::string("/assets/Resources/Models/Cube/Cube.obj");
         //std::string curr = abpath.append(std::string("/assets/Resources/Models/OldHelmet/source/helmet.obj"));
         //model = new Model(modelPath);
         //model->shader = Shader::Create("assets/shaders/Standard.glsl");
@@ -34,12 +34,17 @@ namespace Hazel
         m_Plane.HasComponent<HAZEL::TransformComponent>();
         m_Plane.AddComponent<HAZEL::MeshFilterComponent>(planeModelPath);
         m_Plane.AddComponent<HAZEL::MeshRendererComponent>();
+
+        m_SkyBox = m_ActiveScene->CreateEntity();
+        m_SkyBox.HasComponent<HAZEL::TransformComponent>();
+        m_SkyBox.AddComponent<HAZEL::MeshFilterComponent>(planeModelPath);
+        m_SkyBox.AddComponent<HAZEL::MeshRendererComponent>();
         //HAZEL::MeshRendererComponent& meshRenderer = m_Plane.GetComponent<HAZEL::MeshRendererComponent>();
         
 
-            m_MainLightShader =    Shader::Create("assets/shaders/Shadow.glsl");
-            m_PBRshader = Shader::Create("assets/shaders/Standard.glsl");
-            m_UnLit = Shader::Create("assets/shaders/Ground.glsl");
+        m_MainLightShader = Shader::Create("assets/shaders/Shadow.glsl");
+        m_PBRshader = Shader::Create("assets/shaders/Standard.glsl");
+        m_UnLit = Shader::Create("assets/shaders/Ground.glsl");
        
 	}
 
@@ -69,11 +74,12 @@ namespace Hazel
         //model->rotate = std::make_shared<glm::mat4>(glm::rotate(glm::mat4(1.0f), 90.0f, glm::vec3(0.0f, 0.0f, 1.0f)));
         //model->scale = std::make_shared<glm::mat4>(glm::scale(glm::mat4(1.0f), glm::vec3(0.5f, 0.5f, 1.0f)));
         HZ_CORE_INFO("EditorLayer On attach!");
-        auto view = m_ActiveScene->Reg().view<HAZEL::MeshRendererComponent>();
-        for (auto entity : view)
-        {
-            // can directly do your job inside view
-            HAZEL::MeshRendererComponent& meshRenderer = view.get<HAZEL::MeshRendererComponent>(entity);
+        //auto view = m_ActiveScene->Reg().view<HAZEL::MeshRendererComponent>();
+        //for (auto entity : view)
+        //{
+        //    // can directly do your job inside view
+        //    HAZEL::MeshRendererComponent& meshRenderer = view.get<HAZEL::MeshRendererComponent>(entity);
+        HAZEL::MeshRendererComponent meshRenderer = m_GunObj.GetComponent<HAZEL::MeshRendererComponent>();
             meshRenderer.material->baseMap = Texture2D::Create("assets/Resources/Models/RivetGun/textures/initialShadingGroup_Diffuse.tga.png");
             meshRenderer.material->bumpMap = Texture2D::Create("assets/Resources/Models/RivetGun/textures/initialShadingGroup_Normal.tga.png");
             meshRenderer.material->aoMap = Texture2D::Create("assets/Resources/Models/RivetGun/textures/internal_ground_ao_texture.jpeg");
@@ -81,7 +87,7 @@ namespace Hazel
             meshRenderer.material->specularMap = Texture2D::Create("assets/Resources/Models/RivetGun/textures/initialShadingGroup_Specular.tga.png");
             //model->color = std::make_shared<glm::vec4>(1.0, 1.0, 1.0, 1.0);
             //
-        }
+        //}
 
         //for (auto entity : view)
         //{
@@ -194,7 +200,7 @@ namespace Hazel
                 meshRenderer.material->specularMap->Bind(4);
                 meshRenderer.material->shader->SetInt("u_SpecularMap", 4);
 
-                glBindTextureUnit(5, m_ShadowMapRenderTarget->GetColorAttachmentRendererID());
+                glBindTextureUnit(5, m_ShadowMapRenderTarget->GetDepthAttachmentRendererID());
                 meshRenderer.material->shader->SetInt("u_ShadowMap", 5);
 
                 meshRenderer.material->shader->SetMat4("u_ModelMatrix", *(std::make_shared<glm::mat4>(glm::mat4(1.0f))));
@@ -223,7 +229,7 @@ namespace Hazel
                 meshRenderer.material->shader->SetMat4("u_ViewProjection", m_CameraController.GetCamera().GetViewProjectionMatrix());
                 meshRenderer.material->shader->SetFloat3("u_CameraPos", m_CameraController.GetCamera().GetCamPos());
 
-                glBindTextureUnit(0, m_ShadowMapRenderTarget->GetColorAttachmentRendererID());
+                glBindTextureUnit(0, m_ShadowMapRenderTarget->GetDepthAttachmentRendererID());
                 meshRenderer.material->shader->SetInt("u_ShadowMap", 0);
 
                 meshRenderer.material->shader->SetMat4("u_LightSpaceViewProjection", lightSpaceMatrix);
