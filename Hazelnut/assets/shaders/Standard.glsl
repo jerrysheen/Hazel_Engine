@@ -130,13 +130,14 @@ void main()
 {
 	//color = vec4(v_TexCoord.x, v_TexCoord.y, 0.0, 1.0);
    
-    
+    vec2 mainTexUV = fs_in.v_TexCoord;
+    mainTexUV.y = 1.0 - mainTexUV.y;  
 
-	vec3 normal = texture(u_NormalMap, fs_in.v_TexCoord *  u_TilingFactor).rgb;
-	vec3 albedo = texture(u_DiffuseMap, fs_in.v_TexCoord *  u_TilingFactor).rgb;
-	float metallic = texture(u_GlossnessMap, fs_in.v_TexCoord *  u_TilingFactor).r;
-	float smoothness = texture(u_SpecularMap, fs_in.v_TexCoord *  u_TilingFactor).r;
-	float ao = texture(u_AoMap, fs_in.v_TexCoord *  u_TilingFactor).r;
+	vec3 normal = texture(u_NormalMap, mainTexUV *  u_TilingFactor).rgb;
+	vec3 albedo = texture(u_DiffuseMap, mainTexUV *  u_TilingFactor).rgb;
+	float metallic = texture(u_GlossnessMap, mainTexUV *  u_TilingFactor).r;
+	float smoothness = texture(u_SpecularMap, mainTexUV *  u_TilingFactor).r;
+	float ao = texture(u_AoMap, mainTexUV *  u_TilingFactor).r;
 
 	normal = normalize(normal * 2.0 - 1.0);
 	normal = normalize(fs_in.TBN * normal);

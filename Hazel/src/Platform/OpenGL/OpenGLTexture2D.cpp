@@ -70,7 +70,8 @@ namespace Hazel {
 			HZ_CORE_ASSERT(false, "Only For Test");
 			return;
 		}
-
+		// https://gist.github.com/tilkinsc/13191c0c1e5d6b25fbe79bbd2288a673
+		// https://github.com/Dav1dde/glad/issues/194
 		// lay out variables to be used
 		unsigned char* header;
 
@@ -86,12 +87,9 @@ namespace Hazel {
 
 		unsigned char* buffer = 0;
 
-		GLuint tid = 0;
-
 		// open the DDS file for binary reading and get file size
 		FILE* f;
-		const char* temp = path.c_str();
-		if ((f = fopen(temp, "rb")) == 0)
+		if ((f = fopen(path.c_str(), "rb")) == 0)
 		{
 			HZ_CORE_ASSERT(false, "Can't Open File!!");
 			return;
@@ -148,13 +146,15 @@ namespace Hazel {
 		fread(buffer, 1, file_size, f);
 
 		// prepare new incomplete texture
-		glGenTextures(1, &tid);
-		if (tid == 0)
-			goto exit;
+		//glGenTextures(1, &tid);
+		glCreateTextures(GL_TEXTURE_2D, 1, &m_RendererID);
+		HZ_CORE_INFO("tid: {0}", m_RendererID);
+		/*if (tid == 0)
+			goto exit;*/
 
 		// bind the texture
 		// make it complete by specifying all needed parameters and ensuring all mipmaps are filled
-		glBindTexture(GL_TEXTURE_2D, tid);
+		glBindTexture(GL_TEXTURE_2D, m_RendererID);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, 0);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, mipMapCount - 1); // opengl likes array length of mipmaps
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -192,6 +192,7 @@ namespace Hazel {
 		free(buffer);
 		free(header);
 		fclose(f);
+		//m_RendererID = tid;
 		//return tid;
 	}
 	OpenGLTexture2D::~OpenGLTexture2D()
