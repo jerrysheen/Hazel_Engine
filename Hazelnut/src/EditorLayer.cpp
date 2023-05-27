@@ -80,11 +80,16 @@ namespace Hazel
         //    // can directly do your job inside view
         //    HAZEL::MeshRendererComponent& meshRenderer = view.get<HAZEL::MeshRendererComponent>(entity);
         HAZEL::MeshRendererComponent meshRenderer = m_GunObj.GetComponent<HAZEL::MeshRendererComponent>();
-            meshRenderer.material->baseMap = Texture2D::Create("assets/Resources/Models/RivetGun/textures/initialShadingGroup_Diffuse.tga.png");
+/*            meshRenderer.material->baseMap = Texture2D::Create("assets/Resources/Models/RivetGun/textures/initialShadingGroup_Diffuse.tga.png");
             meshRenderer.material->bumpMap = Texture2D::Create("assets/Resources/Models/RivetGun/textures/initialShadingGroup_Normal.tga.png");
             meshRenderer.material->aoMap = Texture2D::Create("assets/Resources/Models/RivetGun/textures/internal_ground_ao_texture.jpeg");
             meshRenderer.material-> glossnessMap = Texture2D::Create("assets/Resources/Models/RivetGun/textures/initialShadingGroup_Glossiness.tga.png");
-            meshRenderer.material->specularMap = Texture2D::Create("assets/Resources/Models/RivetGun/textures/initialShadingGroup_Specular.tga.png");
+            meshRenderer.material->specularMap = Texture2D::Create("assets/Resources/Models/RivetGun/textures/initialShadingGroup_Specular.tga.png");   */         
+            meshRenderer.material->baseMap = Texture2D::Create("assets/Resources/Models/RivetGun/textures_compressed/diffuse.dds", true);
+            meshRenderer.material->bumpMap = Texture2D::Create("assets/Resources/Models/RivetGun/textures_compressed/normal.dds", true);
+            meshRenderer.material->aoMap = Texture2D::Create("assets/Resources/Models/RivetGun/textures_compressed/ao.dds", true);
+            meshRenderer.material-> glossnessMap = Texture2D::Create("assets/Resources/Models/RivetGun/textures_compressed/glossiness.dds", true);
+            meshRenderer.material->specularMap = Texture2D::Create("assets/Resources/Models/RivetGun/textures_compressed/specular.dds", true);
             //model->color = std::make_shared<glm::vec4>(1.0, 1.0, 1.0, 1.0);
             //
         //}
