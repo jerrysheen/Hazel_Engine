@@ -13,12 +13,19 @@ namespace Hazel
 		static Ref<Material> Create();
 	
 	public :
+		// 最后或许会变成一个keymap的格式， 我从一个脚本语言里面定义这个地方有哪些参数，然后这个地方自动上传上去。
 		Ref<Shader> shader;
-		Ref<Texture2D> baseMap;
-		Ref<Texture2D> bumpMap;
-		Ref<Texture2D> glossnessMap;
-		Ref<Texture2D> specularMap;
-		Ref<Texture2D> aoMap;
+		//Ref<Texture2D> baseMap;
+		//Ref<Texture2D> bumpMap;
+		//Ref<Texture2D> glossnessMap;
+		//Ref<Texture2D> specularMap;
+		//Ref<Texture2D> aoMap;
+		Ref<Texture2D> tex00;
+		Ref<Texture2D> tex01;
+		Ref<Texture2D> tex02;
+		Ref<Texture2D> tex03;
+		Ref<Texture2D> tex04;
+		Ref<Texture2D> tex05;
 
 		Ref<glm::vec4> color;
 		Renderer3D::DRAW_TYPE drawType;

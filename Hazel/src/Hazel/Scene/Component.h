@@ -73,4 +73,6 @@ namespace HAZEL {
 	{
 		Hazel::PerspectiveCamera camera;
 	};
+
+
 }
