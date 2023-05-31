@@ -1456,6 +1456,7 @@
       <Filter>vendor\stb_image</Filter>
     </ClInclude>
     <ClInclude Include="src\Hazel\Scene\Entity.h" />
+    <ClInclude Include="src\Platform\OpenGL\OpenGLTexture3D.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Hazel\Core\Application.cpp">
@@ -1564,5 +1565,6 @@
       <Filter>vendor\stb_image</Filter>
     </ClCompile>
     <ClCompile Include="src\Hazel\Scene\Entity.cpp" />
+    <ClCompile Include="src\Platform\OpenGL\OpenGLTexture3D.cpp" />
   </ItemGroup>
 </Project>
