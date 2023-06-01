@@ -48,13 +48,13 @@ namespace Hazel
        
 
         std::vector<std::string> faces;
-        faces.push_back(std::string("00000"));
-        faces.push_back(std::string("00001"));
-        faces.push_back(std::string("00002"));
-        faces.push_back(std::string("00003"));
-        faces.push_back(std::string("00004"));
-        faces.push_back(std::string("00005"));
-        Ref<Texture3D> tex = Texture3D::Create(faces);
+        faces.push_back(std::string("assets/Resources/Skybox/right.dds"));
+        faces.push_back(std::string("assets/Resources/Skybox/left.dds"));
+        faces.push_back(std::string("assets/Resources/Skybox/top.dds"));
+        faces.push_back(std::string("assets/Resources/Skybox/bottom.dds"));
+        faces.push_back(std::string("assets/Resources/Skybox/back.dds"));
+        faces.push_back(std::string("assets/Resources/Skybox/front.dds"));
+        Ref<Texture3D> tex = Texture3D::Create(faces, true, false);
 	}
 
 	void EditorLayer::OnAttach()
@@ -72,20 +72,20 @@ namespace Hazel
         HZ_CORE_INFO("EditorLayer On attach!");
 
         HAZEL::MeshRendererComponent meshRenderer = m_GunObj.GetComponent<HAZEL::MeshRendererComponent>();   
-        meshRenderer.material->tex00 = Texture2D::Create("assets/Resources/Models/RivetGun/textures_compressed/diffuse.dds", true);
-        meshRenderer.material->tex01 = Texture2D::Create("assets/Resources/Models/RivetGun/textures_compressed/normal.dds", true);
-        meshRenderer.material->tex02 = Texture2D::Create("assets/Resources/Models/RivetGun/textures_compressed/ao.dds", true);
-        meshRenderer.material->tex03 = Texture2D::Create("assets/Resources/Models/RivetGun/textures_compressed/glossiness.dds", true);
-        meshRenderer.material->tex04 = Texture2D::Create("assets/Resources/Models/RivetGun/textures_compressed/specular.dds", true);
+        meshRenderer.material->tex00 = Texture2D::Create("assets/Resources/Models/RivetGun/textures_compressed/diffuse.dds", true, true);
+        meshRenderer.material->tex01 = Texture2D::Create("assets/Resources/Models/RivetGun/textures_compressed/normal.dds", true, true);
+        meshRenderer.material->tex02 = Texture2D::Create("assets/Resources/Models/RivetGun/textures_compressed/ao.dds", true, true);
+        meshRenderer.material->tex03 = Texture2D::Create("assets/Resources/Models/RivetGun/textures_compressed/glossiness.dds", true, true);
+        meshRenderer.material->tex04 = Texture2D::Create("assets/Resources/Models/RivetGun/textures_compressed/specular.dds", true, true);
 
 
         meshRenderer = m_SkyBox.GetComponent<HAZEL::MeshRendererComponent>();
-        meshRenderer.material->tex00 = Texture2D::Create("assets/Resources/Models/RivetGun/textures_compressed/diffuse.dds", true);
-        meshRenderer.material->tex01 = Texture2D::Create("assets/Resources/Models/RivetGun/textures_compressed/normal.dds", true);
-        meshRenderer.material->tex02 = Texture2D::Create("assets/Resources/Models/RivetGun/textures_compressed/ao.dds", true);
-        meshRenderer.material->tex03 = Texture2D::Create("assets/Resources/Models/RivetGun/textures_compressed/glossiness.dds", true);
-        meshRenderer.material->tex04 = Texture2D::Create("assets/Resources/Models/RivetGun/textures_compressed/specular.dds", true);
-        meshRenderer.material->tex05 = Texture2D::Create("assets/Resources/Models/RivetGun/textures_compressed/specular.dds", true);
+        //meshRenderer.material->tex00 = Texture2D::Create("assets/Resources/Models/RivetGun/textures_compressed/diffuse.dds", true);
+        //meshRenderer.material->tex01 = Texture2D::Create("assets/Resources/Models/RivetGun/textures_compressed/normal.dds", true);
+        //meshRenderer.material->tex02 = Texture2D::Create("assets/Resources/Models/RivetGun/textures_compressed/ao.dds", true);
+        //meshRenderer.material->tex03 = Texture2D::Create("assets/Resources/Models/RivetGun/textures_compressed/glossiness.dds", true);
+        //meshRenderer.material->tex04 = Texture2D::Create("assets/Resources/Models/RivetGun/textures_compressed/specular.dds", true);
+        //meshRenderer.material->tex05 = Texture2D::Create("assets/Resources/Models/RivetGun/textures_compressed/specular.dds", true);
 
 	}
 

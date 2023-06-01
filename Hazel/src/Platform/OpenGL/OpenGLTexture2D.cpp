@@ -61,7 +61,7 @@ namespace Hazel {
 		stbi_image_free(data);
 	}
 	
-	OpenGLTexture2D::OpenGLTexture2D(const std::string& path, bool isCompressedImage)
+	OpenGLTexture2D::OpenGLTexture2D(const std::string& path, bool isCompressedImage, bool enableMip)
 		:m_Path(path)
 	{
 		if (!isCompressedImage) 
@@ -112,6 +112,7 @@ namespace Hazel {
 		width = (header[16]) | (header[17] << 8) | (header[18] << 16) | (header[19] << 24);
 		mipMapCount = (header[28]) | (header[29] << 8) | (header[30] << 16) | (header[31] << 24);
 
+		mipMapCount = enableMip ? mipMapCount : 1;
 		// figure out what format to use for what fourCC file type it is
 		// block size is about physical chunk storage of compressed data in file (important)
 		if (header[84] == 'D') {
@@ -156,12 +157,22 @@ namespace Hazel {
 		// make it complete by specifying all needed parameters and ensuring all mipmaps are filled
 		glBindTexture(GL_TEXTURE_2D, m_RendererID);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, 0);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, mipMapCount - 1); // opengl likes array length of mipmaps
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR); // don't forget to enable mipmaping
+		if (enableMip) 
+		{
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, mipMapCount - 1); // opengl likes array length of mipmaps
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR); // don't forget to enable mipmaping
+		}
+		else 
+		{
+			//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, mipMapCount - 1); // opengl likes array length of mipmaps
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR); // don't forget to enable mipmaping
+		}
+
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
+		
 		// prepare some variables
 		unsigned int offset = 0;
 		unsigned int size = 0;

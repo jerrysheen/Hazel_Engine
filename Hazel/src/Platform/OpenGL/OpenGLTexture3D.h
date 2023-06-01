@@ -10,7 +10,7 @@ namespace Hazel {
 
 		OpenGLTexture3D(uint32_t width, uint32_t height);
 		OpenGLTexture3D(const std::vector<std::string>& path);
-		OpenGLTexture3D(const std::string& path, bool isCompressedImage);
+		OpenGLTexture3D(const std::vector<std::string>& path, bool isCompressed, bool enableMipMap);
 		~OpenGLTexture3D();
 
 		virtual uint32_t GetWidth() const override { return m_Width; }

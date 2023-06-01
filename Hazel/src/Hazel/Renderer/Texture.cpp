@@ -31,12 +31,12 @@ namespace Hazel {
 		return nullptr;
 	}
 
-	Ref<Texture2D>  Texture2D::Create(const std::string& path, bool isCompressedImage = false)
+	Ref<Texture2D>  Texture2D::Create(const std::string& path, bool isCompressedImage, bool enableMip)
 	{
 		switch (Renderer::GetAPI())
 		{
 		case RendererAPI::API::None: HZ_CORE_ASSERT(false, "RendererAPI::None is currently not supported");
-		case RendererAPI::API::OpenGL: return std::make_shared<OpenGLTexture2D>(path, isCompressedImage);
+		case RendererAPI::API::OpenGL: return std::make_shared<OpenGLTexture2D>(path, isCompressedImage, enableMip);
 		}
 		HZ_CORE_ASSERT(false, "Unknowed API...");
 		return nullptr;
@@ -67,12 +67,12 @@ namespace Hazel {
 		return nullptr;
 	}
 
-	Ref<Texture3D>  Texture3D::Create(const std::string& path, bool isCompressedImage = false)
+	Ref<Texture3D>  Texture3D::Create(const std::vector<std::string>& path, bool isCompressedImage = true, bool enableMipMap = true)
 	{
 		switch (Renderer::GetAPI())
 		{
 		case RendererAPI::API::None: HZ_CORE_ASSERT(false, "RendererAPI::None is currently not supported");
-		case RendererAPI::API::OpenGL: return std::make_shared<OpenGLTexture3D>(path, isCompressedImage);
+		case RendererAPI::API::OpenGL: return std::make_shared<OpenGLTexture3D>(path, isCompressedImage, enableMipMap);
 		}
 		HZ_CORE_ASSERT(false, "Unknowed API...");
 		return nullptr;
