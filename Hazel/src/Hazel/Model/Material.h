@@ -27,6 +27,8 @@ namespace Hazel
 		Ref<Texture2D> tex04;
 		Ref<Texture2D> tex05;
 
+		Ref<Texture3D> tex3D;
+
 		Ref<glm::vec4> color;
 		Renderer3D::DRAW_TYPE drawType;
 
