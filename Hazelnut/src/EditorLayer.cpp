@@ -35,11 +35,7 @@ namespace Hazel
         m_Plane.AddComponent<HAZEL::MeshFilterComponent>(planeModelPath);
         m_Plane.AddComponent<HAZEL::MeshRendererComponent>();
 
-        m_SkyBox = m_ActiveScene->CreateEntity();
-        m_SkyBox.HasComponent<HAZEL::TransformComponent>();
-        m_SkyBox.AddComponent<HAZEL::MeshFilterComponent>(cubeModelPath);
-        m_SkyBox.AddComponent<HAZEL::MeshRendererComponent>();
-        //HAZEL::MeshRendererComponent& meshRenderer = m_Plane.GetComponent<HAZEL::MeshRendererComponent>();
+
         
 
         m_MainLightShader = Shader::Create("assets/shaders/Shadow.glsl");
@@ -54,7 +50,13 @@ namespace Hazel
         faces.push_back(std::string("assets/Resources/Skybox/bottom.dds"));
         faces.push_back(std::string("assets/Resources/Skybox/back.dds"));
         faces.push_back(std::string("assets/Resources/Skybox/front.dds"));
-        Ref<Texture3D> tex = Texture3D::Create(faces, true, false);
+
+        m_SkyBox = m_ActiveScene->CreateEntity();
+        m_SkyBox.HasComponent<HAZEL::TransformComponent>();
+        m_SkyBox.AddComponent<HAZEL::MeshFilterComponent>(cubeModelPath);
+        m_SkyBox.AddComponent<HAZEL::MeshRendererComponent>();
+        m_SkyBox.GetComponent<HAZEL::MeshRendererComponent>().material->tex3D = Texture3D::Create(faces, true, false);
+        //HAZEL::MeshRendererComponent& meshRenderer = m_Plane.GetComponent<HAZEL::MeshRendererComponent>();
 	}
 
 	void EditorLayer::OnAttach()
