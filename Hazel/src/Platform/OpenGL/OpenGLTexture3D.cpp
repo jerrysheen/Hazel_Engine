@@ -29,7 +29,7 @@ namespace Hazel
 			//faces.push_back(Texture2D::Create(var, true, true));
 
 			int width, height, chanels;
-			stbi_set_flip_vertically_on_load(1);
+			stbi_set_flip_vertically_on_load(0);
 			stbi_uc* data = stbi_load(paths[i].c_str(), &width, &height, &chanels, 0);
 			HZ_CORE_ASSERT(data, "Failed to load the image");
 

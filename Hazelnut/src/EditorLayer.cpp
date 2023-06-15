@@ -40,16 +40,17 @@ namespace Hazel
 
         m_MainLightShader = Shader::Create("assets/shaders/Shadow.glsl");
         m_PBRshader = Shader::Create("assets/shaders/Standard.glsl");
-        m_UnLit = Shader::Create("assets/shaders/Ground.glsl");
+        m_UnLitShader = Shader::Create("assets/shaders/Ground.glsl");
+        m_SkyboxShader = Shader::Create("assets/shaders/Skybox.glsl");
        
 
         std::vector<std::string> faces;
-        faces.push_back(std::string("assets/Resources/Skybox/right.dds"));
-        faces.push_back(std::string("assets/Resources/Skybox/left.dds"));
-        faces.push_back(std::string("assets/Resources/Skybox/top.dds"));
-        faces.push_back(std::string("assets/Resources/Skybox/bottom.dds"));
-        faces.push_back(std::string("assets/Resources/Skybox/back.dds"));
-        faces.push_back(std::string("assets/Resources/Skybox/front.dds"));
+        faces.push_back(std::string("assets/Resources/Skybox/right.jpg"));
+        faces.push_back(std::string("assets/Resources/Skybox/left.jpg"));
+        faces.push_back(std::string("assets/Resources/Skybox/top.jpg"));
+        faces.push_back(std::string("assets/Resources/Skybox/bottom.jpg"));
+        faces.push_back(std::string("assets/Resources/Skybox/back.jpg"));
+        faces.push_back(std::string("assets/Resources/Skybox/front.jpg"));
 
         m_SkyBox = m_ActiveScene->CreateEntity();
         m_SkyBox.HasComponent<HAZEL::TransformComponent>();
@@ -169,7 +170,7 @@ namespace Hazel
             m_FrameBuffer->Bind();
             RendererCommand::SetViewPort(0, 0, m_fbSpec.Width, m_fbSpec.Height);
             // m_viewPortPanelSize = { m_fbSpec.Width, m_fbSpec.Height };
-            RendererCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1 });
+            RendererCommand::SetClearColor({ 0.0f, 0.0f, 0.0f, 0.0f });
             RendererCommand::Clear();
         }
 
@@ -228,7 +229,7 @@ namespace Hazel
         {
                 // can directly do your job inside view
                 HAZEL::MeshRendererComponent& meshRenderer = m_Plane.GetComponent<HAZEL::MeshRendererComponent>();
-                meshRenderer.material->shader = m_UnLit;
+                meshRenderer.material->shader = m_UnLitShader;
 
                 meshRenderer.material->shader->Bind();
                 meshRenderer.material->shader->SetFloat4("u_Color", glm::vec4(1.0, 1.0, 1.0, 1.0));
@@ -250,26 +251,32 @@ namespace Hazel
 
         // draw cube
         {
+
+            glDepthFunc(GL_ALWAYS);
             // can directly do your job inside view
             HAZEL::MeshRendererComponent& meshRenderer = m_SkyBox.GetComponent<HAZEL::MeshRendererComponent>();
-            meshRenderer.material->shader = m_UnLit;
+            meshRenderer.material->shader = m_SkyboxShader;
 
             meshRenderer.material->shader->Bind();
             meshRenderer.material->shader->SetFloat4("u_Color", glm::vec4(1.0, 1.0, 1.0, 1.0));
             meshRenderer.material->shader->SetFloat("u_TilingFactor", 1.0f);
 
 
-            meshRenderer.material->shader->SetMat4("u_ModelMatrix", *(std::make_shared<glm::mat4>(glm::scale(glm::mat4(1.0f), glm::vec3(10.0f)))));
-            meshRenderer.material->shader->SetMat4("u_ViewProjection", m_CameraController.GetCamera().GetViewProjectionMatrix());
+            meshRenderer.material->shader->SetMat4("u_ModelMatrix", *(std::make_shared<glm::mat4>(glm::scale(glm::mat4(1.0f), glm::vec3(1.0f)))));
+
+            glm::mat4 view = glm::mat4(glm::mat3(m_CameraController.GetCamera().GetViewMatrix()));
+            glm::mat4 projection = m_CameraController.GetCamera().GetProjectionMatrix();
+            meshRenderer.material->shader->SetMat4("u_ViewProjection", projection * view);
             meshRenderer.material->shader->SetFloat3("u_CameraPos", m_CameraController.GetCamera().GetCamPos());
 
-            glBindTextureUnit(0, m_ShadowMapRenderTarget->GetDepthAttachmentRendererID());
-            meshRenderer.material->shader->SetInt("u_ShadowMap", 0);
+            meshRenderer.material->tex3D->Bind(0);
+            meshRenderer.material->shader->SetInt("u_SkyboxTexture", 0);
 
             meshRenderer.material->shader->SetMat4("u_LightSpaceViewProjection", lightSpaceMatrix);
             HAZEL::MeshFilterComponent& meshFilter = m_SkyBox.GetComponent<HAZEL::MeshFilterComponent>();
             meshFilter.mesh->meshData->Bind();
             RendererCommand::DrawIndexed(meshFilter.mesh->meshData);
+            glDepthFunc(GL_LEQUAL);
         }
             //// Lighting config
 
