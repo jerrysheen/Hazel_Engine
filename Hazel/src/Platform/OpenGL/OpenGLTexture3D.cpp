@@ -22,21 +22,17 @@ namespace Hazel
 	{
 
 		glGenTextures(1, &m_RendererID);
-		glActiveTexture(GL_TEXTURE0);
-
-
 		glBindTexture(GL_TEXTURE_CUBE_MAP, m_RendererID);
-		for each (std::string path in paths)
+		
+		for (int i = 0; i < paths.size(); i++)
 		{
 			//faces.push_back(Texture2D::Create(var, true, true));
 
 			int width, height, chanels;
 			stbi_set_flip_vertically_on_load(1);
-			stbi_uc* data = stbi_load(path.c_str(), &width, &height, &chanels, 0);
+			stbi_uc* data = stbi_load(paths[i].c_str(), &width, &height, &chanels, 0);
 			HZ_CORE_ASSERT(data, "Failed to load the image");
 
-			m_Width = width;
-			m_Height = height;
 			//HZ_CORE_INFO("image info Height: {0}, Width: {1}", width, height);
 			GLenum internalFormat = 0, dataFormat = 0;
 			if (chanels == 4)
@@ -50,9 +46,6 @@ namespace Hazel
 				dataFormat = GL_RGB;
 			}
 
-			m_InternalFormat = internalFormat;
-			m_DataFormat = dataFormat;
-
 			HZ_CORE_ASSERT(dataFormat && internalFormat, "Unsupported image chanel.");
 
 			//glCreateTextures(GL_TEXTURE_2D, 1, &m_RendererID);
@@ -60,31 +53,17 @@ namespace Hazel
 
 			//glTextureParameteri(m_RendererID, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 			//glTextureParameteri(m_RendererID, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-				GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0,
-			glTexImage2D(
-				GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data
-			);
-			glTextureSubImage2D(m_RendererID, 0, 0, 0, m_Width, m_Height, dataFormat, GL_UNSIGNED_BYTE, data);
-
+			glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
 			stbi_image_free(data);
 		}
 
+		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+		glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
 
-
-
-		// just for fast test function
-		for each (Ref<Texture2D> face in faces)
-		{
-			int rendererID = face->GetRendererID();
-			
-			glBindTexture(GL_TEXTURE_2D, rendererID);
-			glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-			glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-			glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-			glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-			glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-			glBindTexture(GL_TEXTURE_2D, 0);
-		}
 	}
 
 	OpenGLTexture3D::~OpenGLTexture3D()
@@ -93,5 +72,6 @@ namespace Hazel
 
 	void OpenGLTexture3D::Bind(uint32_t slot) const
 	{
+		glBindTextureUnit(slot, m_RendererID);
 	}
 }
