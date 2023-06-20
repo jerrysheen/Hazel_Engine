@@ -23,7 +23,6 @@ void main()
 	v_TexCoord = a_Position;
 
 	vec4 pos = u_ViewProjection * u_ModelMatrix * vec4(a_Position, 1.0);
-	gl_Position = pos;
     pos = u_ViewProjection * vec4(a_Position, 1.0);
     gl_Position = pos.xyww;
     

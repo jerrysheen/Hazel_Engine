@@ -184,6 +184,9 @@ namespace Hazel
         // update Scene
         m_ActiveScene->OnUpdate(ts);
 
+
+
+
         // draw Gun
         {
                 // can directly do your job inside view
@@ -252,7 +255,7 @@ namespace Hazel
         // draw cube
         {
 
-            glDepthFunc(GL_ALWAYS);
+            glDepthFunc(GL_LEQUAL);
             // can directly do your job inside view
             HAZEL::MeshRendererComponent& meshRenderer = m_SkyBox.GetComponent<HAZEL::MeshRendererComponent>();
             meshRenderer.material->shader = m_SkyboxShader;
@@ -276,7 +279,7 @@ namespace Hazel
             HAZEL::MeshFilterComponent& meshFilter = m_SkyBox.GetComponent<HAZEL::MeshFilterComponent>();
             meshFilter.mesh->meshData->Bind();
             RendererCommand::DrawIndexed(meshFilter.mesh->meshData);
-            glDepthFunc(GL_LEQUAL);
+            glDepthFunc(GL_LESS);
         }
             //// Lighting config
 
