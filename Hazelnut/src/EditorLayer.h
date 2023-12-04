@@ -27,7 +27,7 @@ namespace Hazel
 		Ref<Framebuffer> m_FrameBuffer;
 		Ref<Framebuffer> m_ShadowMapRenderTarget;
 		Ref<Shader> m_MainLightShader;
-		Ref<Shader> m_PBRshader;
+		Ref<Shader> m_PBRTextureShader;
 		Ref<Shader> m_UnLitShader;
 		Ref<Shader> m_SkyboxShader;
 		PerspectiveCameraController m_CameraController;
