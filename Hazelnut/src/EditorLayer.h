@@ -37,6 +37,10 @@ namespace Hazel
 		bool m_ViewPortFocused;
 
 		float m_LightPos[3] = { 13.75, 12, 10 };
+		float m_DiffuseColor[4] = { 1.0, 1.0, 1.0, 1.0 };
+		float m_F0 = 0.4;
+		float m_Metallic = 0.4;
+		float m_Roughness = 0.4;
 
 		FramebufferSpecification m_fbSpec;
 		FramebufferSpecification m_shadowMapSpec;

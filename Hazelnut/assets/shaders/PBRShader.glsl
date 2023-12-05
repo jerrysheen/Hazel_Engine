@@ -11,6 +11,10 @@ layout(location = 3) in vec2 a_TexCoord;
 uniform mat4 u_ViewProjection;
 uniform mat4 u_ModelMatrix;
 uniform mat4 u_LightSpaceViewProjection;
+uniform vec4 u_Color;
+uniform float u_Fresnel;
+uniform float u_Metallic;
+uniform float u_Roughness;
 
 out VS_OUT {
     vec2 v_TexCoord;

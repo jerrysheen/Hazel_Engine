@@ -266,13 +266,17 @@ namespace Hazel
             meshRenderer.material->shader = m_UnLitShader;
 
             meshRenderer.material->shader->Bind();
-            meshRenderer.material->shader->SetFloat4("u_Color", glm::vec4(1.0, 1.0, 1.0, 1.0));
+            meshRenderer.material->shader->SetFloat4("u_Color", glm::vec4(m_DiffuseColor[0], m_DiffuseColor[1], m_DiffuseColor[2], m_DiffuseColor[3]));
             meshRenderer.material->shader->SetFloat("u_TilingFactor", 1.0f);
+            meshRenderer.material->shader->SetFloat("u_Fresnel", m_F0);
+            meshRenderer.material->shader->SetFloat("u_Metallic", m_Metallic);
+            meshRenderer.material->shader->SetFloat("u_Roughness", m_Roughness);
 
 
             meshRenderer.material->shader->SetMat4("u_ModelMatrix", *(std::make_shared<glm::mat4>(glm::mat4(1.0f))));
             meshRenderer.material->shader->SetMat4("u_ViewProjection", m_CameraController.GetCamera().GetViewProjectionMatrix());
             meshRenderer.material->shader->SetFloat3("u_CameraPos", m_CameraController.GetCamera().GetCamPos());
+
 
             glBindTextureUnit(0, m_ShadowMapRenderTarget->GetDepthAttachmentRendererID());
             meshRenderer.material->shader->SetInt("u_ShadowMap", 0);
@@ -446,7 +450,10 @@ namespace Hazel
         
         ImGui::Text("Light Pos");
         ImGui::SliderFloat3("LightPos", m_LightPos, -20, 20);
-        
+        ImGui::ColorEdit4("Diffuse", m_DiffuseColor);
+        ImGui::SliderFloat("Fresnel", &m_F0, 0.0, 1.0);
+        ImGui::SliderFloat("Metallic", &m_Metallic, 0.0, 1.0);
+        ImGui::SliderFloat("Roughness", &m_Roughness, 0.0, 1.0);
         ImGui::End();
 
         ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
