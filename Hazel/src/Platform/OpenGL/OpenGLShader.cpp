@@ -117,7 +117,7 @@ namespace Hazel {
 				std::vector<GLchar> infoLog(maxLength);
 				glGetShaderInfoLog(shader, maxLength, &maxLength, &infoLog[0]);
 
-				glDeleteShader(shader);
+				glDeleteShader(shader);	
 
 				HZ_CORE_ERROR("{0}", infoLog.data());
 				HZ_CORE_ASSERT(false, "Shader compilation failure!");
@@ -187,6 +187,11 @@ namespace Hazel {
 	void OpenGLShader::SetMat4(const std::string& name, const glm::mat4& matrix)
 	{
 		UploadUniformMat4(name, matrix);
+	}
+
+	void OpenGLShader::SetMat3(const std::string& name, const glm::mat3& matrix)
+	{
+		UploadUniformMat3(name, matrix);
 	}
 
 	void OpenGLShader::UploadUniformInt(const std::string& name, int value)

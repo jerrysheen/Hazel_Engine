@@ -10,34 +10,36 @@ layout(location = 3) in vec2 a_TexCoord;
 
 uniform mat4 u_ViewProjection;
 uniform mat4 u_ModelMatrix;
+uniform mat3 u_WorldToModelMatrix;
 uniform mat4 u_LightSpaceViewProjection;
-uniform vec4 u_Color;
-uniform float u_Fresnel;
-uniform float u_Metallic;
-uniform float u_Roughness;
+
 
 out VS_OUT {
     vec2 v_TexCoord;
     mat3 TBN;
 	vec3 WorldPos;
+    
     vec4 FragPosLightSpace;
 } vs_out;  
-
-
+out vec3 vs_normal;
+out vec2 vs_UV;
 void main()
 {
 	gl_Position = u_ViewProjection * u_ModelMatrix * vec4(a_Position, 1.0);
     //gl_Position = u_LightSpaceViewProjection * u_ModelMatrix * vec4(a_Position, 1.0);
 	vs_out.v_TexCoord = a_TexCoord;
 
-	vec3 T = normalize(vec3(u_ModelMatrix * vec4(a_Tangent,   0.0)));
-	vec3 N = normalize(vec3(u_ModelMatrix * vec4(a_Normal,    0.0)));
+	vec3 T = mat3(u_ModelMatrix) *  a_Tangent;
+	vec3 N =  u_WorldToModelMatrix * a_Normal;
 	vec3 B = normalize(cross(N, T));
 	//vec3 B = normalize(vec3(model * vec4(bitangent, 0.0)));
 	
 	vs_out.WorldPos = (u_ModelMatrix * vec4(a_Position, 1.0)).xyz;
 	vs_out.TBN = mat3(T, B, N);
-    vs_out.FragPosLightSpace = u_LightSpaceViewProjection * vec4(vs_out.WorldPos, 1.0);;
+    vs_out.FragPosLightSpace = u_LightSpaceViewProjection * vec4(vs_out.WorldPos, 1.0);
+    //vs_out.normal = u_WorldToModelMatrix * a_Normal;
+    vs_normal = a_Normal;
+    vs_UV = a_TexCoord;
 }
 
 
@@ -58,6 +60,9 @@ in VS_OUT {
     vec4 FragPosLightSpace;
 } fs_in;
 
+in vec3 vs_normal;
+in vec2 vs_UV;
+
 // texture.
 uniform sampler2D u_DiffuseMap;
 uniform sampler2D u_NormalMap;
@@ -67,7 +72,10 @@ uniform sampler2D u_SpecularMap;
 uniform sampler2D u_ShadowMap;
 
 
-
+uniform vec4 u_Color;
+uniform float u_Fresnel;
+uniform float u_Metallic;
+uniform float u_Roughness;
 uniform vec3 u_CameraPos;
 
 
@@ -137,13 +145,12 @@ void main()
     vec2 mainTexUV = fs_in.v_TexCoord;
     mainTexUV.y = 1.0 - mainTexUV.y;  
 
-	vec3 normal = texture(u_NormalMap, mainTexUV *  u_TilingFactor).rgb;
-	vec3 albedo = texture(u_DiffuseMap, mainTexUV *  u_TilingFactor).rgb;
-	float metallic = texture(u_GlossnessMap, mainTexUV *  u_TilingFactor).r;
-	float smoothness = texture(u_SpecularMap, mainTexUV *  u_TilingFactor).r;
-	float ao = texture(u_AoMap, mainTexUV *  u_TilingFactor).r;
+	vec3 normal = vec3(0.0, 0.0, 1.0);
+	vec3 albedo = u_Color.rgb;
+	float metallic = u_Metallic;
+	float smoothness = 1.0 - u_Roughness;
+	float ao = 1.0f;
 
-	normal = normalize(normal * 2.0 - 1.0);
 	normal = normalize(fs_in.TBN * normal);
 
     float roughness = 1.0 - smoothness;
@@ -181,13 +188,15 @@ void main()
     vec3 Lo = (kD * albedo / PI + specular) * attenuation * NdotL; 
 
 
-    float Inshadow = ShadowCalculation(fs_in.FragPosLightSpace);
+    //float Inshadow = ShadowCalculation(fs_in.FragPosLightSpace);
     vec3 ambient = vec3(0.1) * albedo * ao;
-    vec3 totalColor = ambient + Lo * (1.0 - Inshadow);
+    //vec3 totalColor = ambient + Lo * (1.0 - Inshadow);
+    vec3 totalColor = ambient + Lo;
 
-    color.xyz = totalColor;
+    color.x = pow(vs_normal.x, 0.45f);
+    color.y = pow(vs_normal.y, 0.45f);
+    color.z = pow(vs_normal.z, 0.45f);
     color.a = 1.0f;
-
 
 }
 

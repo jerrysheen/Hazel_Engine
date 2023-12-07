@@ -19,7 +19,7 @@ namespace Hazel
 		//vertexBuffer.push_back(0.0);
 		//std::vector<uint32_t> indexBuffer;
 		Assimp::Importer import;
-		const aiScene* scene = import.ReadFile(path, aiProcess_Triangulate | aiProcess_CalcTangentSpace);
+		const aiScene* scene = import.ReadFile(path, aiProcess_Triangulate | aiProcess_CalcTangentSpace | aiProcess_GenSmoothNormals);
 
 		if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
 		{
@@ -75,7 +75,7 @@ namespace Hazel
 		//VertexArray
 		// 对于里面每一个节点， 都有Vertex, Normal, TexCoords
 		// add vertexbuffer to mesh.
-		HZ_CORE_INFO("{0}", aiMesh->mNumVertices);
+		HZ_CORE_INFO("vertices size :{0}", aiMesh->mNumVertices);
 		for (unsigned int i = 0; i < aiMesh->mNumVertices; i++)
 		{
 			vertexBuffer.push_back(aiMesh->mVertices[i].x);

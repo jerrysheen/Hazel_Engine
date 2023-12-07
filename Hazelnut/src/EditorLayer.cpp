@@ -47,15 +47,22 @@ namespace Hazel
         m_PBRTextureShader = Shader::Create("assets/shaders/Standard.glsl");
         m_UnLitShader = Shader::Create("assets/shaders/Ground.glsl");
         m_SkyboxShader = Shader::Create("assets/shaders/Skybox.glsl");
+        m_PBRShader = Shader::Create("assets/shaders/PBRShader.glsl");
        
 
         std::vector<std::string> faces;
-        faces.push_back(std::string("assets/Resources/Skybox/right.jpg"));
-        faces.push_back(std::string("assets/Resources/Skybox/left.jpg"));
-        faces.push_back(std::string("assets/Resources/Skybox/top.jpg"));
-        faces.push_back(std::string("assets/Resources/Skybox/bottom.jpg"));
-        faces.push_back(std::string("assets/Resources/Skybox/back.jpg"));
-        faces.push_back(std::string("assets/Resources/Skybox/front.jpg"));
+        //faces.push_back(std::string("assets/Resources/Skybox/right.jpg"));
+        //faces.push_back(std::string("assets/Resources/Skybox/left.jpg"));
+        //faces.push_back(std::string("assets/Resources/Skybox/top.jpg"));
+        //faces.push_back(std::string("assets/Resources/Skybox/bottom.jpg"));
+        //faces.push_back(std::string("assets/Resources/Skybox/back.jpg"));
+        //faces.push_back(std::string("assets/Resources/Skybox/front.jpg"));
+        faces.push_back(std::string("assets/Resources/Skybox/right.dds"));
+        faces.push_back(std::string("assets/Resources/Skybox/left.dds"));
+        faces.push_back(std::string("assets/Resources/Skybox/top.dds"));
+        faces.push_back(std::string("assets/Resources/Skybox/bottom.dds"));
+        faces.push_back(std::string("assets/Resources/Skybox/back.dds"));
+        faces.push_back(std::string("assets/Resources/Skybox/front.dds"));
 
         m_SkyBox = m_ActiveScene->CreateEntity();
         m_SkyBox.HasComponent<HAZEL::TransformComponent>();
@@ -263,17 +270,20 @@ namespace Hazel
 
         {
             HAZEL::MeshRendererComponent& meshRenderer = m_Sphere.GetComponent<HAZEL::MeshRendererComponent>();
-            meshRenderer.material->shader = m_UnLitShader;
+            meshRenderer.material->shader = m_PBRShader;
 
             meshRenderer.material->shader->Bind();
             meshRenderer.material->shader->SetFloat4("u_Color", glm::vec4(m_DiffuseColor[0], m_DiffuseColor[1], m_DiffuseColor[2], m_DiffuseColor[3]));
             meshRenderer.material->shader->SetFloat("u_TilingFactor", 1.0f);
-            meshRenderer.material->shader->SetFloat("u_Fresnel", m_F0);
             meshRenderer.material->shader->SetFloat("u_Metallic", m_Metallic);
             meshRenderer.material->shader->SetFloat("u_Roughness", m_Roughness);
 
 
-            meshRenderer.material->shader->SetMat4("u_ModelMatrix", *(std::make_shared<glm::mat4>(glm::mat4(1.0f))));
+            //meshRenderer.material->shader->SetMat4("u_ModelMatrix", *(std::make_shared<glm::mat4>(glm::mat4(1.0f))));
+            glm::mat4x4 identity = glm::mat4x4(1.0f);
+            glm::mat4x4 translate = glm::translate(identity, glm::vec3(0.0, 1.0, 0.0));
+            meshRenderer.material->shader->SetMat4("u_ModelMatrix", translate);
+            meshRenderer.material->shader->SetMat3("u_WorldToModelMatrix", glm::transpose(glm::inverse(glm::mat3(translate))));
             meshRenderer.material->shader->SetMat4("u_ViewProjection", m_CameraController.GetCamera().GetViewProjectionMatrix());
             meshRenderer.material->shader->SetFloat3("u_CameraPos", m_CameraController.GetCamera().GetCamPos());
 
@@ -286,6 +296,123 @@ namespace Hazel
             meshFilter.mesh->meshData->Bind();
             RendererCommand::DrawIndexed(meshFilter.mesh->meshData);
         }
+
+
+            //unsigned int sphereVAO = 0;
+            //unsigned int indexCount;
+            //if (sphereVAO == 0)
+            //{
+            //    glGenVertexArrays(1, &sphereVAO);
+
+            //    unsigned int vbo, ebo;
+            //    glGenBuffers(1, &vbo);
+            //    glGenBuffers(1, &ebo);
+
+            //    std::vector<glm::vec3> positions;
+            //    std::vector<glm::vec2> uv;
+            //    std::vector<glm::vec3> normals;
+            //    std::vector<unsigned int> indices;
+
+            //    const unsigned int X_SEGMENTS = 64;
+            //    const unsigned int Y_SEGMENTS = 64;
+            //    const float PI = 3.14159265359f;
+            //    for (unsigned int x = 0; x <= X_SEGMENTS; ++x)
+            //    {
+            //        for (unsigned int y = 0; y <= Y_SEGMENTS; ++y)
+            //        {
+            //            float xSegment = (float)x / (float)X_SEGMENTS;
+            //            float ySegment = (float)y / (float)Y_SEGMENTS;
+            //            float xPos = std::cos(xSegment * 2.0f * PI) * std::sin(ySegment * PI);
+            //            float yPos = std::cos(ySegment * PI);
+            //            float zPos = std::sin(xSegment * 2.0f * PI) * std::sin(ySegment * PI);
+
+            //            positions.push_back(glm::vec3(xPos, yPos, zPos));
+            //            uv.push_back(glm::vec2(xSegment, ySegment));
+            //            normals.push_back(glm::vec3(xPos, yPos, zPos));
+            //        }
+            //    }
+
+            //    bool oddRow = false;
+            //    for (unsigned int y = 0; y < Y_SEGMENTS; ++y)
+            //    {
+            //        if (!oddRow) // even rows: y == 0, y == 2; and so on
+            //        {
+            //            for (unsigned int x = 0; x <= X_SEGMENTS; ++x)
+            //            {
+            //                indices.push_back(y * (X_SEGMENTS + 1) + x);
+            //                indices.push_back((y + 1) * (X_SEGMENTS + 1) + x);
+            //            }
+            //        }
+            //        else
+            //        {
+            //            for (int x = X_SEGMENTS; x >= 0; --x)
+            //            {
+            //                indices.push_back((y + 1) * (X_SEGMENTS + 1) + x);
+            //                indices.push_back(y * (X_SEGMENTS + 1) + x);
+            //            }
+            //        }
+            //        oddRow = !oddRow;
+            //    }
+            //    indexCount = static_cast<unsigned int>(indices.size());
+
+            //    std::vector<float> data;
+            //    for (unsigned int i = 0; i < positions.size(); ++i)
+            //    {
+            //        data.push_back(positions[i].x);
+            //        data.push_back(positions[i].y);
+            //        data.push_back(positions[i].z);
+            //        if (normals.size() > 0)
+            //        {
+            //            data.push_back(normals[i].x);
+            //            data.push_back(normals[i].y);
+            //            data.push_back(normals[i].z);
+            //        }
+            //        if (uv.size() > 0)
+            //        {
+            //            data.push_back(uv[i].x);
+            //            data.push_back(uv[i].y);
+            //        }
+            //    }
+            //    glBindVertexArray(sphereVAO);
+            //    glBindBuffer(GL_ARRAY_BUFFER, vbo);
+            //    glBufferData(GL_ARRAY_BUFFER, data.size() * sizeof(float), &data[0], GL_STATIC_DRAW);
+            //    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
+            //    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), &indices[0], GL_STATIC_DRAW);
+            //    unsigned int stride = (3 + 2 + 3) * sizeof(float);
+            //    glEnableVertexAttribArray(0);
+            //    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, stride, (void*)0);
+            //    glEnableVertexAttribArray(1);
+            //    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, stride, (void*)(3 * sizeof(float)));
+            //    glEnableVertexAttribArray(2);
+            //    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, stride, (void*)(6 * sizeof(float)));
+            //}
+
+            //glBindVertexArray(sphereVAO);
+
+            //HAZEL::MeshRendererComponent& meshRenderer = m_Sphere.GetComponent<HAZEL::MeshRendererComponent>();
+            //meshRenderer.material->shader = m_PBRShader;
+
+            //meshRenderer.material->shader->Bind();
+            //meshRenderer.material->shader->SetFloat4("u_Color", glm::vec4(m_DiffuseColor[0], m_DiffuseColor[1], m_DiffuseColor[2], m_DiffuseColor[3]));
+            //meshRenderer.material->shader->SetFloat("u_TilingFactor", 1.0f);
+            //meshRenderer.material->shader->SetFloat("u_Metallic", m_Metallic);
+            //meshRenderer.material->shader->SetFloat("u_Roughness", m_Roughness);
+
+
+            ////meshRenderer.material->shader->SetMat4("u_ModelMatrix", *(std::make_shared<glm::mat4>(glm::mat4(1.0f))));
+            //glm::mat4x4 identity = glm::mat4x4(1.0f);
+            //glm::mat4x4 translate = glm::translate(identity, glm::vec3(0.0, 1.0, 0.0));
+            //meshRenderer.material->shader->SetMat4("u_ModelMatrix", translate);
+            //meshRenderer.material->shader->SetMat3("u_WorldToModelMatrix", glm::transpose(glm::inverse(glm::mat3(translate))));
+            //meshRenderer.material->shader->SetMat4("u_ViewProjection", m_CameraController.GetCamera().GetViewProjectionMatrix());
+            //meshRenderer.material->shader->SetFloat3("u_CameraPos", m_CameraController.GetCamera().GetCamPos());
+            //glDrawElements(GL_TRIANGLE_STRIP, indexCount, GL_UNSIGNED_INT, 0);
+
+
+
+
+
+
 
         // draw skybox
         {
@@ -451,7 +578,6 @@ namespace Hazel
         ImGui::Text("Light Pos");
         ImGui::SliderFloat3("LightPos", m_LightPos, -20, 20);
         ImGui::ColorEdit4("Diffuse", m_DiffuseColor);
-        ImGui::SliderFloat("Fresnel", &m_F0, 0.0, 1.0);
         ImGui::SliderFloat("Metallic", &m_Metallic, 0.0, 1.0);
         ImGui::SliderFloat("Roughness", &m_Roughness, 0.0, 1.0);
         ImGui::End();
