@@ -193,9 +193,7 @@ void main()
     //vec3 totalColor = ambient + Lo * (1.0 - Inshadow);
     vec3 totalColor = ambient + Lo;
 
-    color.x = pow(vs_normal.x, 0.45f);
-    color.y = pow(vs_normal.y, 0.45f);
-    color.z = pow(vs_normal.z, 0.45f);
+    color.xyz = totalColor;
     color.a = 1.0f;
 
 }

@@ -50,6 +50,7 @@ namespace Hazel
 		Entity m_Plane;
 		Entity m_Sphere;
 		Entity m_SkyBox;
+		Entity m_Cube;
 		
 	};
 }

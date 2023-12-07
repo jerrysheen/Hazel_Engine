@@ -10,6 +10,7 @@ namespace Hazel
 		:Layer("EditorLayer"),
         m_CameraController(45.0f, window.GetWidth(), window.GetHeight(), 0.1f, 100000.0f),
 		m_window(window), m_GunObj(entt::null, nullptr), m_Plane(entt::null, nullptr), m_SkyBox(entt::null, nullptr), m_Sphere(entt::null, nullptr)
+        , m_Cube(entt::null, nullptr)
 	{
         std::string abpath = std::filesystem::current_path().u8string();
         std::string gunModelPath = abpath + std::string("/assets/Resources/Models/RivetGun/source/Rivet_Gun.obj");
@@ -69,6 +70,12 @@ namespace Hazel
         m_SkyBox.AddComponent<HAZEL::MeshFilterComponent>(cubeModelPath);
         m_SkyBox.AddComponent<HAZEL::MeshRendererComponent>();
         m_SkyBox.GetComponent<HAZEL::MeshRendererComponent>().material->tex3D = Texture3D::Create(faces, true, false);
+
+        m_Cube = m_ActiveScene->CreateEntity();
+        m_Cube.HasComponent<HAZEL::TransformComponent>();
+        m_Cube.AddComponent<HAZEL::MeshFilterComponent>(cubeModelPath);
+        m_Cube.AddComponent<HAZEL::MeshRendererComponent>();
+        m_Cube.GetComponent<HAZEL::MeshRendererComponent>().material->tex3D = Texture3D::Create(faces, true, false);
         //HAZEL::MeshRendererComponent& meshRenderer = m_Plane.GetComponent<HAZEL::MeshRendererComponent>();
 	}
 
@@ -264,6 +271,33 @@ namespace Hazel
                 meshFilter.mesh->meshData->Bind();
                 RendererCommand::DrawIndexed(meshFilter.mesh->meshData);
         }
+        
+
+        // draw Cube
+
+        {
+                // can directly do your job inside view
+                HAZEL::MeshRendererComponent& meshRenderer = m_Cube.GetComponent<HAZEL::MeshRendererComponent>();
+                meshRenderer.material->shader = m_UnLitShader;
+
+                meshRenderer.material->shader->Bind();
+                meshRenderer.material->shader->SetFloat4("u_Color", glm::vec4(0.5, 0.5, 0.5, 1.0));
+                meshRenderer.material->shader->SetFloat("u_TilingFactor", 1.0f);
+
+                glm::mat4x4 identity = glm::mat4x4(1.0f);
+                glm::mat4x4 translate = glm::translate(identity, glm::vec3(0.0, 0.0, 0.0));
+                meshRenderer.material->shader->SetMat4("u_ModelMatrix", translate);
+                meshRenderer.material->shader->SetMat4("u_ViewProjection", m_CameraController.GetCamera().GetViewProjectionMatrix());
+                meshRenderer.material->shader->SetFloat3("u_CameraPos", m_CameraController.GetCamera().GetCamPos());
+
+                //lBindTextureUnit(0, m_ShadowMapRenderTarget->GetDepthAttachmentRendererID());
+                //meshRenderer.material->shader->SetInt("u_ShadowMap", 0);
+
+                meshRenderer.material->shader->SetMat4("u_LightSpaceViewProjection", lightSpaceMatrix);
+                HAZEL::MeshFilterComponent& meshFilter = m_Cube.GetComponent<HAZEL::MeshFilterComponent>();
+                meshFilter.mesh->meshData->Bind();
+                RendererCommand::DrawIndexed(meshFilter.mesh->meshData);
+        }
 
 
         // draw m_Sphere
@@ -281,7 +315,7 @@ namespace Hazel
 
             //meshRenderer.material->shader->SetMat4("u_ModelMatrix", *(std::make_shared<glm::mat4>(glm::mat4(1.0f))));
             glm::mat4x4 identity = glm::mat4x4(1.0f);
-            glm::mat4x4 translate = glm::translate(identity, glm::vec3(0.0, 1.0, 0.0));
+            glm::mat4x4 translate = glm::translate(identity, glm::vec3(2.0, 1.0, 2.0));
             meshRenderer.material->shader->SetMat4("u_ModelMatrix", translate);
             meshRenderer.material->shader->SetMat3("u_WorldToModelMatrix", glm::transpose(glm::inverse(glm::mat3(translate))));
             meshRenderer.material->shader->SetMat4("u_ViewProjection", m_CameraController.GetCamera().GetViewProjectionMatrix());
@@ -296,122 +330,6 @@ namespace Hazel
             meshFilter.mesh->meshData->Bind();
             RendererCommand::DrawIndexed(meshFilter.mesh->meshData);
         }
-
-
-            //unsigned int sphereVAO = 0;
-            //unsigned int indexCount;
-            //if (sphereVAO == 0)
-            //{
-            //    glGenVertexArrays(1, &sphereVAO);
-
-            //    unsigned int vbo, ebo;
-            //    glGenBuffers(1, &vbo);
-            //    glGenBuffers(1, &ebo);
-
-            //    std::vector<glm::vec3> positions;
-            //    std::vector<glm::vec2> uv;
-            //    std::vector<glm::vec3> normals;
-            //    std::vector<unsigned int> indices;
-
-            //    const unsigned int X_SEGMENTS = 64;
-            //    const unsigned int Y_SEGMENTS = 64;
-            //    const float PI = 3.14159265359f;
-            //    for (unsigned int x = 0; x <= X_SEGMENTS; ++x)
-            //    {
-            //        for (unsigned int y = 0; y <= Y_SEGMENTS; ++y)
-            //        {
-            //            float xSegment = (float)x / (float)X_SEGMENTS;
-            //            float ySegment = (float)y / (float)Y_SEGMENTS;
-            //            float xPos = std::cos(xSegment * 2.0f * PI) * std::sin(ySegment * PI);
-            //            float yPos = std::cos(ySegment * PI);
-            //            float zPos = std::sin(xSegment * 2.0f * PI) * std::sin(ySegment * PI);
-
-            //            positions.push_back(glm::vec3(xPos, yPos, zPos));
-            //            uv.push_back(glm::vec2(xSegment, ySegment));
-            //            normals.push_back(glm::vec3(xPos, yPos, zPos));
-            //        }
-            //    }
-
-            //    bool oddRow = false;
-            //    for (unsigned int y = 0; y < Y_SEGMENTS; ++y)
-            //    {
-            //        if (!oddRow) // even rows: y == 0, y == 2; and so on
-            //        {
-            //            for (unsigned int x = 0; x <= X_SEGMENTS; ++x)
-            //            {
-            //                indices.push_back(y * (X_SEGMENTS + 1) + x);
-            //                indices.push_back((y + 1) * (X_SEGMENTS + 1) + x);
-            //            }
-            //        }
-            //        else
-            //        {
-            //            for (int x = X_SEGMENTS; x >= 0; --x)
-            //            {
-            //                indices.push_back((y + 1) * (X_SEGMENTS + 1) + x);
-            //                indices.push_back(y * (X_SEGMENTS + 1) + x);
-            //            }
-            //        }
-            //        oddRow = !oddRow;
-            //    }
-            //    indexCount = static_cast<unsigned int>(indices.size());
-
-            //    std::vector<float> data;
-            //    for (unsigned int i = 0; i < positions.size(); ++i)
-            //    {
-            //        data.push_back(positions[i].x);
-            //        data.push_back(positions[i].y);
-            //        data.push_back(positions[i].z);
-            //        if (normals.size() > 0)
-            //        {
-            //            data.push_back(normals[i].x);
-            //            data.push_back(normals[i].y);
-            //            data.push_back(normals[i].z);
-            //        }
-            //        if (uv.size() > 0)
-            //        {
-            //            data.push_back(uv[i].x);
-            //            data.push_back(uv[i].y);
-            //        }
-            //    }
-            //    glBindVertexArray(sphereVAO);
-            //    glBindBuffer(GL_ARRAY_BUFFER, vbo);
-            //    glBufferData(GL_ARRAY_BUFFER, data.size() * sizeof(float), &data[0], GL_STATIC_DRAW);
-            //    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
-            //    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), &indices[0], GL_STATIC_DRAW);
-            //    unsigned int stride = (3 + 2 + 3) * sizeof(float);
-            //    glEnableVertexAttribArray(0);
-            //    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, stride, (void*)0);
-            //    glEnableVertexAttribArray(1);
-            //    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, stride, (void*)(3 * sizeof(float)));
-            //    glEnableVertexAttribArray(2);
-            //    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, stride, (void*)(6 * sizeof(float)));
-            //}
-
-            //glBindVertexArray(sphereVAO);
-
-            //HAZEL::MeshRendererComponent& meshRenderer = m_Sphere.GetComponent<HAZEL::MeshRendererComponent>();
-            //meshRenderer.material->shader = m_PBRShader;
-
-            //meshRenderer.material->shader->Bind();
-            //meshRenderer.material->shader->SetFloat4("u_Color", glm::vec4(m_DiffuseColor[0], m_DiffuseColor[1], m_DiffuseColor[2], m_DiffuseColor[3]));
-            //meshRenderer.material->shader->SetFloat("u_TilingFactor", 1.0f);
-            //meshRenderer.material->shader->SetFloat("u_Metallic", m_Metallic);
-            //meshRenderer.material->shader->SetFloat("u_Roughness", m_Roughness);
-
-
-            ////meshRenderer.material->shader->SetMat4("u_ModelMatrix", *(std::make_shared<glm::mat4>(glm::mat4(1.0f))));
-            //glm::mat4x4 identity = glm::mat4x4(1.0f);
-            //glm::mat4x4 translate = glm::translate(identity, glm::vec3(0.0, 1.0, 0.0));
-            //meshRenderer.material->shader->SetMat4("u_ModelMatrix", translate);
-            //meshRenderer.material->shader->SetMat3("u_WorldToModelMatrix", glm::transpose(glm::inverse(glm::mat3(translate))));
-            //meshRenderer.material->shader->SetMat4("u_ViewProjection", m_CameraController.GetCamera().GetViewProjectionMatrix());
-            //meshRenderer.material->shader->SetFloat3("u_CameraPos", m_CameraController.GetCamera().GetCamPos());
-            //glDrawElements(GL_TRIANGLE_STRIP, indexCount, GL_UNSIGNED_INT, 0);
-
-
-
-
-
 
 
         // draw skybox
