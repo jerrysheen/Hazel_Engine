@@ -17,6 +17,10 @@ namespace Hazel
 
 		virtual void Bind() override;
 		virtual void Unbind() override;
+
+		virtual void RebindColorAttachment(uint32_t colorAttachmentID, FramebufferSpecification Spec) override;
+		virtual void RebindDepthAttachment(uint32_t depthAttachmentID, FramebufferSpecification Spec) override;
+		virtual void RebindColorAndDepthAttachment(uint32_t colorAttachmentID, uint32_t depthAttachmentID) override;
 		virtual void Resize(const glm::vec2 &viewportSize) override;
 		virtual const FramebufferSpecification& GetSpecification() const override { return m_Specifications; };
 		

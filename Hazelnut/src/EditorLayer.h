@@ -24,8 +24,11 @@ namespace Hazel
 		glm::vec2 playerPosition = { 0.0f, 0.0f };
 		float playerMoveSpeed = 1;
 		Window& m_window;
+		//我只需要一个FrameBuffer，绑定不同的Texture即可。
 		Ref<Framebuffer> m_FrameBuffer;
-		Ref<Framebuffer> m_ShadowMapRenderTarget;
+		Ref<Texture2D> m_OpaqueTexture;
+		Ref<Texture2D> m_ShadowMap;
+		//Ref<Framebuffer> m_ShadowMapRenderTarget;
 		Ref<Shader> m_MainLightShader;
 		Ref<Shader> m_PBRTextureShader;
 		Ref<Shader> m_UnLitShader;

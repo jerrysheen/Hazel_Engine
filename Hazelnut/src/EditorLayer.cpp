@@ -88,7 +88,11 @@ namespace Hazel
 
         m_shadowMapSpec.Width = 1024;
         m_shadowMapSpec.Height = 1024;
-        m_ShadowMapRenderTarget = Framebuffer::Create(m_shadowMapSpec);
+        m_ShadowMap = Texture2D::Create(m_shadowMapSpec.Width, m_shadowMapSpec.Height);
+        m_FrameBuffer->RebindColorAttachment(m_ShadowMap->GetRendererID(), m_shadowMapSpec);
+        m_OpaqueTexture = Texture2D::Create(m_fbSpec.Width, m_fbSpec.Height);
+        m_FrameBuffer->RebindColorAttachment(m_OpaqueTexture->GetRendererID(), m_fbSpec);
+        //m_ShadowMapRenderTarget = Framebuffer::Create(m_shadowMapSpec);
 
 
         HZ_CORE_INFO("EditorLayer On attach!");
@@ -123,7 +127,7 @@ namespace Hazel
         // render shadowmap
         {
             {
-                m_ShadowMapRenderTarget->Bind();
+                //m_ShadowMapRenderTarget->Bind();
                 
                 RendererCommand::SetClearColor({ 0.0f, 0.0f, 0.0f, 0.0f });
                 RendererCommand::Clear();
@@ -263,7 +267,7 @@ namespace Hazel
                 meshRenderer.material->shader->SetMat4("u_ViewProjection", m_CameraController.GetCamera().GetViewProjectionMatrix());
                 meshRenderer.material->shader->SetFloat3("u_CameraPos", m_CameraController.GetCamera().GetCamPos());
 
-                glBindTextureUnit(0, m_ShadowMapRenderTarget->GetDepthAttachmentRendererID());
+                glBindTextureUnit(0, m_ShadowMap->GetRendererID());
                 meshRenderer.material->shader->SetInt("u_ShadowMap", 0);
 
                 meshRenderer.material->shader->SetMat4("u_LightSpaceViewProjection", lightSpaceMatrix);
@@ -322,7 +326,7 @@ namespace Hazel
             meshRenderer.material->shader->SetFloat3("u_CameraPos", m_CameraController.GetCamera().GetCamPos());
 
 
-            glBindTextureUnit(0, m_ShadowMapRenderTarget->GetDepthAttachmentRendererID());
+            glBindTextureUnit(0, m_ShadowMap->GetRendererID());
             meshRenderer.material->shader->SetInt("u_ShadowMap", 0);
 
             meshRenderer.material->shader->SetMat4("u_LightSpaceViewProjection", lightSpaceMatrix);
@@ -520,8 +524,9 @@ namespace Hazel
         }
         else 
         {
-            uint32_t textureID = m_ShadowMapRenderTarget->GetDepthAttachmentRendererID();
-            ImGui::Image((void*)textureID, ImVec2(m_ShadowMapRenderTarget->GetSpecification().Width, m_ShadowMapRenderTarget->GetSpecification().Height), ImVec2(0, 1), ImVec2(1, 0));
+            glBindTextureUnit(0, m_ShadowMap->GetRendererID());
+            uint32_t textureID = m_ShadowMap->GetRendererID();
+            ImGui::Image((void*)textureID, ImVec2(m_ShadowMap->GetWidth(), m_ShadowMap->GetHeight()), ImVec2(0, 1), ImVec2(1, 0));
         }
 
         ImGui::End();
