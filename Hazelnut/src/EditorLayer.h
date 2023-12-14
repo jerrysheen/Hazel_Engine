@@ -34,12 +34,14 @@ namespace Hazel
 		Ref<Shader> m_UnLitShader;
 		Ref<Shader> m_SkyboxShader;
 		Ref<Shader> m_PBRShader;
+		// temp
+		Ref<Shader> equirectangularToCubemapShader;
 		PerspectiveCameraController m_CameraController;
 
 		//OrthographicCameraController m_ShadowCameraController;
 		glm::vec2 m_viewPortPanelSize;
 		bool m_ViewPortFocused;
-
+		RenderTargetEnum m_renderTargetEnum = RenderTargetEnum::OPAQUE_TEXTURE;
 		float m_LightPos[3] = { 13.75, 12, 10 };
 		float m_DiffuseColor[4] = { 1.0, 1.0, 1.0, 1.0 };
 		float m_Metallic = 0.4;
@@ -47,7 +49,7 @@ namespace Hazel
 
 		FramebufferSpecification m_fbSpec;
 		FramebufferSpecification m_shadowMapSpec;
-
+		Ref<Texture3D> m_IrradianceMap;
 		Ref<Scene> m_ActiveScene;
 		Entity m_GunObj;
 		Entity m_Plane;

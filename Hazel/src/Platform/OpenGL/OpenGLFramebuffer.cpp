@@ -69,6 +69,10 @@ namespace Hazel
 		m_ColorAttachment = colorAttachmentID;
 		glBindFramebuffer(GL_FRAMEBUFFER, m_RendererID);
 		glBindTexture(GL_TEXTURE_2D, colorAttachmentID);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, m_Specifications.Width, m_Specifications.Height, 0,
+			GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, colorAttachmentID, 0);
 		// recreate depth/stencil buffer
 		glDeleteTextures(1, &m_DepthAttachment);

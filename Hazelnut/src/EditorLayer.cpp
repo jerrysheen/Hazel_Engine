@@ -21,7 +21,7 @@ namespace Hazel
         //model = new Model(modelPath);
         //model->shader = Shader::Create("assets/shaders/Standard.glsl");
 
-
+        m_IrradianceMap = Texture3D::Create(512, 512);
 
 
 
@@ -49,15 +49,9 @@ namespace Hazel
         m_UnLitShader = Shader::Create("assets/shaders/Ground.glsl");
         m_SkyboxShader = Shader::Create("assets/shaders/Skybox.glsl");
         m_PBRShader = Shader::Create("assets/shaders/PBRShader.glsl");
-       
+        equirectangularToCubemapShader = Shader::Create("assets/shaders/EquirectangularToCubemap.glsl");
 
         std::vector<std::string> faces;
-        //faces.push_back(std::string("assets/Resources/Skybox/right.jpg"));
-        //faces.push_back(std::string("assets/Resources/Skybox/left.jpg"));
-        //faces.push_back(std::string("assets/Resources/Skybox/top.jpg"));
-        //faces.push_back(std::string("assets/Resources/Skybox/bottom.jpg"));
-        //faces.push_back(std::string("assets/Resources/Skybox/back.jpg"));
-        //faces.push_back(std::string("assets/Resources/Skybox/front.jpg"));
         faces.push_back(std::string("assets/Resources/Skybox/right.dds"));
         faces.push_back(std::string("assets/Resources/Skybox/left.dds"));
         faces.push_back(std::string("assets/Resources/Skybox/top.dds"));
@@ -75,7 +69,7 @@ namespace Hazel
         m_Cube.HasComponent<HAZEL::TransformComponent>();
         m_Cube.AddComponent<HAZEL::MeshFilterComponent>(cubeModelPath);
         m_Cube.AddComponent<HAZEL::MeshRendererComponent>();
-        m_Cube.GetComponent<HAZEL::MeshRendererComponent>().material->tex3D = Texture3D::Create(faces, true, false);
+        //m_Cube.GetComponent<HAZEL::MeshRendererComponent>().material->tex3D = Texture3D::Create(faces, true, false);
         //HAZEL::MeshRendererComponent& meshRenderer = m_Plane.GetComponent<HAZEL::MeshRendererComponent>();
 	}
 
@@ -89,7 +83,7 @@ namespace Hazel
         m_shadowMapSpec.Width = 1024;
         m_shadowMapSpec.Height = 1024;
         m_ShadowMap = Texture2D::Create(m_shadowMapSpec.Width, m_shadowMapSpec.Height);
-        m_FrameBuffer->RebindColorAttachment(m_ShadowMap->GetRendererID(), m_shadowMapSpec);
+        //m_FrameBuffer->RebindColorAttachment(m_ShadowMap->GetRendererID(), m_shadowMapSpec);
         m_OpaqueTexture = Texture2D::Create(m_fbSpec.Width, m_fbSpec.Height);
         m_FrameBuffer->RebindColorAttachment(m_OpaqueTexture->GetRendererID(), m_fbSpec);
         //m_ShadowMapRenderTarget = Framebuffer::Create(m_shadowMapSpec);
@@ -107,13 +101,37 @@ namespace Hazel
 
 
         meshRenderer = m_SkyBox.GetComponent<HAZEL::MeshRendererComponent>();
-        //meshRenderer.material->tex00 = Texture2D::Create("assets/Resources/Models/RivetGun/textures_compressed/diffuse.dds", true);
-        //meshRenderer.material->tex01 = Texture2D::Create("assets/Resources/Models/RivetGun/textures_compressed/normal.dds", true);
-        //meshRenderer.material->tex02 = Texture2D::Create("assets/Resources/Models/RivetGun/textures_compressed/ao.dds", true);
-        //meshRenderer.material->tex03 = Texture2D::Create("assets/Resources/Models/RivetGun/textures_compressed/glossiness.dds", true);
-        //meshRenderer.material->tex04 = Texture2D::Create("assets/Resources/Models/RivetGun/textures_compressed/specular.dds", true);
-        //meshRenderer.material->tex05 = Texture2D::Create("assets/Resources/Models/RivetGun/textures_compressed/specular.dds", true);
 
+
+        //// onAttach的时候，把irrandianceMap给绑定好
+        //glm::mat4 captureViews[] =
+        //{
+        //    glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f,  0.0f,  0.0f), glm::vec3(0.0f, -1.0f,  0.0f)),
+        //    glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(-1.0f,  0.0f,  0.0f), glm::vec3(0.0f, -1.0f,  0.0f)),
+        //    glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f,  1.0f,  0.0f), glm::vec3(0.0f,  0.0f,  1.0f)),
+        //    glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f,  0.0f), glm::vec3(0.0f,  0.0f, -1.0f)),
+        //    glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f,  0.0f,  1.0f), glm::vec3(0.0f, -1.0f,  0.0f)),
+        //    glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f,  0.0f, -1.0f), glm::vec3(0.0f, -1.0f,  0.0f))
+        //};
+        ////m_IrradianceMap->Bind(0);
+        ////RendererCommand::SetViewPort(0, 0, 32, 32);
+        //RendererCommand::SetViewPort(0, 0, 512, 512);
+        //glBindFramebuffer(GL_FRAMEBUFFER, m_FrameBuffer->GetRendererID());
+        //equirectangularToCubemapShader->Bind();
+        //glBindTextureUnit(0, m_SkyBox.GetComponent<HAZEL::MeshRendererComponent>().material->tex3D->GetRendererID());
+        //for (unsigned int i = 0; i < 6; ++i)
+        //{
+        //    equirectangularToCubemapShader->SetMat4("view", captureViews[i]);
+
+        //    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, m_IrradianceMap->GetRendererID(), 0);
+        //    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        //    HAZEL::MeshFilterComponent& meshFilter = m_SkyBox.GetComponent<HAZEL::MeshFilterComponent>();
+        //    meshFilter.mesh->meshData->Bind();
+        //    RendererCommand::DrawIndexed(meshFilter.mesh->meshData);
+        //}
+        //glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        //m_FrameBuffer->RebindColorAttachment(m_OpaqueTexture->GetRendererID(), m_fbSpec);
 	}
 
 	void EditorLayer::OnDetach()
@@ -210,6 +228,45 @@ namespace Hazel
 
 
 
+        // onAttach的时候，把irrandianceMap给绑定好
+        glm::mat4 captureViews[] =
+        {
+            glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f,  0.0f,  0.0f), glm::vec3(0.0f, -1.0f,  0.0f)),
+            glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(-1.0f,  0.0f,  0.0f), glm::vec3(0.0f, -1.0f,  0.0f)),
+            glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f,  1.0f,  0.0f), glm::vec3(0.0f,  0.0f,  1.0f)),
+            glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f,  0.0f), glm::vec3(0.0f,  0.0f, -1.0f)),
+            glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f,  0.0f,  1.0f), glm::vec3(0.0f, -1.0f,  0.0f)),
+            glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f,  0.0f, -1.0f), glm::vec3(0.0f, -1.0f,  0.0f))
+        };
+        //m_IrradianceMap->Bind(0);
+        //RendererCommand::SetViewPort(0, 0, 32, 32);
+        //RendererCommand::SetViewPort(0, 0, 512, 512);
+        //glBindFramebuffer(GL_FRAMEBUFFER, m_FrameBuffer->GetRendererID());
+        equirectangularToCubemapShader->Bind();
+        glBindTextureUnit(0, m_SkyBox.GetComponent<HAZEL::MeshRendererComponent>().material->tex3D->GetRendererID());
+        //for (unsigned int i = 0; i < 6; ++i)
+        //{
+            //equirectangularToCubemapShader->SetMat4("view", captureViews[i]);
+            equirectangularToCubemapShader->SetMat4("u_ModelMatrix", *(std::make_shared<glm::mat4>(glm::mat4(1.0f))));
+            equirectangularToCubemapShader->SetMat4("u_ViewProjection", m_CameraController.GetCamera().GetViewProjectionMatrix());
+            equirectangularToCubemapShader->SetMat4("projection", m_CameraController.GetCamera().GetProjectionMatrix());
+         //   glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, m_IrradianceMap->GetRendererID(), 0);
+         //   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+            HAZEL::MeshFilterComponent& meshFilter = m_SkyBox.GetComponent<HAZEL::MeshFilterComponent>();
+            meshFilter.mesh->meshData->Bind();
+            RendererCommand::DrawIndexed(meshFilter.mesh->meshData);
+        //}
+        //glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        //RendererCommand::SetViewPort(0, 0, m_fbSpec.Width, m_fbSpec.Height);
+        //m_FrameBuffer->RebindColorAttachment(m_OpaqueTexture->GetRendererID(), m_fbSpec);
+        //{
+        //    m_FrameBuffer->Bind();
+        //    //RendererCommand::SetViewPort(0, 0, m_fbSpec.Width, m_fbSpec.Height);
+        //    // m_viewPortPanelSize = { m_fbSpec.Width, m_fbSpec.Height };
+        //    //RendererCommand::SetClearColor({ 0.0f, 0.0f, 0.0f, 0.0f });
+        //    RendererCommand::Clear();
+        //}
 
         //// draw Gun
         //{
@@ -270,38 +327,38 @@ namespace Hazel
                 glBindTextureUnit(0, m_ShadowMap->GetRendererID());
                 meshRenderer.material->shader->SetInt("u_ShadowMap", 0);
 
-                meshRenderer.material->shader->SetMat4("u_LightSpaceViewProjection", lightSpaceMatrix);
+                //meshRenderer.material->shader->SetMat4("u_LightSpaceViewProjection", lightSpaceMatrix);
                 HAZEL::MeshFilterComponent& meshFilter = m_Plane.GetComponent<HAZEL::MeshFilterComponent>();
                 meshFilter.mesh->meshData->Bind();
                 RendererCommand::DrawIndexed(meshFilter.mesh->meshData);
         }
         
 
-        // draw Cube
+        //// draw Cube
 
-        {
-                // can directly do your job inside view
-                HAZEL::MeshRendererComponent& meshRenderer = m_Cube.GetComponent<HAZEL::MeshRendererComponent>();
-                meshRenderer.material->shader = m_UnLitShader;
+        //{
+        //        // can directly do your job inside view
+        //        HAZEL::MeshRendererComponent& meshRenderer = m_Cube.GetComponent<HAZEL::MeshRendererComponent>();
+        //        meshRenderer.material->shader = m_UnLitShader;
 
-                meshRenderer.material->shader->Bind();
-                meshRenderer.material->shader->SetFloat4("u_Color", glm::vec4(0.5, 0.5, 0.5, 1.0));
-                meshRenderer.material->shader->SetFloat("u_TilingFactor", 1.0f);
+        //        meshRenderer.material->shader->Bind();
+        //        meshRenderer.material->shader->SetFloat4("u_Color", glm::vec4(0.5, 0.5, 0.5, 1.0));
+        //        meshRenderer.material->shader->SetFloat("u_TilingFactor", 1.0f);
 
-                glm::mat4x4 identity = glm::mat4x4(1.0f);
-                glm::mat4x4 translate = glm::translate(identity, glm::vec3(0.0, 0.0, 0.0));
-                meshRenderer.material->shader->SetMat4("u_ModelMatrix", translate);
-                meshRenderer.material->shader->SetMat4("u_ViewProjection", m_CameraController.GetCamera().GetViewProjectionMatrix());
-                meshRenderer.material->shader->SetFloat3("u_CameraPos", m_CameraController.GetCamera().GetCamPos());
+        //        glm::mat4x4 identity = glm::mat4x4(1.0f);
+        //        glm::mat4x4 translate = glm::translate(identity, glm::vec3(0.0, 0.0, 0.0));
+        //        meshRenderer.material->shader->SetMat4("u_ModelMatrix", translate);
+        //        meshRenderer.material->shader->SetMat4("u_ViewProjection", m_CameraController.GetCamera().GetViewProjectionMatrix());
+        //        meshRenderer.material->shader->SetFloat3("u_CameraPos", m_CameraController.GetCamera().GetCamPos());
 
-                //lBindTextureUnit(0, m_ShadowMapRenderTarget->GetDepthAttachmentRendererID());
-                //meshRenderer.material->shader->SetInt("u_ShadowMap", 0);
+        //        //lBindTextureUnit(0, m_ShadowMapRenderTarget->GetDepthAttachmentRendererID());
+        //        //meshRenderer.material->shader->SetInt("u_ShadowMap", 0);
 
-                meshRenderer.material->shader->SetMat4("u_LightSpaceViewProjection", lightSpaceMatrix);
-                HAZEL::MeshFilterComponent& meshFilter = m_Cube.GetComponent<HAZEL::MeshFilterComponent>();
-                meshFilter.mesh->meshData->Bind();
-                RendererCommand::DrawIndexed(meshFilter.mesh->meshData);
-        }
+        //        meshRenderer.material->shader->SetMat4("u_LightSpaceViewProjection", lightSpaceMatrix);
+        //        HAZEL::MeshFilterComponent& meshFilter = m_Cube.GetComponent<HAZEL::MeshFilterComponent>();
+        //        meshFilter.mesh->meshData->Bind();
+        //        RendererCommand::DrawIndexed(meshFilter.mesh->meshData);
+        //}
 
 
         // draw m_Sphere
@@ -356,7 +413,9 @@ namespace Hazel
             meshRenderer.material->shader->SetMat4("u_ViewProjection", projection * view);
             meshRenderer.material->shader->SetFloat3("u_CameraPos", m_CameraController.GetCamera().GetCamPos());
 
-            meshRenderer.material->tex3D->Bind(0);
+            //meshRenderer.material->tex3D->Bind(0);
+            // 测试生成的irradiance map
+            glBindTextureUnit(0, m_IrradianceMap->GetRendererID());
             meshRenderer.material->shader->SetInt("u_SkyboxTexture", 0);
 
             meshRenderer.material->shader->SetMat4("u_LightSpaceViewProjection", lightSpaceMatrix);
@@ -470,11 +529,14 @@ namespace Hazel
             {
                 // Disabling fullscreen would allow the window to be moved to the front of other windows,
                 // which we can't undo at the moment without finer window depth/z control.
-                ImGui::MenuItem("Result", NULL, &opt_renderResult);
+                if (ImGui::MenuItem("OpaqueTexture"))
+                {
+                    m_renderTargetEnum = RenderTargetEnum::OPAQUE_TEXTURE;
+                }
 
                 if (ImGui::MenuItem("ShadowMap"))
                 {
-                    opt_renderResult = false; 
+                    m_renderTargetEnum = RenderTargetEnum::SHADOWMAP;
                 }
                 ImGui::EndMenu();
             }
@@ -507,6 +569,9 @@ namespace Hazel
         ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
         ImGui::Begin("ViewPort");
         m_ViewPortFocused = ImGui::IsWindowFocused();
+        ImGuiStyle& style = ImGui::GetStyle();
+        style.Colors[ImGuiCol_WindowBg] = ImVec4(0.3f, 0.3f, 0.3f, 1.0f);
+        style.WindowRounding = 0.25;
         // 这个地方应该不能每一帧resize， resize之后相当于清空了屏幕。
         //ImVec2 viewPortSize = ImGui::GetContentRegionAvail();
         ////HZ_CORE_INFO("Viewport size X: {0};  : {1}", viewPortSize.x, viewPortSize.y);
@@ -517,16 +582,20 @@ namespace Hazel
         //    RendererCommand::SetViewPort(0,0,m_viewPortPanelSize.x, m_viewPortPanelSize.y);
         //    m_CameraController.ResetAspectRatio(m_viewPortPanelSize.x, m_viewPortPanelSize.y);
         //}
-        if (opt_renderResult)
+        uint32_t textureID = 0;
+        switch (m_renderTargetEnum) 
         {
-            uint32_t textureID = m_FrameBuffer->GetColorAttachmentRendererID();
-            ImGui::Image((void*)textureID, ImVec2(m_FrameBuffer->GetSpecification().Width , m_FrameBuffer->GetSpecification().Height), ImVec2(0, 1), ImVec2(1,0));
-        }
-        else 
-        {
-            glBindTextureUnit(0, m_ShadowMap->GetRendererID());
-            uint32_t textureID = m_ShadowMap->GetRendererID();
-            ImGui::Image((void*)textureID, ImVec2(m_ShadowMap->GetWidth(), m_ShadowMap->GetHeight()), ImVec2(0, 1), ImVec2(1, 0));
+            case RenderTargetEnum::OPAQUE_TEXTURE:
+                textureID = m_OpaqueTexture->GetRendererID();
+                ImGui::Image((void*)textureID, ImVec2(m_FrameBuffer->GetSpecification().Width, m_FrameBuffer->GetSpecification().Height), ImVec2(0, 1), ImVec2(1, 0));
+			    break;
+			case RenderTargetEnum::SHADOWMAP:
+                glBindTextureUnit(0, m_ShadowMap->GetRendererID());
+                textureID = m_ShadowMap->GetRendererID();
+                ImGui::Image((void*)textureID, ImVec2(m_ShadowMap->GetWidth(), m_ShadowMap->GetHeight()), ImVec2(0, 1), ImVec2(1, 0));
+				break;
+
+        
         }
 
         ImGui::End();

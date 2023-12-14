@@ -61,8 +61,9 @@ float ShadowCalculation(vec4 fragPosLightSpace)
 void main()
 {
 	color = u_Color;
-	float Inshadow = ShadowCalculation(v_FragPosLightSpace);
+	//float Inshadow = ShadowCalculation(v_FragPosLightSpace);
     //color *= (1.0 - Inshadow);
-	color.xyz = u_Color.xyz * (1 - Inshadow);
+	//color.xyz = u_Color.xyz * (1 - Inshadow);
+	color.xyz = u_Color.xyz;
 	color.a = 1.0f;
 }

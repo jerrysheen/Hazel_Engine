@@ -33,6 +33,7 @@
 #include "Hazel/Model/Material.h"
 
 #include "Hazel/Renderer/OrthographicCamera.h"
+#include "Hazel/Renderer/RenderTargetEnum.h"
 // -----------------------------------
 
 // ---Utility------------------------
