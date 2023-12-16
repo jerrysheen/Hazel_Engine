@@ -253,7 +253,7 @@ namespace Hazel
             equirectangularToCubemapShader->SetMat4("u_ViewMatrix", captureViews[i]);
             //equirectangularToCubemapShader->SetMat4("u_ModelMatrix", *(std::make_shared<glm::mat4>(glm::mat4(1.0f))));
             //equirectangularToCubemapShader->SetMat4("u_ViewProjection", m_CameraController.GetCamera().GetViewProjectionMatrix());
-            equirectangularToCubemapShader->SetMat4("u_ProjectionMatrix", m_CameraController.GetCamera().GetProjectionMatrix());
+            equirectangularToCubemapShader->SetMat4("u_ProjectionMatrix", enviromentCamProjection);
             glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, m_IrradianceMap->GetRendererID(), 0);
             glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE_2D, 0, 0);
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
