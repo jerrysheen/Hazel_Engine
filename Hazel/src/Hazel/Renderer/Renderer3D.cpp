@@ -65,7 +65,7 @@ namespace Hazel {
 		squareIB.reset(IndexBuffer::Create(m_groundIndices, sizeof(m_groundIndices) / sizeof(uint32_t)));
 		s_Data->QuadVertexArray->SetIndexBuffer(squareIB);
 
-		s_Data->WhiteTexture = Texture2D::Create(1, 1);
+		s_Data->WhiteTexture = Texture2D::Create(1, 1, 0x8058);
 		uint32_t whiteTextureData = 0xffffffff;
 		s_Data->WhiteTexture->SetData(&whiteTextureData, sizeof(uint32_t));
 
@@ -100,7 +100,7 @@ namespace Hazel {
 		squareIB.reset(IndexBuffer::Create(m_squareIndices, sizeof(m_squareIndices) / sizeof(uint32_t)));
 		s_Data->QuadVertexArray->SetIndexBuffer(squareIB);
 
-		s_Data->WhiteTexture = Texture2D::Create(1, 1);
+		s_Data->WhiteTexture = Texture2D::Create(1, 1, 0x8058);
 		uint32_t whiteTextureData = 0xffffffff;
 		s_Data->WhiteTexture->SetData(&whiteTextureData, sizeof(uint32_t));
 	

@@ -13,8 +13,8 @@ uniform mat4 u_ModelMatrix;
 uniform vec3 u_CameraPos;
 uniform mat4 u_LightSpaceViewProjection;
 
-uniform mat4 projection;
-uniform mat4 view;
+uniform mat4 u_ProjectionMatrix;
+uniform mat4 u_ViewMatrix;
 
 out vec3 WorldPos;
 out vec3 v_camPos;
@@ -25,10 +25,10 @@ void main()
 {
     WorldPos = a_Position;
 
-	mat4 rotView = mat4(mat3(view));
-	vec4 clipPos = projection * rotView * vec4(WorldPos, 1.0);
-    gl_Position = u_ViewProjection * u_ModelMatrix * vec4(a_Position, 1.0);
-	//gl_Position = clipPos.xyww;
+	mat4 rotView = mat4(mat3(u_ViewMatrix));
+	vec4 clipPos = u_ProjectionMatrix * rotView * vec4(WorldPos, 1.0);
+    //gl_Position = u_ViewProjection * u_ModelMatrix * vec4(a_Position, 1.0);
+	gl_Position = clipPos.xyww;
 }
 
 #type fragment
@@ -55,5 +55,6 @@ void main()
     // // Combine them
     // color = texture(u_SkyboxTexture, v_TexCoord);
      vec3 envColor = texture(u_SkyboxTexture, WorldPos).rgb;
+     color = vec4(envColor, 1.0f);
     //color =  reflect_color;
 }

@@ -27,6 +27,7 @@ namespace Hazel
 		//我只需要一个FrameBuffer，绑定不同的Texture即可。
 		Ref<Framebuffer> m_FrameBuffer;
 		Ref<Texture2D> m_OpaqueTexture;
+		Ref<Texture2D> m_DepthTexture;
 		Ref<Texture2D> m_ShadowMap;
 		//Ref<Framebuffer> m_ShadowMapRenderTarget;
 		Ref<Shader> m_MainLightShader;

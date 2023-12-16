@@ -8,7 +8,7 @@ namespace Hazel {
 	{
 	public:
 
-		OpenGLTexture2D(uint32_t width, uint32_t height);
+		OpenGLTexture2D(uint32_t width, uint32_t height, uint32_t colorFormat);
 		OpenGLTexture2D(const std::string& path);
 		OpenGLTexture2D(const std::string& path, bool isCompressedImage, bool enableMip);
 		~OpenGLTexture2D();

@@ -6,10 +6,11 @@
 
 namespace Hazel {
 
-	OpenGLTexture2D::OpenGLTexture2D(uint32_t width, uint32_t height)
+	OpenGLTexture2D::OpenGLTexture2D(uint32_t width, uint32_t height, uint32_t colorFormat)
 		: m_Width(width), m_Height(height)
 	{
-		m_InternalFormat = GL_RGBA8;
+		// default is RGBA8, depth is GL_DEPTH24_STENCIL8
+		m_InternalFormat = colorFormat;
 		m_DataFormat = GL_RGBA;
 
 		glCreateTextures(GL_TEXTURE_2D, 1, &m_RendererID);
@@ -20,6 +21,7 @@ namespace Hazel {
 
 		glTextureParameteri(m_RendererID, GL_TEXTURE_WRAP_S, GL_REPEAT);
 		glTextureParameteri(m_RendererID, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
 	}
 
 	OpenGLTexture2D::OpenGLTexture2D(const std::string& path)
