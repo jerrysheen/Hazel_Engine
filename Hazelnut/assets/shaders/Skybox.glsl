@@ -24,6 +24,7 @@ void main()
 
 	vec4 pos = u_ViewProjection * u_ModelMatrix * vec4(a_Position, 1.0);
     pos = u_ViewProjection * vec4(a_Position, 1.0);
+    //gl_position = pos.xyww, 后续进行透视除法，这样子z的值就是1， 表示最远的地方。
     gl_Position = pos.xyww;
     
     //gl_Position = u_LightSpaceViewProjection * u_ModelMatrix * vec4(a_Position, 1.0);
@@ -51,10 +52,5 @@ uniform vec4 u_Color;
 
 void main()
 {
-    vec3 I = normalize(v_worldPos - v_camPos);
-    vec3 R = reflect(I, normalize(v_Normal));
-    //vec4 reflect_color = texture(u_SkyboxTexture, R) * 1.0f;
-    // Combine them
     color = texture(u_SkyboxTexture, v_TexCoord);
-    //color =  reflect_color;
 }

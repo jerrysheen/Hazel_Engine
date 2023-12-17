@@ -33,28 +33,40 @@ void main()
 
 #type fragment
 #version 330 core
-
-layout(location = 0) out vec4 color;
-uniform float u_TilingFactor;
-
+out vec4 FragColor;
 in vec3 WorldPos;
-in vec3 v_camPos;
-in vec4 v_FragPosLightSpace;
-in vec3 v_TexCoord;
-in vec3 v_Normal;
 
-//uniform sampler2D u_ShadowMap;
-uniform samplerCube u_SkyboxTexture;
-uniform vec4 u_Color;
+uniform samplerCube environmentMap;
+
+const float PI = 3.14159265359;
 
 void main()
-{
-    // vec3 I = normalize(v_worldPos - v_camPos);
-    // vec3 R = reflect(I, normalize(v_Normal));
-    // //vec4 reflect_color = texture(u_SkyboxTexture, R) * 1.0f;
-    // // Combine them
-    // color = texture(u_SkyboxTexture, v_TexCoord);
-     vec3 envColor = texture(u_SkyboxTexture, WorldPos).rgb;
-     color = vec4(envColor, 1.0f);
-    //color =  reflect_color;
+{		
+    vec3 N = normalize(WorldPos);
+
+    vec3 irradiance = vec3(0.0);   
+    
+    // tangent space calculation from origin point
+    vec3 up    = vec3(0.0, 1.0, 0.0);
+    vec3 right = normalize(cross(up, N));
+    up         = normalize(cross(N, right));
+       
+    float sampleDelta = 0.025;
+    float nrSamples = 0.0f;
+    for(float phi = 0.0; phi < 2.0 * PI; phi += sampleDelta)
+    {
+        for(float theta = 0.0; theta < 0.5 * PI; theta += sampleDelta)
+        {
+            // spherical to cartesian (in tangent space)
+            vec3 tangentSample = vec3(sin(theta) * cos(phi),  sin(theta) * sin(phi), cos(theta));
+            // tangent space to world
+            vec3 sampleVec = tangentSample.x * right + tangentSample.y * up + tangentSample.z * N; 
+
+            irradiance += texture(environmentMap, sampleVec).rgb * cos(theta) * sin(theta);
+            nrSamples++;
+        }
+    }
+    irradiance = PI * irradiance * (1.0 / float(nrSamples));
+    
+    FragColor = vec4(irradiance, 1.0);
 }

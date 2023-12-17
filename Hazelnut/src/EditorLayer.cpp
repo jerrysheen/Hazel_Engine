@@ -103,36 +103,40 @@ namespace Hazel
 
         meshRenderer = m_SkyBox.GetComponent<HAZEL::MeshRendererComponent>();
 
-
-        //// onAttach的时候，把irrandianceMap给绑定好
-        //glm::mat4 captureViews[] =
-        //{
-        //    glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f,  0.0f,  0.0f), glm::vec3(0.0f, -1.0f,  0.0f)),
-        //    glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(-1.0f,  0.0f,  0.0f), glm::vec3(0.0f, -1.0f,  0.0f)),
-        //    glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f,  1.0f,  0.0f), glm::vec3(0.0f,  0.0f,  1.0f)),
-        //    glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f,  0.0f), glm::vec3(0.0f,  0.0f, -1.0f)),
-        //    glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f,  0.0f,  1.0f), glm::vec3(0.0f, -1.0f,  0.0f)),
-        //    glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f,  0.0f, -1.0f), glm::vec3(0.0f, -1.0f,  0.0f))
-        //};
-        ////m_IrradianceMap->Bind(0);
-        ////RendererCommand::SetViewPort(0, 0, 32, 32);
-        //RendererCommand::SetViewPort(0, 0, 512, 512);
-        //glBindFramebuffer(GL_FRAMEBUFFER, m_FrameBuffer->GetRendererID());
-        //equirectangularToCubemapShader->Bind();
-        //glBindTextureUnit(0, m_SkyBox.GetComponent<HAZEL::MeshRendererComponent>().material->tex3D->GetRendererID());
-        //for (unsigned int i = 0; i < 6; ++i)
-        //{
-        //    equirectangularToCubemapShader->SetMat4("view", captureViews[i]);
-
-        //    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, m_IrradianceMap->GetRendererID(), 0);
-        //    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-        //    HAZEL::MeshFilterComponent& meshFilter = m_SkyBox.GetComponent<HAZEL::MeshFilterComponent>();
-        //    meshFilter.mesh->meshData->Bind();
-        //    RendererCommand::DrawIndexed(meshFilter.mesh->meshData);
-        //}
+#pragma region Diffuse Irradiance
+        // onAttach的时候，把irrandianceMap给绑定好
+        glm::mat4 captureViews[] =
+        {
+            glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f,  0.0f,  0.0f), glm::vec3(0.0f, -1.0f,  0.0f)),
+            glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(-1.0f,  0.0f,  0.0f), glm::vec3(0.0f, -1.0f,  0.0f)),
+            glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f,  1.0f,  0.0f), glm::vec3(0.0f,  0.0f,  1.0f)),
+            glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f,  0.0f), glm::vec3(0.0f,  0.0f, -1.0f)),
+            glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f,  0.0f,  1.0f), glm::vec3(0.0f, -1.0f,  0.0f)),
+            glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f,  0.0f, -1.0f), glm::vec3(0.0f, -1.0f,  0.0f))
+        };
+        RendererCommand::SetViewPort(0, 0, 32, 32);
+        glm::mat4 enviromentCamProjection = glm::perspective(glm::radians(90.0f), 1.0f, 0.1f, 10.0f);
+        m_FrameBuffer->Bind();
+        equirectangularToCubemapShader->Bind();
+        m_SkyBox.GetComponent<HAZEL::MeshRendererComponent>().material->tex3D->Bind(0);
+        for (unsigned int i = 0; i < 6; ++i)
+        {
+            equirectangularToCubemapShader->SetMat4("u_ViewMatrix", captureViews[i]);
+            equirectangularToCubemapShader->SetMat4("u_ProjectionMatrix", enviromentCamProjection);
+            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, m_IrradianceMap->GetRendererID(), 0);
+            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE_2D, 0, 0);
+            RendererCommand::Clear();
+            HZ_CORE_ASSERT(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE, "Framebuffer is incomplete");
+            HAZEL::MeshFilterComponent& meshFilter = m_SkyBox.GetComponent<HAZEL::MeshFilterComponent>();
+            meshFilter.mesh->meshData->Bind();
+            RendererCommand::DrawIndexed(meshFilter.mesh->meshData);
+        }
         //glBindFramebuffer(GL_FRAMEBUFFER, 0);
-        //m_FrameBuffer->RebindColorAttachment(m_OpaqueTexture->GetRendererID(), m_fbSpec);
+        RendererCommand::SetViewPort(0, 0, m_fbSpec.Width, m_fbSpec.Height);
+        // 重新绑定一次后，渲染的图片不会被清掉
+        m_FrameBuffer->RebindColorAndDepthAttachment(m_OpaqueTexture->GetRendererID(), m_DepthTexture->GetRendererID(), m_fbSpec);
+        // 
+#pragma region Diffuse Irradiance
 	}
 
 	void EditorLayer::OnDetach()
@@ -162,47 +166,7 @@ namespace Hazel
             glm::mat4 lightView = glm::lookAt(glm::vec3(m_LightPos[0], m_LightPos[1], m_LightPos[2]), glm::vec3(0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
             glm::mat4 lightSpaceMatrix = lightProjection * lightView;
 
-            ////auto view_Renderer = m_ActiveScene->Reg().view<HAZEL::MeshRendererComponent>();
-            ////for (auto entity : view_Renderer)
-            ////{
-            ////    // can directly do your job inside view
-            ////    HAZEL::MeshRendererComponent& meshRenderer = view_Renderer.get<HAZEL::MeshRendererComponent>(entity);
-            ////    meshRenderer.material->shader = m_MainLightShader;
 
-            ////    meshRenderer.material->shader->Bind();
-            ////    meshRenderer.material->shader->SetFloat4("u_Color", glm::vec4(1.0, 1.0, 1.0, 1.0));
-            ////    meshRenderer.material->shader->SetFloat("u_TilingFactor", 1.0f);
-
-
-            ////    meshRenderer.material->shader->SetMat4("u_ModelMatrix", *(std::make_shared<glm::mat4>(glm::mat4(1.0f))));
-            ////    meshRenderer.material->shader->SetMat4("u_ViewProjection", lightSpaceMatrix);
-            ////    meshRenderer.material->shader->SetFloat3("u_CameraPos", m_CameraController.GetCamera().GetCamPos());
-
-            ////}
-            //// draw plane
-            //auto view_Filter = m_ActiveScene->Reg().view<HAZEL::MeshFilterComponent, HAZEL::MeshRendererComponent>();
-            //for (auto entity : view_Filter)
-            //{
-            //    //HZ_CORE_INFO("{0}", view_Filter.size_hint());
-            //    // can directly do your job inside view
-            //    HAZEL::MeshRendererComponent& meshRenderer = view_Filter.get<HAZEL::MeshRendererComponent>(entity);
-            //    meshRenderer.material->shader = m_MainLightShader;
-
-            //    meshRenderer.material->shader->Bind();
-            //    meshRenderer.material->shader->SetFloat4("u_Color", glm::vec4(1.0, 1.0, 1.0, 1.0));
-            //    meshRenderer.material->shader->SetFloat("u_TilingFactor", 1.0f);
-
-
-            //    meshRenderer.material->shader->SetMat4("u_ModelMatrix", *(std::make_shared<glm::mat4>(glm::mat4(1.0f))));
-            //    meshRenderer.material->shader->SetMat4("u_ViewProjection", lightSpaceMatrix);
-            //    meshRenderer.material->shader->SetFloat3("u_CameraPos", m_CameraController.GetCamera().GetCamPos());
-            //    // 不渲里面的一部分？
-            //    // 
-            //    // can directly do your job inside view
-            //    HAZEL::MeshFilterComponent& meshFilter = view_Filter.get<HAZEL::MeshFilterComponent>(entity);
-            //    meshFilter.mesh->meshData->Bind();
-            //    RendererCommand::DrawIndexed(meshFilter.mesh->meshData);
-            //}
 
 #pragma endregion
 
@@ -212,61 +176,14 @@ namespace Hazel
         {
             m_FrameBuffer->Bind();
             RendererCommand::SetViewPort(0, 0, m_fbSpec.Width, m_fbSpec.Height);
-            // m_viewPortPanelSize = { m_fbSpec.Width, m_fbSpec.Height };
             RendererCommand::SetClearColor({ 0.0f, 0.0f, 0.0f, 0.0f });
             RendererCommand::Clear();
         }
 
-        //RendererCommand::SetClearColor({ 104.0 / 256.0, 97.0 / 256.0, 92.0 / 256.0, 1 });
-        //RendererCommand::Clear();
-
-
         Renderer3D::BeginScene(m_CameraController.GetCamera());
-        //Renderer3D::DrawPrimitives();
 
         // update Scene
         m_ActiveScene->OnUpdate(ts);
-
-
-
-        // onAttach的时候，把irrandianceMap给绑定好
-        glm::mat4 captureViews[] =
-        {
-            glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f,  0.0f,  0.0f), glm::vec3(0.0f, -1.0f,  0.0f)),
-            glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(-1.0f,  0.0f,  0.0f), glm::vec3(0.0f, -1.0f,  0.0f)),
-            glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f,  1.0f,  0.0f), glm::vec3(0.0f,  0.0f,  1.0f)),
-            glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f,  0.0f), glm::vec3(0.0f,  0.0f, -1.0f)),
-            glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f,  0.0f,  1.0f), glm::vec3(0.0f, -1.0f,  0.0f)),
-            glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f,  0.0f, -1.0f), glm::vec3(0.0f, -1.0f,  0.0f))
-        };
-        //m_IrradianceMap->Bind(0);
-        glDepthFunc(GL_LEQUAL);
-        glDepthMask(GL_FALSE);
-        RendererCommand::SetViewPort(0, 0, 32, 32);
-        //RendererCommand::SetViewPort(0, 0, 512, 512);
-        glm::mat4 enviromentCamProjection = glm::perspective(glm::radians(90.0f), 1.0f, 0.1f, 10.0f);
-        glBindFramebuffer(GL_FRAMEBUFFER, m_FrameBuffer->GetRendererID());
-        equirectangularToCubemapShader->Bind();
-        glBindTextureUnit(0, m_SkyBox.GetComponent<HAZEL::MeshRendererComponent>().material->tex3D->GetRendererID());
-        for (unsigned int i = 0; i < 6; ++i)
-        {
-            equirectangularToCubemapShader->SetMat4("u_ViewMatrix", captureViews[i]);
-            //equirectangularToCubemapShader->SetMat4("u_ModelMatrix", *(std::make_shared<glm::mat4>(glm::mat4(1.0f))));
-            //equirectangularToCubemapShader->SetMat4("u_ViewProjection", m_CameraController.GetCamera().GetViewProjectionMatrix());
-            equirectangularToCubemapShader->SetMat4("u_ProjectionMatrix", enviromentCamProjection);
-            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, m_IrradianceMap->GetRendererID(), 0);
-            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE_2D, 0, 0);
-            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-            HZ_CORE_ASSERT(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE, "Framebuffer is incomplete");
-            HAZEL::MeshFilterComponent& meshFilter = m_SkyBox.GetComponent<HAZEL::MeshFilterComponent>();
-            meshFilter.mesh->meshData->Bind();
-            RendererCommand::DrawIndexed(meshFilter.mesh->meshData);
-        }
-        //glBindFramebuffer(GL_FRAMEBUFFER, 0);
-        RendererCommand::SetViewPort(0, 0, m_fbSpec.Width, m_fbSpec.Height);
-        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_OpaqueTexture->GetRendererID(), 0);
-        glDepthMask(GL_TRUE);
-        glDepthFunc(GL_LESS);
 
 
         m_FrameBuffer->RebindColorAndDepthAttachment(m_OpaqueTexture->GetRendererID(), m_DepthTexture->GetRendererID(), m_fbSpec);
