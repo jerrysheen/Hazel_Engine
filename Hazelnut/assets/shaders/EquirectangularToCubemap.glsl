@@ -66,7 +66,9 @@ void main()
             nrSamples++;
         }
     }
-    irradiance = PI * irradiance * (1.0 / float(nrSamples));
-    
+    irradiance = 1 / PI * irradiance * (1.0 / float(nrSamples));
+    irradiance.x = pow(irradiance.x, 0.45);
+    irradiance.y = pow(irradiance.y, 0.45);
+    irradiance.z = pow(irradiance.z, 0.45);
     FragColor = vec4(irradiance, 1.0);
 }
