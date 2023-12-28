@@ -137,7 +137,10 @@ namespace Hazel
         m_FrameBuffer->RebindColorAndDepthAttachment(m_OpaqueTexture->GetRendererID(), m_DepthTexture->GetRendererID(), m_fbSpec);
         // 
 #pragma region Diffuse Irradiance
-	}
+	
+        // imgui layout settings:
+        m_SceneHierarchyPanel.SetContext(m_ActiveScene);
+    }
 
 	void EditorLayer::OnDetach()
 	{
@@ -187,6 +190,7 @@ namespace Hazel
 
 
         m_FrameBuffer->RebindColorAndDepthAttachment(m_OpaqueTexture->GetRendererID(), m_DepthTexture->GetRendererID(), m_fbSpec);
+        glObjectLabel(GL_FRAMEBUFFER, m_FrameBuffer->GetRendererID(), -1, "FrameBuffer");
         //{
         //    m_FrameBuffer->Bind();
         //    //RendererCommand::SetViewPort(0, 0, m_fbSpec.Width, m_fbSpec.Height);
@@ -474,6 +478,8 @@ namespace Hazel
         }
 
 #pragma region  Settings panel
+        m_SceneHierarchyPanel.OnImGuiRender();
+
         ImGui::Begin("Settings");
         ImGui::Text("Renderer2d Stats");
         //ImGui::ColorEdit3("Square Color", glm::value_ptr(m_SquareColor));

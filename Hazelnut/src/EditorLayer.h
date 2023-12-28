@@ -4,7 +4,7 @@
 #include "imgui/imgui.h"
 #include "glm/gtc/type_ptr.hpp"
 #include "glm/gtc/matrix_transform.hpp"
-
+#include "Panels/SceneHierarchyPanel.h"
 
 namespace Hazel 
 {
@@ -58,6 +58,7 @@ namespace Hazel
 		Entity m_SkyBox;
 		Entity m_Cube;
 		
+		SceneHierarchyPanel m_SceneHierarchyPanel;
 	};
 }
 
