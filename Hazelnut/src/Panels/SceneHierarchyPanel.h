@@ -16,6 +16,7 @@ namespace Hazel {
 
 		void OnImGuiRender();
 	private:
+		void DrawEntityNode(Entity entity);
 		Ref<Scene> m_Context;
 	};
 }

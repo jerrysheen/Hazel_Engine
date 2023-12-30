@@ -32,12 +32,12 @@ namespace Hazel
         //m_GunObj.AddComponent<HAZEL::MeshFilterComponent>(gunModelPath);
         //m_GunObj.AddComponent<HAZEL::MeshRendererComponent>();
         
-        m_Plane = m_ActiveScene->CreateEntity();
+        m_Plane = m_ActiveScene->CreateEntity("myPlane");
         m_Plane.HasComponent<HAZEL::TransformComponent>();
         m_Plane.AddComponent<HAZEL::MeshFilterComponent>(planeModelPath);
         m_Plane.AddComponent<HAZEL::MeshRendererComponent>();
 
-        m_Sphere = m_ActiveScene->CreateEntity();
+        m_Sphere = m_ActiveScene->CreateEntity("mySphere");
         m_Sphere.HasComponent<HAZEL::TransformComponent>();
         m_Sphere.AddComponent<HAZEL::MeshFilterComponent>(sphereModelPath);
         m_Sphere.AddComponent<HAZEL::MeshRendererComponent>();
@@ -59,13 +59,13 @@ namespace Hazel
         faces.push_back(std::string("assets/Resources/Skybox/back.dds"));
         faces.push_back(std::string("assets/Resources/Skybox/front.dds"));
 
-        m_SkyBox = m_ActiveScene->CreateEntity();
+        m_SkyBox = m_ActiveScene->CreateEntity("mySkyBox");
         m_SkyBox.HasComponent<HAZEL::TransformComponent>();
         m_SkyBox.AddComponent<HAZEL::MeshFilterComponent>(cubeModelPath);
         m_SkyBox.AddComponent<HAZEL::MeshRendererComponent>();
         m_SkyBox.GetComponent<HAZEL::MeshRendererComponent>().material->tex3D = Texture3D::Create(faces, true, false);
 
-        m_Cube = m_ActiveScene->CreateEntity();
+        m_Cube = m_ActiveScene->CreateEntity("myCube");
         m_Cube.HasComponent<HAZEL::TransformComponent>();
         m_Cube.AddComponent<HAZEL::MeshFilterComponent>(cubeModelPath);
         m_Cube.AddComponent<HAZEL::MeshRendererComponent>();

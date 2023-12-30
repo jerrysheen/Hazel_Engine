@@ -21,14 +21,19 @@ namespace Hazel {
 		m_Context->m_Registry.each([&](auto entityID) 
 		{
 				Entity entity{ entityID, m_Context.get() };
-				if (entity.HasComponent<HAZEL::TagComponent>()) 
-				{
-					auto& tc = entity.GetComponent<HAZEL::TagComponent>();
-					ImGui::Text("%s", tc.Tag.c_str());
-				}
+				DrawEntityNode(entity);
+
 		});
 
-
 		ImGui::End();
+		ImGui::ShowDemoWindow();
+	}
+	void SceneHierarchyPanel::DrawEntityNode(Entity entity)
+	{
+		if (entity.HasComponent<HAZEL::TagComponent>())
+		{
+			auto& tc = entity.GetComponent<HAZEL::TagComponent>();
+			ImGui::Text("%s", tc.Tag.c_str());
+		}
 	}
 }
