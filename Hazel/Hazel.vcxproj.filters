@@ -1457,6 +1457,7 @@
     </ClInclude>
     <ClInclude Include="src\Hazel\Scene\Entity.h" />
     <ClInclude Include="src\Platform\OpenGL\OpenGLTexture3D.h" />
+    <ClInclude Include="src\Hazel\Renderer\RenderTargetEnum.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Hazel\Core\Application.cpp">
@@ -1566,5 +1567,6 @@
     </ClCompile>
     <ClCompile Include="src\Hazel\Scene\Entity.cpp" />
     <ClCompile Include="src\Platform\OpenGL\OpenGLTexture3D.cpp" />
+    <ClCompile Include="src\Hazel\Renderer\RenderTargetEnum.cpp" />
   </ItemGroup>
 </Project>
