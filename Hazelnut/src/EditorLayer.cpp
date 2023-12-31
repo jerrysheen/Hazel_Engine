@@ -472,6 +472,15 @@ namespace Hazel
                 ImGui::EndMenu();
             }
 
+            if (ImGui::BeginMenu("Debug")) 
+            {
+                //if (ImGui::MenuItem("ShowImguiDemoWindow") && ImGui::IsWindowHovered()) 
+                //{
+                //    ImGui::ShowDemoWindow();
+                //}
+                ImGui::EndMenu();
+            }
+
 
 
             ImGui::EndMenuBar();
