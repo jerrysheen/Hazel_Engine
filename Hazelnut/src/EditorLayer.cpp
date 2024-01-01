@@ -252,7 +252,7 @@ namespace Hazel
                 meshRenderer.material->shader->SetFloat("u_TilingFactor", 1.0f);
 
 
-                meshRenderer.material->shader->SetMat4("u_ModelMatrix", transform.Transform);
+                meshRenderer.material->shader->SetMat4("u_ModelMatrix", transform.GetTransform());
                 meshRenderer.material->shader->SetMat4("u_ViewProjection", m_CameraController.GetCamera().GetViewProjectionMatrix());
                 meshRenderer.material->shader->SetFloat3("u_CameraPos", m_CameraController.GetCamera().GetCamPos());
 
@@ -310,8 +310,8 @@ namespace Hazel
             //meshRenderer.material->shader->SetMat4("u_ModelMatrix", *(std::make_shared<glm::mat4>(glm::mat4(1.0f))));
             //glm::mat4x4 identity = glm::mat4x4(1.0f);
             //glm::mat4x4 translate = glm::translate(identity, glm::vec3(2.0, 1.0, 2.0));
-            meshRenderer.material->shader->SetMat4("u_ModelMatrix", transform.Transform);
-            meshRenderer.material->shader->SetMat3("u_WorldToModelMatrix", glm::transpose(glm::inverse(glm::mat3(transform.Transform))));
+            meshRenderer.material->shader->SetMat4("u_ModelMatrix", transform.GetTransform());
+            meshRenderer.material->shader->SetMat3("u_WorldToModelMatrix", glm::transpose(glm::inverse(glm::mat3(transform.GetTransform()))));
             meshRenderer.material->shader->SetMat4("u_ViewProjection", m_CameraController.GetCamera().GetViewProjectionMatrix());
             meshRenderer.material->shader->SetFloat3("u_CameraPos", m_CameraController.GetCamera().GetCamPos());
 

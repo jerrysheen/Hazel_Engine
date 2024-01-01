@@ -31,7 +31,7 @@ namespace Hazel {
 		
 		entt::entity entity = m_Registry.create();
 
-		m_Registry.emplace<TransformComponent>(entity, glm::mat4(1.0f));
+		m_Registry.emplace<TransformComponent>(entity, glm::vec3(0.0f));
 
 		//  entity.GetComponent<>();
 		//if(m_Registry.has<TransformComponent>(entity))
