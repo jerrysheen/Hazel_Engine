@@ -8,7 +8,7 @@
 #include <Hazel/Renderer/PerspectiveCamera.h>
 
 
-namespace HAZEL {
+namespace Hazel {
 
 	struct TransformComponent 
 	{
@@ -39,10 +39,10 @@ namespace HAZEL {
 
 	struct MeshFilterComponent
 	{
-		Hazel::Ref<Hazel::Mesh> mesh;
+		Ref<Mesh> mesh;
 		MeshFilterComponent(const std::string& meshAddress)
 		{
-			mesh = Hazel::Mesh::Create();
+			mesh = Mesh::Create();
 			mesh->Create();
 			mesh->LoadMesh(meshAddress);
 		}
@@ -50,11 +50,11 @@ namespace HAZEL {
 
 	struct MeshRendererComponent
 	{
-		Hazel::Ref<Hazel::Material> material;
+		Ref<Material> material;
 
 		MeshRendererComponent()
 		{
-			material = Hazel::Material::Create();
+			material = Material::Create();
 		}
 	};
 
@@ -71,7 +71,7 @@ namespace HAZEL {
 
 	struct CameraComponent 
 	{
-		Hazel::PerspectiveCamera camera;
+		PerspectiveCamera camera;
 	};
 
 

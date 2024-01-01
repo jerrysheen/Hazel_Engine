@@ -31,32 +31,32 @@ namespace Hazel {
 		
 		entt::entity entity = m_Registry.create();
 
-		m_Registry.emplace<HAZEL::TransformComponent>(entity, glm::mat4(1.0f));
+		m_Registry.emplace<TransformComponent>(entity, glm::mat4(1.0f));
 
 		//  entity.GetComponent<>();
 		//if(m_Registry.has<TransformComponent>(entity))
-		HAZEL::TransformComponent& transform = m_Registry.get<HAZEL::TransformComponent>(entity);
+		TransformComponent& transform = m_Registry.get<TransformComponent>(entity);
 
 		// get all entity's that has mesh component
-		auto view = m_Registry.view<HAZEL::TransformComponent>();
+		auto view = m_Registry.view<TransformComponent>();
 		for (auto entity : view) 
 		{
 			// can directly do your job inside view
-			HAZEL::TransformComponent& transform = view.get<HAZEL::TransformComponent>(entity);
+			TransformComponent& transform = view.get<TransformComponent>(entity);
 		}
 
 		// Group two component <Mesh & Transform>
 		// But don't know why group.get not working
-		auto group = m_Registry.group<HAZEL::TransformComponent>(entt::get<HAZEL::SpriteRendererComponent>);
+		auto group = m_Registry.group<TransformComponent>(entt::get<SpriteRendererComponent>);
 		for (auto entity : group) 
 		{
-			auto& [a, b] = m_Registry.get<HAZEL::TransformComponent, HAZEL::SpriteRendererComponent>(entity);
+			auto& [a, b] = m_Registry.get<TransformComponent, SpriteRendererComponent>(entity);
 			 
 			//Rrenderer::submit(mesh, transform);
 		}
 
 		// add a callback to Transform constructor. when every time an TransformComponent added
-		m_Registry.on_construct<HAZEL::TransformComponent>().connect<&OnTransformConstruct>();
+		m_Registry.on_construct<TransformComponent>().connect<&OnTransformConstruct>();
 	}
 
 
@@ -72,8 +72,8 @@ namespace Hazel {
 	Entity Scene::CreateEntity(const std::string& name)
 	{
 		Entity entity = { m_Registry.create(),this };
-		entity.AddComponent<HAZEL::TransformComponent>();
-		auto& tag = entity.AddComponent<HAZEL::TagComponent>();
+		entity.AddComponent<TransformComponent>();
+		auto& tag = entity.AddComponent<TagComponent>();
 		tag.Tag = name.empty() ? "Entity" : name;
 		return entity;
 	}

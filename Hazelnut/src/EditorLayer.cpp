@@ -28,19 +28,19 @@ namespace Hazel
         m_ActiveScene = CreateRef <Scene>();
         //m_GunObj = m_ActiveScene->CreateEntity();
         ////Entity m_GameObject = m_ActiveScene->CreateEntity();
-        //m_GunObj.HasComponent<HAZEL::TransformComponent>();
-        //m_GunObj.AddComponent<HAZEL::MeshFilterComponent>(gunModelPath);
-        //m_GunObj.AddComponent<HAZEL::MeshRendererComponent>();
+        //m_GunObj.HasComponent<TransformComponent>();
+        //m_GunObj.AddComponent<MeshFilterComponent>(gunModelPath);
+        //m_GunObj.AddComponent<MeshRendererComponent>();
         
         m_Plane = m_ActiveScene->CreateEntity("myPlane");
-        m_Plane.HasComponent<HAZEL::TransformComponent>();
-        m_Plane.AddComponent<HAZEL::MeshFilterComponent>(planeModelPath);
-        m_Plane.AddComponent<HAZEL::MeshRendererComponent>();
+        m_Plane.HasComponent<TransformComponent>();
+        m_Plane.AddComponent<MeshFilterComponent>(planeModelPath);
+        m_Plane.AddComponent<MeshRendererComponent>();
 
         m_Sphere = m_ActiveScene->CreateEntity("mySphere");
-        m_Sphere.HasComponent<HAZEL::TransformComponent>();
-        m_Sphere.AddComponent<HAZEL::MeshFilterComponent>(sphereModelPath);
-        m_Sphere.AddComponent<HAZEL::MeshRendererComponent>();
+        m_Sphere.HasComponent<TransformComponent>();
+        m_Sphere.AddComponent<MeshFilterComponent>(sphereModelPath);
+        m_Sphere.AddComponent<MeshRendererComponent>();
 
         
 
@@ -60,17 +60,17 @@ namespace Hazel
         faces.push_back(std::string("assets/Resources/Skybox/front.dds"));
 
         m_SkyBox = m_ActiveScene->CreateEntity("mySkyBox");
-        m_SkyBox.HasComponent<HAZEL::TransformComponent>();
-        m_SkyBox.AddComponent<HAZEL::MeshFilterComponent>(cubeModelPath);
-        m_SkyBox.AddComponent<HAZEL::MeshRendererComponent>();
-        m_SkyBox.GetComponent<HAZEL::MeshRendererComponent>().material->tex3D = Texture3D::Create(faces, true, false);
+        m_SkyBox.HasComponent<TransformComponent>();
+        m_SkyBox.AddComponent<MeshFilterComponent>(cubeModelPath);
+        m_SkyBox.AddComponent<MeshRendererComponent>();
+        m_SkyBox.GetComponent<MeshRendererComponent>().material->tex3D = Texture3D::Create(faces, true, false);
 
         m_Cube = m_ActiveScene->CreateEntity("myCube");
-        m_Cube.HasComponent<HAZEL::TransformComponent>();
-        m_Cube.AddComponent<HAZEL::MeshFilterComponent>(cubeModelPath);
-        m_Cube.AddComponent<HAZEL::MeshRendererComponent>();
-        //m_Cube.GetComponent<HAZEL::MeshRendererComponent>().material->tex3D = Texture3D::Create(faces, true, false);
-        //HAZEL::MeshRendererComponent& meshRenderer = m_Plane.GetComponent<HAZEL::MeshRendererComponent>();
+        m_Cube.HasComponent<TransformComponent>();
+        m_Cube.AddComponent<MeshFilterComponent>(cubeModelPath);
+        m_Cube.AddComponent<MeshRendererComponent>();
+        //m_Cube.GetComponent<MeshRendererComponent>().material->tex3D = Texture3D::Create(faces, true, false);
+        //MeshRendererComponent& meshRenderer = m_Plane.GetComponent<MeshRendererComponent>();
 	}
 
 	void EditorLayer::OnAttach()
@@ -92,8 +92,8 @@ namespace Hazel
 
         HZ_CORE_INFO("EditorLayer On attach!");
 
-        HAZEL::MeshRendererComponent meshRenderer;
-        //meshRenderer = m_GunObj.GetComponent<HAZEL::MeshRendererComponent>();
+        MeshRendererComponent meshRenderer;
+        //meshRenderer = m_GunObj.GetComponent<MeshRendererComponent>();
         //meshRenderer.material->tex00 = Texture2D::Create("assets/Resources/Models/RivetGun/textures_compressed/diffuse.dds", true, true);
         //meshRenderer.material->tex01 = Texture2D::Create("assets/Resources/Models/RivetGun/textures_compressed/normal.dds", true, true);
         //meshRenderer.material->tex02 = Texture2D::Create("assets/Resources/Models/RivetGun/textures_compressed/ao.dds", true, true);
@@ -101,7 +101,7 @@ namespace Hazel
         //meshRenderer.material->tex04 = Texture2D::Create("assets/Resources/Models/RivetGun/textures_compressed/specular.dds", true, true);
 
 
-        meshRenderer = m_SkyBox.GetComponent<HAZEL::MeshRendererComponent>();
+        meshRenderer = m_SkyBox.GetComponent<MeshRendererComponent>();
 
 #pragma region Diffuse Irradiance
         // onAttach的时候，把irrandianceMap给绑定好
@@ -118,7 +118,7 @@ namespace Hazel
         glm::mat4 enviromentCamProjection = glm::perspective(glm::radians(90.0f), 1.0f, 0.1f, 10.0f);
         m_FrameBuffer->Bind();
         equirectangularToCubemapShader->Bind();
-        m_SkyBox.GetComponent<HAZEL::MeshRendererComponent>().material->tex3D->Bind(0);
+        m_SkyBox.GetComponent<MeshRendererComponent>().material->tex3D->Bind(0);
         for (unsigned int i = 0; i < 6; ++i)
         {
             equirectangularToCubemapShader->SetMat4("u_ViewMatrix", captureViews[i]);
@@ -127,7 +127,7 @@ namespace Hazel
             glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE_2D, 0, 0);
             RendererCommand::Clear();
             HZ_CORE_ASSERT(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE, "Framebuffer is incomplete");
-            HAZEL::MeshFilterComponent& meshFilter = m_SkyBox.GetComponent<HAZEL::MeshFilterComponent>();
+            MeshFilterComponent& meshFilter = m_SkyBox.GetComponent<MeshFilterComponent>();
             meshFilter.mesh->meshData->Bind();
             RendererCommand::DrawIndexed(meshFilter.mesh->meshData);
         }
@@ -202,7 +202,7 @@ namespace Hazel
         //// draw Gun
         //{
         //        // can directly do your job inside view
-        //        HAZEL::MeshRendererComponent& meshRenderer = m_GunObj.GetComponent<HAZEL::MeshRendererComponent>();
+        //        MeshRendererComponent& meshRenderer = m_GunObj.GetComponent<MeshRendererComponent>();
         //        meshRenderer.material->shader = m_PBRTextureShader;
 
         //        meshRenderer.material->shader->Bind();
@@ -234,7 +234,7 @@ namespace Hazel
         //        meshRenderer.material->shader->SetFloat3("u_CameraPos", m_CameraController.GetCamera().GetCamPos());
         //        meshRenderer.material->shader->SetMat4("u_LightSpaceViewProjection", lightSpaceMatrix);
 
-        //        HAZEL::MeshFilterComponent& meshFilter = m_GunObj.GetComponent<HAZEL::MeshFilterComponent>();
+        //        MeshFilterComponent& meshFilter = m_GunObj.GetComponent<MeshFilterComponent>();
         //        meshFilter.mesh->meshData->Bind();
         //        RendererCommand::DrawIndexed(meshFilter.mesh->meshData);
         //}
@@ -243,7 +243,8 @@ namespace Hazel
 
         {
                 // can directly do your job inside view
-                HAZEL::MeshRendererComponent& meshRenderer = m_Plane.GetComponent<HAZEL::MeshRendererComponent>();
+                MeshRendererComponent& meshRenderer = m_Plane.GetComponent<MeshRendererComponent>();
+                TransformComponent& transform = m_Plane.GetComponent<TransformComponent>();
                 meshRenderer.material->shader = m_UnLitShader;
 
                 meshRenderer.material->shader->Bind();
@@ -251,7 +252,7 @@ namespace Hazel
                 meshRenderer.material->shader->SetFloat("u_TilingFactor", 1.0f);
 
 
-                meshRenderer.material->shader->SetMat4("u_ModelMatrix", *(std::make_shared<glm::mat4>(glm::mat4(1.0f))));
+                meshRenderer.material->shader->SetMat4("u_ModelMatrix", transform.Transform);
                 meshRenderer.material->shader->SetMat4("u_ViewProjection", m_CameraController.GetCamera().GetViewProjectionMatrix());
                 meshRenderer.material->shader->SetFloat3("u_CameraPos", m_CameraController.GetCamera().GetCamPos());
 
@@ -259,7 +260,7 @@ namespace Hazel
                 meshRenderer.material->shader->SetInt("u_ShadowMap", 0);
 
                 //meshRenderer.material->shader->SetMat4("u_LightSpaceViewProjection", lightSpaceMatrix);
-                HAZEL::MeshFilterComponent& meshFilter = m_Plane.GetComponent<HAZEL::MeshFilterComponent>();
+                MeshFilterComponent& meshFilter = m_Plane.GetComponent<MeshFilterComponent>();
                 meshFilter.mesh->meshData->Bind();
                 RendererCommand::DrawIndexed(meshFilter.mesh->meshData);
         }
@@ -269,7 +270,7 @@ namespace Hazel
 
         //{
         //        // can directly do your job inside view
-        //        HAZEL::MeshRendererComponent& meshRenderer = m_Cube.GetComponent<HAZEL::MeshRendererComponent>();
+        //        MeshRendererComponent& meshRenderer = m_Cube.GetComponent<MeshRendererComponent>();
         //        meshRenderer.material->shader = m_UnLitShader;
 
         //        meshRenderer.material->shader->Bind();
@@ -286,7 +287,7 @@ namespace Hazel
         //        //meshRenderer.material->shader->SetInt("u_ShadowMap", 0);
 
         //        meshRenderer.material->shader->SetMat4("u_LightSpaceViewProjection", lightSpaceMatrix);
-        //        HAZEL::MeshFilterComponent& meshFilter = m_Cube.GetComponent<HAZEL::MeshFilterComponent>();
+        //        MeshFilterComponent& meshFilter = m_Cube.GetComponent<MeshFilterComponent>();
         //        meshFilter.mesh->meshData->Bind();
         //        RendererCommand::DrawIndexed(meshFilter.mesh->meshData);
         //}
@@ -295,7 +296,8 @@ namespace Hazel
         // draw m_Sphere
 
         {
-            HAZEL::MeshRendererComponent& meshRenderer = m_Sphere.GetComponent<HAZEL::MeshRendererComponent>();
+            MeshRendererComponent& meshRenderer = m_Sphere.GetComponent<MeshRendererComponent>();
+            TransformComponent& transform = m_Sphere.GetComponent<TransformComponent>();
             meshRenderer.material->shader = m_PBRShader;
 
             meshRenderer.material->shader->Bind();
@@ -306,10 +308,10 @@ namespace Hazel
 
 
             //meshRenderer.material->shader->SetMat4("u_ModelMatrix", *(std::make_shared<glm::mat4>(glm::mat4(1.0f))));
-            glm::mat4x4 identity = glm::mat4x4(1.0f);
-            glm::mat4x4 translate = glm::translate(identity, glm::vec3(2.0, 1.0, 2.0));
-            meshRenderer.material->shader->SetMat4("u_ModelMatrix", translate);
-            meshRenderer.material->shader->SetMat3("u_WorldToModelMatrix", glm::transpose(glm::inverse(glm::mat3(translate))));
+            //glm::mat4x4 identity = glm::mat4x4(1.0f);
+            //glm::mat4x4 translate = glm::translate(identity, glm::vec3(2.0, 1.0, 2.0));
+            meshRenderer.material->shader->SetMat4("u_ModelMatrix", transform.Transform);
+            meshRenderer.material->shader->SetMat3("u_WorldToModelMatrix", glm::transpose(glm::inverse(glm::mat3(transform.Transform))));
             meshRenderer.material->shader->SetMat4("u_ViewProjection", m_CameraController.GetCamera().GetViewProjectionMatrix());
             meshRenderer.material->shader->SetFloat3("u_CameraPos", m_CameraController.GetCamera().GetCamPos());
 
@@ -318,7 +320,7 @@ namespace Hazel
             meshRenderer.material->shader->SetInt("u_ShadowMap", 0);
 
             meshRenderer.material->shader->SetMat4("u_LightSpaceViewProjection", lightSpaceMatrix);
-            HAZEL::MeshFilterComponent& meshFilter = m_Sphere.GetComponent<HAZEL::MeshFilterComponent>();
+            MeshFilterComponent& meshFilter = m_Sphere.GetComponent<MeshFilterComponent>();
             meshFilter.mesh->meshData->Bind();
             RendererCommand::DrawIndexed(meshFilter.mesh->meshData);
         }
@@ -329,7 +331,7 @@ namespace Hazel
 
             glDepthFunc(GL_LEQUAL);
             // can directly do your job inside view
-            HAZEL::MeshRendererComponent& meshRenderer = m_SkyBox.GetComponent<HAZEL::MeshRendererComponent>();
+            MeshRendererComponent& meshRenderer = m_SkyBox.GetComponent<MeshRendererComponent>();
             meshRenderer.material->shader = m_SkyboxShader;
 
             meshRenderer.material->shader->Bind();
@@ -350,7 +352,7 @@ namespace Hazel
             meshRenderer.material->shader->SetInt("u_SkyboxTexture", 0);
 
             meshRenderer.material->shader->SetMat4("u_LightSpaceViewProjection", lightSpaceMatrix);
-            HAZEL::MeshFilterComponent& meshFilter = m_SkyBox.GetComponent<HAZEL::MeshFilterComponent>();
+            MeshFilterComponent& meshFilter = m_SkyBox.GetComponent<MeshFilterComponent>();
             meshFilter.mesh->meshData->Bind();
             RendererCommand::DrawIndexed(meshFilter.mesh->meshData);
             glDepthFunc(GL_LESS);
@@ -364,11 +366,11 @@ namespace Hazel
             //model->mesh->Bind();
             
 
-            //auto view_Filter = m_ActiveScene->Reg().view<HAZEL::MeshFilterComponent>();
+            //auto view_Filter = m_ActiveScene->Reg().view<MeshFilterComponent>();
             //for (auto entity : view_Filter)
             //{
             //    // can directly do your job inside view
-            //    HAZEL::MeshFilterComponent& meshFilter = view_Filter.get<HAZEL::MeshFilterComponent>(entity);
+            //    MeshFilterComponent& meshFilter = view_Filter.get<MeshFilterComponent>(entity);
             //    meshFilter.mesh->meshData->Bind();
             //    RendererCommand::DrawIndexed(meshFilter.mesh->meshData);
             //}
