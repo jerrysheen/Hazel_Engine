@@ -18,6 +18,8 @@ namespace Hazel {
 
 	void SceneHierarchyPanel::OnImGuiRender()
 	{
+		ImGui::ShowDemoWindow();
+
 		ImGui::Begin("Scene Hierarchy");
 		m_Context->m_Registry.each([&](auto entityID) 
 		{
@@ -26,10 +28,28 @@ namespace Hazel {
 
 		});
 
+		if (m_isMenuEnablede)
+		{
+			DrawLeftMouseMenu(m_Context);
+		}
+
+
 		if (ImGui::IsMouseDown(0) && ImGui::IsWindowHovered()) 
 		{
 			m_SelectionContext = {};
+
 		}
+		else if (ImGui::IsMouseClicked(1)) 
+		{
+			m_isMenuEnablede = true;
+		}
+		//else if (ImGui::IsMouseClicked(0) && m_MenuItem == MenuItem::NULL_SELECTED)
+		//{
+		//	m_isMenuEnablede = false;
+		//}
+
+
+		
 
 		ImGui::End();
 
@@ -151,6 +171,30 @@ namespace Hazel {
 				DrawVec3Control("Scale", transform.Scale, 1.0f);
 				ImGui::TreePop();
 			}
+		}
+	}
+	void SceneHierarchyPanel::DrawLeftMouseMenu(const Ref<Scene>& context)
+	{
+		ImGui::OpenPopup("MyPopup");
+
+		if (ImGui::BeginPopup("MyPopup")) {
+			if (ImGui::BeginMenu("Create Mesh")) {
+				if (ImGui::MenuItem("Create Cube")) {
+					// 当选项2被点击时的处理逻辑
+					m_MenuItem = MenuItem::MESH_CREATE_NEW_CUBE;
+					m_isMenuEnablede = false;
+
+				}
+				else if (ImGui::MenuItem("Create Sphere"))
+				{
+					m_MenuItem = MenuItem::MESH_CREATE_NEW_SPHERE;
+					m_isMenuEnablede = false;
+				}
+				// 当选项1被点击时的处理逻辑
+				ImGui::EndMenu();
+			}
+			// 添加更多选项...
+			ImGui::EndPopup();
 		}
 	}
 }
