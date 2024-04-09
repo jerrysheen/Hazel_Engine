@@ -150,6 +150,9 @@
     <ClInclude Include="src\Hazel\Renderer\PerspectiveCameraController.h">
       <Filter>src\Hazel\Renderer</Filter>
     </ClInclude>
+    <ClInclude Include="src\Hazel\Renderer\RenderTargetEnum.h">
+      <Filter>src\Hazel\Renderer</Filter>
+    </ClInclude>
     <ClInclude Include="src\Hazel\Renderer\Renderer.h">
       <Filter>src\Hazel\Renderer</Filter>
     </ClInclude>
@@ -174,6 +177,9 @@
     <ClInclude Include="src\Hazel\Scene\Component.h">
       <Filter>src\Hazel\Scene</Filter>
     </ClInclude>
+    <ClInclude Include="src\Hazel\Scene\Entity.h">
+      <Filter>src\Hazel\Scene</Filter>
+    </ClInclude>
     <ClInclude Include="src\Hazel\Scene\Scene.h">
       <Filter>src\Hazel\Scene</Filter>
     </ClInclude>
@@ -196,6 +202,9 @@
       <Filter>src\Platform\OpenGL</Filter>
     </ClInclude>
     <ClInclude Include="src\Platform\OpenGL\OpenGLTexture2D.h">
+      <Filter>src\Platform\OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Platform\OpenGL\OpenGLTexture3D.h">
       <Filter>src\Platform\OpenGL</Filter>
     </ClInclude>
     <ClInclude Include="src\Platform\OpenGL\OpenGLVertexArray.h">
@@ -1455,9 +1464,6 @@
     <ClInclude Include="vendor\stb_image\stb_image.h">
       <Filter>vendor\stb_image</Filter>
     </ClInclude>
-    <ClInclude Include="src\Hazel\Scene\Entity.h" />
-    <ClInclude Include="src\Platform\OpenGL\OpenGLTexture3D.h" />
-    <ClInclude Include="src\Hazel\Renderer\RenderTargetEnum.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Hazel\Core\Application.cpp">
@@ -1505,6 +1511,9 @@
     <ClCompile Include="src\Hazel\Renderer\PerspectiveCameraController.cpp">
       <Filter>src\Hazel\Renderer</Filter>
     </ClCompile>
+    <ClCompile Include="src\Hazel\Renderer\RenderTargetEnum.cpp">
+      <Filter>src\Hazel\Renderer</Filter>
+    </ClCompile>
     <ClCompile Include="src\Hazel\Renderer\Renderer.cpp">
       <Filter>src\Hazel\Renderer</Filter>
     </ClCompile>
@@ -1525,6 +1534,9 @@
     </ClCompile>
     <ClCompile Include="src\Hazel\Renderer\VertexArray.cpp">
       <Filter>src\Hazel\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Hazel\Scene\Entity.cpp">
+      <Filter>src\Hazel\Scene</Filter>
     </ClCompile>
     <ClCompile Include="src\Hazel\Scene\Scene.cpp">
       <Filter>src\Hazel\Scene</Filter>
@@ -1550,6 +1562,9 @@
     <ClCompile Include="src\Platform\OpenGL\OpenGLTexture2D.cpp">
       <Filter>src\Platform\OpenGL</Filter>
     </ClCompile>
+    <ClCompile Include="src\Platform\OpenGL\OpenGLTexture3D.cpp">
+      <Filter>src\Platform\OpenGL</Filter>
+    </ClCompile>
     <ClCompile Include="src\Platform\OpenGL\OpenGLVertexArray.cpp">
       <Filter>src\Platform\OpenGL</Filter>
     </ClCompile>
@@ -1565,8 +1580,5 @@
     <ClCompile Include="vendor\stb_image\stb_image.cpp">
       <Filter>vendor\stb_image</Filter>
     </ClCompile>
-    <ClCompile Include="src\Hazel\Scene\Entity.cpp" />
-    <ClCompile Include="src\Platform\OpenGL\OpenGLTexture3D.cpp" />
-    <ClCompile Include="src\Hazel\Renderer\RenderTargetEnum.cpp" />
   </ItemGroup>
 </Project>
