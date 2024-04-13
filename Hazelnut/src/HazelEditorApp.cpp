@@ -17,7 +17,7 @@ namespace Hazel
 		{
 			// ExapleLayer helps us to see the effect imediately.
 			// PushLayer(new ExampleLayer());
-			PushLayer(new EditorLayer(GetWindow()));
+			//PushLayer(new EditorLayer(GetWindow()));
 
 		}
 		~Hazelnut() {

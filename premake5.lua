@@ -41,7 +41,8 @@ project "Hazel"
 
 	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
 	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
-
+	-- defines { "RENDER_API_OPENGL", "TRACE" }
+	defines { "RENDER_API_DIRECTX12", "TRACE" }
 	pchheader "hzpch.h"
 	pchsource "Hazel/src/hzpch.cpp"
 

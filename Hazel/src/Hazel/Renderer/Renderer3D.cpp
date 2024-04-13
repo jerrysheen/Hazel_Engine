@@ -16,9 +16,6 @@ namespace Hazel {
 	void Renderer3D::Init()
 	{
 		
-		s_ObjData = new std::vector<Renderer3D::Renderer3DStorage*>();
-		s_Data = new Renderer3DStorage();
-		RenderGround();
 	}
 	void Renderer3D::Shutdown()
 	{

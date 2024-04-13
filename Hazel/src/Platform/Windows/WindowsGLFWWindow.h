@@ -7,11 +7,11 @@
 
 namespace Hazel {
 
-	class WindowsWindow : public Window
+	class WindowsGLFWWindow : public Window
 	{
 	public:
-		WindowsWindow(const WindowProps& props);
-		virtual ~WindowsWindow();
+		WindowsGLFWWindow(const WindowProps& props);
+		virtual ~WindowsGLFWWindow();
 
 		void OnUpdate() override;
 
@@ -20,6 +20,7 @@ namespace Hazel {
 
 		// Window attributes
 		inline void SetEventCallback(const EventCallbackFn& callback) override { m_Data.EventCallback = callback; }
+		void SetBackGroundColor()  override;
 		void SetVSync(bool enabled) override;
 		bool IsVSync() const override;
 

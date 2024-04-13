@@ -4,6 +4,7 @@
 
 #include "Hazel/Core/Core.h"
 #include "Hazel/Events/Event.h"
+#include "Hazel/Renderer/Renderer.h"
 
 namespace Hazel {
 
@@ -39,6 +40,7 @@ namespace Hazel {
 		// Window attributes
 		virtual void SetEventCallback(const EventCallbackFn& callback) = 0;
 		virtual void SetVSync(bool enabled) = 0;
+		virtual void SetBackGroundColor() = 0;
 		virtual bool IsVSync() const = 0;
 
 		virtual void* GetNativeWindow() const = 0;

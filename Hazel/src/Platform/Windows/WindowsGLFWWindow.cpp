@@ -1,12 +1,12 @@
 #include "hzpch.h"
-#include "WindowsWindow.h"
+#include "WindowsGLFWWindow.h"
 #include "Hazel/Core/Log.h"
 #include "Hazel/Events/ApplicationEvent.h"
 #include "Hazel/Events/MouseEvent.h"
 #include "Hazel/Events/Event.h"
 #include "Hazel/Events/KeyEvent.h"
 #include "Platform/OpenGL/OpenGLContext.h"
-
+#include <glad/glad.h>
 
 namespace Hazel {
 
@@ -15,22 +15,18 @@ namespace Hazel {
 	{
 		HZ_CORE_ERROR("GLFW Error ({0}) : {1}", error, description);
 	}
-	Window* Window::Create(const WindowProps& props)
-	{
-		return new WindowsWindow(props);
-	}
 
-	WindowsWindow::WindowsWindow(const WindowProps& props)
+	WindowsGLFWWindow::WindowsGLFWWindow(const WindowProps& props)
 	{
 		Init(props);
 	}
 
-	WindowsWindow::~WindowsWindow()
+	WindowsGLFWWindow::~WindowsGLFWWindow()
 	{
 		Shutdown();
 	}
 
-	void WindowsWindow::Init(const WindowProps& props)
+	void WindowsGLFWWindow::Init(const WindowProps& props)
 	{
 		m_Data.Title = props.Title;
 		m_Data.Width = props.Width;
@@ -66,7 +62,6 @@ namespace Hazel {
 		// 指派现在的WindowProps给m_Window这个窗口
 		glfwSetWindowUserPointer(m_Window, &m_Data);
 		SetVSync(true);
-
 		// Set GLFW callbacks
 		glfwSetWindowSizeCallback(m_Window, [](GLFWwindow* window, int width, int height)
 		{
@@ -155,18 +150,20 @@ namespace Hazel {
 			});
 	}
 
-	void WindowsWindow::Shutdown()
+	void WindowsGLFWWindow::Shutdown()
 	{
 		glfwDestroyWindow(m_Window);
 	}
 
-	void WindowsWindow::OnUpdate()
+	void WindowsGLFWWindow::OnUpdate()
 	{
 		glfwPollEvents();
 		m_Context->SwapBuffers();
 	}
 
-	void WindowsWindow::SetVSync(bool enabled)
+
+
+	void WindowsGLFWWindow::SetVSync(bool enabled)
 	{
 		if (enabled)
 			glfwSwapInterval(1);
@@ -176,9 +173,19 @@ namespace Hazel {
 		m_Data.VSync = enabled;
 	}
 
-	bool WindowsWindow::IsVSync() const
+	bool WindowsGLFWWindow::IsVSync() const
 	{
 		return m_Data.VSync;
+	}
+		
+	void WindowsGLFWWindow::SetBackGroundColor()
+	{
+		// 切换一次Swapbuffer, 不然只设置一次，会导致颜色闪烁。
+		glClearColor(0.15f, 0.15f, 0.15f, 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT);
+		m_Context->SwapBuffers();
+		glClearColor(0.15f, 0.15f, 0.15f, 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT);
 	}
 
 };

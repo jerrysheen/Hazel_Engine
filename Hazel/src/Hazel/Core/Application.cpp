@@ -25,7 +25,7 @@ namespace Hazel{
 		m_Window->SetEventCallback(BIND_EVENT_FN(OnEvent));
 
 		Renderer::Init();
-
+		m_Window->SetBackGroundColor();
 		m_ImGuiLayer = new ImGuiLayer();
 		PushOverlay(m_ImGuiLayer);
 
