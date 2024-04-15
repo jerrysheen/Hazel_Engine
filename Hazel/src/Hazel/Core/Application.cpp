@@ -25,8 +25,8 @@ namespace Hazel{
 
 		Renderer::Init();
 		m_Window->SetBackGroundColor();
-		m_ImGuiLayer = new ImGuiLayer();
-		PushOverlay(m_ImGuiLayer);
+		//m_ImGuiLayer = new ImGuiLayer();
+		//PushOverlay(m_ImGuiLayer);
 	}
 
 	Application::~Application()
@@ -82,12 +82,12 @@ namespace Hazel{
 					layer->OnUpdate(timestep);
 			}
 			// 每一层上如果有ImGui层，就渲染？
-			m_ImGuiLayer->Begin();
-			for (Layer* layer : m_LayerStack)
-				layer->OnImGuiRender();
-			m_ImGuiLayer->End();
+			//m_ImGuiLayer->Begin();
+			//for (Layer* layer : m_LayerStack)
+			//	layer->OnImGuiRender();
+			//m_ImGuiLayer->End();
 
-			m_Window->OnUpdate();
+			//m_Window->OnUpdate();
 		};
 	}
 

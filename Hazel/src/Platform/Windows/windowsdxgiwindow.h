@@ -30,6 +30,8 @@ namespace Hazel {
 	private:
 		virtual void Init(const WindowProps& props);
 		virtual void Shutdown();
+		
+		void InitDirect3D();
 	protected:
 		HINSTANCE mhAppInst = nullptr;
 		HWND      mhMainWnd = nullptr;
