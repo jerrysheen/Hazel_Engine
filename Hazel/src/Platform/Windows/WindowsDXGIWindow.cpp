@@ -2,9 +2,9 @@
 #include "WindowsDXGIWindow.h"
 #include "Hazel/Core/Application.h"
 
-#include <WindowsX.h>
-#include <wrl/client.h>
-#include <d3d12.h>
+#include "Platform/D3D12/d3dUtil.h"
+#include "Platform/D3D12/d3dx12.h"
+
 using Microsoft::WRL::ComPtr;
 using namespace std;
 using namespace DirectX;
