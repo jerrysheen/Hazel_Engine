@@ -1473,6 +1473,15 @@
     <ClInclude Include="vendor\stb_image\stb_image.h">
       <Filter>vendor\stb_image</Filter>
     </ClInclude>
+    <ClInclude Include="src\Platform\D3D12\d3dUtil.h">
+      <Filter>src\Platform\D3D12</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Platform\D3D12\d3dx12.h">
+      <Filter>src\Platform\D3D12</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Platform\D3D12\MathHelper.h">
+      <Filter>src\Platform\D3D12</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Hazel\Core\Application.cpp">
@@ -1597,6 +1606,12 @@
     </ClCompile>
     <ClCompile Include="vendor\stb_image\stb_image.cpp">
       <Filter>vendor\stb_image</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Platform\D3D12\d3dUtil.cpp">
+      <Filter>src\Platform\D3D12</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Platform\D3D12\MathHelper.cpp">
+      <Filter>src\Platform\D3D12</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

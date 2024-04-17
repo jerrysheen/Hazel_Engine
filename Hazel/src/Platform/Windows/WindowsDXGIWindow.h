@@ -11,11 +11,11 @@
 #pragma comment(lib,"d3dcompiler.lib")
 #pragma comment(lib, "D3D12.lib")
 #pragma comment(lib, "dxgi.lib")
+
+#include <WindowsX.h>
 using Microsoft::WRL::ComPtr;
 using namespace std;
 using namespace DirectX;
-#include <WindowsX.h>
-
 namespace Hazel {
 
 	class WindowsDXGIWindow : public Window
