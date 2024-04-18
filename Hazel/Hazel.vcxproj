@@ -196,7 +196,7 @@
     <ClInclude Include="src\Platform\OpenGL\OpenGLTexture3D.h" />
     <ClInclude Include="src\Platform\OpenGL\OpenGLVertexArray.h" />
     <ClInclude Include="src\Platform\Windows\WindowsGLFWWindow.h" />
-    <ClInclude Include="src\Platform\Windows\windowsdxgiwindow.h" />
+    <ClInclude Include="src\Platform\Windows\WindowsDXGIWindow.h" />
     <ClInclude Include="src\hzpch.h" />
     <ClInclude Include="vendor\glm\glm\common.hpp" />
     <ClInclude Include="vendor\glm\glm\detail\_features.hpp" />

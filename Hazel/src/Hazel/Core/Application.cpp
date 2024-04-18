@@ -21,7 +21,7 @@ namespace Hazel{
 		WindowProps props;
 		props.Title = title;
 		m_Window = std::unique_ptr<Window>(Window::Create(props));
-		m_Window->SetEventCallback(BIND_EVENT_FN(OnEvent));
+		//m_Window->SetEventCallback(BIND_EVENT_FN(OnEvent));
 
 		Renderer::Init();
 		m_Window->SetBackGroundColor();
@@ -72,15 +72,16 @@ namespace Hazel{
 
 		while (m_Running) 
 		{
-			float time = (float)glfwGetTime();		// platform gettime();
-			Timestep timestep = time - m_LastFrameTime;
-			m_LastFrameTime = time;
+			m_Window->OnUpdate();
+			//float time = (float)glfwGetTime();		// platform gettime();
+			//Timestep timestep = time - m_LastFrameTime;
+			//m_LastFrameTime = time;
 
-			if (!m_Minimized) 
-			{
-				for (Layer* layer : m_LayerStack)
-					layer->OnUpdate(timestep);
-			}
+			//if (!m_Minimized) 
+			//{
+			//	for (Layer* layer : m_LayerStack)
+			//		layer->OnUpdate(timestep);
+			//}
 			// 每一层上如果有ImGui层，就渲染？
 			//m_ImGuiLayer->Begin();
 			//for (Layer* layer : m_LayerStack)

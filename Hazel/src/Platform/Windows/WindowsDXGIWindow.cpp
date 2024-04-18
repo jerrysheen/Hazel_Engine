@@ -14,6 +14,7 @@ namespace Hazel
 
 		// Do the initial resize code.
 		OnResize();
+
 	}
 
 	WindowsDXGIWindow::~WindowsDXGIWindow()
@@ -24,6 +25,100 @@ namespace Hazel
 
 	void WindowsDXGIWindow::OnUpdate()
 	{
+		MSG msg = {0};
+ 
+	//mTimer.Reset();
+
+	while(msg.message != WM_QUIT)
+	{
+		// If there are Window messages then process them.
+		if(PeekMessage( &msg, 0, 0, 0, PM_REMOVE ))
+		{
+            TranslateMessage( &msg );
+            DispatchMessage( &msg );
+		}
+		// Otherwise, do animation/game stuff.
+		else
+        {	
+			//mTimer.Tick();
+
+			if( !mAppPaused )
+			{
+				//CalculateFrameStats();
+				//Update(mTimer);	
+				Draw();
+			}
+			else
+			{
+				Sleep(100);
+			}
+        }
+    }
+		
+	}
+
+	void WindowsDXGIWindow::Draw()
+	{
+		// Reuse the memory associated with command recording.
+		// We can only reset when the associated command lists have finished execution on the GPU.
+		ThrowIfFailed(mDirectCmdListAlloc->Reset());
+
+		// A command list can be reset after it has been added to the command queue via ExecuteCommandList.
+		// Reusing the command list reuses memory.
+		ThrowIfFailed(mCommandList->Reset(mDirectCmdListAlloc.Get(), nullptr));
+
+		// Indicate a state transition on the resource usage.
+		mCommandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(CurrentBackBuffer(),
+			D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET));
+
+		// Set the viewport and scissor rect.  This needs to be reset whenever the command list is reset.
+		mCommandList->RSSetViewports(1, &mScreenViewport);
+		mCommandList->RSSetScissorRects(1, &mScissorRect);
+
+		// Clear the back buffer and depth buffer.
+		mCommandList->ClearRenderTargetView(CurrentBackBufferView(), Colors::LightSteelBlue, 0, nullptr);
+		mCommandList->ClearDepthStencilView(DepthStencilView(), D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
+
+		// Specify the buffers we are going to render to.
+		mCommandList->OMSetRenderTargets(1, &CurrentBackBufferView(), true, &DepthStencilView());
+
+		// Indicate a state transition on the resource usage.
+		mCommandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(CurrentBackBuffer(),
+			D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT));
+
+		// Done recording commands.
+		ThrowIfFailed(mCommandList->Close());
+
+		// Add the command list to the queue for execution.
+		ID3D12CommandList* cmdsLists[] = { mCommandList.Get() };
+		mCommandQueue->ExecuteCommandLists(_countof(cmdsLists), cmdsLists);
+
+		// swap the back and front buffers
+		ThrowIfFailed(mSwapChain->Present(0, 0));
+		mCurrBackBuffer = (mCurrBackBuffer + 1) % SwapChainBufferCount;
+
+		// Wait until frame commands are complete.  This waiting is inefficient and is
+		// done for simplicity.  Later we will show how to organize our rendering code
+		// so we do not have to wait per frame.
+		FlushCommandQueue();
+	}
+
+	ID3D12Resource* WindowsDXGIWindow::CurrentBackBuffer()const
+	{
+		return mSwapChainBuffer[mCurrBackBuffer].Get();
+	}
+
+	D3D12_CPU_DESCRIPTOR_HANDLE WindowsDXGIWindow::CurrentBackBufferView()const
+	{
+		return CD3DX12_CPU_DESCRIPTOR_HANDLE(
+			mRtvHeap->GetCPUDescriptorHandleForHeapStart(),
+			mCurrBackBuffer,
+			mRtvDescriptorSize);
+	}
+
+	D3D12_CPU_DESCRIPTOR_HANDLE WindowsDXGIWindow::DepthStencilView()const
+	{
+		return mDsvHeap->GetCPUDescriptorHandleForHeapStart();
 	}
 
 	static LRESULT CALLBACK
@@ -43,6 +138,7 @@ namespace Hazel
 	{
 		mMainWndCaption = L"D3DApp";
 		WNDCLASS wc;
+
 		wc.style = CS_HREDRAW | CS_VREDRAW;
 		wc.lpfnWndProc = MainWndProc;
 		wc.cbClsExtra = 0;
@@ -222,8 +318,17 @@ namespace Hazel
 
 	LRESULT WindowsDXGIWindow::MsgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	{
+		HZ_CORE_INFO("WindowsDXGIWindow::MsgProc");
+		HZ_CORE_INFO("msg: {0}", msg);
+
 		switch (msg)
 		{
+		//case WM_PAINT:
+		//	PAINTSTRUCT ps;
+		//	HDC hdc = BeginPaint(hwnd, &ps);
+		//	// 在这里使用 hdc 进行绘制
+		//	EndPaint(hwnd, &ps);
+		//	return 0;
 			// WM_ACTIVATE is sent when the window is activated or deactivated.  
 			// We pause the game when the window is deactivated and unpause it 
 			// when it becomes active.  
@@ -258,7 +363,7 @@ namespace Hazel
 					mAppPaused = false;
 					mMinimized = false;
 					mMaximized = true;
-					//OnResize();
+					OnResize();
 				}
 				else if (wParam == SIZE_RESTORED)
 				{
@@ -268,7 +373,7 @@ namespace Hazel
 					{
 						mAppPaused = false;
 						mMinimized = false;
-						//OnResize();
+						OnResize();
 					}
 
 					// Restoring from maximized state?
@@ -276,7 +381,7 @@ namespace Hazel
 					{
 						mAppPaused = false;
 						mMaximized = false;
-						//OnResize();
+						OnResize();
 					}
 					else if (mResizing)
 					{
@@ -291,7 +396,7 @@ namespace Hazel
 					}
 					else // API call such as SetWindowPos or mSwapChain->SetFullscreenState.
 					{
-						//OnResize();
+						OnResize();
 					}
 				}
 			}
@@ -310,7 +415,7 @@ namespace Hazel
 			mAppPaused = false;
 			mResizing = false;
 			//mTimer.Start();
-			//OnResize();
+			OnResize();
 			return 0;
 
 			// WM_DESTROY is sent when the window is being destroyed.
@@ -353,8 +458,6 @@ namespace Hazel
 
 			return 0;
 		}
-
-		return DefWindowProc(hwnd, msg, wParam, lParam);
 	}
 
 	void  WindowsDXGIWindow::InitDirect3D()
@@ -524,9 +627,50 @@ namespace Hazel
 
 	void WindowsDXGIWindow::CreateSwapChain()
 	{
+		// Release the previous swapchain we will be recreating.
+		mSwapChain.Reset();
+
+		DXGI_SWAP_CHAIN_DESC sd;
+		sd.BufferDesc.Width = mClientWidth;
+		sd.BufferDesc.Height = mClientHeight;
+		sd.BufferDesc.RefreshRate.Numerator = 60;
+		sd.BufferDesc.RefreshRate.Denominator = 1;
+		sd.BufferDesc.Format = mBackBufferFormat;
+		sd.BufferDesc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
+		sd.BufferDesc.Scaling = DXGI_MODE_SCALING_UNSPECIFIED;
+		sd.SampleDesc.Count = m4xMsaaState ? 4 : 1;
+		sd.SampleDesc.Quality = m4xMsaaState ? (m4xMsaaQuality - 1) : 0;
+		sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
+		sd.BufferCount = SwapChainBufferCount;
+		sd.OutputWindow = mhMainWnd;
+		sd.Windowed = true;
+		sd.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
+		sd.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
+
+		// Note: Swap chain uses queue to perform flush.
+		ThrowIfFailed(mdxgiFactory->CreateSwapChain(
+			mCommandQueue.Get(),
+			&sd,
+			mSwapChain.GetAddressOf()));
 	}
 
 	void WindowsDXGIWindow::CreateRtvAndDsvDescriptorHeaps()
 	{
+		D3D12_DESCRIPTOR_HEAP_DESC rtvHeapDesc;
+		rtvHeapDesc.NumDescriptors = SwapChainBufferCount;
+		rtvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
+		rtvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
+		rtvHeapDesc.NodeMask = 0;
+		ThrowIfFailed(md3dDevice->CreateDescriptorHeap(
+			&rtvHeapDesc, IID_PPV_ARGS(mRtvHeap.GetAddressOf())));
+
+
+		D3D12_DESCRIPTOR_HEAP_DESC dsvHeapDesc;
+		dsvHeapDesc.NumDescriptors = 1;
+		dsvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_DSV;
+		dsvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
+		dsvHeapDesc.NodeMask = 0;
+		ThrowIfFailed(md3dDevice->CreateDescriptorHeap(
+			&dsvHeapDesc, IID_PPV_ARGS(mDsvHeap.GetAddressOf())));
 	}
 }

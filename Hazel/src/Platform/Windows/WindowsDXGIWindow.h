@@ -48,6 +48,7 @@ namespace Hazel {
 		void CreateSwapChain();
 		void CreateRtvAndDsvDescriptorHeaps();
 		void FlushCommandQueue();
+		void Draw();
 
 		void OnResize();
 
@@ -57,6 +58,9 @@ namespace Hazel {
 
 
 	protected:
+		ID3D12Resource* CurrentBackBuffer()const;
+		D3D12_CPU_DESCRIPTOR_HANDLE CurrentBackBufferView()const;
+		D3D12_CPU_DESCRIPTOR_HANDLE DepthStencilView()const;
 
 		HINSTANCE mhAppInst = nullptr; // application instance handle
 		HWND      mhMainWnd = nullptr; // main window handle

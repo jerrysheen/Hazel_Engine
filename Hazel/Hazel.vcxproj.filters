@@ -219,7 +219,7 @@
     <ClInclude Include="src\Platform\Windows\WindowsGLFWWindow.h">
       <Filter>src\Platform\Windows</Filter>
     </ClInclude>
-    <ClInclude Include="src\Platform\Windows\windowsdxgiwindow.h">
+    <ClInclude Include="src\Platform\Windows\WindowsDXGIWindow.h">
       <Filter>src\Platform\Windows</Filter>
     </ClInclude>
     <ClInclude Include="src\hzpch.h">
