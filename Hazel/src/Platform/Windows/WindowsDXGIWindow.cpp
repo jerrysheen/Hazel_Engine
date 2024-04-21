@@ -323,15 +323,14 @@ namespace Hazel
 
 		switch (msg)
 		{
-		//case WM_PAINT:
-		//	PAINTSTRUCT ps;
-		//	HDC hdc = BeginPaint(hwnd, &ps);
-		//	// 在这里使用 hdc 进行绘制
-		//	EndPaint(hwnd, &ps);
-		//	return 0;
-			// WM_ACTIVATE is sent when the window is activated or deactivated.  
-			// We pause the game when the window is deactivated and unpause it 
-			// when it becomes active.  
+		case WM_PAINT:
+		{
+			PAINTSTRUCT ps;
+			HDC hdc = BeginPaint(hwnd, &ps);
+			// 这里通常你不需要进行任何GDI绘制，因为你使用的是D3D12
+			EndPaint(hwnd, &ps);
+			return 0;
+		}
 		case WM_ACTIVATE:
 			if (LOWORD(wParam) == WA_INACTIVE)
 			{
@@ -458,6 +457,7 @@ namespace Hazel
 
 			return 0;
 		}
+		return DefWindowProc(hwnd, msg, wParam, lParam);
 	}
 
 	void  WindowsDXGIWindow::InitDirect3D()
