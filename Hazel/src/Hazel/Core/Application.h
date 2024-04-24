@@ -35,6 +35,7 @@ namespace Hazel
 	private:
 		bool OnWindowClose(WindowCloseEvent& e);
 		bool OnWindowResize(WindowResizeEvent& e);
+		bool OnMouseButtonPressed(MouseButtonPressedEvent& e);
 	private:
 		std::unique_ptr<Window> m_Window;
 		ImGuiLayer* m_ImGuiLayer;

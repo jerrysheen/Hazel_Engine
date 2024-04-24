@@ -21,7 +21,7 @@ namespace Hazel{
 		WindowProps props;
 		props.Title = title;
 		m_Window = std::unique_ptr<Window>(Window::Create(props));
-		//m_Window->SetEventCallback(BIND_EVENT_FN(OnEvent));
+		m_Window->SetEventCallback(BIND_EVENT_FN(OnEvent));
 
 		Renderer::Init();
 		m_Window->SetBackGroundColor();
@@ -57,6 +57,7 @@ namespace Hazel{
 		EventDispatcher dispatcher(e);
 		dispatcher.Dispatch<WindowCloseEvent>(BIND_EVENT_FN(OnWindowClose));
 		dispatcher.Dispatch<WindowResizeEvent>(BIND_EVENT_FN(OnWindowResize));
+		dispatcher.Dispatch<MouseButtonPressedEvent>(BIND_EVENT_FN(OnMouseButtonPressed));
 		//HZ_CORE_INFO("{0}", e);
 
 		for (auto it = m_LayerStack.end(); it != m_LayerStack.begin(); )
@@ -95,6 +96,12 @@ namespace Hazel{
 	bool Application::OnWindowClose(WindowCloseEvent& e) 
 	{
 		m_Running = false;
+		return true;
+	}
+
+	bool Application::OnMouseButtonPressed(MouseButtonPressedEvent& e)
+	{
+		HZ_CORE_INFO("RBUTTTONDOWN event Catch!");
 		return true;
 	}
 

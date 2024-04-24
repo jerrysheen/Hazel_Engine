@@ -318,8 +318,8 @@ namespace Hazel
 
 	LRESULT WindowsDXGIWindow::MsgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	{
-		HZ_CORE_INFO("WindowsDXGIWindow::MsgProc");
-		HZ_CORE_INFO("msg: {0}", msg);
+		//HZ_CORE_INFO("WindowsDXGIWindow::MsgProc");
+		//HZ_CORE_INFO("msg: {0}", msg);
 
 		switch (msg)
 		{
@@ -435,12 +435,21 @@ namespace Hazel
 			return 0;
 
 		case WM_LBUTTONDOWN:
-		case WM_MBUTTONDOWN:
-		case WM_RBUTTONDOWN:
-			//OnMouseDown(wParam, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
 			return 0;
+		case WM_MBUTTONDOWN:
+			return 0;
+		case WM_RBUTTONDOWN: 
+		{
+			HZ_CORE_INFO("RBUTTTONDOWN event received..");
+
+			MouseButtonPressedEvent event(0);
+			m_Data.EventCallback(event);
+			return 0;
+		}
 		case WM_LBUTTONUP:
+			return 0;
 		case WM_MBUTTONUP:
+			return 0;
 		case WM_RBUTTONUP:
 			//OnMouseUp(wParam, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
 			return 0;
