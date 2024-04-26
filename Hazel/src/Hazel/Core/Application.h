@@ -5,6 +5,7 @@
 #include "Hazel/Events/ApplicationEvent.h"
 
 #include "Window.h"
+#include "Hazel/Graphics/RenderAPIManager.h"
 #include "Hazel/Core/LayerStack.h"
 
 #include "Hazel/ImGui/ImGuiLayer.h"
@@ -37,7 +38,8 @@ namespace Hazel
 		bool OnWindowResize(WindowResizeEvent& e);
 		bool OnMouseButtonPressed(MouseButtonPressedEvent& e);
 	private:
-		std::unique_ptr<Window> m_Window;
+		Scope<Window> m_Window;
+		Scope<RenderAPIManager> m_RenderAPIManager;
 		ImGuiLayer* m_ImGuiLayer;
 		bool m_Running = true;
 		bool m_Minimized = false;

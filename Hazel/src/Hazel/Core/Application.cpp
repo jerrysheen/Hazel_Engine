@@ -20,10 +20,12 @@ namespace Hazel{
 		s_Instance = this;
 		WindowProps props;
 		props.Title = title;
-		m_Window = std::unique_ptr<Window>(Window::Create(props));
+		m_Window = Scope<Window>(Window::Create(props));
+		m_RenderAPIManager = Scope<RenderAPIManager>(RenderAPIManager::Create());
 		m_Window->SetEventCallback(BIND_EVENT_FN(OnEvent));
+		
 
-		Renderer::Init();
+		//Renderer::Init();
 		m_Window->SetBackGroundColor();
 		//m_ImGuiLayer = new ImGuiLayer();
 		//PushOverlay(m_ImGuiLayer);
@@ -113,7 +115,8 @@ namespace Hazel{
 			return false;
 		}
 		m_Minimized = false;
-		Renderer::OnWindowResize(e.GetWidth(), e.GetHeight());
+		//Renderer::OnWindowResize(e.GetWidth(), e.GetHeight());
+		// todo: renderAPIµÄwindow resize
 		// since we want all other layout know this event;
 		return false;
 	}
