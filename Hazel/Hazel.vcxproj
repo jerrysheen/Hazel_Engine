@@ -160,6 +160,7 @@
     <ClInclude Include="src\Hazel\Events\Event.h" />
     <ClInclude Include="src\Hazel\Events\KeyEvent.h" />
     <ClInclude Include="src\Hazel\Events\MouseEvent.h" />
+    <ClInclude Include="src\Hazel\Graphics\RenderAPIManager.h" />
     <ClInclude Include="src\Hazel\ImGui\ImGuiLayer.h" />
     <ClInclude Include="src\Hazel\Model\Material.h" />
     <ClInclude Include="src\Hazel\Model\Mesh.h" />
@@ -174,7 +175,7 @@
     <ClInclude Include="src\Hazel\Renderer\RenderTargetEnum.h" />
     <ClInclude Include="src\Hazel\Renderer\Renderer.h" />
     <ClInclude Include="src\Hazel\Renderer\Renderer3D.h" />
-    <ClInclude Include="src\Hazel\Renderer\RendererAPI.h" />
+    <ClInclude Include="src\Hazel\Graphics\RenderAPI.h" />
     <ClInclude Include="src\Hazel\Renderer\RendererCommand.h" />
     <ClInclude Include="src\Hazel\Renderer\Shader.h" />
     <ClInclude Include="src\Hazel\Renderer\Texture.h" />
@@ -183,14 +184,14 @@
     <ClInclude Include="src\Hazel\Scene\Entity.h" />
     <ClInclude Include="src\Hazel\Scene\Scene.h" />
     <ClInclude Include="src\Hazel\Utility\Random.h" />
-    <ClInclude Include="src\Platform\D3D12\D3D12RendererAPI.h" />
+    <ClInclude Include="src\Platform\D3D12\D3D12RenderAPI.h" />
     <ClInclude Include="src\Platform\D3D12\d3dUtil.h" />
     <ClInclude Include="src\Platform\D3D12\d3dx12.h" />
     <ClInclude Include="src\Platform\D3D12\MathHelper.h" />
     <ClInclude Include="src\Platform\OpenGL\OpenGLBuffer.h" />
     <ClInclude Include="src\Platform\OpenGL\OpenGLContext.h" />
     <ClInclude Include="src\Platform\OpenGL\OpenGLFramebuffer.h" />
-    <ClInclude Include="src\Platform\OpenGL\OpenGLRendererAPI.h" />
+    <ClInclude Include="src\Platform\OpenGL\OpenGLRenderAPI.h" />
     <ClInclude Include="src\Platform\OpenGL\OpenGLShader.h" />
     <ClInclude Include="src\Platform\OpenGL\OpenGLTexture2D.h" />
     <ClInclude Include="src\Platform\OpenGL\OpenGLTexture3D.h" />
@@ -620,6 +621,7 @@
     <ClCompile Include="src\Hazel\Core\Layer.cpp" />
     <ClCompile Include="src\Hazel\Core\LayerStack.cpp" />
     <ClCompile Include="src\Hazel\Core\Log.cpp" />
+    <ClCompile Include="src\Hazel\Graphics\RenderAPIManager.cpp" />
     <ClCompile Include="src\Hazel\ImGui\ImGuiBuild.cpp" />
     <ClCompile Include="src\Hazel\ImGui\ImGuiLayer.cpp" />
     <ClCompile Include="src\Hazel\Model\Material.cpp" />
@@ -634,7 +636,7 @@
     <ClCompile Include="src\Hazel\Renderer\RenderTargetEnum.cpp" />
     <ClCompile Include="src\Hazel\Renderer\Renderer.cpp" />
     <ClCompile Include="src\Hazel\Renderer\Renderer3D.cpp" />
-    <ClCompile Include="src\Hazel\Renderer\RendererAPI.cpp" />
+    <ClCompile Include="src\Hazel\Graphics\RenderAPI.cpp" />
     <ClCompile Include="src\Hazel\Renderer\RendererCommand.cpp" />
     <ClCompile Include="src\Hazel\Renderer\Shader.cpp" />
     <ClCompile Include="src\Hazel\Renderer\Texture.cpp" />
@@ -642,13 +644,13 @@
     <ClCompile Include="src\Hazel\Scene\Entity.cpp" />
     <ClCompile Include="src\Hazel\Scene\Scene.cpp" />
     <ClCompile Include="src\Hazel\Utility\Random.cpp" />
-    <ClCompile Include="src\Platform\D3D12\D3D12RendererAPI.cpp" />
+    <ClCompile Include="src\Platform\D3D12\D3D12RenderAPI.cpp" />
     <ClCompile Include="src\Platform\D3D12\d3dUtil.cpp" />
     <ClCompile Include="src\Platform\D3D12\MathHelper.cpp" />
     <ClCompile Include="src\Platform\OpenGL\OpenGLBuffer.cpp" />
     <ClCompile Include="src\Platform\OpenGL\OpenGLContext.cpp" />
     <ClCompile Include="src\Platform\OpenGL\OpenGLFramebuffer.cpp" />
-    <ClCompile Include="src\Platform\OpenGL\OpenGLRendererAPI.cpp" />
+    <ClCompile Include="src\Platform\OpenGL\OpenGLRenderAPI.cpp" />
     <ClCompile Include="src\Platform\OpenGL\OpenGLShader.cpp" />
     <ClCompile Include="src\Platform\OpenGL\OpenGLTexture2D.cpp" />
     <ClCompile Include="src\Platform\OpenGL\OpenGLTexture3D.cpp" />

@@ -2,11 +2,11 @@
 
 #include <glm/glm.hpp>
 
-#include "VertexArray.h"
+#include "Hazel/Renderer/VertexArray.h"
 
 namespace Hazel {
 	
-	class RendererAPI
+	class RenderAPI
 	{
 	public:
 		enum class API

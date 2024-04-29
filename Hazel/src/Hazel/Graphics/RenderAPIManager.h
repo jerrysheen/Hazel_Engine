@@ -9,9 +9,10 @@
 /// </summary>
 namespace Hazel {
 
-	class RenderAPIManager
+	class HAZEL_API RenderAPIManager
 	{
 	public:
+		virtual ~RenderAPIManager() {}
 		static void Init();
 
 		static  RenderAPIManager* Create();

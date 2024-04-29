@@ -1,6 +1,6 @@
 #pragma once
 
-#include "RendererAPI.h"
+#include "Hazel/Graphics/RenderAPI.h"
 #include "OrthographicCamera.h"
 #include "PerspectiveCamera.h"
 #include "Shader.h"
@@ -18,7 +18,7 @@ namespace Hazel {
 
 		static void Submit(const Ref<Shader>& shader, const Ref<VertexArray>& vertexArray, const glm::mat4& transform = glm::mat4(1.0f));
 
-		inline static RendererAPI::API GetAPI() { return RendererAPI::GetAPI(); };
+		inline static RenderAPI::API GetAPI() { return RenderAPI::GetAPI(); };
 	private:
 		struct SceneData
 		{

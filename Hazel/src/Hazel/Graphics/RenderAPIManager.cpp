@@ -7,9 +7,9 @@ namespace Hazel
 	{
 		//switch (Renderer::GetAPI())
 		//{
-		//case RendererAPI::API::None: HZ_CORE_ASSERT(false, "RendererAPI::None is currently not supported"); break;
-		//case RendererAPI::API::OpenGL: return new WindowsGLFWWindow(props); break;
-		//case RendererAPI::API::DirectX12: return new WindowsDXGIWindow(props); break;
+		//case RenderAPI::API::None: HZ_CORE_ASSERT(false, "RenderAPI::None is currently not supported"); break;
+		//case RenderAPI::API::OpenGL: return new WindowsGLFWWindow(props); break;
+		//case RenderAPI::API::DirectX12: return new WindowsDXGIWindow(props); break;
 		//}
 		return nullptr;
 	}

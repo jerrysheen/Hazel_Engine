@@ -1,10 +1,10 @@
 #pragma once
 
-#include "Hazel/Renderer/RendererAPI.h"
+#include "Hazel/Graphics/RenderAPI.h"
 
 namespace Hazel {
 
-	class D3D12RendererAPI : public RendererAPI
+	class D3D12RenderAPI : public RenderAPI
 	{
 		virtual void Init() override;
 		virtual void SetViewPort(uint32_t x, uint32_t y, uint32_t width, uint32_t height) override;

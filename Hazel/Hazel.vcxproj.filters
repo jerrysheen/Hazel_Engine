@@ -162,7 +162,7 @@
     <ClInclude Include="src\Hazel\Renderer\Renderer3D.h">
       <Filter>src\Hazel\Renderer</Filter>
     </ClInclude>
-    <ClInclude Include="src\Hazel\Renderer\RendererAPI.h">
+    <ClInclude Include="src\Hazel\Graphics\RenderAPI.h">
       <Filter>src\Hazel\Renderer</Filter>
     </ClInclude>
     <ClInclude Include="src\Hazel\Renderer\RendererCommand.h">
@@ -189,7 +189,7 @@
     <ClInclude Include="src\Hazel\Utility\Random.h">
       <Filter>src\Hazel\Utility</Filter>
     </ClInclude>
-    <ClInclude Include="src\Platform\D3D12\D3D12RendererAPI.h">
+    <ClInclude Include="src\Platform\D3D12\D3D12RenderAPI.h">
       <Filter>src\Platform\D3D12</Filter>
     </ClInclude>
     <ClInclude Include="src\Platform\OpenGL\OpenGLBuffer.h">
@@ -201,7 +201,7 @@
     <ClInclude Include="src\Platform\OpenGL\OpenGLFramebuffer.h">
       <Filter>src\Platform\OpenGL</Filter>
     </ClInclude>
-    <ClInclude Include="src\Platform\OpenGL\OpenGLRendererAPI.h">
+    <ClInclude Include="src\Platform\OpenGL\OpenGLRenderAPI.h">
       <Filter>src\Platform\OpenGL</Filter>
     </ClInclude>
     <ClInclude Include="src\Platform\OpenGL\OpenGLShader.h">
@@ -1482,6 +1482,7 @@
     <ClInclude Include="src\Platform\D3D12\MathHelper.h">
       <Filter>src\Platform\D3D12</Filter>
     </ClInclude>
+    <ClInclude Include="src\Hazel\Graphics\RenderAPIManager.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Hazel\Core\Application.cpp">
@@ -1538,7 +1539,7 @@
     <ClCompile Include="src\Hazel\Renderer\Renderer3D.cpp">
       <Filter>src\Hazel\Renderer</Filter>
     </ClCompile>
-    <ClCompile Include="src\Hazel\Renderer\RendererAPI.cpp">
+    <ClCompile Include="src\Hazel\Graphics\RenderAPI.cpp">
       <Filter>src\Hazel\Renderer</Filter>
     </ClCompile>
     <ClCompile Include="src\Hazel\Renderer\RendererCommand.cpp">
@@ -1562,7 +1563,7 @@
     <ClCompile Include="src\Hazel\Utility\Random.cpp">
       <Filter>src\Hazel\Utility</Filter>
     </ClCompile>
-    <ClCompile Include="src\Platform\D3D12\D3D12RendererAPI.cpp">
+    <ClCompile Include="src\Platform\D3D12\D3D12RenderAPI.cpp">
       <Filter>src\Platform\D3D12</Filter>
     </ClCompile>
     <ClCompile Include="src\Platform\OpenGL\OpenGLBuffer.cpp">
@@ -1574,7 +1575,7 @@
     <ClCompile Include="src\Platform\OpenGL\OpenGLFramebuffer.cpp">
       <Filter>src\Platform\OpenGL</Filter>
     </ClCompile>
-    <ClCompile Include="src\Platform\OpenGL\OpenGLRendererAPI.cpp">
+    <ClCompile Include="src\Platform\OpenGL\OpenGLRenderAPI.cpp">
       <Filter>src\Platform\OpenGL</Filter>
     </ClCompile>
     <ClCompile Include="src\Platform\OpenGL\OpenGLShader.cpp">
@@ -1613,5 +1614,6 @@
     <ClCompile Include="src\Platform\D3D12\MathHelper.cpp">
       <Filter>src\Platform\D3D12</Filter>
     </ClCompile>
+    <ClCompile Include="src\Hazel\Graphics\RenderAPIManager.cpp" />
   </ItemGroup>
 </Project>

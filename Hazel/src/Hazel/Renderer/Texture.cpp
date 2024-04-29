@@ -11,11 +11,11 @@ namespace Hazel {
 	{
 		switch (Renderer::GetAPI())
 		{
-		case RendererAPI::API::None:    HZ_CORE_ASSERT(false, "RendererAPI::None is currently not supported!"); return nullptr;
-		case RendererAPI::API::OpenGL:  return  std::make_shared<OpenGLTexture2D>(width, height, colorFormat);
+		case RenderAPI::API::None:    HZ_CORE_ASSERT(false, "RenderAPI::None is currently not supported!"); return nullptr;
+		case RenderAPI::API::OpenGL:  return  std::make_shared<OpenGLTexture2D>(width, height, colorFormat);
 		}
 
-		HZ_CORE_ASSERT(false, "Unknown RendererAPI!");
+		HZ_CORE_ASSERT(false, "Unknown RenderAPI!");
 		return nullptr;
 	}
 
@@ -24,8 +24,8 @@ namespace Hazel {
 	{
 		switch (Renderer::GetAPI())
 		{
-			case RendererAPI::API::None: HZ_CORE_ASSERT(false, "RendererAPI::None is currently not supported");
-			case RendererAPI::API::OpenGL: return std::make_shared<OpenGLTexture2D>(path);
+			case RenderAPI::API::None: HZ_CORE_ASSERT(false, "RenderAPI::None is currently not supported");
+			case RenderAPI::API::OpenGL: return std::make_shared<OpenGLTexture2D>(path);
 		}
 		HZ_CORE_ASSERT(false, "Unknowed API...");
 		return nullptr;
@@ -35,8 +35,8 @@ namespace Hazel {
 	{
 		switch (Renderer::GetAPI())
 		{
-		case RendererAPI::API::None: HZ_CORE_ASSERT(false, "RendererAPI::None is currently not supported");
-		case RendererAPI::API::OpenGL: return std::make_shared<OpenGLTexture2D>(path, isCompressedImage, enableMip);
+		case RenderAPI::API::None: HZ_CORE_ASSERT(false, "RenderAPI::None is currently not supported");
+		case RenderAPI::API::OpenGL: return std::make_shared<OpenGLTexture2D>(path, isCompressedImage, enableMip);
 		}
 		HZ_CORE_ASSERT(false, "Unknowed API...");
 		return nullptr;
@@ -47,11 +47,11 @@ namespace Hazel {
 	{
 		switch (Renderer::GetAPI())
 		{
-		case RendererAPI::API::None:    HZ_CORE_ASSERT(false, "RendererAPI::None is currently not supported!"); return nullptr;
-		case RendererAPI::API::OpenGL:  return  std::make_shared<OpenGLTexture3D>(width, height);
+		case RenderAPI::API::None:    HZ_CORE_ASSERT(false, "RenderAPI::None is currently not supported!"); return nullptr;
+		case RenderAPI::API::OpenGL:  return  std::make_shared<OpenGLTexture3D>(width, height);
 		}
 
-		HZ_CORE_ASSERT(false, "Unknown RendererAPI!");
+		HZ_CORE_ASSERT(false, "Unknown RenderAPI!");
 		return nullptr;
 	}
 
@@ -60,8 +60,8 @@ namespace Hazel {
 	{
 		switch (Renderer::GetAPI())
 		{
-		case RendererAPI::API::None: HZ_CORE_ASSERT(false, "RendererAPI::None is currently not supported");
-		case RendererAPI::API::OpenGL: return std::make_shared<OpenGLTexture3D>(path);
+		case RenderAPI::API::None: HZ_CORE_ASSERT(false, "RenderAPI::None is currently not supported");
+		case RenderAPI::API::OpenGL: return std::make_shared<OpenGLTexture3D>(path);
 		}
 		HZ_CORE_ASSERT(false, "Unknowed API...");
 		return nullptr;
@@ -71,8 +71,8 @@ namespace Hazel {
 	{
 		switch (Renderer::GetAPI())
 		{
-		case RendererAPI::API::None: HZ_CORE_ASSERT(false, "RendererAPI::None is currently not supported");
-		case RendererAPI::API::OpenGL: return std::make_shared<OpenGLTexture3D>(path, isCompressedImage, enableMipMap);
+		case RenderAPI::API::None: HZ_CORE_ASSERT(false, "RenderAPI::None is currently not supported");
+		case RenderAPI::API::OpenGL: return std::make_shared<OpenGLTexture3D>(path, isCompressedImage, enableMipMap);
 		}
 		HZ_CORE_ASSERT(false, "Unknowed API...");
 		return nullptr;
