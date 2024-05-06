@@ -1483,6 +1483,9 @@
       <Filter>src\Platform\D3D12</Filter>
     </ClInclude>
     <ClInclude Include="src\Hazel\Graphics\RenderAPIManager.h" />
+    <ClInclude Include="src\Platform\D3D12\D3D12RenderAPIManager.h">
+      <Filter>src\Platform\D3D12</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Hazel\Core\Application.cpp">
@@ -1615,5 +1618,8 @@
       <Filter>src\Platform\D3D12</Filter>
     </ClCompile>
     <ClCompile Include="src\Hazel\Graphics\RenderAPIManager.cpp" />
+    <ClCompile Include="src\Platform\D3D12\D3D12RenderAPIManager.cpp">
+      <Filter>src\Platform\D3D12</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

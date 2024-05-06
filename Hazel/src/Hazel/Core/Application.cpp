@@ -21,8 +21,8 @@ namespace Hazel{
 		WindowProps props;
 		props.Title = title;
 		m_Window = Scope<Window>(Window::Create(props));
-		m_RenderAPIManager = Scope<RenderAPIManager>(RenderAPIManager::Create());
 		m_Window->SetEventCallback(BIND_EVENT_FN(OnEvent));
+		m_RenderAPIManager = Scope<RenderAPIManager>(RenderAPIManager::Create());
 		
 
 		//Renderer::Init();
