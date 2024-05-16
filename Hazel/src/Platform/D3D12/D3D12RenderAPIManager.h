@@ -22,7 +22,7 @@ namespace Hazel {
 		virtual ~D3D12RenderAPIManager();
 		
 		static D3D12RenderAPIManager* D3D12RenderAPIManager::s_instance;
-
+		virtual void OnUpdate() override;
 	private:
 		void InitDirect3D();
 
@@ -42,8 +42,7 @@ namespace Hazel {
 		D3D12_CPU_DESCRIPTOR_HANDLE CurrentBackBufferView()const;
 		D3D12_CPU_DESCRIPTOR_HANDLE DepthStencilView()const;
 
-		HINSTANCE mhAppInst = nullptr; // application instance handle
-		HWND      mhMainWnd = nullptr; // main window handle
+
 		bool      mAppPaused = false;  // is the application paused?
 		bool      mMinimized = false;  // is the application minimized?
 		bool      mMaximized = false;  // is the application maximized?
@@ -82,8 +81,7 @@ namespace Hazel {
 		UINT mDsvDescriptorSize = 0;
 		UINT mCbvSrvUavDescriptorSize = 0;
 
-		// Derived class should set these in derived constructor to customize starting values.
-		std::wstring mMainWndCaption = L"d3d App";
+
 		D3D_DRIVER_TYPE md3dDriverType = D3D_DRIVER_TYPE_HARDWARE;
 		DXGI_FORMAT mBackBufferFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
 		DXGI_FORMAT mDepthStencilFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;

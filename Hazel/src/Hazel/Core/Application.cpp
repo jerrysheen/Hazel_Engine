@@ -22,7 +22,7 @@ namespace Hazel{
 		props.Title = title;
 		m_Window = Scope<Window>(Window::Create(props));
 		m_Window->SetEventCallback(BIND_EVENT_FN(OnEvent));
-		m_RenderAPIManager = Scope<RenderAPIManager>(RenderAPIManager::Create());
+		m_RenderAPIManager = Ref<RenderAPIManager>(RenderAPIManager::Create());
 		
 
 		//Renderer::Init();
@@ -60,6 +60,7 @@ namespace Hazel{
 		dispatcher.Dispatch<WindowCloseEvent>(BIND_EVENT_FN(OnWindowClose));
 		dispatcher.Dispatch<WindowResizeEvent>(BIND_EVENT_FN(OnWindowResize));
 		dispatcher.Dispatch<MouseButtonPressedEvent>(BIND_EVENT_FN(OnMouseButtonPressed));
+		dispatcher.Dispatch<AppActiveEvent>(BIND_EVENT_FN(OnAppActiveStateChange));
 		//HZ_CORE_INFO("{0}", e);
 
 		for (auto it = m_LayerStack.end(); it != m_LayerStack.begin(); )
@@ -76,6 +77,7 @@ namespace Hazel{
 		while (m_Running) 
 		{
 			m_Window->OnUpdate();
+			m_RenderAPIManager->OnUpdate();
 			//float time = (float)glfwGetTime();		// platform gettime();
 			//Timestep timestep = time - m_LastFrameTime;
 			//m_LastFrameTime = time;
@@ -119,6 +121,11 @@ namespace Hazel{
 		// todo: renderAPIµÄwindow resize
 		// since we want all other layout know this event;
 		return false;
+	}
+
+	bool Application::OnAppActiveStateChange(AppActiveEvent& e)
+	{
+		return true;
 	}
 }
 

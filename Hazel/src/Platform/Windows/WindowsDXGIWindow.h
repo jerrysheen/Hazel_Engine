@@ -15,6 +15,8 @@ namespace Hazel {
 
 		void OnUpdate() override;
 
+		inline static WindowsDXGIWindow& Get() { return *s_Instance; }
+		inline HWND GetDXGIWindowInstance() const { return mhMainWnd; }
 		inline unsigned int GetWidth() const override { return m_Data.Width; }
 		inline unsigned int GetHeight() const override { return m_Data.Height; }
 
@@ -26,11 +28,14 @@ namespace Hazel {
 
 		inline virtual void* GetNativeWindow() const { return m_Window; }
 		LRESULT WindowsDXGIWindow::MsgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
-		static WindowsDXGIWindow* s_instance;
+		static WindowsDXGIWindow* s_Instance;
 	private:
 		virtual void Init(const WindowProps& props);
 		virtual void Shutdown();
-		
+		HINSTANCE mhAppInst = nullptr; // application instance handle
+		HWND      mhMainWnd = nullptr; // main window handle
+		// Derived class should set these in derived constructor to customize starting values.
+		std::wstring mMainWndCaption = L"d3d App";
 	private:
 		HWND m_Window = nullptr;
 		GraphicsContext* m_Context;

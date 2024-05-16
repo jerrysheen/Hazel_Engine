@@ -9,11 +9,13 @@ namespace Hazel {
 	class HAZEL_API WindowResizeEvent : public Event
 	{
 	public:
-		WindowResizeEvent(unsigned int width, unsigned int height)
-			: m_Width(width), m_Height(height) {}
+		WindowResizeEvent(unsigned int width, unsigned int height, bool miniMized, bool maxiMized)
+			: m_Width(width), m_Height(height), m_Maximized(maxiMized), m_Minimized(miniMized){}
 
 		inline unsigned int GetWidth() const { return m_Width; }
 		inline unsigned int GetHeight() const { return m_Height; }
+		inline unsigned int IsWindowMaximized() const { return m_Maximized; }
+		inline unsigned int IsWindowMinimized() const { return m_Minimized; }
 
 		std::string ToString() const override
 		{
@@ -26,6 +28,17 @@ namespace Hazel {
 			EVENT_CLASS_CATEGORY(EventCategoryApplication)
 	private:
 		unsigned int m_Width, m_Height;
+		bool m_Minimized = false;
+		bool m_Maximized = true;
+	};
+
+	class HAZEL_API WindowStateChangeEvent : public Event
+	{
+	public:
+		WindowStateChangeEvent() {}
+
+		EVENT_CLASS_TYPE(WindowClose)
+			EVENT_CLASS_CATEGORY(EventCategoryApplication)
 	};
 
 	class HAZEL_API WindowCloseEvent : public Event
@@ -45,6 +58,17 @@ namespace Hazel {
 
 		EVENT_CLASS_TYPE(AppTick)
 			EVENT_CLASS_CATEGORY(EventCategoryApplication)
+	};
+
+	class HAZEL_API AppActiveEvent : public Event
+	{
+	public:
+		AppActiveEvent(bool isAppPaulse) : m_Running(!isAppPaulse){}
+		inline unsigned int GetAppActiveState() const { return m_Running; }
+		EVENT_CLASS_TYPE(AppActive)
+			EVENT_CLASS_CATEGORY(EventCategoryApplication)
+	private:
+		bool m_Running;
 	};
 
 	class HAZEL_API AppUpdateEvent : public Event

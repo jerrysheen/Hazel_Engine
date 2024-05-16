@@ -68,7 +68,7 @@ namespace Hazel {
 				WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
 				data.Width = width;
 				data.Height = height;
-				WindowResizeEvent event(width, height);
+				WindowResizeEvent event(width, height, false, false);
 				data.EventCallback(event);
 				
 		});

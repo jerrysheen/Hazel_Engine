@@ -14,7 +14,7 @@ namespace Hazel {
 	public:
 		virtual ~RenderAPIManager() {}
 		static void Init();
-
+		virtual void OnUpdate() {};
 		static RenderAPIManager* Create();
 	};
 }

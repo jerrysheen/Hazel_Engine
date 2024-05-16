@@ -20,6 +20,8 @@ namespace Hazel {
 			unsigned int height = 720)
 			: Title(title), Width(width), Height(height)
 		{
+			//Application::Get().SetWindowWidth(width);
+			//Application::Get().SetWindowHeight(height);
 		}
 	};
 

@@ -1,5 +1,6 @@
 #include "hzpch.h"
 #include "D3D12RenderAPIManager.h"
+#include "Platform/Windows/WindowsDXGIWindow.h"
 
 namespace Hazel
 {
@@ -11,6 +12,10 @@ namespace Hazel
 
 		// Do the initial resize code.
 		OnResize();
+	}
+
+	D3D12RenderAPIManager::~D3D12RenderAPIManager()
+	{
 	}
 
 	void D3D12RenderAPIManager::Draw()
@@ -200,6 +205,11 @@ namespace Hazel
 		}
 	}
 
+	void D3D12RenderAPIManager::OnUpdate()
+	{
+		Draw();
+	}
+
 	void  D3D12RenderAPIManager::InitDirect3D()
 	{
 #if defined(DEBUG) || defined(_DEBUG) 
@@ -382,7 +392,7 @@ namespace Hazel
 		sd.SampleDesc.Quality = m4xMsaaState ? (m4xMsaaQuality - 1) : 0;
 		sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
 		sd.BufferCount = SwapChainBufferCount;
-		sd.OutputWindow = mhMainWnd;
+		sd.OutputWindow = WindowsDXGIWindow::Get().GetDXGIWindowInstance();
 		sd.Windowed = true;
 		sd.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
 		sd.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
