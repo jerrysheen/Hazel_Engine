@@ -272,6 +272,7 @@ namespace Hazel
 	CreateCommandObjects();
 	CreateSwapChain();
 	CreateRtvAndDsvDescriptorHeaps();
+	CreateCvbDescriptorHeaps();
 
 	//return true;
 	}
@@ -422,6 +423,16 @@ namespace Hazel
 		dsvHeapDesc.NodeMask = 0;
 		ThrowIfFailed(md3dDevice->CreateDescriptorHeap(
 			&dsvHeapDesc, IID_PPV_ARGS(mDsvHeap.GetAddressOf())));
+	}
+		
+	void D3D12RenderAPIManager::CreateCvbDescriptorHeaps()
+	{
+	D3D12_DESCRIPTOR_HEAP_DESC cbvHeapDesc;
+	cbvHeapDesc.NumDescriptors = 1;
+	cbvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
+	cbvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
+	cbvHeapDesc.NodeMask = 0;
+	ThrowIfFailed(md3dDevice->CreateDescriptorHeap(&cbvHeapDesc, IID_PPV_ARGS(&mCbvHeap)));
 	}
 
 }

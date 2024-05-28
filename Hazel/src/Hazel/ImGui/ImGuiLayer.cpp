@@ -2,8 +2,16 @@
 #include "ImGuiLayer.h"
 
 #include "imgui.h"
-#include "examples/imgui_impl_glfw.h"
-#include "examples/imgui_impl_opengl3.h"
+#ifdef RENDER_API_OPENGL
+#define IMGUI_IMPL_OPENGL_LOADER_GLAD
+#include "examples/imgui_impl_opengl3.cpp"
+#include "examples/imgui_impl_glfw.cpp" 
+#elif RENDER_API_DIRECTX12
+#include "examples/imgui_impl_win32.cpp"
+#include "examples/imgui_impl_dx12.cpp"
+#include "platform/D3D12/D3D12RenderAPIManager.h"
+#endif
+#include "imgui_internal.h"
 
 #include "Hazel/Core/Application.h"
 
@@ -11,6 +19,7 @@
 #include <glad/glad.h>
 
 namespace Hazel {
+
 
 	ImGuiLayer::ImGuiLayer()
 		: Layer("ImGuiLayer")
@@ -23,6 +32,7 @@ namespace Hazel {
 
 	void ImGuiLayer::OnAttach()
 	{
+#ifdef RENDER_API_OPENGL
 		// Setup Dear ImGui context
 		IMGUI_CHECKVERSION();
 		ImGui::CreateContext();
@@ -52,25 +62,88 @@ namespace Hazel {
 		// Setup Platform/Renderer bindings
 		ImGui_ImplGlfw_InitForOpenGL(window, true);
 		ImGui_ImplOpenGL3_Init("#version 410");
+#elif RENDER_API_DIRECTX12
+
+		//		// Create application window
+		////ImGui_ImplWin32_EnableDpiAwareness();
+		//		WNDCLASSEXW wc = { sizeof(wc), CS_CLASSDC, WndProc, 0L, 0L, GetModuleHandle(nullptr), nullptr, nullptr, nullptr, nullptr, L"ImGui Example", nullptr };
+		//		::RegisterClassExW(&wc);
+		//		HWND hwnd = ::CreateWindowW(wc.lpszClassName, L"Dear ImGui DirectX12 Example", WS_OVERLAPPEDWINDOW, 100, 100, 1280, 800, nullptr, nullptr, wc.hInstance, nullptr);
+		//
+		//		// Initialize Direct3D
+		//		if (!CreateDeviceD3D(hwnd))
+		//		{
+		//			CleanupDeviceD3D();
+		//			::UnregisterClassW(wc.lpszClassName, wc.hInstance);
+		//			return 1;
+		//		}
+		//
+		//		// Show the window
+		//		::ShowWindow(hwnd, SW_SHOWDEFAULT);
+		//		::UpdateWindow(hwnd);
+
+				// Setup Dear ImGui context
+		IMGUI_CHECKVERSION();
+		ImGui::CreateContext();
+		ImGuiIO& io = ImGui::GetIO(); (void)io;
+		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
+		io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
+
+		// Setup Dear ImGui style
+		ImGui::StyleColorsDark();
+		//ImGui::StyleColorsLight();
+
+		// Setup Platform/Renderer backends
+		//ImGui_ImplWin32_Init(hwnd);
+		//ImGui_ImplDX12_Init(g_pd3dDevice, NUM_FRAMES_IN_FLIGHT,
+		//	DXGI_FORMAT_R8G8B8A8_UNORM, g_pd3dSrvDescHeap,
+		//	g_pd3dSrvDescHeap->GetCPUDescriptorHandleForHeapStart(),
+		//	g_pd3dSrvDescHeap->GetGPUDescriptorHandleForHeapStart());
+		ImGui_ImplWin32_Init(Application::Get().GetWindow().GetNativeWindow());
+		//if (D3D12RenderAPIManager* renderAPIManager = dynamic_cast<D3D12RenderAPIManager*>(basePtr)) {
+		//	derivedPtr->show();
+		D3D12RenderAPIManager* renderAPIManager = static_cast<D3D12RenderAPIManager*>(Application::Get().GetRenderAPIManager().get());
+		ID3D12DescriptorHeap* srvDescHeap = renderAPIManager->GetCbvHeap().Get();
+		ImGui_ImplDX12_Init(renderAPIManager->GetD3DDevice().Get(), NUM_FRAMES_IN_FLIGHT,
+			renderAPIManager->GetBackBufferFormat(), srvDescHeap,
+			srvDescHeap->GetCPUDescriptorHandleForHeapStart(),
+			srvDescHeap->GetGPUDescriptorHandleForHeapStart());
+#endif
 	}
 
-	
+
 	void ImGuiLayer::OnDetach()
 	{
+#ifdef RENDER_API_OPENGL
 		ImGui_ImplOpenGL3_Shutdown();
 		ImGui_ImplGlfw_Shutdown();
 		ImGui::DestroyContext();
+#elif RENDER_API_DIRECTX12
+#endif
+
 	}
 
 	void ImGuiLayer::Begin()
 	{
+#ifdef RENDER_API_OPENGL
 		ImGui_ImplOpenGL3_NewFrame();
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
+#elif RENDER_API_DIRECTX12
+		// Start the Dear ImGui frame
+		ImGui_ImplDX12_NewFrame();
+		ImGui_ImplWin32_NewFrame();
+		ImGui::NewFrame();
+
+		// 1. Show the big demo window (Most of the sample code is in ImGui::ShowDemoWindow()! You can browse its code to learn more about Dear ImGui!).
+		ImGui::ShowDemoWindow();
+
+#endif
 	}
 
 	void ImGuiLayer::End()
 	{
+#ifdef RENDER_API_OPENGL
 		ImGuiIO& io = ImGui::GetIO();
 		Application& app = Application::Get();
 		io.DisplaySize = ImVec2(app.GetWindow().GetWidth(), app.GetWindow().GetHeight());
@@ -86,6 +159,21 @@ namespace Hazel {
 			ImGui::RenderPlatformWindowsDefault();
 			glfwMakeContextCurrent(backup_current_context);
 		}
+#elif RENDER_API_DIRECTX12
+		ImGuiIO& io = ImGui::GetIO();
+		Application& app = Application::Get();
+		io.DisplaySize = ImVec2(app.GetWindow().GetWidth(), app.GetWindow().GetHeight());
+		// Rendering
+		ImGui::Render();
+		// utf-8？ 
+		// 之前的时候其实也是这么做的，相当于每一层的内容，我最后都基本渲染在一个rendertarget上面，这个rendertarget就是我的backbuffer。
+		// 可以理解为这个类似于UI层，每一个EditorLayer里面，我把内容都加到Imgui里面，然后在这个地方统一按照层级做一个渲染。
+		// EditorLayer层里面自己的渲染内容，我可以不管，但是最后基本上都是一个RenderTexture的形式。
+		// 也就是说，我在这个地方需要接管 swapbuffer的操作。
+
+#endif
+
+
 	}
 
 	void ImGuiLayer::OnImGuiRender()
@@ -93,6 +181,6 @@ namespace Hazel {
 	}
 
 
-	
+
 
 }

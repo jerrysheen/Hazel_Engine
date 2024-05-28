@@ -27,7 +27,7 @@ namespace Hazel{
 
 		//Renderer::Init();
 		m_Window->SetBackGroundColor();
-		//m_ImGuiLayer = new ImGuiLayer();
+		m_ImGuiLayer = new ImGuiLayer();
 		//PushOverlay(m_ImGuiLayer);
 	}
 

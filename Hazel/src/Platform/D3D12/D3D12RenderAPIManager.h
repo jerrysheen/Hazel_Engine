@@ -23,12 +23,18 @@ namespace Hazel {
 		
 		static D3D12RenderAPIManager* D3D12RenderAPIManager::s_instance;
 		virtual void OnUpdate() override;
+
+		inline Microsoft::WRL::ComPtr<ID3D12Device> GetD3DDevice() {return md3dDevice;}
+		inline DXGI_FORMAT GetBackBufferFormat() {return mBackBufferFormat;}
+		inline Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> GetCbvHeap() { return mCbvHeap; }
+
 	private:
 		void InitDirect3D();
 
 		void CreateCommandObjects();
 		void CreateSwapChain();
 		void CreateRtvAndDsvDescriptorHeaps();
+		void CreateCvbDescriptorHeaps();
 		void FlushCommandQueue();
 		void Draw();
 
@@ -73,6 +79,7 @@ namespace Hazel {
 
 		Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> mRtvHeap;
 		Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> mDsvHeap;
+		Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> mCbvHeap = nullptr;
 
 		D3D12_VIEWPORT mScreenViewport;
 		D3D12_RECT mScissorRect;

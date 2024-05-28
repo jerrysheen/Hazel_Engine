@@ -26,7 +26,7 @@ namespace Hazel {
 		void SetVSync(bool enabled) override;
 		bool IsVSync() const override;
 
-		inline virtual void* GetNativeWindow() const { return m_Window; }
+		inline virtual void* GetNativeWindow() const { return mhMainWnd; }
 		LRESULT WindowsDXGIWindow::MsgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 		static WindowsDXGIWindow* s_Instance;
 	private:
@@ -37,7 +37,7 @@ namespace Hazel {
 		// Derived class should set these in derived constructor to customize starting values.
 		std::wstring mMainWndCaption = L"d3d App";
 	private:
-		HWND m_Window = nullptr;
+		//HWND m_Window = nullptr;
 		GraphicsContext* m_Context;
 
 		// required by GLFW

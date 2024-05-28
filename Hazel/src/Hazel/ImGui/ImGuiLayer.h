@@ -28,6 +28,9 @@ namespace Hazel {
 	private:
 		bool m_BlockEvents = true;
 		float m_Time = 0.0f;
+		void* m_RenderAPIManager;
+
+		int NUM_FRAMES_IN_FLIGHT = 3;
 	};
 
 }
