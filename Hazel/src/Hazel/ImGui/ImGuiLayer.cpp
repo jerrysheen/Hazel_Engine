@@ -9,7 +9,6 @@
 #elif RENDER_API_DIRECTX12
 #include "examples/imgui_impl_win32.cpp"
 #include "examples/imgui_impl_dx12.cpp"
-#include "platform/D3D12/D3D12RenderAPIManager.h"
 #endif
 #include "imgui_internal.h"
 
@@ -102,7 +101,7 @@ namespace Hazel {
 		ImGui_ImplWin32_Init(Application::Get().GetWindow().GetNativeWindow());
 		//if (D3D12RenderAPIManager* renderAPIManager = dynamic_cast<D3D12RenderAPIManager*>(basePtr)) {
 		//	derivedPtr->show();
-		D3D12RenderAPIManager* renderAPIManager = static_cast<D3D12RenderAPIManager*>(Application::Get().GetRenderAPIManager().get());
+		renderAPIManager = static_cast<D3D12RenderAPIManager*>(Application::Get().GetRenderAPIManager().get());
 		ID3D12DescriptorHeap* srvDescHeap = renderAPIManager->GetCbvHeap().Get();
 		ImGui_ImplDX12_Init(renderAPIManager->GetD3DDevice().Get(), NUM_FRAMES_IN_FLIGHT,
 			renderAPIManager->GetBackBufferFormat(), srvDescHeap,
@@ -119,6 +118,10 @@ namespace Hazel {
 		ImGui_ImplGlfw_Shutdown();
 		ImGui::DestroyContext();
 #elif RENDER_API_DIRECTX12
+		// Cleanup
+		ImGui_ImplDX12_Shutdown();
+		ImGui_ImplWin32_Shutdown();
+		ImGui::DestroyContext();
 #endif
 
 	}
@@ -135,8 +138,7 @@ namespace Hazel {
 		ImGui_ImplWin32_NewFrame();
 		ImGui::NewFrame();
 
-		// 1. Show the big demo window (Most of the sample code is in ImGui::ShowDemoWindow()! You can browse its code to learn more about Dear ImGui!).
-		ImGui::ShowDemoWindow();
+
 
 #endif
 	}
@@ -164,12 +166,65 @@ namespace Hazel {
 		Application& app = Application::Get();
 		io.DisplaySize = ImVec2(app.GetWindow().GetWidth(), app.GetWindow().GetHeight());
 		// Rendering
+
+		// 1. Show the big demo window (Most of the sample code is in ImGui::ShowDemoWindow()! You can browse its code to learn more about Dear ImGui!).
+		bool show_another_window = true;
+		ImGui::ShowDemoWindow(&show_another_window);
+		ImGui::Begin("Another Window", &show_another_window);   // Pass a pointer to our bool variable (the window will have a closing button that will clear the bool when clicked)
+		ImGui::Text("Hello from another window!");
+		if (ImGui::Button("Close Me"))
+			show_another_window = false;
+		ImGui::End();
 		ImGui::Render();
 		// utf-8？ 
 		// 之前的时候其实也是这么做的，相当于每一层的内容，我最后都基本渲染在一个rendertarget上面，这个rendertarget就是我的backbuffer。
 		// 可以理解为这个类似于UI层，每一个EditorLayer里面，我把内容都加到Imgui里面，然后在这个地方统一按照层级做一个渲染。
 		// EditorLayer层里面自己的渲染内容，我可以不管，但是最后基本上都是一个RenderTexture的形式。
 		// 也就是说，我在这个地方需要接管 swapbuffer的操作。
+		
+		// 2024-06-02 我这个地方先尝试接入， 然后再把功能替换一下。
+
+		renderAPIManager->ReInitCommandList();
+
+		Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> mCommandList = renderAPIManager->GetCmdList();
+
+		// Indicate a state transition on the resource usage.
+		mCommandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(renderAPIManager->GetCurrentBackBuffer(),
+			D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET));
+
+		// Set the viewport and scissor rect.  This needs to be reset whenever the command list is reset.
+		mCommandList->RSSetViewports(1, renderAPIManager->GetCurrentViewPort());
+		mCommandList->RSSetScissorRects(1, renderAPIManager->GetCurrentScissorRect());
+
+		// Clear the back buffer and depth buffer.
+		// 感觉对这个 backbufferview的获取还是有疑惑。
+		mCommandList->ClearRenderTargetView(renderAPIManager->CurrentBackBufferView(), Colors::LightSteelBlue, 0, nullptr);
+		mCommandList->ClearDepthStencilView(renderAPIManager->DepthStencilView(), D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
+
+		// Specify the buffers we are going to render to.
+		mCommandList->OMSetRenderTargets(1, &renderAPIManager->CurrentBackBufferView(), true, &renderAPIManager->DepthStencilView());
+		ID3D12DescriptorHeap* descriptorHeaps[] = { renderAPIManager->GetCbvHeap().Get()};
+		mCommandList->SetDescriptorHeaps(_countof(descriptorHeaps), descriptorHeaps);
+		ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), mCommandList.Get());
+		// Indicate a state transition on the resource usage.
+		mCommandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(renderAPIManager->GetCurrentBackBuffer(),
+			D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT));
+
+		// Done recording commands.
+		ThrowIfFailed(mCommandList->Close());
+
+		// Add the command list to the queue for execution.
+		ID3D12CommandList* cmdsLists[] = { mCommandList.Get() };
+		renderAPIManager->GetCommandQueue()->ExecuteCommandLists(_countof(cmdsLists), cmdsLists);
+
+		// swap the back and front buffers
+		ThrowIfFailed(renderAPIManager->GetSwapChain()->Present(0, 0));
+		renderAPIManager->UpdateBackBufferIndex();
+
+		// Wait until frame commands are complete.  This waiting is inefficient and is
+		// done for simplicity.  Later we will show how to organize our rendering code
+		// so we do not have to wait per frame.
+		renderAPIManager->FlushCommandQueue();
 
 #endif
 

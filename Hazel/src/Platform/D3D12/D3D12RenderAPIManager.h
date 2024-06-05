@@ -20,14 +20,26 @@ namespace Hazel {
 	public:
 		D3D12RenderAPIManager();
 		virtual ~D3D12RenderAPIManager();
-		
+
 		static D3D12RenderAPIManager* D3D12RenderAPIManager::s_instance;
 		virtual void OnUpdate() override;
 
-		inline Microsoft::WRL::ComPtr<ID3D12Device> GetD3DDevice() {return md3dDevice;}
-		inline DXGI_FORMAT GetBackBufferFormat() {return mBackBufferFormat;}
+		inline Microsoft::WRL::ComPtr<ID3D12Device> GetD3DDevice() { return md3dDevice; }
+		inline DXGI_FORMAT GetBackBufferFormat() { return mBackBufferFormat; }
 		inline Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> GetCbvHeap() { return mCbvHeap; }
+		inline Microsoft::WRL::ComPtr<ID3D12CommandAllocator> GetCmdListAlloc() { return mDirectCmdListAlloc; }
+		inline Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> GetCmdList() { return mCommandList; }
+		inline  D3D12_VIEWPORT* GetCurrentViewPort() { return &mScreenViewport; }
+		inline  D3D12_RECT* GetCurrentScissorRect() { return &mScissorRect; }
+		inline  Microsoft::WRL::ComPtr<IDXGISwapChain> GetSwapChain() { return mSwapChain; }
+		inline  Microsoft::WRL::ComPtr<ID3D12CommandQueue> GetCommandQueue() { return mCommandQueue; }
+		inline  void UpdateBackBufferIndex() { mCurrBackBuffer = (mCurrBackBuffer + 1) % SwapChainBufferCount;; }
+		void ReInitCommandList();
+		ID3D12Resource* GetCurrentBackBuffer()const;
+		void FlushCommandQueue();
 
+		D3D12_CPU_DESCRIPTOR_HANDLE CurrentBackBufferView()const;
+		D3D12_CPU_DESCRIPTOR_HANDLE DepthStencilView()const;
 	private:
 		void InitDirect3D();
 
@@ -35,7 +47,6 @@ namespace Hazel {
 		void CreateSwapChain();
 		void CreateRtvAndDsvDescriptorHeaps();
 		void CreateCvbDescriptorHeaps();
-		void FlushCommandQueue();
 		void Draw();
 
 		void OnResize();
@@ -44,9 +55,6 @@ namespace Hazel {
 		void LogAdapterOutputs(IDXGIAdapter* adapter);
 		void LogOutputDisplayModes(IDXGIOutput* output, DXGI_FORMAT format);
 	protected:
-		ID3D12Resource* CurrentBackBuffer()const;
-		D3D12_CPU_DESCRIPTOR_HANDLE CurrentBackBufferView()const;
-		D3D12_CPU_DESCRIPTOR_HANDLE DepthStencilView()const;
 
 
 		bool      mAppPaused = false;  // is the application paused?
@@ -72,14 +80,14 @@ namespace Hazel {
 		Microsoft::WRL::ComPtr<ID3D12CommandAllocator> mDirectCmdListAlloc;
 		Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> mCommandList;
 
-		static const int SwapChainBufferCount = 2;
+		static const int SwapChainBufferCount = 3;
 		int mCurrBackBuffer = 0;
 		Microsoft::WRL::ComPtr<ID3D12Resource> mSwapChainBuffer[SwapChainBufferCount];
 		Microsoft::WRL::ComPtr<ID3D12Resource> mDepthStencilBuffer;
 
 		Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> mRtvHeap;
 		Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> mDsvHeap;
-		Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> mCbvHeap = nullptr;
+		Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> mCbvHeap;
 
 		D3D12_VIEWPORT mScreenViewport;
 		D3D12_RECT mScissorRect;

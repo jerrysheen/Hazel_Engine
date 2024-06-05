@@ -6,6 +6,13 @@
 #include "Hazel/Events/KeyEvent.h"
 #include "Hazel/Events/MouseEvent.h"
 
+#ifdef RENDER_API_OPENGL
+
+#elif RENDER_API_DIRECTX12
+
+#include "platform/D3D12/D3D12RenderAPIManager.h"
+#endif
+
 namespace Hazel {
 
 	class  HAZEL_API ImGuiLayer : public Layer
@@ -31,6 +38,11 @@ namespace Hazel {
 		void* m_RenderAPIManager;
 
 		int NUM_FRAMES_IN_FLIGHT = 3;
+
+#ifdef RENDER_API_OPENGL
+#elif RENDER_API_DIRECTX12
+		D3D12RenderAPIManager* renderAPIManager;
+#endif
 	};
 
 }
