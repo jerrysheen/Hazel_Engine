@@ -1,6 +1,7 @@
 ﻿#include "hzpch.h"
 #include "WindowsDXGIWindow.h"
-
+#include "examples/imgui_impl_win32.h"
+#include "examples/imgui_impl_dx12.h"
 
 namespace Hazel 
 {
@@ -128,10 +129,15 @@ namespace Hazel
 		return false;
 	}
 
+	//extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+
 	LRESULT WindowsDXGIWindow::MsgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	{
 		//HZ_CORE_INFO("WindowsDXGIWindow::MsgProc");
 		//HZ_CORE_INFO("msg: {0}", msg);
+		if (ImGui_ImplWin32_WndProcHandler(hwnd, msg, wParam, lParam))
+			return true;
+		return DefWindowProc(hwnd, msg, wParam, lParam);
 
 		switch (msg)
 		{
