@@ -34,6 +34,7 @@ namespace Hazel {
 		inline  Microsoft::WRL::ComPtr<IDXGISwapChain> GetSwapChain() { return mSwapChain; }
 		inline  Microsoft::WRL::ComPtr<ID3D12CommandQueue> GetCommandQueue() { return mCommandQueue; }
 		inline  void UpdateBackBufferIndex() { mCurrBackBuffer = (mCurrBackBuffer + 1) % SwapChainBufferCount;; }
+		inline  int GetNumFrameInFlight() { return NUM_FRAMES_IN_FLIGHT; }
 		void ReInitCommandList();
 		ID3D12Resource* GetCurrentBackBuffer()const;
 		void FlushCommandQueue();
@@ -77,7 +78,9 @@ namespace Hazel {
 		UINT64 mCurrentFence = 0;
 
 		Microsoft::WRL::ComPtr<ID3D12CommandQueue> mCommandQueue;
-		Microsoft::WRL::ComPtr<ID3D12CommandAllocator> mDirectCmdListAlloc;
+		//Microsoft::WRL::ComPtr<ID3D12CommandAllocator> mDirectCmdListAlloc;
+		
+		
 		Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> mCommandList;
 
 		static const int SwapChainBufferCount = 3;
@@ -102,5 +105,16 @@ namespace Hazel {
 		DXGI_FORMAT mDepthStencilFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
 		int mClientWidth = 800;
 		int mClientHeight = 600;
+
+		struct FrameContext
+		{
+			Microsoft::WRL::ComPtr<ID3D12CommandAllocator> CommandAllocator;
+			UINT64                  FenceValue;
+		};
+
+		static int const                    NUM_FRAMES_IN_FLIGHT = 3;
+		// 这边有三个FrameContext，里面主要是有三个CommandAllocator，主要是为了处理多帧的操作，
+		static FrameContext                 g_frameContext[NUM_FRAMES_IN_FLIGHT];
+		static HANDLE  g_fenceEvent;
 	};
 }

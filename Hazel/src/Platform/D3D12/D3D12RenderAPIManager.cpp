@@ -255,6 +255,9 @@ namespace Hazel
 	ThrowIfFailed(md3dDevice->CreateFence(0, D3D12_FENCE_FLAG_NONE,
 		IID_PPV_ARGS(&mFence)));
 
+	g_fenceEvent = CreateEvent(nullptr, FALSE, FALSE, nullptr);
+	ThrowIfFailed(g_fenceEvent == nullptr);
+
 	mRtvDescriptorSize = md3dDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
 	mDsvDescriptorSize = md3dDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_DSV);
 	mCbvSrvUavDescriptorSize = md3dDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
@@ -370,14 +373,18 @@ namespace Hazel
 		queueDesc.Flags = D3D12_COMMAND_QUEUE_FLAG_NONE;
 		ThrowIfFailed(md3dDevice->CreateCommandQueue(&queueDesc, IID_PPV_ARGS(&mCommandQueue)));
 
-		ThrowIfFailed(md3dDevice->CreateCommandAllocator(
-			D3D12_COMMAND_LIST_TYPE_DIRECT,
-			IID_PPV_ARGS(mDirectCmdListAlloc.GetAddressOf())));
+		for (UINT i = 0; i < NUM_FRAMES_IN_FLIGHT; i++) 
+		{
+			ThrowIfFailed(md3dDevice->CreateCommandAllocator(
+				D3D12_COMMAND_LIST_TYPE_DIRECT,
+				IID_PPV_ARGS(g_frameContext[i].CommandAllocator.GetAddressOf())));
+		}
+
 
 		ThrowIfFailed(md3dDevice->CreateCommandList(
 			0,
 			D3D12_COMMAND_LIST_TYPE_DIRECT,
-			mDirectCmdListAlloc.Get(), // Associated command allocator
+			g_frameContext[0].CommandAllocator.Get(), // Associated command allocator
 			nullptr,                   // Initial PipelineStateObject
 			IID_PPV_ARGS(mCommandList.GetAddressOf())));
 
