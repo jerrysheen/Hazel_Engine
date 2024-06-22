@@ -27,7 +27,7 @@ namespace Hazel {
 		inline Microsoft::WRL::ComPtr<ID3D12Device> GetD3DDevice() { return md3dDevice; }
 		inline DXGI_FORMAT GetBackBufferFormat() { return mBackBufferFormat; }
 		inline Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> GetCbvHeap() { return mCbvHeap; }
-		inline Microsoft::WRL::ComPtr<ID3D12CommandAllocator> GetCmdListAlloc() { return mDirectCmdListAlloc; }
+		//inline Microsoft::WRL::ComPtr<ID3D12CommandAllocator> GetCmdListAlloc() { return mDirectCmdListAlloc; }
 		inline Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> GetCmdList() { return mCommandList; }
 		inline  D3D12_VIEWPORT* GetCurrentViewPort() { return &mScreenViewport; }
 		inline  D3D12_RECT* GetCurrentScissorRect() { return &mScissorRect; }
@@ -37,6 +37,7 @@ namespace Hazel {
 		inline  int GetNumFrameInFlight() { return NUM_FRAMES_IN_FLIGHT; }
 		void ReInitCommandList();
 		ID3D12Resource* GetCurrentBackBuffer()const;
+		ID3D12CommandAllocator* GetCurrentCommandAllocator() const;
 		void FlushCommandQueue();
 
 		D3D12_CPU_DESCRIPTOR_HANDLE CurrentBackBufferView()const;
@@ -48,7 +49,7 @@ namespace Hazel {
 		void CreateSwapChain();
 		void CreateRtvAndDsvDescriptorHeaps();
 		void CreateCvbDescriptorHeaps();
-		void Draw();
+		//void Draw();
 
 		void OnResize();
 
@@ -71,7 +72,7 @@ namespace Hazel {
 		// Used to keep track of the 揹elta-time?and game time (?.4).
 
 		Microsoft::WRL::ComPtr<IDXGIFactory4> mdxgiFactory;
-		Microsoft::WRL::ComPtr<IDXGISwapChain> mSwapChain;
+		Microsoft::WRL::ComPtr<IDXGISwapChain3> mSwapChain;
 		Microsoft::WRL::ComPtr<ID3D12Device> md3dDevice;
 
 		Microsoft::WRL::ComPtr<ID3D12Fence> mFence;
@@ -114,7 +115,9 @@ namespace Hazel {
 
 		static int const                    NUM_FRAMES_IN_FLIGHT = 3;
 		// 这边有三个FrameContext，里面主要是有三个CommandAllocator，主要是为了处理多帧的操作，
-		static FrameContext                 g_frameContext[NUM_FRAMES_IN_FLIGHT];
-		static HANDLE  g_fenceEvent;
+		FrameContext                 g_frameContext[NUM_FRAMES_IN_FLIGHT] = {};
+		HANDLE  g_fenceEvent;
+		HANDLE g_hSwapChainWaitableObject = nullptr;
+
 	};
 }

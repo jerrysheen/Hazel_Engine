@@ -18,55 +18,60 @@ namespace Hazel
 	{
 	}
 
-	void D3D12RenderAPIManager::Draw()
-	{
-		// Reuse the memory associated with command recording.
-		// We can only reset when the associated command lists have finished execution on the GPU.
-		ThrowIfFailed(mDirectCmdListAlloc->Reset());
+	//void D3D12RenderAPIManager::Draw()
+	//{
+	//	// Reuse the memory associated with command recording.
+	//	// We can only reset when the associated command lists have finished execution on the GPU.
+	//	ThrowIfFailed(mDirectCmdListAlloc->Reset());
 
-		// A command list can be reset after it has been added to the command queue via ExecuteCommandList.
-		// Reusing the command list reuses memory.
-		ThrowIfFailed(mCommandList->Reset(mDirectCmdListAlloc.Get(), nullptr));
+	//	// A command list can be reset after it has been added to the command queue via ExecuteCommandList.
+	//	// Reusing the command list reuses memory.
+	//	ThrowIfFailed(mCommandList->Reset(mDirectCmdListAlloc.Get(), nullptr));
 
-		// Indicate a state transition on the resource usage.
-		mCommandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(GetCurrentBackBuffer(),
-			D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET));
+	//	// Indicate a state transition on the resource usage.
+	//	mCommandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(GetCurrentBackBuffer(),
+	//		D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET));
 
-		// Set the viewport and scissor rect.  This needs to be reset whenever the command list is reset.
-		mCommandList->RSSetViewports(1, &mScreenViewport);
-		mCommandList->RSSetScissorRects(1, &mScissorRect);
+	//	// Set the viewport and scissor rect.  This needs to be reset whenever the command list is reset.
+	//	mCommandList->RSSetViewports(1, &mScreenViewport);
+	//	mCommandList->RSSetScissorRects(1, &mScissorRect);
 
-		// Clear the back buffer and depth buffer.
-		mCommandList->ClearRenderTargetView(CurrentBackBufferView(), Colors::LightSteelBlue, 0, nullptr);
-		mCommandList->ClearDepthStencilView(DepthStencilView(), D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
+	//	// Clear the back buffer and depth buffer.
+	//	mCommandList->ClearRenderTargetView(CurrentBackBufferView(), Colors::LightSteelBlue, 0, nullptr);
+	//	mCommandList->ClearDepthStencilView(DepthStencilView(), D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
 
-		// Specify the buffers we are going to render to.
-		mCommandList->OMSetRenderTargets(1, &CurrentBackBufferView(), true, &DepthStencilView());
+	//	// Specify the buffers we are going to render to.
+	//	mCommandList->OMSetRenderTargets(1, &CurrentBackBufferView(), true, &DepthStencilView());
 
-		// Indicate a state transition on the resource usage.
-		mCommandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(GetCurrentBackBuffer(),
-			D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT));
+	//	// Indicate a state transition on the resource usage.
+	//	mCommandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(GetCurrentBackBuffer(),
+	//		D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT));
 
-		// Done recording commands.
-		ThrowIfFailed(mCommandList->Close());
+	//	// Done recording commands.
+	//	ThrowIfFailed(mCommandList->Close());
 
-		// Add the command list to the queue for execution.
-		ID3D12CommandList* cmdsLists[] = { mCommandList.Get() };
-		mCommandQueue->ExecuteCommandLists(_countof(cmdsLists), cmdsLists);
+	//	// Add the command list to the queue for execution.
+	//	ID3D12CommandList* cmdsLists[] = { mCommandList.Get() };
+	//	mCommandQueue->ExecuteCommandLists(_countof(cmdsLists), cmdsLists);
 
-		// swap the back and front buffers
-		ThrowIfFailed(mSwapChain->Present(0, 0));
-		mCurrBackBuffer = (mCurrBackBuffer + 1) % SwapChainBufferCount;
+	//	// swap the back and front buffers
+	//	ThrowIfFailed(mSwapChain->Present(0, 0));
+	//	mCurrBackBuffer = (mCurrBackBuffer + 1) % SwapChainBufferCount;
 
-		// Wait until frame commands are complete.  This waiting is inefficient and is
-		// done for simplicity.  Later we will show how to organize our rendering code
-		// so we do not have to wait per frame.
-		FlushCommandQueue();
-	}
+	//	// Wait until frame commands are complete.  This waiting is inefficient and is
+	//	// done for simplicity.  Later we will show how to organize our rendering code
+	//	// so we do not have to wait per frame.
+	//	FlushCommandQueue();
+	//}
 
 	ID3D12Resource* D3D12RenderAPIManager::GetCurrentBackBuffer()const
 	{
 		return mSwapChainBuffer[mCurrBackBuffer].Get();
+	}
+
+	ID3D12CommandAllocator* D3D12RenderAPIManager::GetCurrentCommandAllocator() const
+	{
+		return g_frameContext[mCurrBackBuffer].CommandAllocator.Get();
 	}
 
 	D3D12_CPU_DESCRIPTOR_HANDLE D3D12RenderAPIManager::CurrentBackBufferView()const
@@ -87,12 +92,12 @@ namespace Hazel
 	{
 		assert(md3dDevice);
 		assert(mSwapChain);
-		assert(mDirectCmdListAlloc);
+		assert(g_frameContext[0].CommandAllocator);
 
 		// Flush before changing any resources.
 		FlushCommandQueue();
 
-		ThrowIfFailed(mCommandList->Reset(mDirectCmdListAlloc.Get(), nullptr));
+		ThrowIfFailed(mCommandList->Reset(GetCurrentCommandAllocator(), nullptr));
 
 		// Release the previous resources we will be recreating.
 		for (int i = 0; i < SwapChainBufferCount; ++i)
@@ -207,18 +212,18 @@ namespace Hazel
 
 	void D3D12RenderAPIManager::OnUpdate()
 	{
-		Draw();
+		//Draw();
 	}
 
 	void D3D12RenderAPIManager::ReInitCommandList()
 	{
 		// Reuse the memory associated with command recording.
 		// We can only reset when the associated command lists have finished execution on the GPU.
-		ThrowIfFailed(mDirectCmdListAlloc->Reset());
+		ThrowIfFailed(GetCurrentCommandAllocator()->Reset());
 
 		// A command list can be reset after it has been added to the command queue via ExecuteCommandList.
 		// Reusing the command list reuses memory.
-		ThrowIfFailed(mCommandList->Reset(mDirectCmdListAlloc.Get(), nullptr));
+		ThrowIfFailed(mCommandList->Reset(GetCurrentCommandAllocator(), nullptr));
 	}
 
 	void  D3D12RenderAPIManager::InitDirect3D()
@@ -396,31 +401,58 @@ namespace Hazel
 
 	void D3D12RenderAPIManager::CreateSwapChain()
 	{
-		// Release the previous swapchain we will be recreating.
-		mSwapChain.Reset();
+		//// Release the previous swapchain we will be recreating.
+		//mSwapChain.Reset();
 
-		DXGI_SWAP_CHAIN_DESC sd;
-		sd.BufferDesc.Width = mClientWidth;
-		sd.BufferDesc.Height = mClientHeight;
-		sd.BufferDesc.RefreshRate.Numerator = 60;
-		sd.BufferDesc.RefreshRate.Denominator = 1;
-		sd.BufferDesc.Format = mBackBufferFormat;
-		sd.BufferDesc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
-		sd.BufferDesc.Scaling = DXGI_MODE_SCALING_UNSPECIFIED;
-		sd.SampleDesc.Count = m4xMsaaState ? 4 : 1;
-		sd.SampleDesc.Quality = m4xMsaaState ? (m4xMsaaQuality - 1) : 0;
-		sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-		sd.BufferCount = SwapChainBufferCount;
-		sd.OutputWindow = WindowsDXGIWindow::Get().GetDXGIWindowInstance();
-		sd.Windowed = true;
-		sd.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
-		sd.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
+		//DXGI_SWAP_CHAIN_DESC sd;
+		//sd.BufferDesc.Width = mClientWidth;
+		//sd.BufferDesc.Height = mClientHeight;
+		//sd.BufferDesc.RefreshRate.Numerator = 60;
+		//sd.BufferDesc.RefreshRate.Denominator = 1;
+		//sd.BufferDesc.Format = mBackBufferFormat;
+		//sd.BufferDesc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
+		//sd.BufferDesc.Scaling = DXGI_MODE_SCALING_UNSPECIFIED;
+		//sd.SampleDesc.Count = m4xMsaaState ? 4 : 1;
+		//sd.SampleDesc.Quality = m4xMsaaState ? (m4xMsaaQuality - 1) : 0;
+		//sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
+		//sd.BufferCount = SwapChainBufferCount;
+		//sd.OutputWindow = WindowsDXGIWindow::Get().GetDXGIWindowInstance();
+		//sd.Windowed = true;
+		//sd.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
+		//sd.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
 
-		// Note: Swap chain uses queue to perform flush.
-		ThrowIfFailed(mdxgiFactory->CreateSwapChain(
-			mCommandQueue.Get(),
-			&sd,
-			mSwapChain.GetAddressOf()));
+		//// Note: Swap chain uses queue to perform flush.
+		//ThrowIfFailed(mdxgiFactory->CreateSwapChain(
+		//	mCommandQueue.Get(),
+		//	&sd,
+		//	mSwapChain.GetAddressOf()));
+		
+		// 改用imgui的模式去创建，涉及到swapchain1和sawapchain4.
+			// Setup swap chain
+		DXGI_SWAP_CHAIN_DESC1 sd;
+		{
+			ZeroMemory(&sd, sizeof(sd));
+			sd.BufferCount = SwapChainBufferCount;
+			sd.Width = 0;
+			sd.Height = 0;
+			sd.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+			sd.Flags = DXGI_SWAP_CHAIN_FLAG_FRAME_LATENCY_WAITABLE_OBJECT;
+			sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
+			sd.SampleDesc.Count = 1;
+			sd.SampleDesc.Quality = 0;
+			sd.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
+			sd.AlphaMode = DXGI_ALPHA_MODE_UNSPECIFIED;
+			sd.Scaling = DXGI_SCALING_STRETCH;
+			sd.Stereo = FALSE;
+		}
+
+		IDXGISwapChain1* swapChain1 = nullptr;
+		//assert(CreateDXGIFactory1(IID_PPV_ARGS(&mdxgiFactory)) != S_OK);
+		assert(mdxgiFactory->CreateSwapChainForHwnd(mCommandQueue.Get(), WindowsDXGIWindow::Get().GetDXGIWindowInstance(), &sd, nullptr, nullptr, &swapChain1) != S_OK);
+		assert(swapChain1->QueryInterface(IID_PPV_ARGS(&mSwapChain)) != S_OK);
+		swapChain1->Release();
+		mSwapChain->SetMaximumFrameLatency(SwapChainBufferCount);
+		g_hSwapChainWaitableObject = mSwapChain->GetFrameLatencyWaitableObject();
 	}
 
 	void D3D12RenderAPIManager::CreateRtvAndDsvDescriptorHeaps()
@@ -433,6 +465,8 @@ namespace Hazel
 		ThrowIfFailed(md3dDevice->CreateDescriptorHeap(
 			&rtvHeapDesc, IID_PPV_ARGS(mRtvHeap.GetAddressOf())));
 
+		// Imgui里面，创建了三份RenderTargetDescriptor，注意这个地方和我们的实现不一样。
+
 
 		D3D12_DESCRIPTOR_HEAP_DESC dsvHeapDesc;
 		dsvHeapDesc.NumDescriptors = 1;
@@ -441,6 +475,8 @@ namespace Hazel
 		dsvHeapDesc.NodeMask = 0;
 		ThrowIfFailed(md3dDevice->CreateDescriptorHeap(
 			&dsvHeapDesc, IID_PPV_ARGS(mDsvHeap.GetAddressOf())));
+
+	
 	}
 		
 	void D3D12RenderAPIManager::CreateCvbDescriptorHeaps()
