@@ -11,7 +11,7 @@ namespace Hazel
 		InitDirect3D();
 
 		// Do the initial resize code.
-		OnResize();
+		//OnResize();
 	}
 
 	D3D12RenderAPIManager::~D3D12RenderAPIManager()
@@ -56,7 +56,7 @@ namespace Hazel
 
 	//	// swap the back and front buffers
 	//	ThrowIfFailed(mSwapChain->Present(0, 0));
-	//	mCurrBackBuffer = (mCurrBackBuffer + 1) % SwapChainBufferCount;
+	//	mCurrBackBufferIndex = (mCurrBackBufferIndex + 1) % SwapChainBufferCount;
 
 	//	// Wait until frame commands are complete.  This waiting is inefficient and is
 	//	// done for simplicity.  Later we will show how to organize our rendering code
@@ -66,25 +66,48 @@ namespace Hazel
 
 	ID3D12Resource* D3D12RenderAPIManager::GetCurrentBackBuffer()const
 	{
-		return mSwapChainBuffer[mCurrBackBuffer].Get();
+		return mSwapChainBuffer[mCurrBackBufferIndex].Get();
 	}
 
 	ID3D12CommandAllocator* D3D12RenderAPIManager::GetCurrentCommandAllocator() const
 	{
-		return g_frameContext[mCurrBackBuffer].CommandAllocator.Get();
+		return g_frameContext[mCurrBackBufferIndex].CommandAllocator.Get();
 	}
 
 	D3D12_CPU_DESCRIPTOR_HANDLE D3D12RenderAPIManager::CurrentBackBufferView()const
 	{
 		return CD3DX12_CPU_DESCRIPTOR_HANDLE(
 			mRtvHeap->GetCPUDescriptorHandleForHeapStart(),
-			mCurrBackBuffer,
+			mCurrBackBufferIndex,
 			mRtvDescriptorSize);
 	}
 
 	D3D12_CPU_DESCRIPTOR_HANDLE D3D12RenderAPIManager::DepthStencilView()const
 	{
 		return mDsvHeap->GetCPUDescriptorHandleForHeapStart();
+	}
+
+	D3D12RenderAPIManager::FrameContext* D3D12RenderAPIManager::WaitForNextFrameResources()
+	{
+		UINT nextFrameIndex = mCurrBackBufferIndex + 1;
+		mCurrBackBufferIndex = nextFrameIndex;
+
+		HANDLE waitableObjects[] = { g_hSwapChainWaitableObject, nullptr };
+		DWORD numWaitableObjects = 1;
+
+		FrameContext* frameCtx = &g_frameContext[nextFrameIndex % NUM_FRAMES_IN_FLIGHT];
+		UINT64 fenceValue = frameCtx->FenceValue;
+		if (fenceValue != 0) // means no fence was signaled
+		{
+			frameCtx->FenceValue = 0;
+			mFence->SetEventOnCompletion(fenceValue, g_fenceEvent);
+			waitableObjects[1] = g_fenceEvent;
+			numWaitableObjects = 2;
+		}
+
+		WaitForMultipleObjects(numWaitableObjects, waitableObjects, TRUE, INFINITE);
+
+		return frameCtx;
 	}
 
 
@@ -111,7 +134,7 @@ namespace Hazel
 			mBackBufferFormat,
 			DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH));
 
-		mCurrBackBuffer = 0;
+		mCurrBackBufferIndex = 0;
 
 		CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHeapHandle(mRtvHeap->GetCPUDescriptorHandleForHeapStart());
 		for (UINT i = 0; i < SwapChainBufferCount; i++)
@@ -292,9 +315,21 @@ namespace Hazel
 	CreateSwapChain();
 	CreateRtvAndDsvDescriptorHeaps();
 	CreateCvbDescriptorHeaps();
-
+	CreateRenderTarget();
 	//return true;
 	}
+
+	void D3D12RenderAPIManager::CreateRenderTarget()
+	{
+		for (UINT i = 0; i < NUM_FRAMES_IN_FLIGHT; i++)
+		{
+			ID3D12Resource* pBackBuffer = nullptr;
+			g_pSwapChain->GetBuffer(i, IID_PPV_ARGS(&pBackBuffer));
+			g_pd3dDevice->CreateRenderTargetView(pBackBuffer, nullptr, g_mainRenderTargetDescriptor[i]);
+			g_mainRenderTargetResource[i] = pBackBuffer;
+		}
+	}
+
 
 	void D3D12RenderAPIManager::LogAdapters()
 	{
@@ -448,8 +483,8 @@ namespace Hazel
 
 		IDXGISwapChain1* swapChain1 = nullptr;
 		//assert(CreateDXGIFactory1(IID_PPV_ARGS(&mdxgiFactory)) != S_OK);
-		assert(mdxgiFactory->CreateSwapChainForHwnd(mCommandQueue.Get(), WindowsDXGIWindow::Get().GetDXGIWindowInstance(), &sd, nullptr, nullptr, &swapChain1) != S_OK);
-		assert(swapChain1->QueryInterface(IID_PPV_ARGS(&mSwapChain)) != S_OK);
+		assert(mdxgiFactory->CreateSwapChainForHwnd(mCommandQueue.Get(), WindowsDXGIWindow::s_Instance->GetDXGIWindowInstance(), &sd, nullptr, nullptr, &swapChain1) == S_OK);
+		assert(swapChain1->QueryInterface(IID_PPV_ARGS(&mSwapChain)) == S_OK);
 		swapChain1->Release();
 		mSwapChain->SetMaximumFrameLatency(SwapChainBufferCount);
 		g_hSwapChainWaitableObject = mSwapChain->GetFrameLatencyWaitableObject();

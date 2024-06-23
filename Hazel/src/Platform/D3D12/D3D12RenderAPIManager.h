@@ -18,6 +18,12 @@ namespace Hazel {
 	class D3D12RenderAPIManager : public RenderAPIManager
 	{
 	public:
+		struct FrameContext
+		{
+			Microsoft::WRL::ComPtr<ID3D12CommandAllocator> CommandAllocator;
+			UINT64                  FenceValue;
+		};
+
 		D3D12RenderAPIManager();
 		virtual ~D3D12RenderAPIManager();
 
@@ -33,8 +39,11 @@ namespace Hazel {
 		inline  D3D12_RECT* GetCurrentScissorRect() { return &mScissorRect; }
 		inline  Microsoft::WRL::ComPtr<IDXGISwapChain> GetSwapChain() { return mSwapChain; }
 		inline  Microsoft::WRL::ComPtr<ID3D12CommandQueue> GetCommandQueue() { return mCommandQueue; }
-		inline  void UpdateBackBufferIndex() { mCurrBackBuffer = (mCurrBackBuffer + 1) % SwapChainBufferCount;; }
+		inline  void UpdateBackBufferIndex() { mCurrBackBufferIndex = (mCurrBackBufferIndex + 1) % SwapChainBufferCount;; }
 		inline  int GetNumFrameInFlight() { return NUM_FRAMES_IN_FLIGHT; }
+		inline  void IncreaseLastSignaledValue() { g_fenceLastSignaledValue++; }
+		inline  void SignalFence() { mCommandQueue->Signal(mFence.Get(), g_fenceLastSignaledValue); }
+		inline  void SyncCurrentFenceValueToFrameContext() { g_frameContext[mCurrBackBufferIndex % NUM_FRAMES_IN_FLIGHT].FenceValue = g_fenceLastSignaledValue; }
 		void ReInitCommandList();
 		ID3D12Resource* GetCurrentBackBuffer()const;
 		ID3D12CommandAllocator* GetCurrentCommandAllocator() const;
@@ -42,8 +51,11 @@ namespace Hazel {
 
 		D3D12_CPU_DESCRIPTOR_HANDLE CurrentBackBufferView()const;
 		D3D12_CPU_DESCRIPTOR_HANDLE DepthStencilView()const;
+
+		FrameContext* WaitForNextFrameResources();
 	private:
 		void InitDirect3D();
+		void CreateRenderTarget();
 
 		void CreateCommandObjects();
 		void CreateSwapChain();
@@ -85,7 +97,7 @@ namespace Hazel {
 		Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> mCommandList;
 
 		static const int SwapChainBufferCount = 3;
-		int mCurrBackBuffer = 0;
+		int mCurrBackBufferIndex = 0;
 		Microsoft::WRL::ComPtr<ID3D12Resource> mSwapChainBuffer[SwapChainBufferCount];
 		Microsoft::WRL::ComPtr<ID3D12Resource> mDepthStencilBuffer;
 
@@ -107,12 +119,8 @@ namespace Hazel {
 		int mClientWidth = 800;
 		int mClientHeight = 600;
 
-		struct FrameContext
-		{
-			Microsoft::WRL::ComPtr<ID3D12CommandAllocator> CommandAllocator;
-			UINT64                  FenceValue;
-		};
 
+		UINT64                       g_fenceLastSignaledValue = 0;
 		static int const                    NUM_FRAMES_IN_FLIGHT = 3;
 		// 这边有三个FrameContext，里面主要是有三个CommandAllocator，主要是为了处理多帧的操作，
 		FrameContext                 g_frameContext[NUM_FRAMES_IN_FLIGHT] = {};

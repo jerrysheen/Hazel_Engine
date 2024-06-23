@@ -176,6 +176,8 @@ namespace Hazel {
 			show_another_window = false;
 		ImGui::End();
 		ImGui::Render();
+
+
 		// utf-8？ 
 		// 之前的时候其实也是这么做的，相当于每一层的内容，我最后都基本渲染在一个rendertarget上面，这个rendertarget就是我的backbuffer。
 		// 可以理解为这个类似于UI层，每一个EditorLayer里面，我把内容都加到Imgui里面，然后在这个地方统一按照层级做一个渲染。
@@ -184,6 +186,19 @@ namespace Hazel {
 		
 		// 2024-06-02 我这个地方先尝试接入， 然后再把功能替换一下。
 
+		/*FrameContext* frameCtx = WaitForNextFrameResources();
+		UINT backBufferIdx = g_pSwapChain->GetCurrentBackBufferIndex();
+		frameCtx->CommandAllocator->Reset();
+
+		D3D12_RESOURCE_BARRIER barrier = {};
+		barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
+		barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
+		barrier.Transition.pResource = g_mainRenderTargetResource[backBufferIdx];
+		barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
+		barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_PRESENT;
+		barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_RENDER_TARGET;
+		g_pd3dCommandList->Reset(frameCtx->CommandAllocator, nullptr);
+		g_pd3dCommandList->ResourceBarrier(1, &barrier);*/
 		renderAPIManager->ReInitCommandList();
 
 		Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> mCommandList = renderAPIManager->GetCmdList();
@@ -199,10 +214,11 @@ namespace Hazel {
 		// Clear the back buffer and depth buffer.
 		// 感觉对这个 backbufferview的获取还是有疑惑。
 		mCommandList->ClearRenderTargetView(renderAPIManager->CurrentBackBufferView(), Colors::LightSteelBlue, 0, nullptr);
-		mCommandList->ClearDepthStencilView(renderAPIManager->DepthStencilView(), D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
+		//mCommandList->ClearDepthStencilView(renderAPIManager->DepthStencilView(), D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
 
 		// Specify the buffers we are going to render to.
-		mCommandList->OMSetRenderTargets(1, &renderAPIManager->CurrentBackBufferView(), true, &renderAPIManager->DepthStencilView());
+		//mCommandList->OMSetRenderTargets(1, &renderAPIManager->CurrentBackBufferView(), true, &renderAPIManager->DepthStencilView());
+		mCommandList->OMSetRenderTargets(1, &renderAPIManager->CurrentBackBufferView(), false, nullptr);
 		ID3D12DescriptorHeap* descriptorHeaps[] = { renderAPIManager->GetCbvHeap().Get()};
 		mCommandList->SetDescriptorHeaps(_countof(descriptorHeaps), descriptorHeaps);
 		ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), mCommandList.Get());
@@ -218,14 +234,16 @@ namespace Hazel {
 		renderAPIManager->GetCommandQueue()->ExecuteCommandLists(_countof(cmdsLists), cmdsLists);
 
 		// swap the back and front buffers
-		ThrowIfFailed(renderAPIManager->GetSwapChain()->Present(0, 0));
+		ThrowIfFailed(renderAPIManager->GetSwapChain()->Present(1, 0));
 		renderAPIManager->UpdateBackBufferIndex();
 
 		// Wait until frame commands are complete.  This waiting is inefficient and is
 		// done for simplicity.  Later we will show how to organize our rendering code
 		// so we do not have to wait per frame.
-		renderAPIManager->FlushCommandQueue();
-
+		//renderAPIManager->FlushCommandQueue();
+		renderAPIManager->IncreaseLastSignaledValue();
+		renderAPIManager->SignalFence();
+		renderAPIManager->SyncCurrentFenceValueToFrameContext();
 #endif
 
 
