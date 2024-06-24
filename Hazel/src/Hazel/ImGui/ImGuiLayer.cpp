@@ -186,27 +186,13 @@ namespace Hazel {
 		
 		// 2024-06-02 我这个地方先尝试接入， 然后再把功能替换一下。
 
-		/*FrameContext* frameCtx = WaitForNextFrameResources();
-		UINT backBufferIdx = g_pSwapChain->GetCurrentBackBufferIndex();
-		frameCtx->CommandAllocator->Reset();
-
-		D3D12_RESOURCE_BARRIER barrier = {};
-		barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
-		barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
-		barrier.Transition.pResource = g_mainRenderTargetResource[backBufferIdx];
-		barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
-		barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_PRESENT;
-		barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_RENDER_TARGET;
-		g_pd3dCommandList->Reset(frameCtx->CommandAllocator, nullptr);
-		g_pd3dCommandList->ResourceBarrier(1, &barrier);*/
-		renderAPIManager->ReInitCommandList();
+		renderAPIManager->ResetCommandList();
 
 		Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> mCommandList = renderAPIManager->GetCmdList();
 
 		// Indicate a state transition on the resource usage.
 		mCommandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(renderAPIManager->GetCurrentBackBuffer(),
 			D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET));
-
 		// Set the viewport and scissor rect.  This needs to be reset whenever the command list is reset.
 		mCommandList->RSSetViewports(1, renderAPIManager->GetCurrentViewPort());
 		mCommandList->RSSetScissorRects(1, renderAPIManager->GetCurrentScissorRect());
@@ -214,7 +200,6 @@ namespace Hazel {
 		// Clear the back buffer and depth buffer.
 		// 感觉对这个 backbufferview的获取还是有疑惑。
 		mCommandList->ClearRenderTargetView(renderAPIManager->CurrentBackBufferView(), Colors::LightSteelBlue, 0, nullptr);
-		//mCommandList->ClearDepthStencilView(renderAPIManager->DepthStencilView(), D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
 
 		// Specify the buffers we are going to render to.
 		//mCommandList->OMSetRenderTargets(1, &renderAPIManager->CurrentBackBufferView(), true, &renderAPIManager->DepthStencilView());
@@ -235,7 +220,6 @@ namespace Hazel {
 
 		// swap the back and front buffers
 		ThrowIfFailed(renderAPIManager->GetSwapChain()->Present(1, 0));
-		renderAPIManager->UpdateBackBufferIndex();
 
 		// Wait until frame commands are complete.  This waiting is inefficient and is
 		// done for simplicity.  Later we will show how to organize our rendering code

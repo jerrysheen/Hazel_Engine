@@ -40,11 +40,11 @@ namespace Hazel {
 		inline  Microsoft::WRL::ComPtr<IDXGISwapChain> GetSwapChain() { return mSwapChain; }
 		inline  Microsoft::WRL::ComPtr<ID3D12CommandQueue> GetCommandQueue() { return mCommandQueue; }
 		inline  void UpdateBackBufferIndex() { mCurrBackBufferIndex = (mCurrBackBufferIndex + 1) % SwapChainBufferCount;; }
-		inline  int GetNumFrameInFlight() { return NUM_FRAMES_IN_FLIGHT; }
+		inline  int GetNumFrameInFlight() { return NUM_BACK_BUFFERS; }
 		inline  void IncreaseLastSignaledValue() { g_fenceLastSignaledValue++; }
 		inline  void SignalFence() { mCommandQueue->Signal(mFence.Get(), g_fenceLastSignaledValue); }
-		inline  void SyncCurrentFenceValueToFrameContext() { g_frameContext[mCurrBackBufferIndex % NUM_FRAMES_IN_FLIGHT].FenceValue = g_fenceLastSignaledValue; }
-		void ReInitCommandList();
+		inline  void SyncCurrentFenceValueToFrameContext() { g_frameContext[mCurrBackBufferIndex % NUM_BACK_BUFFERS].FenceValue = g_fenceLastSignaledValue; }
+		void ResetCommandList();
 		ID3D12Resource* GetCurrentBackBuffer()const;
 		ID3D12CommandAllocator* GetCurrentCommandAllocator() const;
 		void FlushCommandQueue();
@@ -121,11 +121,12 @@ namespace Hazel {
 
 
 		UINT64                       g_fenceLastSignaledValue = 0;
-		static int const                    NUM_FRAMES_IN_FLIGHT = 3;
+		static int const                    NUM_BACK_BUFFERS = 3;
 		// 这边有三个FrameContext，里面主要是有三个CommandAllocator，主要是为了处理多帧的操作，
-		FrameContext                 g_frameContext[NUM_FRAMES_IN_FLIGHT] = {};
+		FrameContext                 g_frameContext[NUM_BACK_BUFFERS] = {};
 		HANDLE  g_fenceEvent;
 		HANDLE g_hSwapChainWaitableObject = nullptr;
-
+		D3D12_CPU_DESCRIPTOR_HANDLE  g_mainRenderTargetDescriptor[NUM_BACK_BUFFERS] = {};
+		ID3D12Resource* g_mainRenderTargetResource[NUM_BACK_BUFFERS] = {};
 	};
 }

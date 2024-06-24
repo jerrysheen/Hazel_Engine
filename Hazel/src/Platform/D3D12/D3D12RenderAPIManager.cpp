@@ -66,7 +66,7 @@ namespace Hazel
 
 	ID3D12Resource* D3D12RenderAPIManager::GetCurrentBackBuffer()const
 	{
-		return mSwapChainBuffer[mCurrBackBufferIndex].Get();
+		return g_mainRenderTargetResource[mCurrBackBufferIndex];
 	}
 
 	ID3D12CommandAllocator* D3D12RenderAPIManager::GetCurrentCommandAllocator() const
@@ -76,10 +76,11 @@ namespace Hazel
 
 	D3D12_CPU_DESCRIPTOR_HANDLE D3D12RenderAPIManager::CurrentBackBufferView()const
 	{
-		return CD3DX12_CPU_DESCRIPTOR_HANDLE(
+		return g_mainRenderTargetDescriptor[mCurrBackBufferIndex];
+		/*return CD3DX12_CPU_DESCRIPTOR_HANDLE(
 			mRtvHeap->GetCPUDescriptorHandleForHeapStart(),
 			mCurrBackBufferIndex,
-			mRtvDescriptorSize);
+			mRtvDescriptorSize);*/
 	}
 
 	D3D12_CPU_DESCRIPTOR_HANDLE D3D12RenderAPIManager::DepthStencilView()const
@@ -89,13 +90,13 @@ namespace Hazel
 
 	D3D12RenderAPIManager::FrameContext* D3D12RenderAPIManager::WaitForNextFrameResources()
 	{
-		UINT nextFrameIndex = mCurrBackBufferIndex + 1;
+		UINT nextFrameIndex = mSwapChain->GetCurrentBackBufferIndex();
 		mCurrBackBufferIndex = nextFrameIndex;
 
 		HANDLE waitableObjects[] = { g_hSwapChainWaitableObject, nullptr };
 		DWORD numWaitableObjects = 1;
 
-		FrameContext* frameCtx = &g_frameContext[nextFrameIndex % NUM_FRAMES_IN_FLIGHT];
+		FrameContext* frameCtx = &g_frameContext[nextFrameIndex % NUM_BACK_BUFFERS];
 		UINT64 fenceValue = frameCtx->FenceValue;
 		if (fenceValue != 0) // means no fence was signaled
 		{
@@ -238,15 +239,15 @@ namespace Hazel
 		//Draw();
 	}
 
-	void D3D12RenderAPIManager::ReInitCommandList()
+	// reset的时候 让current buffer + 1 了。。。
+	void D3D12RenderAPIManager::ResetCommandList()
 	{
-		// Reuse the memory associated with command recording.
-		// We can only reset when the associated command lists have finished execution on the GPU.
-		ThrowIfFailed(GetCurrentCommandAllocator()->Reset());
+		FrameContext* frameCtx = WaitForNextFrameResources();
+		frameCtx->CommandAllocator->Reset();
 
 		// A command list can be reset after it has been added to the command queue via ExecuteCommandList.
 		// Reusing the command list reuses memory.
-		ThrowIfFailed(mCommandList->Reset(GetCurrentCommandAllocator(), nullptr));
+		ThrowIfFailed(mCommandList->Reset(frameCtx->CommandAllocator.Get(), nullptr));
 	}
 
 	void  D3D12RenderAPIManager::InitDirect3D()
@@ -321,11 +322,11 @@ namespace Hazel
 
 	void D3D12RenderAPIManager::CreateRenderTarget()
 	{
-		for (UINT i = 0; i < NUM_FRAMES_IN_FLIGHT; i++)
+		for (UINT i = 0; i < NUM_BACK_BUFFERS; i++)
 		{
 			ID3D12Resource* pBackBuffer = nullptr;
-			g_pSwapChain->GetBuffer(i, IID_PPV_ARGS(&pBackBuffer));
-			g_pd3dDevice->CreateRenderTargetView(pBackBuffer, nullptr, g_mainRenderTargetDescriptor[i]);
+			mSwapChain->GetBuffer(i, IID_PPV_ARGS(&pBackBuffer));
+			md3dDevice->CreateRenderTargetView(pBackBuffer, nullptr, g_mainRenderTargetDescriptor[i]);
 			g_mainRenderTargetResource[i] = pBackBuffer;
 		}
 	}
@@ -413,7 +414,7 @@ namespace Hazel
 		queueDesc.Flags = D3D12_COMMAND_QUEUE_FLAG_NONE;
 		ThrowIfFailed(md3dDevice->CreateCommandQueue(&queueDesc, IID_PPV_ARGS(&mCommandQueue)));
 
-		for (UINT i = 0; i < NUM_FRAMES_IN_FLIGHT; i++) 
+		for (UINT i = 0; i < NUM_BACK_BUFFERS; i++)
 		{
 			ThrowIfFailed(md3dDevice->CreateCommandAllocator(
 				D3D12_COMMAND_LIST_TYPE_DIRECT,
@@ -501,7 +502,13 @@ namespace Hazel
 			&rtvHeapDesc, IID_PPV_ARGS(mRtvHeap.GetAddressOf())));
 
 		// Imgui里面，创建了三份RenderTargetDescriptor，注意这个地方和我们的实现不一样。
-
+		SIZE_T rtvDescriptorSize = md3dDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
+		D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle = mRtvHeap->GetCPUDescriptorHandleForHeapStart();
+		for (UINT i = 0; i < NUM_BACK_BUFFERS; i++)
+		{
+			g_mainRenderTargetDescriptor[i] = rtvHandle;
+			rtvHandle.ptr += rtvDescriptorSize;
+		}
 
 		D3D12_DESCRIPTOR_HEAP_DESC dsvHeapDesc;
 		dsvHeapDesc.NumDescriptors = 1;
