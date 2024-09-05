@@ -7,6 +7,7 @@
 #include "glm/gtc/type_ptr.hpp"
 #include "Platform/OpenGL/OpenGLShader.h"
 #include "EditorLayer.h"
+#include "SceneViewLayer.h"
 
 namespace Hazel 
 {
@@ -18,6 +19,7 @@ namespace Hazel
 			// ExapleLayer helps us to see the effect imediately.
 			// PushLayer(new ExampleLayer());
 			//PushLayer(new EditorLayer(GetWindow()));
+			PushLayer(new SceneViewLayer(GetWindow()));
 
 		}
 		~Hazelnut() {

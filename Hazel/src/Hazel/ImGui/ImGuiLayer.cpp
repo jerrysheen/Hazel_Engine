@@ -168,13 +168,13 @@ namespace Hazel {
 		// Rendering
 
 		// 1. Show the big demo window (Most of the sample code is in ImGui::ShowDemoWindow()! You can browse its code to learn more about Dear ImGui!).
-		bool show_another_window = true;
-		ImGui::ShowDemoWindow(&show_another_window);
-		ImGui::Begin("Another Window", &show_another_window);   // Pass a pointer to our bool variable (the window will have a closing button that will clear the bool when clicked)
-		ImGui::Text("Hello from another window!");
-		if (ImGui::Button("Close Me"))
-			show_another_window = false;
-		ImGui::End();
+		//bool show_another_window = true;
+		//ImGui::ShowDemoWindow(&show_another_window);
+		//ImGui::Begin("Another Window", &show_another_window);   // Pass a pointer to our bool variable (the window will have a closing button that will clear the bool when clicked)
+		//ImGui::Text("Hello from another window!");
+		//if (ImGui::Button("Close Me"))
+		//	show_another_window = false;
+		//ImGui::End();
 		ImGui::Render();
 
 
