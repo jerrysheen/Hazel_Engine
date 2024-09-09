@@ -5,28 +5,29 @@
 namespace Hazel 
 {
 	OpenGLFramebuffer::OpenGLFramebuffer(const FramebufferSpecification& spec)
-		: m_Specifications(spec)
+		: m_Specifications(spec), m_RendererID(0)
 	{
 		Invalidate();
 	}
 
 	OpenGLFramebuffer::~OpenGLFramebuffer()
 	{
-		glDeleteFramebuffers(1, &m_RendererID);
+		glDeleteFramebuffers(1, &m_NativeRendererID);
 		glDeleteTextures(1, &m_ColorAttachment);
 		glDeleteTextures(1, &m_DepthAttachment);
 	}
 
 	void OpenGLFramebuffer::Invalidate()
 	{
-		if (!m_RendererID) 
+		if (!m_NativeRendererID) 
 		{
-			glDeleteFramebuffers(1, &m_RendererID);
+			glDeleteFramebuffers(1, &m_NativeRendererID);
 			glDeleteTextures(1, &m_ColorAttachment);
 			glDeleteTextures(1, &m_DepthAttachment);
 		}
-		glCreateFramebuffers(1, &m_RendererID);
-		glBindFramebuffer(GL_FRAMEBUFFER, m_RendererID);
+		glCreateFramebuffers(1, &m_NativeRendererID);
+		m_RendererID = m_NativeRendererID;
+		glBindFramebuffer(GL_FRAMEBUFFER, m_NativeRendererID);
 
 		glCreateTextures(GL_TEXTURE_2D, 1, &m_ColorAttachment);
 		glBindTexture(GL_TEXTURE_2D, m_ColorAttachment);
@@ -50,7 +51,7 @@ namespace Hazel
 	}
 	void  OpenGLFramebuffer::Bind() 
 	{
-		glBindFramebuffer(GL_FRAMEBUFFER, m_RendererID);
+		glBindFramebuffer(GL_FRAMEBUFFER, m_NativeRendererID);
 
 	}
 	void OpenGLFramebuffer::Unbind()
@@ -67,7 +68,7 @@ namespace Hazel
 	void OpenGLFramebuffer::RebindColorAttachment(uint32_t colorAttachmentID, FramebufferSpecification Spec)
 	{
 		m_ColorAttachment = colorAttachmentID;
-		glBindFramebuffer(GL_FRAMEBUFFER, m_RendererID);
+		glBindFramebuffer(GL_FRAMEBUFFER, m_NativeRendererID);
 		//glBindTexture(GL_TEXTURE_2D, colorAttachmentID);
 		//glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, m_Specifications.Width, m_Specifications.Height, 0,
 		//	GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
@@ -93,7 +94,7 @@ namespace Hazel
 
 		m_DepthAttachment = depthAttachmentID;
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, 0, 0);
-		//glBindFramebuffer(GL_FRAMEBUFFER, m_RendererID);
+		//glBindFramebuffer(GL_FRAMEBUFFER, m_NativeRendererID);
 		//glDeleteTextures(1, &m_ColorAttachment);
 		//glCreateTextures(GL_TEXTURE_2D, 1, &m_ColorAttachment);
 		//glBindTexture(GL_TEXTURE_2D, m_ColorAttachment);
@@ -111,7 +112,7 @@ namespace Hazel
 	{
 		m_ColorAttachment = colorAttachmentID;
 		m_DepthAttachment = depthAttachmentID;
-		glBindFramebuffer(GL_FRAMEBUFFER, m_RendererID);
+		glBindFramebuffer(GL_FRAMEBUFFER, m_NativeRendererID);
 		glBindTexture(GL_TEXTURE_2D, colorAttachmentID);
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, colorAttachmentID, 0);
 		glBindTexture(GL_TEXTURE_2D, depthAttachmentID);

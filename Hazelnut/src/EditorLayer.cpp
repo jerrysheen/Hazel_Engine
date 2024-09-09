@@ -190,7 +190,7 @@ namespace Hazel
 
 
         m_FrameBuffer->RebindColorAndDepthAttachment(m_OpaqueTexture->GetRendererID(), m_DepthTexture->GetRendererID(), m_fbSpec);
-        glObjectLabel(GL_FRAMEBUFFER, m_FrameBuffer->GetRendererID(), -1, "FrameBuffer");
+        //glObjectLabel(GL_FRAMEBUFFER, m_FrameBuffer->GetRendererID(), -1, "FrameBuffer");
         //{
         //    m_FrameBuffer->Bind();
         //    //RendererCommand::SetViewPort(0, 0, m_fbSpec.Width, m_fbSpec.Height);

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "hzpch.h"
 #include "Hazel/Core/Core.h"
 #include "glm/gtc/type_ptr.hpp"
 
@@ -25,7 +26,8 @@ namespace Hazel {
 		virtual void Resize(const glm::vec2& viewportSize) = 0;
 		virtual uint32_t GetColorAttachmentRendererID() const = 0;
 		virtual uint32_t GetDepthAttachmentRendererID() const = 0;
-		virtual uint32_t GetRendererID() const = 0;
+		virtual std::any GetRendererID() const = 0;
+		//virtual uint32_t GetRendererID() const = 0;
 
 		virtual const FramebufferSpecification& GetSpecification() const = 0;
 

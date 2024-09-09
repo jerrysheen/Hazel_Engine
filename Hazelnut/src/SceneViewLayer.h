@@ -21,6 +21,7 @@ namespace Hazel
 
 	private:
 		Window& m_window;
+		Ref<Framebuffer> m_BackBuffer;
 	};
 }
 

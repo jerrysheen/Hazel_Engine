@@ -11,7 +11,13 @@ namespace Hazel
 
     void SceneViewLayer::OnAttach()
     {
-
+        // 尝试直接在这个地方创建一个RT， 应该是只需要渲染到窗口上就行了。 
+        // 以后所有的多线程渲染的内容， 应该都是基于这个窗口来进行的， 即最后都是渲染出一个framebuffer， 然后把colorattachement绑定在Imgui::Image上。
+        // 我的所有渲染行为应该是基于相机的，所以相机会持有一个FrameBuffer，我最后应该是把相机的FrameBufffer结果注入到RT上。
+        // 所以我这个地方先放一个相机，别的模型啥的后面再加入。
+        // 相机后续的渲染逻辑可以参考Unity的。。 就是相机-> renderer -> renderingPipeline.
+        // 应该先有一个framebuffer，相机是在这个framebuffer的逻辑之上的。
+        m_BackBuffer = Framebuffer::Create({ 1280, 720 });
     }
 
     void SceneViewLayer::OnDetach()
@@ -127,6 +133,17 @@ namespace Hazel
         //    m_CameraController.ResetAspectRatio(m_viewPortPanelSize.x, m_viewPortPanelSize.y);
         //}
         uint32_t textureID = 0;
+
+        // 这个地方应该看一下Imgui中的texture 是怎么绑定的。
+        //uint32_t textureID = 0;
+        //switch (m_renderTargetEnum)
+        //{
+        //case RenderTargetEnum::OPAQUE_TEXTURE:
+        //    textureID = m_FrameBuffer->GetColorAttachmentRendererID();
+        //    ImGui::Image((void*)textureID, ImVec2(m_FrameBuffer->GetSpecification().Width, m_FrameBuffer->GetSpecification().Height), ImVec2(0, 1), ImVec2(1, 0));
+        //    break;
+        //}
+
 
         ImGui::End();
         ImGui::PopStyleVar();
