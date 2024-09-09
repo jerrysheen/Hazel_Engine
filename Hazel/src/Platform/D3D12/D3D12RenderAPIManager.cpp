@@ -137,12 +137,14 @@ namespace Hazel
 
 		mCurrBackBufferIndex = 0;
 
-		CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHeapHandle(mRtvHeap->GetCPUDescriptorHandleForHeapStart());
+		CD3DX12_CPU_DESCRIPTOR_HANDLE backbufferHeapHandle(mBackBufferHeap->GetCPUDescriptorHandleForHeapStart());
+		//mRtvDescriptorCount = 0;
 		for (UINT i = 0; i < SwapChainBufferCount; i++)
 		{
 			ThrowIfFailed(mSwapChain->GetBuffer(i, IID_PPV_ARGS(&mSwapChainBuffer[i])));
-			md3dDevice->CreateRenderTargetView(mSwapChainBuffer[i].Get(), nullptr, rtvHeapHandle);
-			rtvHeapHandle.Offset(1, mRtvDescriptorSize);
+			md3dDevice->CreateRenderTargetView(mSwapChainBuffer[i].Get(), nullptr, backbufferHeapHandle);
+			backbufferHeapHandle.Offset(1, mRtvDescriptorSize);
+			//mRtvDescriptorCount++;
 		}
 
 		// Create the depth/stencil buffer and view.
@@ -314,7 +316,7 @@ namespace Hazel
 
 	CreateCommandObjects();
 	CreateSwapChain();
-	CreateRtvAndDsvDescriptorHeaps();
+	CreateHeaps();
 	CreateCvbDescriptorHeaps();
 	CreateRenderTarget();
 	//return true;
@@ -491,23 +493,35 @@ namespace Hazel
 		g_hSwapChainWaitableObject = mSwapChain->GetFrameLatencyWaitableObject();
 	}
 
-	void D3D12RenderAPIManager::CreateRtvAndDsvDescriptorHeaps()
+	void D3D12RenderAPIManager::CreateHeaps()
 	{
+		// 用来存储正常的Render Target，各种渲染相关的都在这里创建，
+		// 默认有十个， todo： 记录空闲的backbuffer。
 		D3D12_DESCRIPTOR_HEAP_DESC rtvHeapDesc;
-		rtvHeapDesc.NumDescriptors = SwapChainBufferCount;
+		rtvHeapDesc.NumDescriptors = 10;
 		rtvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
 		rtvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
 		rtvHeapDesc.NodeMask = 0;
 		ThrowIfFailed(md3dDevice->CreateDescriptorHeap(
 			&rtvHeapDesc, IID_PPV_ARGS(mRtvHeap.GetAddressOf())));
 
+		// 用来创建backbuffer、swapchain相关的rt，专门用来做backbuffer渲染的。
+		// 固定数量为三个。
 		// Imgui里面，创建了三份RenderTargetDescriptor，注意这个地方和我们的实现不一样。
+		D3D12_DESCRIPTOR_HEAP_DESC backBufferHeapDesc;
+		backBufferHeapDesc.NumDescriptors = SwapChainBufferCount;
+		backBufferHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
+		backBufferHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
+		backBufferHeapDesc.NodeMask = 0;
+		ThrowIfFailed(md3dDevice->CreateDescriptorHeap(
+			&backBufferHeapDesc, IID_PPV_ARGS(mBackBufferHeap.GetAddressOf())));
 		SIZE_T rtvDescriptorSize = md3dDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
-		D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle = mRtvHeap->GetCPUDescriptorHandleForHeapStart();
+		D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle = mBackBufferHeap->GetCPUDescriptorHandleForHeapStart();
 		for (UINT i = 0; i < NUM_BACK_BUFFERS; i++)
 		{
 			g_mainRenderTargetDescriptor[i] = rtvHandle;
 			rtvHandle.ptr += rtvDescriptorSize;
+			//mRtvDescriptorCount++;
 		}
 
 		D3D12_DESCRIPTOR_HEAP_DESC dsvHeapDesc;
@@ -518,7 +532,12 @@ namespace Hazel
 		ThrowIfFailed(md3dDevice->CreateDescriptorHeap(
 			&dsvHeapDesc, IID_PPV_ARGS(mDsvHeap.GetAddressOf())));
 
-	
+		// mSrvHeap创建srv， srv就是shader中能访问到的资源的view的heap
+		D3D12_DESCRIPTOR_HEAP_DESC srvHeapDesc = {};
+		srvHeapDesc.NumDescriptors = 1;
+		srvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
+		srvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE; // 必须是 GPU 可见的
+		ThrowIfFailed(md3dDevice->CreateDescriptorHeap(&srvHeapDesc, IID_PPV_ARGS(mSrvHeap.GetAddressOf())));
 	}
 		
 	void D3D12RenderAPIManager::CreateCvbDescriptorHeaps()

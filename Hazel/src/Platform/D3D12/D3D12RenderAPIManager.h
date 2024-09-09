@@ -33,12 +33,21 @@ namespace Hazel {
 		inline Microsoft::WRL::ComPtr<ID3D12Device> GetD3DDevice() { return md3dDevice; }
 		inline DXGI_FORMAT GetBackBufferFormat() { return mBackBufferFormat; }
 		inline Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> GetCbvHeap() { return mCbvHeap; }
+		inline Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> GetSrvHeap() { return mSrvHeap; }
+		
+		// RTV Heap and Handle Size;
+		inline Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> GetRtvHeap() { return mRtvHeap; }
+		inline UINT GetRtvDescriptorCount() { return mRtvDescriptorCount; }
+		inline UINT GetRtvDescriptorSize() { return md3dDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV); }
+
+
 		//inline Microsoft::WRL::ComPtr<ID3D12CommandAllocator> GetCmdListAlloc() { return mDirectCmdListAlloc; }
-		inline Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> GetCmdList() { return mCommandList; }
 		inline  D3D12_VIEWPORT* GetCurrentViewPort() { return &mScreenViewport; }
 		inline  D3D12_RECT* GetCurrentScissorRect() { return &mScissorRect; }
 		inline  Microsoft::WRL::ComPtr<IDXGISwapChain> GetSwapChain() { return mSwapChain; }
 		inline  Microsoft::WRL::ComPtr<ID3D12CommandQueue> GetCommandQueue() { return mCommandQueue; }
+		inline Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> GetCmdList() { return mCommandList; }
+
 		inline  void UpdateBackBufferIndex() { mCurrBackBufferIndex = (mCurrBackBufferIndex + 1) % SwapChainBufferCount;; }
 		inline  int GetNumFrameInFlight() { return NUM_BACK_BUFFERS; }
 		inline  void IncreaseLastSignaledValue() { g_fenceLastSignaledValue++; }
@@ -59,7 +68,7 @@ namespace Hazel {
 
 		void CreateCommandObjects();
 		void CreateSwapChain();
-		void CreateRtvAndDsvDescriptorHeaps();
+		void CreateHeaps();
 		void CreateCvbDescriptorHeaps();
 		//void Draw();
 
@@ -102,13 +111,17 @@ namespace Hazel {
 		Microsoft::WRL::ComPtr<ID3D12Resource> mDepthStencilBuffer;
 
 		Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> mRtvHeap;
+		Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> mBackBufferHeap;
 		Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> mDsvHeap;
 		Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> mCbvHeap;
+		Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> mSrvHeap;
 
 		D3D12_VIEWPORT mScreenViewport;
 		D3D12_RECT mScissorRect;
 
 		UINT mRtvDescriptorSize = 0;
+		UINT mRtvDescriptorCount = 0;
+
 		UINT mDsvDescriptorSize = 0;
 		UINT mCbvSrvUavDescriptorSize = 0;
 

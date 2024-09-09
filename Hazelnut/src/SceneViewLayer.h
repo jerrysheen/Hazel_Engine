@@ -5,6 +5,10 @@
 #include "glm/gtc/type_ptr.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 #include "Panels/SceneHierarchyPanel.h"
+#include "Platform/D3D12/d3dx12.h"
+#include "Platform/D3D12/d3dUtil.h"
+#include "Platform/D3D12/D3D12RenderAPIManager.h"
+
 
 namespace Hazel
 {
@@ -22,6 +26,11 @@ namespace Hazel
 	private:
 		Window& m_window;
 		Ref<Framebuffer> m_BackBuffer;
+		Microsoft::WRL::ComPtr<ID3D12Resource> colorBuffer;
+		CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle;
+		CD3DX12_CPU_DESCRIPTOR_HANDLE srvHandle;
+		D3D12_CPU_DESCRIPTOR_HANDLE my_texture_srv_cpu_handle;
+		D3D12_GPU_DESCRIPTOR_HANDLE my_texture_srv_gpu_handle;
 	};
 }
 
