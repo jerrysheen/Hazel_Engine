@@ -13,6 +13,33 @@ namespace Hazel
 
     void SceneViewLayer::OnAttach()
     {
+
+        D3D12RenderAPIManager* renderAPIManager = static_cast<D3D12RenderAPIManager*>(Application::Get().GetRenderAPIManager().get());
+        Microsoft::WRL::ComPtr<ID3D12Device> device = renderAPIManager->GetD3DDevice();
+
+        ID3D12Fence* fence = NULL;
+        HRESULT hr = device->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&fence));
+        IM_ASSERT(SUCCEEDED(hr));
+
+        HANDLE event = CreateEvent(0, 0, 0, 0);
+        IM_ASSERT(event != NULL);
+
+        D3D12_COMMAND_QUEUE_DESC queueDesc = {};
+        queueDesc.Type = D3D12_COMMAND_LIST_TYPE_DIRECT;
+        queueDesc.Flags = D3D12_COMMAND_QUEUE_FLAG_NONE;
+        queueDesc.NodeMask = 1;
+
+        ID3D12CommandQueue* cmdQueue = NULL;
+        hr = device->CreateCommandQueue(&queueDesc, IID_PPV_ARGS(&cmdQueue));
+        IM_ASSERT(SUCCEEDED(hr));
+
+        ID3D12CommandAllocator* cmdAlloc = NULL;
+        hr = device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&cmdAlloc));
+        IM_ASSERT(SUCCEEDED(hr));
+
+        ID3D12GraphicsCommandList* cmdList = NULL;
+        hr = device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, cmdAlloc, NULL, IID_PPV_ARGS(&cmdList));
+        IM_ASSERT(SUCCEEDED(hr));
         // 尝试直接在这个地方创建一个RT， 应该是只需要渲染到窗口上就行了。 
         // 以后所有的多线程渲染的内容， 应该都是基于这个窗口来进行的， 即最后都是渲染出一个framebuffer， 然后把colorattachement绑定在Imgui::Image上。
         // 我的所有渲染行为应该是基于相机的，所以相机会持有一个FrameBuffer，我最后应该是把相机的FrameBufffer结果注入到RT上。
@@ -33,22 +60,21 @@ namespace Hazel
         colorBufferDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET; // 声明这是一个渲染目标
 
         // 为颜色缓冲区指定清除值
-        //D3D12_CLEAR_VALUE clearValue = {};
-        //clearValue.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-        //clearValue.Color[0] = 1.0f; 
-        //clearValue.Color[1] = 1.0f;
-        //clearValue.Color[2] = 1.0f;
-        //clearValue.Color[3] = 1.0f;
+        D3D12_CLEAR_VALUE clearValue = {};
+        clearValue.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+        clearValue.Color[0] = 1.0f;
+        clearValue.Color[1] = 1.0f;
+        clearValue.Color[2] = 1.0f;
+        clearValue.Color[3] = 1.0f;
 
-        D3D12RenderAPIManager* renderAPIManager = static_cast<D3D12RenderAPIManager*>(Application::Get().GetRenderAPIManager().get());
-        Microsoft::WRL::ComPtr<ID3D12Device> device = renderAPIManager->GetD3DDevice();
+
         device->CreateCommittedResource
         (
             &CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT),
             D3D12_HEAP_FLAG_NONE,
             &colorBufferDesc,
             D3D12_RESOURCE_STATE_RENDER_TARGET, // 初始状态为渲染目标
-            nullptr,
+            &clearValue,
             IID_PPV_ARGS(&colorBuffer)
         );
 
@@ -64,7 +90,7 @@ namespace Hazel
         int descriptor_index = renderAPIManager->GetRtvDescriptorCount(); // The descriptor table index to use (not normally a hard-coded constant, but in this case we'll assume we have slot 1 reserved for us)
         my_texture_srv_cpu_handle = renderAPIManager->GetRtvHeap()->GetCPUDescriptorHandleForHeapStart();
         //my_texture_srv_cpu_handle.ptr += (handle_increment * descriptor_index);
-        my_texture_srv_gpu_handle = renderAPIManager->GetRtvHeap()->GetGPUDescriptorHandleForHeapStart();
+        //my_texture_srv_gpu_handle = renderAPIManager->GetRtvHeap()->GetGPUDescriptorHandleForHeapStart();
         //my_texture_srv_gpu_handle.ptr += (handle_increment * descriptor_index);
 
         CD3DX12_RESOURCE_BARRIER barrierToSRV = CD3DX12_RESOURCE_BARRIER::Transition(
@@ -72,7 +98,8 @@ namespace Hazel
             D3D12_RESOURCE_STATE_RENDER_TARGET, // 渲染结束时是 Render Target 状态
             D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE // 切换到纹理资源状态
         );
-        renderAPIManager->GetCmdList()->ResourceBarrier(1, &barrierToSRV);
+        cmdList->ResourceBarrier(1, &barrierToSRV);
+
 
 
         // 创建 SRV（Shader Resource View）
@@ -82,13 +109,34 @@ namespace Hazel
         srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
         srvDesc.Texture2D.MipLevels = 1;
 
-        srvHandle = renderAPIManager->GetSrvHeap()->GetCPUDescriptorHandleForHeapStart();
+        srvHandle = renderAPIManager->GetCbvHeap()->GetCPUDescriptorHandleForHeapStart();
+        srvHandle.Offset(1, handle_increment);
         device->CreateShaderResourceView(colorBuffer.Get(), &srvDesc, srvHandle);
 
-        my_texture_srv_gpu_handle = renderAPIManager->GetSrvHeap()->GetGPUDescriptorHandleForHeapStart();
+        my_texture_srv_gpu_handle = renderAPIManager->GetCbvHeap()->GetGPUDescriptorHandleForHeapStart();
+        my_texture_srv_gpu_handle.ptr += (handle_increment * 1);
         ID3D12DescriptorHeap* descriptorHeaps[] = { renderAPIManager->GetCbvHeap().Get() };
-        renderAPIManager->GetCmdList()->SetDescriptorHeaps(_countof(descriptorHeaps), descriptorHeaps);
+        cmdList->SetDescriptorHeaps(_countof(descriptorHeaps), descriptorHeaps);
 
+
+
+
+
+        hr = cmdList->Close();
+        IM_ASSERT(SUCCEEDED(hr));
+
+        cmdQueue->ExecuteCommandLists(1, (ID3D12CommandList* const*)&cmdList);
+        hr = cmdQueue->Signal(fence, 1);
+        IM_ASSERT(SUCCEEDED(hr));
+
+        fence->SetEventOnCompletion(1, event);
+        WaitForSingleObject(event, INFINITE);
+
+        cmdList->Release();
+        cmdAlloc->Release();
+        cmdQueue->Release();
+        CloseHandle(event);
+        fence->Release();
     }
 
     void SceneViewLayer::OnDetach()

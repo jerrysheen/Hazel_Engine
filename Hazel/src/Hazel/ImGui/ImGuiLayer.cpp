@@ -108,6 +108,7 @@ namespace Hazel {
 			srvDescHeap->GetCPUDescriptorHandleForHeapStart(),
 			srvDescHeap->GetGPUDescriptorHandleForHeapStart());
 #endif
+
 	}
 
 
@@ -167,19 +168,10 @@ namespace Hazel {
 		io.DisplaySize = ImVec2(app.GetWindow().GetWidth(), app.GetWindow().GetHeight());
 		// Rendering
 
-		// 1. Show the big demo window (Most of the sample code is in ImGui::ShowDemoWindow()! You can browse its code to learn more about Dear ImGui!).
-		//bool show_another_window = true;
-		//ImGui::ShowDemoWindow(&show_another_window);
-		//ImGui::Begin("Another Window", &show_another_window);   // Pass a pointer to our bool variable (the window will have a closing button that will clear the bool when clicked)
-		//ImGui::Text("Hello from another window!");
-		//if (ImGui::Button("Close Me"))
-		//	show_another_window = false;
-		//ImGui::End();
 		ImGui::Render();
 
 
 		// utf-8？ 
-		// 之前的时候其实也是这么做的，相当于每一层的内容，我最后都基本渲染在一个rendertarget上面，这个rendertarget就是我的backbuffer。
 		// 可以理解为这个类似于UI层，每一个EditorLayer里面，我把内容都加到Imgui里面，然后在这个地方统一按照层级做一个渲染。
 		// EditorLayer层里面自己的渲染内容，我可以不管，但是最后基本上都是一个RenderTexture的形式。
 		// 也就是说，我在这个地方需要接管 swapbuffer的操作。
@@ -187,6 +179,7 @@ namespace Hazel {
 		// 2024-06-02 我这个地方先尝试接入， 然后再把功能替换一下。
 
 		renderAPIManager->ResetCommandList();
+
 
 		Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> mCommandList = renderAPIManager->GetCmdList();
 

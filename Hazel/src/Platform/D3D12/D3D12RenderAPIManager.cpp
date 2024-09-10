@@ -504,6 +504,8 @@ namespace Hazel
 		rtvHeapDesc.NodeMask = 0;
 		ThrowIfFailed(md3dDevice->CreateDescriptorHeap(
 			&rtvHeapDesc, IID_PPV_ARGS(mRtvHeap.GetAddressOf())));
+		mRtvHeap->SetName(L"RTV Heap");
+
 
 		// 用来创建backbuffer、swapchain相关的rt，专门用来做backbuffer渲染的。
 		// 固定数量为三个。
@@ -515,6 +517,8 @@ namespace Hazel
 		backBufferHeapDesc.NodeMask = 0;
 		ThrowIfFailed(md3dDevice->CreateDescriptorHeap(
 			&backBufferHeapDesc, IID_PPV_ARGS(mBackBufferHeap.GetAddressOf())));
+		mBackBufferHeap->SetName(L"BackBuffer Heap");
+
 		SIZE_T rtvDescriptorSize = md3dDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
 		D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle = mBackBufferHeap->GetCPUDescriptorHandleForHeapStart();
 		for (UINT i = 0; i < NUM_BACK_BUFFERS; i++)
@@ -531,6 +535,9 @@ namespace Hazel
 		dsvHeapDesc.NodeMask = 0;
 		ThrowIfFailed(md3dDevice->CreateDescriptorHeap(
 			&dsvHeapDesc, IID_PPV_ARGS(mDsvHeap.GetAddressOf())));
+		mDsvHeap->SetName(L"DSV Heap");
+
+
 
 		// mSrvHeap创建srv， srv就是shader中能访问到的资源的view的heap
 		D3D12_DESCRIPTOR_HEAP_DESC srvHeapDesc = {};
@@ -538,16 +545,19 @@ namespace Hazel
 		srvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
 		srvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE; // 必须是 GPU 可见的
 		ThrowIfFailed(md3dDevice->CreateDescriptorHeap(&srvHeapDesc, IID_PPV_ARGS(mSrvHeap.GetAddressOf())));
+		mSrvHeap->SetName(L"SRV Heap");
+
 	}
 		
 	void D3D12RenderAPIManager::CreateCvbDescriptorHeaps()
 	{
 		D3D12_DESCRIPTOR_HEAP_DESC cbvHeapDesc;
-		cbvHeapDesc.NumDescriptors = 1;
+		cbvHeapDesc.NumDescriptors = 10;
 		cbvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
 		cbvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
 		cbvHeapDesc.NodeMask = 0;
 		ThrowIfFailed(md3dDevice->CreateDescriptorHeap(&cbvHeapDesc, IID_PPV_ARGS(mCbvHeap.GetAddressOf())));
+		mCbvHeap->SetName(L"mCbvHeap");
 	}
 
 }
