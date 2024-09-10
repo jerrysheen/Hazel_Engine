@@ -85,7 +85,7 @@ namespace Hazel
 
         // ´´½¨RTVÃèÊö·û
         device->CreateRenderTargetView(colorBuffer.Get(), nullptr, rtvHandle);
-
+        cmdList->ClearRenderTargetView(rtvHandle, Colors::White, 0, nullptr);
         UINT handle_increment = device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
         int descriptor_index = renderAPIManager->GetRtvDescriptorCount(); // The descriptor table index to use (not normally a hard-coded constant, but in this case we'll assume we have slot 1 reserved for us)
         my_texture_srv_cpu_handle = renderAPIManager->GetRtvHeap()->GetCPUDescriptorHandleForHeapStart();
