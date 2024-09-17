@@ -1,7 +1,7 @@
 #pragma once
 
 #include "OrthographicCamera.h"
-#include "PerspectiveCamera.h"
+#include "Camera.h"
 #include "glm/gtc/matrix_transform.hpp"
 #include "Texture.h"
 #include "hzpch.h"
@@ -17,7 +17,7 @@ namespace Hazel {
 		static void Shutdown();
 
 		static void BeginScene(const OrthographicCamera& camera);
-		static void BeginScene(const PerspectiveCamera& camera);
+		static void BeginScene(const Camera& camera);
 
 		static void EndScene();
 

@@ -3,9 +3,9 @@
 #include "glm/glm.hpp"
 
 namespace Hazel {
-	class PerspectiveCamera {
+	class Camera {
 	public:
-		PerspectiveCamera(float fov, float width, float height, float nearPlane, float farPlane);
+		Camera(float fov, float width, float height, float nearPlane, float farPlane);
 		
 		void SetProjection(float fov, float width, float height, float nearPlane, float farPlane);
 
@@ -55,5 +55,9 @@ namespace Hazel {
 		float m_Rotation = 0.0f;
 		glm::vec3 m_Front = { 0, 0, 1 };
 		glm::vec3 m_up = { 0, 1.0f, 0.0f };
+
+		//RenderTargetHandler m_CameraColorAttachment;
+		//RenderTargetHandler m_CameraDepthAttachment;
+
 	};
 }

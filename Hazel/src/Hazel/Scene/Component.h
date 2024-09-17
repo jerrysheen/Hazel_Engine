@@ -6,7 +6,7 @@
 #include "Hazel/Model/Mesh.h"
 #include <Hazel/Model/Material.h>
 #include <Hazel/Model/Model.h>
-#include <Hazel/Renderer/PerspectiveCamera.h>
+#include <Hazel/Renderer/Camera.h>
 
 
 namespace Hazel {
@@ -81,7 +81,7 @@ namespace Hazel {
 
 	struct CameraComponent 
 	{
-		PerspectiveCamera camera;
+		Camera camera;
 	};
 
 

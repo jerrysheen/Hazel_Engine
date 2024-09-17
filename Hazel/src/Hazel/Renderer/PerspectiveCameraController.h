@@ -1,5 +1,5 @@
 #pragma once
-#include "PerspectiveCamera.h"
+#include "Camera.h"
 #include "Hazel/Events/Event.h"
 #include "Hazel/Core/Timestep.h"
 
@@ -13,7 +13,7 @@ namespace Hazel {
 	public:
 		PerspectiveCameraController(float fov, float width, float height, float nearPlane, float farPlane);
 
-		inline const PerspectiveCamera GetCamera() { return m_Camera; };
+		inline const Camera GetCamera() { return m_Camera; };
 		void OnEvent(Event& e);
 		void OnUpdate(Timestep ts);
 		void onRender() {
@@ -34,7 +34,7 @@ namespace Hazel {
 
 		bool OnMouseMoved(MouseMovedEvent& e);
 	private:
-		PerspectiveCamera m_Camera;
+		Camera m_Camera;
 		glm::vec3 m_CameraPosition = { 0.0, 3.0, -10.0 };
 		glm::vec3 m_front = {0.0, 0.0, 1.0 };
 		glm::vec3 m_up = { 0, 1, 0 };

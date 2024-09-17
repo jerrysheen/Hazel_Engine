@@ -14,6 +14,7 @@ namespace Hazel
     void SceneViewLayer::OnAttach()
     {
 
+
         D3D12RenderAPIManager* renderAPIManager = static_cast<D3D12RenderAPIManager*>(Application::Get().GetRenderAPIManager().get());
         Microsoft::WRL::ComPtr<ID3D12Device> device = renderAPIManager->GetD3DDevice();
 
@@ -146,7 +147,30 @@ namespace Hazel
 
     void SceneViewLayer::OnUpdate(Timestep ts)
     {
+        
+        //Culling result = Camera.Cull(Scene);
+        //
+        //Camera.Render(result);
+        //defaultRenderer.AddRenderPass(opaquePass);
+        //Camera.BindRenderer(defaultRenderer);
+        //Camera.Render();
+ 
+        // 
+        // 
+        // m_textureID = Camera.GetColorAttachment();
+        // 
+        // 参考unity的先写一版吧。
+        // 每个camera持有一个renderer，renderer里面有renderfeature，一个renderfeature执行一次绘制。
+        // 每个renderpass会声明自己对应的rendertarget，以及各自的渲染状态。
+        // 最后我的相机的输出就是一个cameraColorAttachment， 但是在这个地方我还要去考虑这些rt的管理。
+        // 我可能需要重构一下最底层那个代码。。就是imgui层。 把renderapi manager往上弄， 底层不需要这个东西。。
+        // 这一层layer持有一个rt？ 所有的内容其实就是叠加在这个上面进行绘制的。
 
+        // 所谓的sceneview到底应该干什么？这个窗口不应该承担任何渲染的逻辑，如果说sceneview底下有一个scene，然后里面有一些gameobject
+        // 那么我应该就是往这个scene里面添加gameobject，我的绘制应该在这个地方拉起来吗？ 其实感觉也不应该。。 不过先这么写吧。
+        // 后续的渲染逻辑肯定要更加细分，能想象到的就是这个地方，mtextureID的赋值应该是在postRender的地方，这个地方一切渲染的内容都已经绘制完了。
+        // 这个地方的多线程， 想一下profiler里面，相当于是我主线程提交一个pass，多线程里面就立即执行这个内容，这个过程中我们如果先不考虑feedback的东西，
+        // 那么GPU只需要按照command依次执行就好了，所以我们会看到主线程 -> 渲染线程 -> GPU 这样子的一个流程。
 
     }
 

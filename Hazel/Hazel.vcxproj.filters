@@ -147,7 +147,7 @@
     <ClInclude Include="src\Hazel\Renderer\OrthographicCameraController.h">
       <Filter>src\Hazel\Renderer</Filter>
     </ClInclude>
-    <ClInclude Include="src\Hazel\Renderer\PerspectiveCamera.h">
+    <ClInclude Include="src\Hazel\Renderer\Camera.h">
       <Filter>src\Hazel\Renderer</Filter>
     </ClInclude>
     <ClInclude Include="src\Hazel\Renderer\PerspectiveCameraController.h">
@@ -1489,6 +1489,8 @@
     <ClInclude Include="src\Platform\D3D12\DirectX12Framebuffer.h">
       <Filter>src\Platform\D3D12</Filter>
     </ClInclude>
+    <ClInclude Include="resource.h" />
+    <ClInclude Include="src\Hazel\Gfx\RenderTarget.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Hazel\Core\Application.cpp">
@@ -1530,7 +1532,7 @@
     <ClCompile Include="src\Hazel\Renderer\OrthographicCameraController.cpp">
       <Filter>src\Hazel\Renderer</Filter>
     </ClCompile>
-    <ClCompile Include="src\Hazel\Renderer\PerspectiveCamera.cpp">
+    <ClCompile Include="src\Hazel\Renderer\Camera.cpp">
       <Filter>src\Hazel\Renderer</Filter>
     </ClCompile>
     <ClCompile Include="src\Hazel\Renderer\PerspectiveCameraController.cpp">
@@ -1627,5 +1629,9 @@
     <ClCompile Include="src\Platform\D3D12\DirectX12Framebuffer.cpp">
       <Filter>src\Platform\D3D12</Filter>
     </ClCompile>
+    <ClCompile Include="src\Hazel\Gfx\RenderTarget.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Hazel.rc" />
   </ItemGroup>
 </Project>

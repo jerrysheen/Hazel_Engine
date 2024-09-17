@@ -25,7 +25,7 @@ namespace Hazel {
 		m_SceneData->ViewProjectionMatrix = camera.GetViewProjectionMatrix();
 	}
 
-	void Renderer::BeginScene(const PerspectiveCamera& camera)
+	void Renderer::BeginScene(const Camera& camera)
 	{
 		m_SceneData->ViewProjectionMatrix = camera.GetViewProjectionMatrix();
 	}

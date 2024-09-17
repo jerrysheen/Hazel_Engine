@@ -150,12 +150,12 @@ namespace Hazel {
 		return false;
 	}
 
-	void PerspectiveCameraController::ResetAspectRatio(float width, float height) 
+	void PerspectiveCameraController::ResetAspectRatio(float width, float height)
 	{
 		m_Camera.ResetAspectRatio(width, height);
 	}
 
-	//bool PerspectiveCameraController::OnMouseScrolled(MouseScrolledEvent& e)
+	//bool CameraController::OnMouseScrolled(MouseScrolledEvent& e)
 	//{
 	//	/*m_ZoomLevel -= e.GetYOffset() * 0.25;
 	//	m_ZoomLevel = std::max(m_ZoomLevel, 0.25f);
