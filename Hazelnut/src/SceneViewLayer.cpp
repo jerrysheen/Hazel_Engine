@@ -1,5 +1,5 @@
 #include "SceneViewLayer.h"
-
+#include <Hazel/Gfx/RenderStruct.h>
 
 
 
@@ -153,7 +153,12 @@ namespace Hazel
         //Camera.Render(result);
         //defaultRenderer.AddRenderPass(opaquePass);
         //Camera.BindRenderer(defaultRenderer);
-        //Camera.Render();
+        Camera* sceneCamera = new Camera(60, 1920, 1080, 0.1f, 1000.0f);
+        //sceneCamera->BindRenderer(defaultRenderer);
+        RenderNode* node = Culling.Cull(sceneCamera, scene);
+        RenderingData renderingData;
+        sceneCamera->Render(node, renderingData);
+        // 最后将这个colorattachment作为backbuffer输出。
  
         // 
         // 

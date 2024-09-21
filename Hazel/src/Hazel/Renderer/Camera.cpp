@@ -16,6 +16,17 @@ namespace Hazel {
 		m_ViewProjectionMatrix = m_ProjectionMatrix * m_ViewMatrix;
 	}
 
+	void Camera::Render(node, renderingData)
+	{
+		
+		// renderer 只是一个抽象的结构？记录的只是一些数据，直接用
+		for each (var pass in m_Renderer.renderPass)
+		{
+			pass.Configure();
+			pass.Execute();
+		}
+	}
+
 	void Camera::SetProjection(float fov, float width, float height, float nearPlane, float farPlane)
 	{
 		m_ProjectionMatrix = glm::perspective(fov, width/height , nearPlane, farPlane);

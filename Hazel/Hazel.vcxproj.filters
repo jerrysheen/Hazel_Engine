@@ -1491,6 +1491,7 @@
     </ClInclude>
     <ClInclude Include="resource.h" />
     <ClInclude Include="src\Hazel\Gfx\RenderTarget.h" />
+    <ClInclude Include="src\Platform\D3D12\D3D12RenderTarget.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Hazel\Core\Application.cpp">
@@ -1630,6 +1631,7 @@
       <Filter>src\Platform\D3D12</Filter>
     </ClCompile>
     <ClCompile Include="src\Hazel\Gfx\RenderTarget.cpp" />
+    <ClCompile Include="src\Platform\D3D12\D3D12RenderTarget.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Hazel.rc" />

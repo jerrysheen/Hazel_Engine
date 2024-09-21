@@ -19,6 +19,7 @@ namespace Hazel {
 
 		inline float GetRotation() const { return m_Rotation; }
 
+		void Render();
 
 		void SetCameraFront(const glm::vec3& front) {
 			m_Front = front;
