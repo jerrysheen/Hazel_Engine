@@ -3,7 +3,6 @@
 
 
 #include "RendererCommand.h"
-#include "Renderer.h"
 
 namespace Hazel {
 

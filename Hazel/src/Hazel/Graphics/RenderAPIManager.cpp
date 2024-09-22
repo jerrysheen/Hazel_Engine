@@ -1,13 +1,14 @@
 #include "hzpch.h"
 #include "Hazel/Graphics/RenderAPIManager.h"
-#include "Hazel/Renderer/Renderer.h"
 #include "Platform/D3D12/D3D12RenderAPIManager.h"
 //#include "Platform/Windows/WindowsDXGIWindow.h"
+
+#include "Hazel/Graphics/RenderAPI.h"
 namespace Hazel
 {
 	RenderAPIManager* RenderAPIManager::Create()
 	{
-		switch (Renderer::GetAPI())
+		switch (RenderAPI::GetAPI())
 		{
 		case RenderAPI::API::None: HZ_CORE_ASSERT(false, "RenderAPI::None is currently not supported"); break;
 		//case RenderAPI::API::OpenGL: return new WindowsGLFWWindow(props); break;

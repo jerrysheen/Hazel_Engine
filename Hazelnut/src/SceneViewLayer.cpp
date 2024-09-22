@@ -1,5 +1,6 @@
 #include "SceneViewLayer.h"
 #include <Hazel/Gfx/RenderStruct.h>
+#include <Hazel/Gfx/Culling.h>
 
 
 
@@ -20,10 +21,10 @@ namespace Hazel
 
         ID3D12Fence* fence = NULL;
         HRESULT hr = device->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&fence));
-        IM_ASSERT(SUCCEEDED(hr));
+        assert(SUCCEEDED(hr));
 
         HANDLE event = CreateEvent(0, 0, 0, 0);
-        IM_ASSERT(event != NULL);
+        assert(event != NULL);
 
         D3D12_COMMAND_QUEUE_DESC queueDesc = {};
         queueDesc.Type = D3D12_COMMAND_LIST_TYPE_DIRECT;
@@ -32,23 +33,17 @@ namespace Hazel
 
         ID3D12CommandQueue* cmdQueue = NULL;
         hr = device->CreateCommandQueue(&queueDesc, IID_PPV_ARGS(&cmdQueue));
-        IM_ASSERT(SUCCEEDED(hr));
+        assert(SUCCEEDED(hr));
 
         ID3D12CommandAllocator* cmdAlloc = NULL;
         hr = device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&cmdAlloc));
-        IM_ASSERT(SUCCEEDED(hr));
+        assert(SUCCEEDED(hr));
 
         ID3D12GraphicsCommandList* cmdList = NULL;
         hr = device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, cmdAlloc, NULL, IID_PPV_ARGS(&cmdList));
-        IM_ASSERT(SUCCEEDED(hr));
-        // 尝试直接在这个地方创建一个RT， 应该是只需要渲染到窗口上就行了。 
-        // 以后所有的多线程渲染的内容， 应该都是基于这个窗口来进行的， 即最后都是渲染出一个framebuffer， 然后把colorattachement绑定在Imgui::Image上。
-        // 我的所有渲染行为应该是基于相机的，所以相机会持有一个FrameBuffer，我最后应该是把相机的FrameBufffer结果注入到RT上。
-        // 所以我这个地方先放一个相机，别的模型啥的后面再加入。
-        // 相机后续的渲染逻辑可以参考Unity的。。 就是相机-> renderer -> renderingPipeline.
-        // 应该先有一个framebuffer，相机是在这个framebuffer的逻辑之上的。
-        //m_BackBuffer = Framebuffer::Create({ 1280, 720 });
-                // delete model;
+        assert(SUCCEEDED(hr));
+
+
         D3D12_RESOURCE_DESC colorBufferDesc = {};
         colorBufferDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
         colorBufferDesc.Width = 1280;       // 设置颜色缓冲区的宽度
@@ -154,9 +149,10 @@ namespace Hazel
         //defaultRenderer.AddRenderPass(opaquePass);
         //Camera.BindRenderer(defaultRenderer);
         Camera* sceneCamera = new Camera(60, 1920, 1080, 0.1f, 1000.0f);
+        Scene* scene;
         //sceneCamera->BindRenderer(defaultRenderer);
-        RenderNode* node = Culling.Cull(sceneCamera, scene);
-        RenderingData renderingData;
+        RenderNode* node = Culling::Cull(sceneCamera, scene);
+        RenderingData* renderingData;
         sceneCamera->Render(node, renderingData);
         // 最后将这个colorattachment作为backbuffer输出。
  

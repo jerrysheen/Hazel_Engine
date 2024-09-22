@@ -2,7 +2,6 @@
 #include "Application.h"
 
 #include "Hazel/Core/Log.h"
-#include "Hazel/Renderer/Renderer.h"
 #include "Glfw/glfw3.h"
 
 namespace Hazel{

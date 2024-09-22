@@ -1,6 +1,9 @@
 #pragma once
 
 #include "glm/glm.hpp"
+#include "Hazel/Gfx/RenderStruct.h"
+#include "Hazel/Gfx/Renderer.h"
+#include "Hazel/Gfx/RenderTarget.h"
 
 namespace Hazel {
 	class Camera {
@@ -19,7 +22,7 @@ namespace Hazel {
 
 		inline float GetRotation() const { return m_Rotation; }
 
-		void Render();
+		void Render(RenderNode* node, RenderingData* data);
 
 		void SetCameraFront(const glm::vec3& front) {
 			m_Front = front;
@@ -38,6 +41,8 @@ namespace Hazel {
 		const  glm::vec3& GetCamPos() const { return m_Position; };
 		const glm::mat4& GetViewMatrix() const { return m_ViewMatrix; };
 		const glm::mat4& GetViewProjectionMatrix() const { return m_ViewProjectionMatrix; };
+
+		Renderer* m_Renderer;
 	private:
 		void RecalculateViewMatrix();
 	private:
@@ -57,8 +62,8 @@ namespace Hazel {
 		glm::vec3 m_Front = { 0, 0, 1 };
 		glm::vec3 m_up = { 0, 1.0f, 0.0f };
 
-		//RenderTargetHandler m_CameraColorAttachment;
-		//RenderTargetHandler m_CameraDepthAttachment;
+		Ref<RenderTarget> m_CameraColorAttachment;
+		Ref<RenderTarget> m_CameraDepthAttachment;
 
 	};
 }

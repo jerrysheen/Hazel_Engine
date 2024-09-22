@@ -2,7 +2,10 @@
 
 
 #include "Hazel/Gfx/RenderTarget.h"
-
+#include "Platform/D3D12/d3dx12.h"
+#include "Platform/D3D12/d3dUtil.h"
+#include "Platform/D3D12/D3D12RenderAPIManager.h"
+#include "Hazel.h"
 namespace Hazel
 {
 
@@ -33,6 +36,8 @@ namespace Hazel
 		//uint32_t m_NativeRendererID = 0;
 		//uint32_t m_ColorAttachment = 0, m_DepthAttachment = 0;
 		//FramebufferSpecification m_Specifications;
+		Microsoft::WRL::ComPtr<ID3D12Resource> bufferResrouce;
+
 	};
 
 }

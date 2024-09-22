@@ -156,7 +156,7 @@
     <ClInclude Include="src\Hazel\Renderer\RenderTargetEnum.h">
       <Filter>src\Hazel\Renderer</Filter>
     </ClInclude>
-    <ClInclude Include="src\Hazel\Renderer\Renderer.h">
+    <ClInclude Include="src\Hazel\Gfx\Renderer.h">
       <Filter>src\Hazel\Renderer</Filter>
     </ClInclude>
     <ClInclude Include="src\Hazel\Renderer\Renderer3D.h">
@@ -1492,6 +1492,9 @@
     <ClInclude Include="resource.h" />
     <ClInclude Include="src\Hazel\Gfx\RenderTarget.h" />
     <ClInclude Include="src\Platform\D3D12\D3D12RenderTarget.h" />
+    <ClInclude Include="src\Hazel\Gfx\Culling.h" />
+    <ClInclude Include="src\Hazel\Gfx\RenderStruct.h" />
+    <ClInclude Include="src\Hazel\Gfx\RenderPass.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Hazel\Core\Application.cpp">
@@ -1542,7 +1545,7 @@
     <ClCompile Include="src\Hazel\Renderer\RenderTargetEnum.cpp">
       <Filter>src\Hazel\Renderer</Filter>
     </ClCompile>
-    <ClCompile Include="src\Hazel\Renderer\Renderer.cpp">
+    <ClCompile Include="src\Hazel\Gfx\Renderer.cpp">
       <Filter>src\Hazel\Renderer</Filter>
     </ClCompile>
     <ClCompile Include="src\Hazel\Renderer\Renderer3D.cpp">
@@ -1632,6 +1635,8 @@
     </ClCompile>
     <ClCompile Include="src\Hazel\Gfx\RenderTarget.cpp" />
     <ClCompile Include="src\Platform\D3D12\D3D12RenderTarget.cpp" />
+    <ClCompile Include="src\Hazel\Gfx\Culling.cpp" />
+    <ClCompile Include="src\Hazel\Gfx\RenderPass.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Hazel.rc" />

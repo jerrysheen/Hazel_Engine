@@ -1,7 +1,7 @@
 #pragma once
 
 #include "OrthographicCamera.h"
-#include "Camera.h"
+#include "Hazel/Renderer/Camera.h"
 #include "glm/gtc/matrix_transform.hpp"
 #include "Texture.h"
 #include "hzpch.h"

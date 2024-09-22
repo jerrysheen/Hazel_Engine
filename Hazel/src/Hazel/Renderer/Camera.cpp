@@ -14,17 +14,14 @@ namespace Hazel {
 		,m_FarPlane(farPlane)
 	{
 		m_ViewProjectionMatrix = m_ProjectionMatrix * m_ViewMatrix;
+
+		m_CameraColorAttachment= RenderTarget::Create({ (UINT32)width, (UINT32)height });
+		// InitCamera color/depth Attachment
 	}
 
-	void Camera::Render(node, renderingData)
+	void Camera::Render(RenderNode* node, RenderingData* data)
 	{
-		
-		// renderer 只是一个抽象的结构？记录的只是一些数据，直接用
-		for each (var pass in m_Renderer.renderPass)
-		{
-			pass.Configure();
-			pass.Execute();
-		}
+		m_Renderer->Render(node, data);
 	}
 
 	void Camera::SetProjection(float fov, float width, float height, float nearPlane, float farPlane)

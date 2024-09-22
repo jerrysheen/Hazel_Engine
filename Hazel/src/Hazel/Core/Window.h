@@ -4,7 +4,7 @@
 
 #include "Hazel/Core/Core.h"
 #include "Hazel/Events/Event.h"
-#include "Hazel/Renderer/Renderer.h"
+//#include "Hazel/Renderer/Renderer.h"
 
 namespace Hazel {
 

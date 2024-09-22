@@ -2,7 +2,9 @@
 
 #include "hzpch.h"
 #include "../Renderer/Shader.h"
-#include "../Renderer/Renderer3D.h"
+#include "Hazel/Renderer/Texture.h"
+
+//#include "../Renderer/Renderer3D.h"
 
 namespace Hazel 
 {
@@ -30,7 +32,7 @@ namespace Hazel
 		Ref<Texture3D> tex3D;
 
 		Ref<glm::vec4> color;
-		Renderer3D::DRAW_TYPE drawType;
+		//Renderer3D::DRAW_TYPE drawType;
 
 		Ref<glm::mat4> modelMatrix;
 		Ref<glm::mat4> translate;

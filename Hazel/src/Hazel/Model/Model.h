@@ -5,7 +5,7 @@
 #include <assimp/scene.h>           // Output data structure
 #include <assimp/postprocess.h>     // Post processing flags
 #include "../Renderer/Shader.h"
-#include "../Renderer/Renderer3D.h"
+//#include "../Renderer/Renderer3D.h"
 #include "Mesh.h"
 #include "glm/gtc/matrix_transform.hpp"
 
@@ -32,7 +32,7 @@ namespace Hazel
         Ref<Texture2D> aoMap;
 
         Ref<glm::vec4> color;
-        Renderer3D::DRAW_TYPE drawType;
+       // Renderer3D::DRAW_TYPE drawType;
         
         Ref<glm::mat4> modelMatrix;
         Ref<glm::mat4> translate;

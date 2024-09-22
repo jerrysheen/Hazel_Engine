@@ -2,14 +2,14 @@
 
 
 #include "Texture.h"
-#include "Renderer.h"
+#include "Hazel/Graphics/RenderAPI.h"
 #include "Platform/OpenGL/OpenGLTexture2D.h"
 #include "Platform/OpenGL/OpenGLTexture3D.h"
 
 namespace Hazel {
 	Ref<Texture2D> Texture2D::Create(uint32_t width, uint32_t height, uint32_t colorFormat)
 	{
-		switch (Renderer::GetAPI())
+		switch (RenderAPI::GetAPI())
 		{
 		case RenderAPI::API::None:    HZ_CORE_ASSERT(false, "RenderAPI::None is currently not supported!"); return nullptr;
 		case RenderAPI::API::OpenGL:  return  std::make_shared<OpenGLTexture2D>(width, height, colorFormat);
@@ -22,7 +22,7 @@ namespace Hazel {
 
 	Ref<Texture2D> Texture2D::Create(const std::string& path) 
 	{
-		switch (Renderer::GetAPI())
+		switch (RenderAPI::GetAPI())
 		{
 			case RenderAPI::API::None: HZ_CORE_ASSERT(false, "RenderAPI::None is currently not supported");
 			case RenderAPI::API::OpenGL: return std::make_shared<OpenGLTexture2D>(path);
@@ -33,7 +33,7 @@ namespace Hazel {
 
 	Ref<Texture2D>  Texture2D::Create(const std::string& path, bool isCompressedImage, bool enableMip)
 	{
-		switch (Renderer::GetAPI())
+		switch (RenderAPI::GetAPI())
 		{
 		case RenderAPI::API::None: HZ_CORE_ASSERT(false, "RenderAPI::None is currently not supported");
 		case RenderAPI::API::OpenGL: return std::make_shared<OpenGLTexture2D>(path, isCompressedImage, enableMip);
@@ -45,7 +45,7 @@ namespace Hazel {
 
 	Ref<Texture3D> Texture3D::Create(uint32_t width, uint32_t height)
 	{
-		switch (Renderer::GetAPI())
+		switch (RenderAPI::GetAPI())
 		{
 		case RenderAPI::API::None:    HZ_CORE_ASSERT(false, "RenderAPI::None is currently not supported!"); return nullptr;
 		case RenderAPI::API::OpenGL:  return  std::make_shared<OpenGLTexture3D>(width, height);
@@ -58,7 +58,7 @@ namespace Hazel {
 
 	Ref<Texture3D> Texture3D::Create(const std::vector<std::string>& path)
 	{
-		switch (Renderer::GetAPI())
+		switch (RenderAPI::GetAPI())
 		{
 		case RenderAPI::API::None: HZ_CORE_ASSERT(false, "RenderAPI::None is currently not supported");
 		case RenderAPI::API::OpenGL: return std::make_shared<OpenGLTexture3D>(path);
@@ -69,7 +69,7 @@ namespace Hazel {
 
 	Ref<Texture3D>  Texture3D::Create(const std::vector<std::string>& path, bool isCompressedImage = true, bool enableMipMap = true)
 	{
-		switch (Renderer::GetAPI())
+		switch (RenderAPI::GetAPI())
 		{
 		case RenderAPI::API::None: HZ_CORE_ASSERT(false, "RenderAPI::None is currently not supported");
 		case RenderAPI::API::OpenGL: return std::make_shared<OpenGLTexture3D>(path, isCompressedImage, enableMipMap);
