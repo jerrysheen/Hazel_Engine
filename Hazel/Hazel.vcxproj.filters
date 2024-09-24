@@ -1495,6 +1495,7 @@
     <ClInclude Include="src\Hazel\Gfx\Culling.h" />
     <ClInclude Include="src\Hazel\Gfx\RenderStruct.h" />
     <ClInclude Include="src\Hazel\Gfx\RenderPass.h" />
+    <ClInclude Include="src\Hazel\Gfx\CustomRenderPass\OpaqueRenderPass.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Hazel\Core\Application.cpp">
@@ -1637,6 +1638,7 @@
     <ClCompile Include="src\Platform\D3D12\D3D12RenderTarget.cpp" />
     <ClCompile Include="src\Hazel\Gfx\Culling.cpp" />
     <ClCompile Include="src\Hazel\Gfx\RenderPass.cpp" />
+    <ClCompile Include="src\Hazel\Gfx\CustomRenderPass\OpaqueRenderPass.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Hazel.rc" />

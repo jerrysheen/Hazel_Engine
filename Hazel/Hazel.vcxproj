@@ -163,6 +163,7 @@
     <ClInclude Include="src\Hazel\Events\KeyEvent.h" />
     <ClInclude Include="src\Hazel\Events\MouseEvent.h" />
     <ClInclude Include="src\Hazel\Gfx\Culling.h" />
+    <ClInclude Include="src\Hazel\Gfx\CustomRenderPass\OpaqueRenderPass.h" />
     <ClInclude Include="src\Hazel\Gfx\RenderPass.h" />
     <ClInclude Include="src\Hazel\Gfx\RenderStruct.h" />
     <ClInclude Include="src\Hazel\Gfx\RenderTarget.h" />
@@ -631,6 +632,7 @@
     <ClCompile Include="src\Hazel\Core\LayerStack.cpp" />
     <ClCompile Include="src\Hazel\Core\Log.cpp" />
     <ClCompile Include="src\Hazel\Gfx\Culling.cpp" />
+    <ClCompile Include="src\Hazel\Gfx\CustomRenderPass\OpaqueRenderPass.cpp" />
     <ClCompile Include="src\Hazel\Gfx\RenderPass.cpp" />
     <ClCompile Include="src\Hazel\Gfx\RenderTarget.cpp" />
     <ClCompile Include="src\Hazel\Graphics\RenderAPIManager.cpp" />

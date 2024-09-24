@@ -10,7 +10,7 @@ namespace Hazel {
 	{
 	public:
 		static void Init();
-		
+		void OnCameraSetup();
 		void Render(RenderNode* node, RenderingData* data);
 		
 		std::vector<RenderPass> m_RenderPasses;
