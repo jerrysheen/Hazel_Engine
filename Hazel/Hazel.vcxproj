@@ -162,8 +162,11 @@
     <ClInclude Include="src\Hazel\Events\Event.h" />
     <ClInclude Include="src\Hazel\Events\KeyEvent.h" />
     <ClInclude Include="src\Hazel\Events\MouseEvent.h" />
+    <ClInclude Include="src\Hazel\Gfx\CommandList.h" />
+    <ClInclude Include="src\Hazel\Gfx\CommandPool.h" />
     <ClInclude Include="src\Hazel\Gfx\Culling.h" />
     <ClInclude Include="src\Hazel\Gfx\CustomRenderPass\OpaqueRenderPass.h" />
+    <ClInclude Include="src\Hazel\Gfx\RendererConstant.h" />
     <ClInclude Include="src\Hazel\Gfx\RenderPass.h" />
     <ClInclude Include="src\Hazel\Gfx\RenderStruct.h" />
     <ClInclude Include="src\Hazel\Gfx\RenderTarget.h" />
@@ -191,6 +194,7 @@
     <ClInclude Include="src\Hazel\Scene\Entity.h" />
     <ClInclude Include="src\Hazel\Scene\Scene.h" />
     <ClInclude Include="src\Hazel\Utility\Random.h" />
+    <ClInclude Include="src\Platform\D3D12\D3D12CommandList.h" />
     <ClInclude Include="src\Platform\D3D12\D3D12RenderAPI.h" />
     <ClInclude Include="src\Platform\D3D12\D3D12RenderAPIManager.h" />
     <ClInclude Include="src\Platform\D3D12\D3D12RenderTarget.h" />
@@ -631,6 +635,8 @@
     <ClCompile Include="src\Hazel\Core\Layer.cpp" />
     <ClCompile Include="src\Hazel\Core\LayerStack.cpp" />
     <ClCompile Include="src\Hazel\Core\Log.cpp" />
+    <ClCompile Include="src\Hazel\Gfx\CommandList.cpp" />
+    <ClCompile Include="src\Hazel\Gfx\CommandPool.cpp" />
     <ClCompile Include="src\Hazel\Gfx\Culling.cpp" />
     <ClCompile Include="src\Hazel\Gfx\CustomRenderPass\OpaqueRenderPass.cpp" />
     <ClCompile Include="src\Hazel\Gfx\RenderPass.cpp" />
@@ -658,6 +664,7 @@
     <ClCompile Include="src\Hazel\Scene\Entity.cpp" />
     <ClCompile Include="src\Hazel\Scene\Scene.cpp" />
     <ClCompile Include="src\Hazel\Utility\Random.cpp" />
+    <ClCompile Include="src\Platform\D3D12\D3D12CommandList.cpp" />
     <ClCompile Include="src\Platform\D3D12\D3D12RenderAPI.cpp" />
     <ClCompile Include="src\Platform\D3D12\D3D12RenderAPIManager.cpp" />
     <ClCompile Include="src\Platform\D3D12\D3D12RenderTarget.cpp" />

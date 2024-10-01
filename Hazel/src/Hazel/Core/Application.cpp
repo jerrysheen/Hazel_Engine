@@ -3,6 +3,7 @@
 
 #include "Hazel/Core/Log.h"
 #include "Glfw/glfw3.h"
+#include "Hazel/Gfx/CommandPool.h"
 
 namespace Hazel{
 
@@ -22,7 +23,7 @@ namespace Hazel{
 		m_Window = Scope<Window>(Window::Create(props));
 		m_Window->SetEventCallback(BIND_EVENT_FN(OnEvent));
 		m_RenderAPIManager = Ref<RenderAPIManager>(RenderAPIManager::Create());
-		
+		CommandPool::getInstance()->Init();
 
 		//Renderer::Init();
 		m_Window->SetBackGroundColor();
