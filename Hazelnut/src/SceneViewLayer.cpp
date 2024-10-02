@@ -1,7 +1,7 @@
 #include "SceneViewLayer.h"
 #include <Hazel/Gfx/RenderStruct.h>
 #include <Hazel/Gfx/Culling.h>
-
+#include "Hazel/Gfx/CommandPool.h"
 
 
 namespace Hazel
@@ -42,6 +42,8 @@ namespace Hazel
         ID3D12GraphicsCommandList* cmdList = NULL;
         hr = device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, cmdAlloc, NULL, IID_PPV_ARGS(&cmdList));
         assert(SUCCEEDED(hr));
+        //Ref<CommandList> cmdList = CommandPool::getInstance()->GetCommand();
+        //cmdList->Reset();
 
 
         D3D12_RESOURCE_DESC colorBufferDesc = {};

@@ -25,7 +25,7 @@ namespace Hazel
 		float playerMoveSpeed = 1;
 		Window& m_window;
 		//我只需要一个FrameBuffer，绑定不同的Texture即可。
-		Ref<Framebuffer> m_FrameBuffer;
+		Ref<TextureBuffer> m_FrameBuffer;
 		Ref<Texture2D> m_OpaqueTexture;
 		Ref<Texture2D> m_DepthTexture;
 		Ref<Texture2D> m_ShadowMap;

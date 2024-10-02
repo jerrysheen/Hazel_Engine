@@ -16,6 +16,15 @@
     <Filter Include="src\Hazel\Events">
       <UniqueIdentifier>{D495B311-C08E-D263-E9C0-B7E8D518B26F}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Hazel\Gfx">
+      <UniqueIdentifier>{64B15F1C-D071-DB52-99AC-24D0052C202F}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Hazel\Gfx\CustomRenderPass">
+      <UniqueIdentifier>{E5534EBD-D179-1824-BABF-9DEFA6843DF0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Hazel\Graphics">
+      <UniqueIdentifier>{30EE53E8-1CD2-143E-8532-0F917135FFBF}</UniqueIdentifier>
+    </Filter>
     <Filter Include="src\Hazel\ImGui">
       <UniqueIdentifier>{1AE138B3-866C-A677-8F7D-296CFB870278}</UniqueIdentifier>
     </Filter>
@@ -120,6 +129,42 @@
     <ClInclude Include="src\Hazel\Events\MouseEvent.h">
       <Filter>src\Hazel\Events</Filter>
     </ClInclude>
+    <ClInclude Include="src\Hazel\Gfx\CommandList.h">
+      <Filter>src\Hazel\Gfx</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Hazel\Gfx\CommandPool.h">
+      <Filter>src\Hazel\Gfx</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Hazel\Gfx\CommandQueue.h">
+      <Filter>src\Hazel\Gfx</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Hazel\Gfx\Culling.h">
+      <Filter>src\Hazel\Gfx</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Hazel\Gfx\CustomRenderPass\OpaqueRenderPass.h">
+      <Filter>src\Hazel\Gfx\CustomRenderPass</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Hazel\Gfx\RenderPass.h">
+      <Filter>src\Hazel\Gfx</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Hazel\Gfx\RenderStruct.h">
+      <Filter>src\Hazel\Gfx</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Hazel\Gfx\RenderTarget.h">
+      <Filter>src\Hazel\Gfx</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Hazel\Gfx\Renderer.h">
+      <Filter>src\Hazel\Gfx</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Hazel\Gfx\RendererConstant.h">
+      <Filter>src\Hazel\Gfx</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Hazel\Graphics\RenderAPI.h">
+      <Filter>src\Hazel\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Hazel\Graphics\RenderAPIManager.h">
+      <Filter>src\Hazel\Graphics</Filter>
+    </ClInclude>
     <ClInclude Include="src\Hazel\ImGui\ImGuiLayer.h">
       <Filter>src\Hazel\ImGui</Filter>
     </ClInclude>
@@ -135,7 +180,7 @@
     <ClInclude Include="src\Hazel\Renderer\Buffer.h">
       <Filter>src\Hazel\Renderer</Filter>
     </ClInclude>
-    <ClInclude Include="src\Hazel\Renderer\Framebuffer.h">
+    <ClInclude Include="src\Hazel\Renderer\Camera.h">
       <Filter>src\Hazel\Renderer</Filter>
     </ClInclude>
     <ClInclude Include="src\Hazel\Renderer\GraphicsContext.h">
@@ -147,22 +192,13 @@
     <ClInclude Include="src\Hazel\Renderer\OrthographicCameraController.h">
       <Filter>src\Hazel\Renderer</Filter>
     </ClInclude>
-    <ClInclude Include="src\Hazel\Renderer\Camera.h">
-      <Filter>src\Hazel\Renderer</Filter>
-    </ClInclude>
     <ClInclude Include="src\Hazel\Renderer\PerspectiveCameraController.h">
       <Filter>src\Hazel\Renderer</Filter>
     </ClInclude>
     <ClInclude Include="src\Hazel\Renderer\RenderTargetEnum.h">
       <Filter>src\Hazel\Renderer</Filter>
     </ClInclude>
-    <ClInclude Include="src\Hazel\Gfx\Renderer.h">
-      <Filter>src\Hazel\Renderer</Filter>
-    </ClInclude>
     <ClInclude Include="src\Hazel\Renderer\Renderer3D.h">
-      <Filter>src\Hazel\Renderer</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Hazel\Graphics\RenderAPI.h">
       <Filter>src\Hazel\Renderer</Filter>
     </ClInclude>
     <ClInclude Include="src\Hazel\Renderer\RendererCommand.h">
@@ -172,6 +208,9 @@
       <Filter>src\Hazel\Renderer</Filter>
     </ClInclude>
     <ClInclude Include="src\Hazel\Renderer\Texture.h">
+      <Filter>src\Hazel\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Hazel\Renderer\TextureBuffer.h">
       <Filter>src\Hazel\Renderer</Filter>
     </ClInclude>
     <ClInclude Include="src\Hazel\Renderer\VertexArray.h">
@@ -189,7 +228,28 @@
     <ClInclude Include="src\Hazel\Utility\Random.h">
       <Filter>src\Hazel\Utility</Filter>
     </ClInclude>
+    <ClInclude Include="src\Platform\D3D12\D3D12CommandList.h">
+      <Filter>src\Platform\D3D12</Filter>
+    </ClInclude>
     <ClInclude Include="src\Platform\D3D12\D3D12RenderAPI.h">
+      <Filter>src\Platform\D3D12</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Platform\D3D12\D3D12RenderAPIManager.h">
+      <Filter>src\Platform\D3D12</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Platform\D3D12\D3D12RenderTarget.h">
+      <Filter>src\Platform\D3D12</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Platform\D3D12\DirectX12Framebuffer.h">
+      <Filter>src\Platform\D3D12</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Platform\D3D12\MathHelper.h">
+      <Filter>src\Platform\D3D12</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Platform\D3D12\d3dUtil.h">
+      <Filter>src\Platform\D3D12</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Platform\D3D12\d3dx12.h">
       <Filter>src\Platform\D3D12</Filter>
     </ClInclude>
     <ClInclude Include="src\Platform\OpenGL\OpenGLBuffer.h">
@@ -216,10 +276,10 @@
     <ClInclude Include="src\Platform\OpenGL\OpenGLVertexArray.h">
       <Filter>src\Platform\OpenGL</Filter>
     </ClInclude>
-    <ClInclude Include="src\Platform\Windows\WindowsGLFWWindow.h">
+    <ClInclude Include="src\Platform\Windows\WindowsDXGIWindow.h">
       <Filter>src\Platform\Windows</Filter>
     </ClInclude>
-    <ClInclude Include="src\Platform\Windows\WindowsDXGIWindow.h">
+    <ClInclude Include="src\Platform\Windows\WindowsGLFWWindow.h">
       <Filter>src\Platform\Windows</Filter>
     </ClInclude>
     <ClInclude Include="src\hzpch.h">
@@ -1473,33 +1533,6 @@
     <ClInclude Include="vendor\stb_image\stb_image.h">
       <Filter>vendor\stb_image</Filter>
     </ClInclude>
-    <ClInclude Include="src\Platform\D3D12\d3dUtil.h">
-      <Filter>src\Platform\D3D12</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Platform\D3D12\d3dx12.h">
-      <Filter>src\Platform\D3D12</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Platform\D3D12\MathHelper.h">
-      <Filter>src\Platform\D3D12</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Hazel\Graphics\RenderAPIManager.h" />
-    <ClInclude Include="src\Platform\D3D12\D3D12RenderAPIManager.h">
-      <Filter>src\Platform\D3D12</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Platform\D3D12\DirectX12Framebuffer.h">
-      <Filter>src\Platform\D3D12</Filter>
-    </ClInclude>
-    <ClInclude Include="resource.h" />
-    <ClInclude Include="src\Hazel\Gfx\RenderTarget.h" />
-    <ClInclude Include="src\Platform\D3D12\D3D12RenderTarget.h" />
-    <ClInclude Include="src\Hazel\Gfx\Culling.h" />
-    <ClInclude Include="src\Hazel\Gfx\RenderStruct.h" />
-    <ClInclude Include="src\Hazel\Gfx\RenderPass.h" />
-    <ClInclude Include="src\Hazel\Gfx\CustomRenderPass\OpaqueRenderPass.h" />
-    <ClInclude Include="src\Hazel\Gfx\CommandList.h" />
-    <ClInclude Include="src\Hazel\Gfx\CommandPool.h" />
-    <ClInclude Include="src\Hazel\Gfx\RendererConstant.h" />
-    <ClInclude Include="src\Platform\D3D12\D3D12CommandList.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Hazel\Core\Application.cpp">
@@ -1513,6 +1546,36 @@
     </ClCompile>
     <ClCompile Include="src\Hazel\Core\Log.cpp">
       <Filter>src\Hazel\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Hazel\Gfx\CommandList.cpp">
+      <Filter>src\Hazel\Gfx</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Hazel\Gfx\CommandPool.cpp">
+      <Filter>src\Hazel\Gfx</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Hazel\Gfx\Commandqueue.cpp">
+      <Filter>src\Hazel\Gfx</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Hazel\Gfx\Culling.cpp">
+      <Filter>src\Hazel\Gfx</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Hazel\Gfx\CustomRenderPass\OpaqueRenderPass.cpp">
+      <Filter>src\Hazel\Gfx\CustomRenderPass</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Hazel\Gfx\RenderPass.cpp">
+      <Filter>src\Hazel\Gfx</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Hazel\Gfx\RenderTarget.cpp">
+      <Filter>src\Hazel\Gfx</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Hazel\Gfx\Renderer.cpp">
+      <Filter>src\Hazel\Gfx</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Hazel\Graphics\RenderAPI.cpp">
+      <Filter>src\Hazel\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Hazel\Graphics\RenderAPIManager.cpp">
+      <Filter>src\Hazel\Graphics</Filter>
     </ClCompile>
     <ClCompile Include="src\Hazel\ImGui\ImGuiBuild.cpp">
       <Filter>src\Hazel\ImGui</Filter>
@@ -1532,7 +1595,7 @@
     <ClCompile Include="src\Hazel\Renderer\Buffer.cpp">
       <Filter>src\Hazel\Renderer</Filter>
     </ClCompile>
-    <ClCompile Include="src\Hazel\Renderer\Framebuffer.cpp">
+    <ClCompile Include="src\Hazel\Renderer\Camera.cpp">
       <Filter>src\Hazel\Renderer</Filter>
     </ClCompile>
     <ClCompile Include="src\Hazel\Renderer\OrthographicCamera.cpp">
@@ -1541,22 +1604,13 @@
     <ClCompile Include="src\Hazel\Renderer\OrthographicCameraController.cpp">
       <Filter>src\Hazel\Renderer</Filter>
     </ClCompile>
-    <ClCompile Include="src\Hazel\Renderer\Camera.cpp">
-      <Filter>src\Hazel\Renderer</Filter>
-    </ClCompile>
     <ClCompile Include="src\Hazel\Renderer\PerspectiveCameraController.cpp">
       <Filter>src\Hazel\Renderer</Filter>
     </ClCompile>
     <ClCompile Include="src\Hazel\Renderer\RenderTargetEnum.cpp">
       <Filter>src\Hazel\Renderer</Filter>
     </ClCompile>
-    <ClCompile Include="src\Hazel\Gfx\Renderer.cpp">
-      <Filter>src\Hazel\Renderer</Filter>
-    </ClCompile>
     <ClCompile Include="src\Hazel\Renderer\Renderer3D.cpp">
-      <Filter>src\Hazel\Renderer</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Hazel\Graphics\RenderAPI.cpp">
       <Filter>src\Hazel\Renderer</Filter>
     </ClCompile>
     <ClCompile Include="src\Hazel\Renderer\RendererCommand.cpp">
@@ -1566,6 +1620,9 @@
       <Filter>src\Hazel\Renderer</Filter>
     </ClCompile>
     <ClCompile Include="src\Hazel\Renderer\Texture.cpp">
+      <Filter>src\Hazel\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Hazel\Renderer\TextureBuffer.cpp">
       <Filter>src\Hazel\Renderer</Filter>
     </ClCompile>
     <ClCompile Include="src\Hazel\Renderer\VertexArray.cpp">
@@ -1580,7 +1637,25 @@
     <ClCompile Include="src\Hazel\Utility\Random.cpp">
       <Filter>src\Hazel\Utility</Filter>
     </ClCompile>
+    <ClCompile Include="src\Platform\D3D12\D3D12CommandList.cpp">
+      <Filter>src\Platform\D3D12</Filter>
+    </ClCompile>
     <ClCompile Include="src\Platform\D3D12\D3D12RenderAPI.cpp">
+      <Filter>src\Platform\D3D12</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Platform\D3D12\D3D12RenderAPIManager.cpp">
+      <Filter>src\Platform\D3D12</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Platform\D3D12\D3D12RenderTarget.cpp">
+      <Filter>src\Platform\D3D12</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Platform\D3D12\DirectX12Framebuffer.cpp">
+      <Filter>src\Platform\D3D12</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Platform\D3D12\MathHelper.cpp">
+      <Filter>src\Platform\D3D12</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Platform\D3D12\d3dUtil.cpp">
       <Filter>src\Platform\D3D12</Filter>
     </ClCompile>
     <ClCompile Include="src\Platform\OpenGL\OpenGLBuffer.cpp">
@@ -1625,29 +1700,5 @@
     <ClCompile Include="vendor\stb_image\stb_image.cpp">
       <Filter>vendor\stb_image</Filter>
     </ClCompile>
-    <ClCompile Include="src\Platform\D3D12\d3dUtil.cpp">
-      <Filter>src\Platform\D3D12</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Platform\D3D12\MathHelper.cpp">
-      <Filter>src\Platform\D3D12</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Hazel\Graphics\RenderAPIManager.cpp" />
-    <ClCompile Include="src\Platform\D3D12\D3D12RenderAPIManager.cpp">
-      <Filter>src\Platform\D3D12</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Platform\D3D12\DirectX12Framebuffer.cpp">
-      <Filter>src\Platform\D3D12</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Hazel\Gfx\RenderTarget.cpp" />
-    <ClCompile Include="src\Platform\D3D12\D3D12RenderTarget.cpp" />
-    <ClCompile Include="src\Hazel\Gfx\Culling.cpp" />
-    <ClCompile Include="src\Hazel\Gfx\RenderPass.cpp" />
-    <ClCompile Include="src\Hazel\Gfx\CustomRenderPass\OpaqueRenderPass.cpp" />
-    <ClCompile Include="src\Hazel\Gfx\CommandList.cpp" />
-    <ClCompile Include="src\Hazel\Gfx\CommandPool.cpp" />
-    <ClCompile Include="src\Platform\D3D12\D3D12CommandList.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ResourceCompile Include="Hazel.rc" />
   </ItemGroup>
 </Project>

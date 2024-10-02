@@ -1,8 +1,6 @@
 #pragma once
 #include "Hazel/Core/Core.h"
-#include <iostream>
-#include <memory>
-#include <mutex>
+#include "hzpch.h"
 #include "Hazel/Gfx/CommandList.h"
 
 namespace Hazel {
@@ -15,8 +13,8 @@ namespace Hazel {
             CommandPool() { Init(); }
             ~CommandPool() { std::cout << "CommandPool Destroyed\n"; }
 
-            std::vector<Ref<CommandList>> m_CommandLists;
-
+            std::stack<Ref<CommandList>> m_IdleCommandListStack;
+            std::stack<Ref<CommandList>> m_BusyCommandListStack;
         public:
             // 删除拷贝构造函数和赋值操作符
             CommandPool(const CommandPool&) = delete;
@@ -35,10 +33,7 @@ namespace Hazel {
 
             void Init();
 
-            void getCommand() {
-                std::cout << "Getting command...\n";
-                // 在这个地方获取一个可以使用的commandList;
-            }
+            Ref<CommandList> GetCommand();
     };
 
 }

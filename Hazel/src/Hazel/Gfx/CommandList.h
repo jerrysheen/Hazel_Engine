@@ -8,6 +8,8 @@ namespace Hazel
 		virtual ~CommandList() {}
 		virtual void OnUpdate() {};
 		static Ref<CommandList> Create();
+
+		virtual void Reset() {};
 	};
 
 }

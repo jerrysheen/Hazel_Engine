@@ -21,6 +21,7 @@ IncludeDir["glm"] = "Hazel/vendor/glm"
 IncludeDir["stb_image"] = "Hazel/vendor/stb_image"
 IncludeDir["assimp"] = "Hazel/vendor/assimp/include"
 IncludeDir["entt"] = "Hazel/vendor/entt/include"
+IncludeDir["boost"] = "Hazel/vendor/boost"
 
 group "Dependencies"
 	-- This include file include the GLFW premake5.lua.
@@ -28,6 +29,8 @@ group "Dependencies"
 	include "Hazel/vendor/Glad"
 	include "Hazel/vendor/imgui"
 	include "Hazel/vendor/assimp"
+	include "Hazel/vendor/boost"
+	include "Hazel/vendor/glm"
 group ""
 
 
@@ -67,7 +70,8 @@ project "Hazel"
 		"%{IncludeDir.glm}",
 		"%{IncludeDir.stb_image}",
 		"%{IncludeDir.assimp}",
-		"%{IncludeDir.entt}"
+		"%{IncludeDir.entt}",
+		"%{IncludeDir.boost}"
 	}
 -- ����о�����������MSVS linker��������additional dependencyһ����
 -- ��Ϊhazel��һ��dll lib�� ����include��һ��static lib�� ����sanbox include��hazelһ��
@@ -77,7 +81,8 @@ project "Hazel"
 		"Glad",
 		"ImGui",
 		"opengl32.lib",
-		"assimp"
+		"assimp",
+		"boost"
 	}
 
   	filter "system:windows"
@@ -128,7 +133,8 @@ project "Sandbox"
 		"Hazel/src",
 		"Hazel/vendor",
 		"%{IncludeDir.glm}",
-		"%{IncludeDir.entt}"
+		"%{IncludeDir.entt}",
+		"%{IncludeDir.boost}"
 	}
 
 	links
@@ -186,7 +192,8 @@ project "Hazelnut"
 		"%{IncludeDir.GLFW}",
 		"%{IncludeDir.Glad}",
 		"%{IncludeDir.ImGui}",
-		"%{IncludeDir.entt}"
+		"%{IncludeDir.entt}",
+		"%{IncludeDir.boost}"
 	}
 
 	links

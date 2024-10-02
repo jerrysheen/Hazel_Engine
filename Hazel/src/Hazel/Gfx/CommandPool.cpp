@@ -14,8 +14,24 @@ namespace Hazel
         for (int i = 0; i < MAX_COMMANDLIST_SIZE; i++) 
         {
             Ref<CommandList> command = CommandList::Create();
-            m_CommandLists.push_back(command);
+            m_IdleCommandListStack.push(command);
         }
-        
+    }
+
+
+    Ref<CommandList> CommandPool::GetCommand()
+    {
+        std::lock_guard<std::mutex> lock(mutex);
+        if (m_IdleCommandListStack.empty())
+        {
+			HZ_CORE_ASSERT(false, "CommandList is not enough");
+			return nullptr;
+		}
+		Ref<CommandList> command = m_IdleCommandListStack.top();
+		m_IdleCommandListStack.pop();
+		m_BusyCommandListStack.push(command);
+
+        command->Reset();
+		return command;
     }
 }

@@ -25,7 +25,7 @@ namespace Hazel
 
 	private:
 		Window& m_window;
-		Ref<Framebuffer> m_BackBuffer;
+		Ref<TextureBuffer> m_BackBuffer;
 		Microsoft::WRL::ComPtr<ID3D12Resource> colorBuffer;
 		CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle;
 		CD3DX12_CPU_DESCRIPTOR_HANDLE srvHandle;

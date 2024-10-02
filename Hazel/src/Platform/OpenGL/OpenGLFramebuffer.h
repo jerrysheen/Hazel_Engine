@@ -1,13 +1,13 @@
 #pragma once
 
-#include "Hazel/Renderer/Framebuffer.h"
+#include "Hazel/Renderer/TextureBuffer.h"
 #include "glm/gtc/type_ptr.hpp"
 
 namespace Hazel 
 {
 
 
-	class OpenGLFramebuffer : public Framebuffer 
+	class OpenGLFramebuffer : public TextureBuffer
 	{
 	public:
 		OpenGLFramebuffer(const FramebufferSpecification& spec);

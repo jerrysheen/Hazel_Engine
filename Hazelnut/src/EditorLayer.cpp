@@ -78,7 +78,7 @@ namespace Hazel
 
         m_fbSpec.Width = 960;
         m_fbSpec.Height = 540;
-        m_FrameBuffer = Framebuffer::Create(m_fbSpec);
+        m_FrameBuffer = TextureBuffer::Create(m_fbSpec);
 
         m_shadowMapSpec.Width = 1024;
         m_shadowMapSpec.Height = 1024;

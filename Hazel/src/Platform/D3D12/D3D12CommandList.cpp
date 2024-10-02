@@ -24,11 +24,20 @@ namespace Hazel
 		// to the command list we will Reset it, and it needs to be closed before
 		// calling Reset.
 		mCommandList->Close();
-		
 	}
 
 
 	D3D12CommandList::~D3D12CommandList()
 	{
+	}
+
+
+	void D3D12CommandList::Reset()
+	{
+		// Reset the command allocator.
+		ThrowIfFailed(CommandAllocator->Reset());
+
+		// Reset the command list
+		ThrowIfFailed(mCommandList->Reset(CommandAllocator.Get(), nullptr));
 	}
 }

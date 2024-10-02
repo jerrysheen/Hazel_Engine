@@ -16,8 +16,9 @@
 #include "Hazel/Core/Log.h"
 
 #include <any>
+#include <stack>
 #include <filesystem>
-
+#include <mutex>
 #include "Hazel/Debug/Instrumentor.h"
 
 
