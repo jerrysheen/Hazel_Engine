@@ -12,6 +12,7 @@ namespace Hazel
 
 	struct RenderingData 
 	{
+		int lightCount;
 		//Camera* m_Camera;
 		//Light m_Light;
 		//RenderingData() { m_Camera = nullptr; };

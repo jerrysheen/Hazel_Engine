@@ -213,6 +213,9 @@
     <ClInclude Include="src\Hazel\Renderer\TextureBuffer.h">
       <Filter>src\Hazel\Renderer</Filter>
     </ClInclude>
+    <ClInclude Include="src\Hazel\Renderer\TextureStruct.h">
+      <Filter>src\Hazel\Renderer</Filter>
+    </ClInclude>
     <ClInclude Include="src\Hazel\Renderer\VertexArray.h">
       <Filter>src\Hazel\Renderer</Filter>
     </ClInclude>
@@ -228,6 +231,9 @@
     <ClInclude Include="src\Hazel\Utility\Random.h">
       <Filter>src\Hazel\Utility</Filter>
     </ClInclude>
+    <ClInclude Include="src\Hazel\Utility\Unique.h">
+      <Filter>src\Hazel\Utility</Filter>
+    </ClInclude>
     <ClInclude Include="src\Platform\D3D12\D3D12CommandList.h">
       <Filter>src\Platform\D3D12</Filter>
     </ClInclude>
@@ -240,7 +246,7 @@
     <ClInclude Include="src\Platform\D3D12\D3D12RenderTarget.h">
       <Filter>src\Platform\D3D12</Filter>
     </ClInclude>
-    <ClInclude Include="src\Platform\D3D12\DirectX12Framebuffer.h">
+    <ClInclude Include="src\Platform\D3D12\D3D12TextureBuffer.h">
       <Filter>src\Platform\D3D12</Filter>
     </ClInclude>
     <ClInclude Include="src\Platform\D3D12\MathHelper.h">
@@ -1533,6 +1539,9 @@
     <ClInclude Include="vendor\stb_image\stb_image.h">
       <Filter>vendor\stb_image</Filter>
     </ClInclude>
+    <ClInclude Include="src\Hazel\Gfx\GfxViewManager.h" />
+    <ClInclude Include="src\Hazel\Gfx\GfxDesc.h" />
+    <ClInclude Include="src\Platform\D3D12\D3D12GfxDescHeap.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Hazel\Core\Application.cpp">
@@ -1649,7 +1658,7 @@
     <ClCompile Include="src\Platform\D3D12\D3D12RenderTarget.cpp">
       <Filter>src\Platform\D3D12</Filter>
     </ClCompile>
-    <ClCompile Include="src\Platform\D3D12\DirectX12Framebuffer.cpp">
+    <ClCompile Include="src\Platform\D3D12\D3D12TextureBuffer.cpp">
       <Filter>src\Platform\D3D12</Filter>
     </ClCompile>
     <ClCompile Include="src\Platform\D3D12\MathHelper.cpp">
@@ -1700,5 +1709,8 @@
     <ClCompile Include="vendor\stb_image\stb_image.cpp">
       <Filter>vendor\stb_image</Filter>
     </ClCompile>
+    <ClCompile Include="src\Hazel\Gfx\GfxViewManager.cpp" />
+    <ClCompile Include="src\Hazel\Gfx\GfxDesc.cpp" />
+    <ClCompile Include="src\Platform\D3D12\D3D12GfxDescHeap.cpp" />
   </ItemGroup>
 </Project>

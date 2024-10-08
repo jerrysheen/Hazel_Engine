@@ -48,8 +48,8 @@ namespace Hazel
 		float m_Metallic = 0.4;
 		float m_Roughness = 0.4;
 
-		FramebufferSpecification m_fbSpec;
-		FramebufferSpecification m_shadowMapSpec;
+		TextureBufferSpecification m_fbSpec;
+		TextureBufferSpecification m_shadowMapSpec;
 		Ref<Texture3D> m_IrradianceMap;
 		Ref<Scene> m_ActiveScene;
 		Entity m_GunObj;

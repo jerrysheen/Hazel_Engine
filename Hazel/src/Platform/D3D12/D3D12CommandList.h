@@ -12,7 +12,7 @@ namespace Hazel
 		D3D12CommandList();
 		virtual ~D3D12CommandList();
 		virtual void Reset() override;
-		Microsoft::WRL::ComPtr<ID3D12CommandAllocator> CommandAllocator;
-		Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> mCommandList;
+		Microsoft::WRL::ComPtr<ID3D12CommandAllocator> m_CommandAllocator;
+		Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> m_CommandList;
 	};
 }

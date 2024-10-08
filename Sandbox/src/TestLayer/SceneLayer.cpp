@@ -15,10 +15,10 @@ void SceneLayer::OnAttach()
 {
 	//m_Texture = Hazel::Texture2D::Create("assets/textures/Checkerboard.png");
     
-    Hazel::FramebufferSpecification fbSpec;
+    Hazel::TextureBufferSpecification fbSpec;
     fbSpec.Width = 1280;
     fbSpec.Height = 720;
-    m_FrameBuffer = Hazel::Framebuffer::Create(fbSpec);
+    m_FrameBuffer = Hazel::TextureBuffer::Create(fbSpec);
 }
 
 void SceneLayer::OnDetach()

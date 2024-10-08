@@ -4,7 +4,6 @@
 
 namespace Hazel
 {
-	D3D12RenderAPIManager* D3D12RenderAPIManager::s_instance = nullptr;
 
 	D3D12RenderAPIManager::D3D12RenderAPIManager()
 	{

@@ -27,7 +27,6 @@ namespace Hazel {
 		D3D12RenderAPIManager();
 		virtual ~D3D12RenderAPIManager();
 
-		static D3D12RenderAPIManager* D3D12RenderAPIManager::s_instance;
 		virtual void OnUpdate() override;
 
 		inline Microsoft::WRL::ComPtr<ID3D12Device> GetD3DDevice() { return md3dDevice; }

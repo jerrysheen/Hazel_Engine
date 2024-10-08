@@ -4,7 +4,7 @@
 #include <glad/glad.h>
 namespace Hazel 
 {
-	OpenGLFramebuffer::OpenGLFramebuffer(const FramebufferSpecification& spec)
+	OpenGLFramebuffer::OpenGLFramebuffer(const TextureBufferSpecification& spec)
 		: m_Specifications(spec), m_RendererID(0)
 	{
 		Invalidate();
@@ -31,7 +31,7 @@ namespace Hazel
 
 		glCreateTextures(GL_TEXTURE_2D, 1, &m_ColorAttachment);
 		glBindTexture(GL_TEXTURE_2D, m_ColorAttachment);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, m_Specifications.Width, m_Specifications.Height, 0, 
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, m_Specifications.width, m_Specifications.height, 0, 
 			GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -60,12 +60,12 @@ namespace Hazel
 	}
 	void OpenGLFramebuffer::Resize(const glm::vec2& viewportSize)
 	{
-		m_Specifications.Width = viewportSize.x;
-		m_Specifications.Height = viewportSize.y;
+		m_Specifications.width = viewportSize.x;
+		m_Specifications.height = viewportSize.y;
 		Invalidate();
 	}	
 
-	void OpenGLFramebuffer::RebindColorAttachment(uint32_t colorAttachmentID, FramebufferSpecification Spec)
+	void OpenGLFramebuffer::RebindColorAttachment(uint32_t colorAttachmentID, TextureBufferSpecification Spec)
 	{
 		m_ColorAttachment = colorAttachmentID;
 		glBindFramebuffer(GL_FRAMEBUFFER, m_NativeRendererID);
@@ -89,7 +89,7 @@ namespace Hazel
 		HZ_CORE_ASSERT(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE, "Framebuffer is incomplete");
 		//glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
-	void OpenGLFramebuffer::RebindDepthAttachment(uint32_t depthAttachmentID, FramebufferSpecification Spec)
+	void OpenGLFramebuffer::RebindDepthAttachment(uint32_t depthAttachmentID, TextureBufferSpecification Spec)
 	{
 
 		m_DepthAttachment = depthAttachmentID;
@@ -108,7 +108,7 @@ namespace Hazel
 		//glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}	
 
-	void OpenGLFramebuffer::RebindColorAndDepthAttachment(uint32_t colorAttachmentID, uint32_t depthAttachmentID, FramebufferSpecification Spec)
+	void OpenGLFramebuffer::RebindColorAndDepthAttachment(uint32_t colorAttachmentID, uint32_t depthAttachmentID, TextureBufferSpecification Spec)
 	{
 		m_ColorAttachment = colorAttachmentID;
 		m_DepthAttachment = depthAttachmentID;

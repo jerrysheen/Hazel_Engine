@@ -76,16 +76,16 @@ namespace Hazel
 	void EditorLayer::OnAttach()
 	{
 
-        m_fbSpec.Width = 960;
-        m_fbSpec.Height = 540;
+        m_fbSpec.width = 960;
+        m_fbSpec.height = 540;
         m_FrameBuffer = TextureBuffer::Create(m_fbSpec);
 
-        m_shadowMapSpec.Width = 1024;
-        m_shadowMapSpec.Height = 1024;
-        m_ShadowMap = Texture2D::Create(m_shadowMapSpec.Width, m_shadowMapSpec.Height, GL_DEPTH24_STENCIL8);
+        m_shadowMapSpec.width = 1024;
+        m_shadowMapSpec.height = 1024;
+        m_ShadowMap = Texture2D::Create(m_shadowMapSpec.width, m_shadowMapSpec.height, GL_DEPTH24_STENCIL8);
         //m_FrameBuffer->RebindColorAttachment(m_ShadowMap->GetRendererID(), m_shadowMapSpec);
-        m_OpaqueTexture = Texture2D::Create(m_fbSpec.Width, m_fbSpec.Height, GL_RGBA8);
-        m_DepthTexture = Texture2D::Create(m_fbSpec.Width, m_fbSpec.Height, GL_DEPTH24_STENCIL8);
+        m_OpaqueTexture = Texture2D::Create(m_fbSpec.width, m_fbSpec.height, GL_RGBA8);
+        m_DepthTexture = Texture2D::Create(m_fbSpec.width, m_fbSpec.height, GL_DEPTH24_STENCIL8);
         m_FrameBuffer->RebindColorAttachment(m_OpaqueTexture->GetRendererID(), m_fbSpec);
         //m_ShadowMapRenderTarget = Framebuffer::Create(m_shadowMapSpec);
 
@@ -132,7 +132,7 @@ namespace Hazel
             RendererCommand::DrawIndexed(meshFilter.mesh->meshData);
         }
         //glBindFramebuffer(GL_FRAMEBUFFER, 0);
-        RendererCommand::SetViewPort(0, 0, m_fbSpec.Width, m_fbSpec.Height);
+        RendererCommand::SetViewPort(0, 0, m_fbSpec.width, m_fbSpec.height);
         // 重新绑定一次后，渲染的图片不会被清掉
         m_FrameBuffer->RebindColorAndDepthAttachment(m_OpaqueTexture->GetRendererID(), m_DepthTexture->GetRendererID(), m_fbSpec);
         // 
@@ -160,8 +160,8 @@ namespace Hazel
             }
 
 
-            RendererCommand::SetViewPort(0, 0, m_shadowMapSpec.Width, m_shadowMapSpec.Height);
-            m_viewPortPanelSize = { m_shadowMapSpec.Width, m_shadowMapSpec.Height };
+            RendererCommand::SetViewPort(0, 0, m_shadowMapSpec.width, m_shadowMapSpec.height);
+            m_viewPortPanelSize = { m_shadowMapSpec.width, m_shadowMapSpec.height };
             Renderer3D::BeginScene(m_CameraController.GetCamera());
 
             GLfloat near_plane =0.1f, far_plane = 57.5f;
@@ -178,7 +178,7 @@ namespace Hazel
 
         {
             m_FrameBuffer->Bind();
-            RendererCommand::SetViewPort(0, 0, m_fbSpec.Width, m_fbSpec.Height);
+            RendererCommand::SetViewPort(0, 0, m_fbSpec.width, m_fbSpec.height);
             RendererCommand::SetClearColor({ 0.0f, 0.0f, 0.0f, 0.0f });
             RendererCommand::Clear();
         }
@@ -531,7 +531,7 @@ namespace Hazel
         {
             case RenderTargetEnum::OPAQUE_TEXTURE:
                 textureID = m_FrameBuffer->GetColorAttachmentRendererID();
-                ImGui::Image((void*)textureID, ImVec2(m_FrameBuffer->GetSpecification().Width, m_FrameBuffer->GetSpecification().Height), ImVec2(0, 1), ImVec2(1, 0));
+                ImGui::Image((void*)textureID, ImVec2(m_FrameBuffer->GetSpecification().width, m_FrameBuffer->GetSpecification().height), ImVec2(0, 1), ImVec2(1, 0));
 			    break;
 			case RenderTargetEnum::SHADOWMAP:
                 glBindTextureUnit(0, m_ShadowMap->GetRendererID());

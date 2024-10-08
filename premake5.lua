@@ -82,7 +82,6 @@ project "Hazel"
 		"ImGui",
 		"opengl32.lib",
 		"assimp",
-		"boost"
 	}
 
   	filter "system:windows"

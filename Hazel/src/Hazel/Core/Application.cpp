@@ -4,6 +4,7 @@
 #include "Hazel/Core/Log.h"
 #include "Glfw/glfw3.h"
 #include "Hazel/Gfx/CommandPool.h"
+#include "Hazel/Gfx/GfxDescManager.h"
 
 namespace Hazel{
 
@@ -24,6 +25,7 @@ namespace Hazel{
 		m_Window->SetEventCallback(BIND_EVENT_FN(OnEvent));
 		m_RenderAPIManager = Ref<RenderAPIManager>(RenderAPIManager::Create());
 		CommandPool::getInstance()->Init();
+		GfxDescManager::getInstance()->Init();
 
 		//Renderer::Init();
 		m_Window->SetBackGroundColor();
@@ -82,11 +84,11 @@ namespace Hazel{
 			//Timestep timestep = time - m_LastFrameTime;
 			//m_LastFrameTime = time;
 
-			//if (!m_Minimized) 
-			//{
-			//	for (Layer* layer : m_LayerStack)
-			//		layer->OnUpdate(timestep);
-			//}
+			if (!m_Minimized) 
+			{
+				for (Layer* layer : m_LayerStack)
+					layer->OnUpdate(0.01f);
+			}
 			// 每一层上如果有ImGui层，就渲染？
 			m_ImGuiLayer->Begin();
 			for (Layer* layer : m_LayerStack)

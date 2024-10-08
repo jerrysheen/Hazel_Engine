@@ -9,6 +9,7 @@
 #include <array>
 
 #include <string>
+#include <map>
 #include <sstream>
 #include <vector>
 #include <unordered_map>
@@ -16,12 +17,14 @@
 #include "Hazel/Core/Log.h"
 
 #include <any>
+#include <variant>
 #include <stack>
 #include <filesystem>
 #include <mutex>
 #include "Hazel/Debug/Instrumentor.h"
 
-
+#include "boost/uuid/uuid.hpp"
+#include "Hazel/Utility/Unique.h"
 
 #ifdef HZ_PLATFORM_WINDOWS
 	#include <Windows.h>
