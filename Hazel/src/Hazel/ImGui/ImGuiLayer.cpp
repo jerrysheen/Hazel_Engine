@@ -16,6 +16,8 @@
 
 #include <GLFW/glfw3.h>
 #include <glad/glad.h>
+#include "Hazel/Gfx/GfxViewManager.h"
+
 
 namespace Hazel {
 
@@ -102,7 +104,8 @@ namespace Hazel {
 		//if (D3D12RenderAPIManager* renderAPIManager = dynamic_cast<D3D12RenderAPIManager*>(basePtr)) {
 		//	derivedPtr->show();
 		renderAPIManager = static_cast<D3D12RenderAPIManager*>(Application::Get().GetRenderAPIManager().get());
-		ID3D12DescriptorHeap* srvDescHeap = renderAPIManager->GetCbvHeap().Get();
+		//ID3D12DescriptorHeap* srvDescHeap = renderAPIManager->GetCbvHeap().Get();
+		ID3D12DescriptorHeap* srvDescHeap = GfxViewManager::getInstance()->GetCBVHeap()->getHeap< Microsoft::WRL::ComPtr<ID3D12DescriptorHeap>>().Get();
 		ImGui_ImplDX12_Init(renderAPIManager->GetD3DDevice().Get(), NUM_FRAMES_IN_FLIGHT,
 			renderAPIManager->GetBackBufferFormat(), srvDescHeap,
 			srvDescHeap->GetCPUDescriptorHandleForHeapStart(),
@@ -197,7 +200,10 @@ namespace Hazel {
 		// Specify the buffers we are going to render to.
 		//mCommandList->OMSetRenderTargets(1, &renderAPIManager->CurrentBackBufferView(), true, &renderAPIManager->DepthStencilView());
 		mCommandList->OMSetRenderTargets(1, &renderAPIManager->CurrentBackBufferView(), false, nullptr);
-		ID3D12DescriptorHeap* descriptorHeaps[] = { renderAPIManager->GetCbvHeap().Get()};
+
+		//ID3D12DescriptorHeap* descriptorHeaps[] = { renderAPIManager->GetCbvHeap().Get()};
+		auto d3dCbvHeap = GfxViewManager::getInstance()->GetCBVHeap()->getHeap< Microsoft::WRL::ComPtr<ID3D12DescriptorHeap>>();
+		ID3D12DescriptorHeap* descriptorHeaps[] = { d3dCbvHeap.Get() };
 		mCommandList->SetDescriptorHeaps(_countof(descriptorHeaps), descriptorHeaps);
 		ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), mCommandList.Get());
 		// Indicate a state transition on the resource usage.

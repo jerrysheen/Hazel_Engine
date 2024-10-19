@@ -38,10 +38,11 @@ namespace Hazel {
         void Init();
         
         // 创建或者获取TextureBuffer的描述符。
-        Ref<GfxDesc> GetRtvHandle(const TextureBuffer& textureBuffer);
-        Ref<GfxDesc> GetSrvHandle(const TextureBuffer& textureBuffer);
-        Ref<GfxDesc> GetDsvHandle(const TextureBuffer& textureBuffer);
+        Ref<GfxDesc> GetRtvHandle(const Ref<TextureBuffer> textureBuffer);
+        Ref<GfxDesc> GetSrvHandle(const Ref<TextureBuffer> textureBuffer);
+        Ref<GfxDesc> GetDsvHandle(const Ref<TextureBuffer> textureBuffer);
 
+        inline Ref<GfxDescHeap> GetCBVHeap() { return m_SrvHeap; };
     private:
         Ref<GfxDescHeap> m_RtvHeap;
         Ref<GfxDescHeap> m_SrvHeap;

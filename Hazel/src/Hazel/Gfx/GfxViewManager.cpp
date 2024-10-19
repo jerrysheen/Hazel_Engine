@@ -9,25 +9,29 @@ namespace Hazel
 
     void GfxViewManager::Init()
     {
-        m_SrvHeap = GfxDescHeap::Create(DescriptorType::DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+        // 针对第一种heap，我只需要创建DESCRIPTOR_TYPE_CBV， 但是它本质上会创建D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV
+        // 三种类型的desc都可以容纳在这个heap里面。
+        m_SrvHeap = GfxDescHeap::Create(DescriptorType::DESCRIPTOR_TYPE_CBV);
         m_RtvHeap = GfxDescHeap::Create(DescriptorType::DESCRIPTOR_TYPE_RTV);
         m_DsvHeap = GfxDescHeap::Create(DescriptorType::DESCRIPTOR_TYPE_DSV);
     }
 
-    Ref<GfxDesc> GfxViewManager::GetRtvHandle(const TextureBuffer& textureBuffer)
+    Ref<GfxDesc> GfxViewManager::GetRtvHandle(const Ref<TextureBuffer> textureBuffer)
     {
-        auto Desc = m_RtvHeap->GetOrCreateRtvDesc(const TextureBuffer & textureBuffer);
-        return Ref<GfxDesc>();
+        auto Desc = m_RtvHeap->GetOrCreateDesc(textureBuffer, DescriptorType::DESCRIPTOR_TYPE_RTV);
+        return Desc;
     }
 
-    Ref<GfxDesc> GfxViewManager::GetSrvHandle(const TextureBuffer& textureBuffer)
+    Ref<GfxDesc> GfxViewManager::GetSrvHandle(const Ref<TextureBuffer> textureBuffer)
     {
-        return Ref<GfxDesc>();
+        auto Desc = m_SrvHeap->GetOrCreateDesc(textureBuffer, DescriptorType::DESCRIPTOR_TYPE_SRV);
+        return Desc;
     }
 
-    Ref<GfxDesc> GfxViewManager::GetDsvHandle(const TextureBuffer& textureBuffer)
+    Ref<GfxDesc> GfxViewManager::GetDsvHandle(const Ref<TextureBuffer> textureBuffer)
     {
-        return Ref<GfxDesc>();
+        auto Desc = m_DsvHeap->GetOrCreateDesc(textureBuffer, DescriptorType::DESCRIPTOR_TYPE_DSV);
+        return Desc;
     }
 
 }

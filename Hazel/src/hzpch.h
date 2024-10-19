@@ -26,6 +26,10 @@
 #include "boost/uuid/uuid.hpp"
 #include "Hazel/Utility/Unique.h"
 
+
+#include "Platform/D3D12/d3dx12.h"
+#include "Platform/D3D12/d3dUtil.h"
+
 #ifdef HZ_PLATFORM_WINDOWS
 	#include <Windows.h>
 #endif

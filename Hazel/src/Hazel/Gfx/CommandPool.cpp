@@ -31,7 +31,7 @@ namespace Hazel
 		m_IdleCommandListStack.pop();
 		m_BusyCommandListStack.push(command);
 
-        command->Reset();
+        //command->Reset();
 		return command;
     }
 }
