@@ -12,7 +12,6 @@ namespace Hazel
 	{
         m_UUID = Unique::GetUUID();
 		CreateBufferResource();
-        CreateBufferDesc();
 	}
 
 	void D3D12TextureBuffer::CreateBufferResource() 
@@ -41,8 +40,6 @@ namespace Hazel
         // 原则上这个地方我不应该这么或devices...
         D3D12RenderAPIManager* renderAPIManager = static_cast<D3D12RenderAPIManager*>(Application::Get().GetRenderAPIManager().get());
         Microsoft::WRL::ComPtr<ID3D12Device> device = renderAPIManager->GetD3DDevice();
-
-        Microsoft::WRL::ComPtr<ID3D12Resource> m_Temp = getResource<Microsoft::WRL::ComPtr<ID3D12Resource>>();
         device->CreateCommittedResource
         (
             &CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT),
@@ -50,24 +47,12 @@ namespace Hazel
             &bufferDesc,
             D3D12_RESOURCE_STATE_RENDER_TARGET, // 初始状态为渲染目标
             &clearValue,
-            IID_PPV_ARGS(&m_Temp)
+            IID_PPV_ARGS(&m_BufferResourceLocal)
         );
+        m_BufferResource = m_BufferResourceLocal;
+
 	}
 
-    void D3D12TextureBuffer::CreateBufferDesc()
-    {
-        //根据当前的纹理类型创建对应的描述符；
-        // 这个地方就创建一个对应的描述符，但是要往HeapManager里面放。
-        switch (m_Spec.textureRenderUsage)
-        {
-        case TextureRenderUsage::RENDER_TARGET:
-            //// 应该利用当前的TextureID,去HeapManager里面取一个对应的描述符。
-            GfxViewManager::getInstance()->GetRtvHandle(*this);
-            break;
-        case TextureRenderUsage::RENDER_TEXTURE:
-            break;
-        }
-    }
 
     D3D12_RESOURCE_DIMENSION D3D12TextureBuffer::GetResourceDimension()
     {

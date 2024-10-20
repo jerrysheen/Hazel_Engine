@@ -4,7 +4,7 @@
 #include "Hazel/Core/Log.h"
 #include "Glfw/glfw3.h"
 #include "Hazel/Gfx/CommandPool.h"
-#include "Hazel/Gfx/GfxDescManager.h"
+#include "Hazel/Gfx/GfxViewManager.h"
 
 namespace Hazel{
 
@@ -23,11 +23,12 @@ namespace Hazel{
 		props.Title = title;
 		m_Window = Scope<Window>(Window::Create(props));
 		m_Window->SetEventCallback(BIND_EVENT_FN(OnEvent));
+		
+		// ≥ı ºªØRenderAPI°£
 		m_RenderAPIManager = Ref<RenderAPIManager>(RenderAPIManager::Create());
 		CommandPool::getInstance()->Init();
-		GfxDescManager::getInstance()->Init();
+		GfxViewManager::getInstance()->Init();
 
-		//Renderer::Init();
 		m_Window->SetBackGroundColor();
 		m_ImGuiLayer = new ImGuiLayer();
 		PushOverlay(m_ImGuiLayer);

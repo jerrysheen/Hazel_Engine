@@ -75,71 +75,71 @@ namespace Hazel
 
 	void EditorLayer::OnAttach()
 	{
-
-        m_fbSpec.width = 960;
-        m_fbSpec.height = 540;
-        m_FrameBuffer = TextureBuffer::Create(m_fbSpec);
-
-        m_shadowMapSpec.width = 1024;
-        m_shadowMapSpec.height = 1024;
-        m_ShadowMap = Texture2D::Create(m_shadowMapSpec.width, m_shadowMapSpec.height, GL_DEPTH24_STENCIL8);
-        //m_FrameBuffer->RebindColorAttachment(m_ShadowMap->GetRendererID(), m_shadowMapSpec);
-        m_OpaqueTexture = Texture2D::Create(m_fbSpec.width, m_fbSpec.height, GL_RGBA8);
-        m_DepthTexture = Texture2D::Create(m_fbSpec.width, m_fbSpec.height, GL_DEPTH24_STENCIL8);
-        m_FrameBuffer->RebindColorAttachment(m_OpaqueTexture->GetRendererID(), m_fbSpec);
-        //m_ShadowMapRenderTarget = Framebuffer::Create(m_shadowMapSpec);
-
-
-        HZ_CORE_INFO("EditorLayer On attach!");
-
-        MeshRendererComponent meshRenderer;
-        //meshRenderer = m_GunObj.GetComponent<MeshRendererComponent>();
-        //meshRenderer.material->tex00 = Texture2D::Create("assets/Resources/Models/RivetGun/textures_compressed/diffuse.dds", true, true);
-        //meshRenderer.material->tex01 = Texture2D::Create("assets/Resources/Models/RivetGun/textures_compressed/normal.dds", true, true);
-        //meshRenderer.material->tex02 = Texture2D::Create("assets/Resources/Models/RivetGun/textures_compressed/ao.dds", true, true);
-        //meshRenderer.material->tex03 = Texture2D::Create("assets/Resources/Models/RivetGun/textures_compressed/glossiness.dds", true, true);
-        //meshRenderer.material->tex04 = Texture2D::Create("assets/Resources/Models/RivetGun/textures_compressed/specular.dds", true, true);
-
-
-        meshRenderer = m_SkyBox.GetComponent<MeshRendererComponent>();
-
-#pragma region Diffuse Irradiance
-        // onAttach的时候，把irrandianceMap给绑定好
-        glm::mat4 captureViews[] =
-        {
-            glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f,  0.0f,  0.0f), glm::vec3(0.0f, -1.0f,  0.0f)),
-            glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(-1.0f,  0.0f,  0.0f), glm::vec3(0.0f, -1.0f,  0.0f)),
-            glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f,  1.0f,  0.0f), glm::vec3(0.0f,  0.0f,  1.0f)),
-            glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f,  0.0f), glm::vec3(0.0f,  0.0f, -1.0f)),
-            glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f,  0.0f,  1.0f), glm::vec3(0.0f, -1.0f,  0.0f)),
-            glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f,  0.0f, -1.0f), glm::vec3(0.0f, -1.0f,  0.0f))
-        };
-        RendererCommand::SetViewPort(0, 0, 32, 32);
-        glm::mat4 enviromentCamProjection = glm::perspective(glm::radians(90.0f), 1.0f, 0.1f, 10.0f);
-        m_FrameBuffer->Bind();
-        equirectangularToCubemapShader->Bind();
-        m_SkyBox.GetComponent<MeshRendererComponent>().material->tex3D->Bind(0);
-        for (unsigned int i = 0; i < 6; ++i)
-        {
-            equirectangularToCubemapShader->SetMat4("u_ViewMatrix", captureViews[i]);
-            equirectangularToCubemapShader->SetMat4("u_ProjectionMatrix", enviromentCamProjection);
-            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, m_IrradianceMap->GetRendererID(), 0);
-            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE_2D, 0, 0);
-            RendererCommand::Clear();
-            HZ_CORE_ASSERT(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE, "Framebuffer is incomplete");
-            MeshFilterComponent& meshFilter = m_SkyBox.GetComponent<MeshFilterComponent>();
-            meshFilter.mesh->meshData->Bind();
-            RendererCommand::DrawIndexed(meshFilter.mesh->meshData);
-        }
-        //glBindFramebuffer(GL_FRAMEBUFFER, 0);
-        RendererCommand::SetViewPort(0, 0, m_fbSpec.width, m_fbSpec.height);
-        // 重新绑定一次后，渲染的图片不会被清掉
-        m_FrameBuffer->RebindColorAndDepthAttachment(m_OpaqueTexture->GetRendererID(), m_DepthTexture->GetRendererID(), m_fbSpec);
-        // 
-#pragma region Diffuse Irradiance
-	
-        // imgui layout settings:
-        m_SceneHierarchyPanel.SetContext(m_ActiveScene);
+//
+//        m_fbSpec.width = 960;
+//        m_fbSpec.height = 540;
+//        m_FrameBuffer = TextureBuffer::Create(m_fbSpec);
+//
+//        m_shadowMapSpec.width = 1024;
+//        m_shadowMapSpec.height = 1024;
+//        m_ShadowMap = Texture2D::Create(m_shadowMapSpec.width, m_shadowMapSpec.height, GL_DEPTH24_STENCIL8);
+//        //m_FrameBuffer->RebindColorAttachment(m_ShadowMap->GetRendererID(), m_shadowMapSpec);
+//        m_OpaqueTexture = Texture2D::Create(m_fbSpec.width, m_fbSpec.height, GL_RGBA8);
+//        m_DepthTexture = Texture2D::Create(m_fbSpec.width, m_fbSpec.height, GL_DEPTH24_STENCIL8);
+//        m_FrameBuffer->RebindColorAttachment(m_OpaqueTexture->GetRendererID(), m_fbSpec);
+//        //m_ShadowMapRenderTarget = Framebuffer::Create(m_shadowMapSpec);
+//
+//
+//        HZ_CORE_INFO("EditorLayer On attach!");
+//
+//        MeshRendererComponent meshRenderer;
+//        //meshRenderer = m_GunObj.GetComponent<MeshRendererComponent>();
+//        //meshRenderer.material->tex00 = Texture2D::Create("assets/Resources/Models/RivetGun/textures_compressed/diffuse.dds", true, true);
+//        //meshRenderer.material->tex01 = Texture2D::Create("assets/Resources/Models/RivetGun/textures_compressed/normal.dds", true, true);
+//        //meshRenderer.material->tex02 = Texture2D::Create("assets/Resources/Models/RivetGun/textures_compressed/ao.dds", true, true);
+//        //meshRenderer.material->tex03 = Texture2D::Create("assets/Resources/Models/RivetGun/textures_compressed/glossiness.dds", true, true);
+//        //meshRenderer.material->tex04 = Texture2D::Create("assets/Resources/Models/RivetGun/textures_compressed/specular.dds", true, true);
+//
+//
+//        meshRenderer = m_SkyBox.GetComponent<MeshRendererComponent>();
+//
+//#pragma region Diffuse Irradiance
+//        // onAttach的时候，把irrandianceMap给绑定好
+//        glm::mat4 captureViews[] =
+//        {
+//            glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f,  0.0f,  0.0f), glm::vec3(0.0f, -1.0f,  0.0f)),
+//            glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(-1.0f,  0.0f,  0.0f), glm::vec3(0.0f, -1.0f,  0.0f)),
+//            glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f,  1.0f,  0.0f), glm::vec3(0.0f,  0.0f,  1.0f)),
+//            glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f,  0.0f), glm::vec3(0.0f,  0.0f, -1.0f)),
+//            glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f,  0.0f,  1.0f), glm::vec3(0.0f, -1.0f,  0.0f)),
+//            glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f,  0.0f, -1.0f), glm::vec3(0.0f, -1.0f,  0.0f))
+//        };
+//        RendererCommand::SetViewPort(0, 0, 32, 32);
+//        glm::mat4 enviromentCamProjection = glm::perspective(glm::radians(90.0f), 1.0f, 0.1f, 10.0f);
+//        m_FrameBuffer->Bind();
+//        equirectangularToCubemapShader->Bind();
+//        m_SkyBox.GetComponent<MeshRendererComponent>().material->tex3D->Bind(0);
+//        for (unsigned int i = 0; i < 6; ++i)
+//        {
+//            equirectangularToCubemapShader->SetMat4("u_ViewMatrix", captureViews[i]);
+//            equirectangularToCubemapShader->SetMat4("u_ProjectionMatrix", enviromentCamProjection);
+//            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, m_IrradianceMap->GetRendererID(), 0);
+//            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE_2D, 0, 0);
+//            RendererCommand::Clear();
+//            HZ_CORE_ASSERT(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE, "Framebuffer is incomplete");
+//            MeshFilterComponent& meshFilter = m_SkyBox.GetComponent<MeshFilterComponent>();
+//            meshFilter.mesh->meshData->Bind();
+//            RendererCommand::DrawIndexed(meshFilter.mesh->meshData);
+//        }
+//        //glBindFramebuffer(GL_FRAMEBUFFER, 0);
+//        RendererCommand::SetViewPort(0, 0, m_fbSpec.width, m_fbSpec.height);
+//        // 重新绑定一次后，渲染的图片不会被清掉
+//        m_FrameBuffer->RebindColorAndDepthAttachment(m_OpaqueTexture->GetRendererID(), m_DepthTexture->GetRendererID(), m_fbSpec);
+//        // 
+//#pragma region Diffuse Irradiance
+//	
+//        // imgui layout settings:
+//        m_SceneHierarchyPanel.SetContext(m_ActiveScene);
     }
 
 	void EditorLayer::OnDetach()

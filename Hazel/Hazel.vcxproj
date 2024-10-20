@@ -160,6 +160,7 @@
     <ClInclude Include="src\Hazel\Events\Event.h" />
     <ClInclude Include="src\Hazel\Events\KeyEvent.h" />
     <ClInclude Include="src\Hazel\Events\MouseEvent.h" />
+    <ClInclude Include="src\Hazel\Gfx\Color.h" />
     <ClInclude Include="src\Hazel\Gfx\CommandList.h" />
     <ClInclude Include="src\Hazel\Gfx\CommandPool.h" />
     <ClInclude Include="src\Hazel\Gfx\CommandQueue.h" />
@@ -639,6 +640,7 @@
     <ClCompile Include="src\Hazel\Core\Layer.cpp" />
     <ClCompile Include="src\Hazel\Core\LayerStack.cpp" />
     <ClCompile Include="src\Hazel\Core\Log.cpp" />
+    <ClCompile Include="src\Hazel\Gfx\Color.cpp" />
     <ClCompile Include="src\Hazel\Gfx\CommandList.cpp" />
     <ClCompile Include="src\Hazel\Gfx\CommandPool.cpp" />
     <ClCompile Include="src\Hazel\Gfx\Commandqueue.cpp" />

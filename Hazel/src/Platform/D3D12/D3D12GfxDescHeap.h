@@ -11,12 +11,13 @@ namespace Hazel
 	public:
 		D3D12GfxDescHeap(const DescriptorType& type);
 		virtual ~D3D12GfxDescHeap();
-		virtual void Reset() override;
-		virtual Ref<GfxDesc> GetOrCreateDesc(const TextureBuffer& textureBuffer) override;
+		//virtual void Reset() override;
+		virtual Ref<GfxDesc> GetOrCreateDesc(const Ref<TextureBuffer> textureBuffer, const DescriptorType& type) override;
 
 	private:
-		Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> m_Heap;
-		std::map<boost::uuids::uuid, Ref<GfxDesc>> m_DescMap;
+		// 针对D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV 这种类型，可能会存在一对多的情况。。
+		std::map<boost::uuids::uuid, std::map<DescriptorType, Ref<GfxDesc>>> m_DescMap;
+		Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> m_HeapLocal;
 	};
 
 

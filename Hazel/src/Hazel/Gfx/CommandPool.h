@@ -8,7 +8,7 @@ namespace Hazel {
         private:
             static Ref<CommandPool> instance;
             static std::mutex mutex;
-
+            
             // 私有构造函数和析构函数
             CommandPool() { Init(); }
             ~CommandPool() { std::cout << "CommandPool Destroyed\n"; }

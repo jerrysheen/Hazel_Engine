@@ -3,7 +3,9 @@
 #include <Hazel/Renderer/TextureBuffer.h>
 #include <Hazel/Gfx/Culling.h>
 #include "Hazel/Gfx/CommandPool.h"
-
+#include "Hazel/Gfx/GfxViewManager.h"
+#include "Hazel/Gfx/GfxDesc.h"
+#include "Hazel/Gfx/GfxDesc.h"
 
 namespace Hazel
 {
@@ -11,6 +13,7 @@ namespace Hazel
         :Layer("SceneViewLayer"),
         m_window(window)
     {
+
     }
 
     void SceneViewLayer::OnAttach()
@@ -50,7 +53,7 @@ namespace Hazel
 
         TextureBufferSpecification spec = { 1280, 720, TextureType::TEXTURE2D, TextureFormat::RGBA32, TextureRenderUsage::RENDER_TARGET, MultiSample::NONE};
 
-        Ref<TextureBuffer> m_BackBuffer = TextureBuffer::Create(spec) ;
+        Ref<TextureBuffer> m_BackBuffer = TextureBuffer::Create(spec);
         //D3D12_RESOURCE_DESC colorBufferDesc = {};
         //colorBufferDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
         //colorBufferDesc.Width = 1280;       // 设置颜色缓冲区的宽度
@@ -92,53 +95,52 @@ namespace Hazel
         //UINT handle_increment = device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
         //int descriptor_index = renderAPIManager->GetRtvDescriptorCount(); // The descriptor table index to use (not normally a hard-coded constant, but in this case we'll assume we have slot 1 reserved for us)
         //my_texture_srv_cpu_handle = renderAPIManager->GetRtvHeap()->GetCPUDescriptorHandleForHeapStart();
+        Ref<GfxDesc> renderTargetHandle = GfxViewManager::getInstance()->GetRtvHandle(m_BackBuffer);
+        cmdList->ClearRenderTargetView(renderTargetHandle, Color::White);
 
 
-
-        CD3DX12_RESOURCE_BARRIER barrierToSRV = CD3DX12_RESOURCE_BARRIER::Transition(
-            colorBuffer.Get(),
-            D3D12_RESOURCE_STATE_RENDER_TARGET, // 渲染结束时是 Render Target 状态
-            D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE // 切换到纹理资源状态
-        );
-        cmdList->ResourceBarrier(1, &barrierToSRV);
-
+        cmdList->ChangeResourceState(m_BackBuffer, TextureRenderUsage::RENDER_TARGET, TextureRenderUsage::RENDER_TEXTURE);
 
 
         // 创建 SRV（Shader Resource View）
-        D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
-        srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-        srvDesc.Format = colorBuffer->GetDesc().Format; // 与 Render Target 的格式保持一致
-        srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
-        srvDesc.Texture2D.MipLevels = 1;
+        //D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
+        //srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+        //srvDesc.Format = colorBuffer->GetDesc().Format; // 与 Render Target 的格式保持一致
+        //srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
+        //srvDesc.Texture2D.MipLevels = 1;
 
-        srvHandle = renderAPIManager->GetCbvHeap()->GetCPUDescriptorHandleForHeapStart();
-        srvHandle.Offset(1, handle_increment);
-        device->CreateShaderResourceView(colorBuffer.Get(), &srvDesc, srvHandle);
+        //srvHandle = renderAPIManager->GetCbvHeap()->GetCPUDescriptorHandleForHeapStart();
+        //srvHandle.Offset(1, handle_increment);
+        //device->CreateShaderResourceView(colorBuffer.Get(), &srvDesc, srvHandle);
 
-        my_texture_srv_gpu_handle = renderAPIManager->GetCbvHeap()->GetGPUDescriptorHandleForHeapStart();
-        my_texture_srv_gpu_handle.ptr += (handle_increment * 1);
-        ID3D12DescriptorHeap* descriptorHeaps[] = { renderAPIManager->GetCbvHeap().Get() };
-        cmdList->SetDescriptorHeaps(_countof(descriptorHeaps), descriptorHeaps);
+        //my_texture_srv_gpu_handle = renderAPIManager->GetCbvHeap()->GetGPUDescriptorHandleForHeapStart();
+        //my_texture_srv_gpu_handle.ptr += (handle_increment * 1);
+        //ID3D12DescriptorHeap* descriptorHeaps[] = { renderAPIManager->GetCbvHeap().Get() };
+        //cmdList->SetDescriptorHeaps(_countof(descriptorHeaps), descriptorHeaps);
 
+        auto gfxViewManager = GfxViewManager::getInstance();
+        Ref<GfxDesc> renderTargetSrvDesc = gfxViewManager->GetSrvHandle(m_BackBuffer);
+        my_texture_srv_gpu_handle = renderTargetSrvDesc->GetGPUDescHandle<D3D12_GPU_DESCRIPTOR_HANDLE>();
+        cmdList->BindCbvHeap(gfxViewManager->GetCBVHeap());
 
+        cmdList->Close();
+        //CommandPool::ExecuteCommand(cmdList);
 
+        Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> m_CommandList = cmdList->getCommandList<Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList>>();
+        ID3D12CommandList* rawCommandList = m_CommandList.Get();
 
-
-        hr = cmdList->Close();
-        IM_ASSERT(SUCCEEDED(hr));
-
-        cmdQueue->ExecuteCommandLists(1, (ID3D12CommandList* const*)&cmdList);
+        cmdQueue->ExecuteCommandLists(1, (ID3D12CommandList* const*)&rawCommandList);
         hr = cmdQueue->Signal(fence, 1);
         IM_ASSERT(SUCCEEDED(hr));
 
         fence->SetEventOnCompletion(1, event);
         WaitForSingleObject(event, INFINITE);
 
-        cmdList->Release();
-        cmdAlloc->Release();
-        cmdQueue->Release();
-        CloseHandle(event);
-        fence->Release();
+        //cmdList->Release();
+        //cmdAlloc->Release();
+        //cmdQueue->Release();
+        //CloseHandle(event);
+        //fence->Release();
     }
 
     void SceneViewLayer::OnDetach()

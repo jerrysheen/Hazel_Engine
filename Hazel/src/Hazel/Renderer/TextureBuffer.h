@@ -11,7 +11,8 @@ namespace Hazel {
 	class TextureBuffer
 	{
 	public:
-		TextureBuffer() : m_BufferResource(uint32_t(0)), m_CpuHandle(uint32_t(0)){}
+		//TextureBuffer() : m_BufferResource(uint32_t(0)), m_CpuHandle(uint32_t(0)){}
+		virtual ~TextureBuffer() = default;
 
 		virtual void Bind() = 0;
 		virtual void Unbind() = 0;
@@ -52,7 +53,6 @@ namespace Hazel {
 		}
 
 
-		int textVal;
 		std::variant<uint32_t, CD3DX12_CPU_DESCRIPTOR_HANDLE> m_CpuHandle;
 
 		std::variant<uint32_t, Microsoft::WRL::ComPtr<ID3D12Resource>> m_BufferResource;
