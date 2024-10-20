@@ -136,11 +136,10 @@ namespace Hazel
         fence->SetEventOnCompletion(1, event);
         WaitForSingleObject(event, INFINITE);
 
-        //cmdList->Release();
-        //cmdAlloc->Release();
-        //cmdQueue->Release();
-        //CloseHandle(event);
-        //fence->Release();
+        cmdList->Release();
+        cmdQueue->Release();
+        CloseHandle(event);
+        fence->Release();
     }
 
     void SceneViewLayer::OnDetach()
@@ -164,11 +163,11 @@ namespace Hazel
         //Camera.Render(result);
         //defaultRenderer.AddRenderPass(opaquePass);
         //Camera.BindRenderer(defaultRenderer);
-        Camera* sceneCamera = new Camera(60, 1920, 1080, 0.1f, 1000.0f);
-        Scene* scene = new Scene();
-        //sceneCamera->BindRenderer(defaultRenderer);
-        RenderNode* node = Culling::Cull(sceneCamera, scene);
-        RenderingData* renderingData = new RenderingData();
+        //Camera* sceneCamera = new Camera(60, 1920, 1080, 0.1f, 1000.0f);
+        //Scene* scene = new Scene();
+        ////sceneCamera->BindRenderer(defaultRenderer);
+        //RenderNode* node = Culling::Cull(sceneCamera, scene);
+        //RenderingData* renderingData = new RenderingData();
         //sceneCamera->Render(node, renderingData);
         // 
         // 最后将这个colorattachment作为backbuffer输出。

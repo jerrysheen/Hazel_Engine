@@ -271,7 +271,7 @@ namespace Hazel
 	CreateCommandObjects();
 	CreateSwapChain();
 	CreateHeaps();
-	CreateCvbDescriptorHeaps();
+	//CreateCvbDescriptorHeaps();
 	CreateRenderTarget();
 	//return true;
 	}

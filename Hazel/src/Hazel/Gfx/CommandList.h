@@ -18,6 +18,8 @@ namespace Hazel
 		virtual void ChangeResourceState(const Ref<TextureBuffer>& texture, const TextureRenderUsage& fromFormat, const TextureRenderUsage& toFormat) = 0;
 		virtual void BindCbvHeap(const Ref<GfxDescHeap>& cbvHeap) = 0;
 		virtual void Close() = 0;
+		virtual void Release() = 0;
+
 
 		template<typename T>
 		T getCommandAllocator() const {

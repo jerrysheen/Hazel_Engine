@@ -15,7 +15,7 @@ namespace Hazel {
 	{
 		m_ViewProjectionMatrix = m_ProjectionMatrix * m_ViewMatrix;
 
-		m_CameraColorAttachment= RenderTarget::Create({ (UINT32)width, (UINT32)height });
+		//m_CameraColorAttachment= RenderTarget::Create({ (UINT32)width, (UINT32)height });
 		// InitCamera color/depth Attachment
 	}
 

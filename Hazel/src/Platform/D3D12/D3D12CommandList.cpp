@@ -56,7 +56,7 @@ namespace Hazel
 	{
 		auto handle = desc->GetCPUDescHandle<D3D12_CPU_DESCRIPTOR_HANDLE>();
 		//m_CommandListLocal->ClearRenderTargetView(handle, Colors::Azure, 0, nullptr);
-		m_CommandListLocal->ClearRenderTargetView(handle, &color[0], 0, nullptr);
+		m_CommandListLocal->ClearRenderTargetView(handle, Colors::White, 0, nullptr);
 
 		m_CommandList = m_CommandListLocal;
 	}
@@ -120,5 +120,12 @@ namespace Hazel
 		assert(SUCCEEDED(hr));
 
 		m_CommandList = m_CommandListLocal;
+	}
+	void D3D12CommandList::Release()
+	{
+		m_CommandListLocal->Release();
+		m_CommandAllocatorLocal->Release();
+		//m_CommandList = m_CommandListLocal;
+		//m_CommandAllocator = m_CommandAllocatorLocal;
 	}
 }

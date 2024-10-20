@@ -52,8 +52,8 @@ namespace Hazel
 		{
 		case DescriptorType::DESCRIPTOR_TYPE_SRV:
 			descriptorSize = device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-			m_DescriptorCount = 1;
 			handle = { m_HeapLocal->GetCPUDescriptorHandleForHeapStart().ptr + descriptorSize * m_DescriptorCount };
+			gpuHandle = { m_HeapLocal->GetGPUDescriptorHandleForHeapStart().ptr + descriptorSize * m_DescriptorCount };
 			srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
 			srvDesc.Format = d3dTextureResource->GetDesc().Format;
 			srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
@@ -62,7 +62,6 @@ namespace Hazel
 			srvDesc.Texture2D.PlaneSlice = 0;
 			srvDesc.Texture2D.ResourceMinLODClamp = 0.0f;
 			device->CreateShaderResourceView(d3dTextureResource.Get(), &srvDesc, handle);
-			gpuHandle = { m_HeapLocal->GetGPUDescriptorHandleForHeapStart().ptr + descriptorSize * m_DescriptorCount };
 			m_DescMap[keyToSearch][decritorType] = newDesc;
 			//m_DescriptorCount++;
 			newDesc->GetCPUHandlerVariant() = handle;
@@ -120,21 +119,21 @@ namespace Hazel
 		case DescriptorType::DESCRIPTOR_TYPE_CBV:
 		case DescriptorType::DESCRIPTOR_TYPE_UAV:
 		case DescriptorType::DESCRIPTOR_TYPE_SRV:
-			cbvHeapDesc.NumDescriptors = 1;
+			cbvHeapDesc.NumDescriptors = 10;
 			cbvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
 			cbvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
 			device->CreateDescriptorHeap(&cbvHeapDesc, IID_PPV_ARGS(&m_HeapLocal));
 			m_HeapLocal->SetName(L"DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV");
 			break;
 		case DescriptorType::DESCRIPTOR_TYPE_RTV:
-			rtvHeapDesc.NumDescriptors = 1;
+			rtvHeapDesc.NumDescriptors = 10;
 			rtvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
 			rtvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
 			device->CreateDescriptorHeap(&rtvHeapDesc, IID_PPV_ARGS(&m_HeapLocal));
 			m_HeapLocal->SetName(L"DESCRIPTOR_TYPE_RTV");
 				break;
 		case DescriptorType::DESCRIPTOR_TYPE_DSV:
-			dsvHeapDesc.NumDescriptors = 1;
+			dsvHeapDesc.NumDescriptors = 10;
 			dsvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_DSV;
 			dsvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
 			device->CreateDescriptorHeap(&dsvHeapDesc, IID_PPV_ARGS(&m_HeapLocal));

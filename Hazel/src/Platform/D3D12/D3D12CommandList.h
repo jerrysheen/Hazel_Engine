@@ -17,6 +17,7 @@ namespace Hazel
 		virtual void ChangeResourceState(const Ref<TextureBuffer>& texture, const TextureRenderUsage& fromFormat, const TextureRenderUsage& toFormat) override;
 		virtual void BindCbvHeap(const Ref<GfxDescHeap>& cbvHeap) override;
 		virtual void Close() override;
+		virtual void Release() override;
 	private :
 		Microsoft::WRL::ComPtr<ID3D12CommandAllocator> m_CommandAllocatorLocal;
 		Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> m_CommandListLocal;
