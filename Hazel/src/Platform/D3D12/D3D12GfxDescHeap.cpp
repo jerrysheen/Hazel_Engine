@@ -6,9 +6,53 @@
 namespace Hazel
 {
 
-	D3D12GfxDescHeap::~D3D12GfxDescHeap()
+	D3D12GfxDescHeap::D3D12GfxDescHeap(const DescriptorType& type):
+		m_HeapLocal(std::get<Microsoft::WRL::ComPtr<ID3D12DescriptorHeap>>(m_Heap))
 	{
 
+		D3D12RenderAPIManager* renderAPIManager = static_cast<D3D12RenderAPIManager*>(Application::Get().GetRenderAPIManager().get());
+		Microsoft::WRL::ComPtr<ID3D12Device> device = renderAPIManager->GetD3DDevice();
+		m_Type = type;
+
+
+		D3D12_DESCRIPTOR_HEAP_DESC rtvHeapDesc = {};
+		D3D12_DESCRIPTOR_HEAP_DESC cbvHeapDesc = {};
+		D3D12_DESCRIPTOR_HEAP_DESC dsvHeapDesc = {};
+		switch (type)
+		{
+		case DescriptorType::DESCRIPTOR_TYPE_CBV:
+		case DescriptorType::DESCRIPTOR_TYPE_UAV:
+		case DescriptorType::DESCRIPTOR_TYPE_SRV:
+			m_DescriptorCount = 1; // 默认有一个，匹配imgui中需要有一个descriptor？
+			cbvHeapDesc.NumDescriptors = 10;
+			cbvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
+			cbvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
+			device->CreateDescriptorHeap(&cbvHeapDesc, IID_PPV_ARGS(&m_HeapLocal));
+			m_HeapLocal->SetName(L"DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV");
+			break;
+		case DescriptorType::DESCRIPTOR_TYPE_RTV:
+			rtvHeapDesc.NumDescriptors = 10;
+			rtvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
+			rtvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
+			device->CreateDescriptorHeap(&rtvHeapDesc, IID_PPV_ARGS(&m_HeapLocal));
+			m_HeapLocal->SetName(L"DESCRIPTOR_TYPE_RTV");
+			break;
+		case DescriptorType::DESCRIPTOR_TYPE_DSV:
+			dsvHeapDesc.NumDescriptors = 10;
+			dsvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_DSV;
+			dsvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
+			device->CreateDescriptorHeap(&dsvHeapDesc, IID_PPV_ARGS(&m_HeapLocal));
+			m_HeapLocal->SetName(L"DESCRIPTOR_TYPE_DSV");
+			break;
+		default:
+			break;
+		}
+	
+	}
+
+	D3D12GfxDescHeap::~D3D12GfxDescHeap()
+	{
+		m_HeapLocal->Release();
 	}
 
 	Ref<GfxDesc> D3D12GfxDescHeap::GetOrCreateDesc(const Ref<TextureBuffer> textureBuffer, const DescriptorType& decritorType)
@@ -63,7 +107,6 @@ namespace Hazel
 			srvDesc.Texture2D.ResourceMinLODClamp = 0.0f;
 			device->CreateShaderResourceView(d3dTextureResource.Get(), &srvDesc, handle);
 			m_DescMap[keyToSearch][decritorType] = newDesc;
-			//m_DescriptorCount++;
 			newDesc->GetCPUHandlerVariant() = handle;
 			newDesc->GetGPUHandlerVariant() = gpuHandle;
 			return newDesc;
@@ -71,11 +114,9 @@ namespace Hazel
 		case DescriptorType::DESCRIPTOR_TYPE_RTV:
 			descriptorSize = device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
 			handle = { m_HeapLocal->GetCPUDescriptorHandleForHeapStart().ptr + descriptorSize * m_DescriptorCount };
-
 			rtvDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM; // 确保格式与纹理的格式相匹配
 			rtvDesc.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE2D; // 2D纹理
 			rtvDesc.Texture2D.MipSlice = 0; // 通常使用第0层mip
-
 			// 创建渲染目标视图
 			device->CreateRenderTargetView(d3dTextureResource.Get(), &rtvDesc, handle);
 			m_DescMap[keyToSearch][decritorType] = newDesc;
@@ -103,47 +144,7 @@ namespace Hazel
 		}
 	}
 
-	D3D12GfxDescHeap::D3D12GfxDescHeap(const DescriptorType& type)
-	{
 
-		D3D12RenderAPIManager* renderAPIManager = static_cast<D3D12RenderAPIManager*>(Application::Get().GetRenderAPIManager().get());
-		Microsoft::WRL::ComPtr<ID3D12Device> device = renderAPIManager->GetD3DDevice();
-		m_Type = type;
-
-
-		D3D12_DESCRIPTOR_HEAP_DESC rtvHeapDesc = {};
-		D3D12_DESCRIPTOR_HEAP_DESC cbvHeapDesc = {};
-		D3D12_DESCRIPTOR_HEAP_DESC dsvHeapDesc = {};
-		switch (type)
-		{
-		case DescriptorType::DESCRIPTOR_TYPE_CBV:
-		case DescriptorType::DESCRIPTOR_TYPE_UAV:
-		case DescriptorType::DESCRIPTOR_TYPE_SRV:
-			cbvHeapDesc.NumDescriptors = 10;
-			cbvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
-			cbvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
-			device->CreateDescriptorHeap(&cbvHeapDesc, IID_PPV_ARGS(&m_HeapLocal));
-			m_HeapLocal->SetName(L"DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV");
-			break;
-		case DescriptorType::DESCRIPTOR_TYPE_RTV:
-			rtvHeapDesc.NumDescriptors = 10;
-			rtvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
-			rtvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
-			device->CreateDescriptorHeap(&rtvHeapDesc, IID_PPV_ARGS(&m_HeapLocal));
-			m_HeapLocal->SetName(L"DESCRIPTOR_TYPE_RTV");
-				break;
-		case DescriptorType::DESCRIPTOR_TYPE_DSV:
-			dsvHeapDesc.NumDescriptors = 10;
-			dsvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_DSV;
-			dsvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
-			device->CreateDescriptorHeap(&dsvHeapDesc, IID_PPV_ARGS(&m_HeapLocal));
-			m_HeapLocal->SetName(L"DESCRIPTOR_TYPE_DSV");
-			break;
-		default:
-			break;
-		}
-		m_Heap = m_HeapLocal;
-	}
 
 
 	//D3D12GfxDesc::D3D12GfxDesc(const DescriptorType& type, const GfxDescHeap& heap)

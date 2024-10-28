@@ -18,8 +18,10 @@ namespace Hazel
 		virtual void BindCbvHeap(const Ref<GfxDescHeap>& cbvHeap) override;
 		virtual void Close() override;
 		virtual void Release() override;
+		virtual void Execute(ID3D12CommandQueue*& queue, ID3D12Fence* fence) override;
+
 	private :
-		Microsoft::WRL::ComPtr<ID3D12CommandAllocator> m_CommandAllocatorLocal;
-		Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> m_CommandListLocal;
+		Microsoft::WRL::ComPtr<ID3D12CommandAllocator>& m_CommandAllocatorLocal;
+		Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList>& m_CommandListLocal;
 	};
 }

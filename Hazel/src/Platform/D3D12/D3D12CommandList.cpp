@@ -9,8 +9,12 @@
 
 namespace Hazel 
 {
-	D3D12CommandList::D3D12CommandList()
+	D3D12CommandList::D3D12CommandList():
+		m_CommandAllocatorLocal(std::get<Microsoft::WRL::ComPtr<ID3D12CommandAllocator>>(m_CommandAllocator)),
+		m_CommandListLocal(std::get<Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList>>(m_CommandList))
 	{
+
+
 
 		D3D12RenderAPIManager* renderAPIManager = static_cast<D3D12RenderAPIManager*>(Application::Get().GetRenderAPIManager().get());
 		Microsoft::WRL::ComPtr<ID3D12Device> device = renderAPIManager->GetD3DDevice();
@@ -29,8 +33,6 @@ namespace Hazel
 		// to the command list we will Reset it, and it needs to be closed before
 		// calling Reset.
 		m_CommandListLocal->Close();
-		m_CommandAllocator = m_CommandAllocatorLocal;
-		m_CommandList = m_CommandListLocal;
 	}
 
 
@@ -49,16 +51,13 @@ namespace Hazel
 		// Reset the command list
 		ThrowIfFailed(m_CommandListLocal->Reset(m_CommandAllocatorLocal.Get(), nullptr));
 
-		m_CommandAllocator = m_CommandAllocatorLocal;
-		m_CommandList = m_CommandListLocal;
 	}
 	void D3D12CommandList::ClearRenderTargetView(const Ref<GfxDesc>& desc, const glm::vec4& color)
 	{
 		auto handle = desc->GetCPUDescHandle<D3D12_CPU_DESCRIPTOR_HANDLE>();
 		//m_CommandListLocal->ClearRenderTargetView(handle, Colors::Azure, 0, nullptr);
-		m_CommandListLocal->ClearRenderTargetView(handle, Colors::White, 0, nullptr);
+		m_CommandListLocal->ClearRenderTargetView(handle, &color[0], 0, nullptr);
 
-		m_CommandList = m_CommandListLocal;
 	}
 
 
@@ -102,7 +101,6 @@ namespace Hazel
 
 		// 这里应该设置一个同步点。。。
 
-		m_CommandList = m_CommandListLocal;
 	}
 
 	void D3D12CommandList::BindCbvHeap(const Ref<GfxDescHeap>& cbvHeap)
@@ -111,7 +109,6 @@ namespace Hazel
 		ID3D12DescriptorHeap* descriptorHeaps[] = { d3dCbvHeap.Get()};
 		m_CommandListLocal->SetDescriptorHeaps(_countof(descriptorHeaps), descriptorHeaps);
 
-		m_CommandList = m_CommandListLocal;
 	}
 
 	void D3D12CommandList::Close()
@@ -119,13 +116,14 @@ namespace Hazel
 		HRESULT hr = m_CommandListLocal->Close();
 		assert(SUCCEEDED(hr));
 
-		m_CommandList = m_CommandListLocal;
 	}
 	void D3D12CommandList::Release()
 	{
 		m_CommandListLocal->Release();
 		m_CommandAllocatorLocal->Release();
-		//m_CommandList = m_CommandListLocal;
-		//m_CommandAllocator = m_CommandAllocatorLocal;
+	}
+
+	void D3D12CommandList::Execute(ID3D12CommandQueue*& queue, ID3D12Fence* fence)
+	{
 	}
 }

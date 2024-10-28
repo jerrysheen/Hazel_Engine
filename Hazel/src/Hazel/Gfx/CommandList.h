@@ -9,6 +9,15 @@ namespace Hazel
 	class CommandList 
 	{
 	public:
+		CommandList() {
+#ifdef RENDER_API_OPENGL
+			m_CommandAllocator = 0;
+			m_CommandList = 0;
+#elif RENDER_API_DIRECTX12 // RENDER_API_OPENGL
+			m_CommandAllocator = Microsoft::WRL::ComPtr<ID3D12CommandAllocator>{};
+			m_CommandList = Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList>{};
+#endif // DEBUG
+		};
 		virtual ~CommandList() {};
 		virtual void OnUpdate() {};
 		static Ref<CommandList> Create();
@@ -19,7 +28,7 @@ namespace Hazel
 		virtual void BindCbvHeap(const Ref<GfxDescHeap>& cbvHeap) = 0;
 		virtual void Close() = 0;
 		virtual void Release() = 0;
-
+		virtual void Execute(ID3D12CommandQueue* & queue, ID3D12Fence* fence) = 0;
 
 		template<typename T>
 		T getCommandAllocator() const {

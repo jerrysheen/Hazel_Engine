@@ -59,14 +59,20 @@ namespace Hazel
 	class GfxDescHeap
 	{
 	public:
+		GfxDescHeap() 
+		{
+#ifdef RENDER_API_OPENGL
+			m_Heap = 0;
+#elif RENDER_API_DIRECTX12 // RENDER_API_OPENGL
+			m_Heap = Microsoft::WRL::ComPtr<ID3D12DescriptorHeap>{};
+#endif // DEBUG
+		};
 		virtual ~GfxDescHeap() {};
 		virtual void OnUpdate() {};
 		static Ref<GfxDescHeap> Create(const DescriptorType &type);
 
-		//virtual void Reset() = 0;
 		virtual Ref<GfxDesc> GetOrCreateDesc(const Ref<TextureBuffer> textureBuffer, const DescriptorType& type) = 0;
 		DescriptorType m_Type;
-		// 记录当前已经有的描述符数量，用来计算下一个的位置。
 		int m_DescriptorCount = 0;
 
 		template<typename T>

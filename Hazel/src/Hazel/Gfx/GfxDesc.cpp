@@ -32,11 +32,8 @@ namespace Hazel
 
 	GfxDesc::GfxDesc()
 	{
-		D3D12_CPU_DESCRIPTOR_HANDLE handle;
-		m_CPUHandle = handle;
-
-		D3D12_GPU_DESCRIPTOR_HANDLE gpuhandle;
-		m_GPUHandle = gpuhandle;
+		m_CPUHandle = D3D12_CPU_DESCRIPTOR_HANDLE{};
+		m_GPUHandle = D3D12_GPU_DESCRIPTOR_HANDLE{};
 	}
 
 }

@@ -39,92 +39,21 @@ namespace Hazel
         hr = device->CreateCommandQueue(&queueDesc, IID_PPV_ARGS(&cmdQueue));
         assert(SUCCEEDED(hr));
 
-        //ID3D12CommandAllocator* cmdAlloc = NULL;
-        //hr = device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&cmdAlloc));
-        //assert(SUCCEEDED(hr));
-
-        //ID3D12GraphicsCommandList* cmdList = NULL;
-        //hr = device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, cmdAlloc, NULL, IID_PPV_ARGS(&cmdList));
-        //assert(SUCCEEDED(hr));
         Ref<CommandList> cmdList = CommandPool::getInstance()->GetCommand();
         cmdList->Reset();
 
-
-
         TextureBufferSpecification spec = { 1280, 720, TextureType::TEXTURE2D, TextureFormat::RGBA32, TextureRenderUsage::RENDER_TARGET, MultiSample::NONE};
 
-        Ref<TextureBuffer> m_BackBuffer = TextureBuffer::Create(spec);
-        //D3D12_RESOURCE_DESC colorBufferDesc = {};
-        //colorBufferDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
-        //colorBufferDesc.Width = 1280;       // 设置颜色缓冲区的宽度
-        //colorBufferDesc.Height = 720;     // 设置颜色缓冲区的高度
-        //colorBufferDesc.DepthOrArraySize = 1;
-        //colorBufferDesc.MipLevels = 1;       // 不需要多级细化
-        //colorBufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM; // 颜色格式
-        //colorBufferDesc.SampleDesc.Count = 1;  // 不使用多重采样
-        //colorBufferDesc.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN;
-        //colorBufferDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET; // 声明这是一个渲染目标
-
-        //// 为颜色缓冲区指定清除值
-        //D3D12_CLEAR_VALUE clearValue = {};
-        //clearValue.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-        //clearValue.Color[0] = 1.0f;
-        //clearValue.Color[1] = 1.0f;
-        //clearValue.Color[2] = 1.0f;
-        //clearValue.Color[3] = 1.0f;
-
-
-        //device->CreateCommittedResource
-        //(
-        //    &CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT),
-        //    D3D12_HEAP_FLAG_NONE,
-        //    &colorBufferDesc,
-        //    D3D12_RESOURCE_STATE_RENDER_TARGET, // 初始状态为渲染目标
-        //    &clearValue,
-        //    IID_PPV_ARGS(&colorBuffer)
-        //);
-
-        //// 获取RTV描述符的句柄
-        //Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> m_rtvHeap = renderAPIManager->GetRtvHeap();
-        //UINT rtvDescriptorSize = renderAPIManager->GetRtvDescriptorSize();
-        //rtvHandle = m_rtvHeap->GetCPUDescriptorHandleForHeapStart(), 0, rtvDescriptorSize;
-
-        //// 创建RTV描述符
-        //device->CreateRenderTargetView(colorBuffer.Get(), nullptr, rtvHandle);
-        //cmdList->ClearRenderTargetView(rtvHandle, Colors::White, 0, nullptr);
-        //UINT handle_increment = device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-        //int descriptor_index = renderAPIManager->GetRtvDescriptorCount(); // The descriptor table index to use (not normally a hard-coded constant, but in this case we'll assume we have slot 1 reserved for us)
-        //my_texture_srv_cpu_handle = renderAPIManager->GetRtvHeap()->GetCPUDescriptorHandleForHeapStart();
+        m_BackBuffer = TextureBuffer::Create(spec);
         Ref<GfxDesc> renderTargetHandle = GfxViewManager::getInstance()->GetRtvHandle(m_BackBuffer);
-        cmdList->ClearRenderTargetView(renderTargetHandle, Color::White);
-
+        cmdList->ClearRenderTargetView(renderTargetHandle, Color::Black);
 
         cmdList->ChangeResourceState(m_BackBuffer, TextureRenderUsage::RENDER_TARGET, TextureRenderUsage::RENDER_TEXTURE);
-
-
-        // 创建 SRV（Shader Resource View）
-        //D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
-        //srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-        //srvDesc.Format = colorBuffer->GetDesc().Format; // 与 Render Target 的格式保持一致
-        //srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
-        //srvDesc.Texture2D.MipLevels = 1;
-
-        //srvHandle = renderAPIManager->GetCbvHeap()->GetCPUDescriptorHandleForHeapStart();
-        //srvHandle.Offset(1, handle_increment);
-        //device->CreateShaderResourceView(colorBuffer.Get(), &srvDesc, srvHandle);
-
-        //my_texture_srv_gpu_handle = renderAPIManager->GetCbvHeap()->GetGPUDescriptorHandleForHeapStart();
-        //my_texture_srv_gpu_handle.ptr += (handle_increment * 1);
-        //ID3D12DescriptorHeap* descriptorHeaps[] = { renderAPIManager->GetCbvHeap().Get() };
-        //cmdList->SetDescriptorHeaps(_countof(descriptorHeaps), descriptorHeaps);
-
         auto gfxViewManager = GfxViewManager::getInstance();
         Ref<GfxDesc> renderTargetSrvDesc = gfxViewManager->GetSrvHandle(m_BackBuffer);
         my_texture_srv_gpu_handle = renderTargetSrvDesc->GetGPUDescHandle<D3D12_GPU_DESCRIPTOR_HANDLE>();
         cmdList->BindCbvHeap(gfxViewManager->GetCBVHeap());
-
         cmdList->Close();
-        //CommandPool::ExecuteCommand(cmdList);
 
         Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> m_CommandList = cmdList->getCommandList<Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList>>();
         ID3D12CommandList* rawCommandList = m_CommandList.Get();

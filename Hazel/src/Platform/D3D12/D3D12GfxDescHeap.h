@@ -17,7 +17,7 @@ namespace Hazel
 	private:
 		// 针对D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV 这种类型，可能会存在一对多的情况。。
 		std::map<boost::uuids::uuid, std::map<DescriptorType, Ref<GfxDesc>>> m_DescMap;
-		Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> m_HeapLocal;
+		Microsoft::WRL::ComPtr<ID3D12DescriptorHeap>& m_HeapLocal;
 	};
 
 
