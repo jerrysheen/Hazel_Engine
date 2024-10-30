@@ -45,14 +45,15 @@ namespace Hazel
         TextureBufferSpecification spec = { 1280, 720, TextureType::TEXTURE2D, TextureFormat::RGBA32, TextureRenderUsage::RENDER_TARGET, MultiSample::NONE};
 
         m_BackBuffer = TextureBuffer::Create(spec);
-        Ref<GfxDesc> renderTargetHandle = GfxViewManager::getInstance()->GetRtvHandle(m_BackBuffer);
+        /*Ref<GfxDesc> renderTargetHandle = GfxViewManager::getInstance()->GetRtvHandle(m_BackBuffer);
         cmdList->ClearRenderTargetView(renderTargetHandle, Color::Black);
 
         cmdList->ChangeResourceState(m_BackBuffer, TextureRenderUsage::RENDER_TARGET, TextureRenderUsage::RENDER_TEXTURE);
+
         auto gfxViewManager = GfxViewManager::getInstance();
         Ref<GfxDesc> renderTargetSrvDesc = gfxViewManager->GetSrvHandle(m_BackBuffer);
         my_texture_srv_gpu_handle = renderTargetSrvDesc->GetGPUDescHandle<D3D12_GPU_DESCRIPTOR_HANDLE>();
-        cmdList->BindCbvHeap(gfxViewManager->GetCBVHeap());
+        cmdList->BindCbvHeap(gfxViewManager->GetCBVHeap());*/
         cmdList->Close();
 
         Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> m_CommandList = cmdList->getCommandList<Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList>>();
@@ -78,6 +79,8 @@ namespace Hazel
 
     void SceneViewLayer::OnUpdate(Timestep ts)
     {
+
+        
         //boost::uuids::random_generator generator;
 
         //// 生成UUID
@@ -117,6 +120,59 @@ namespace Hazel
         // 后续的渲染逻辑肯定要更加细分，能想象到的就是这个地方，mtextureID的赋值应该是在postRender的地方，这个地方一切渲染的内容都已经绘制完了。
         // 这个地方的多线程， 想一下profiler里面，相当于是我主线程提交一个pass，多线程里面就立即执行这个内容，这个过程中我们如果先不考虑feedback的东西，
         // 那么GPU只需要按照command依次执行就好了，所以我们会看到主线程 -> 渲染线程 -> GPU 这样子的一个流程。
+
+        // 在这个地方尝试起一个渲染命令
+
+        D3D12RenderAPIManager* renderAPIManager = static_cast<D3D12RenderAPIManager*>(Application::Get().GetRenderAPIManager().get());
+        Microsoft::WRL::ComPtr<ID3D12Device> device = renderAPIManager->GetD3DDevice();
+
+        ID3D12Fence* fence = NULL;
+        HRESULT hr = device->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&fence));
+        assert(SUCCEEDED(hr));
+
+        HANDLE event = CreateEvent(0, 0, 0, 0);
+        assert(event != NULL);
+
+        D3D12_COMMAND_QUEUE_DESC queueDesc = {};
+        queueDesc.Type = D3D12_COMMAND_LIST_TYPE_DIRECT;
+        queueDesc.Flags = D3D12_COMMAND_QUEUE_FLAG_NONE;
+        queueDesc.NodeMask = 1;
+
+        ID3D12CommandQueue* cmdQueue = NULL;
+        hr = device->CreateCommandQueue(&queueDesc, IID_PPV_ARGS(&cmdQueue));
+        assert(SUCCEEDED(hr));
+
+        Ref<CommandList> cmdList = CommandPool::getInstance()->GetCommand();
+        cmdList->Reset();
+
+        Ref<GfxDesc> renderTargetHandle = GfxViewManager::getInstance()->GetRtvHandle(m_BackBuffer);
+        cmdList->ClearRenderTargetView(renderTargetHandle, Color::White);
+
+        cmdList->ChangeResourceState(m_BackBuffer, TextureRenderUsage::RENDER_TARGET, TextureRenderUsage::RENDER_TEXTURE);
+
+        auto gfxViewManager = GfxViewManager::getInstance();
+        Ref<GfxDesc> renderTargetSrvDesc = gfxViewManager->GetSrvHandle(m_BackBuffer);
+        my_texture_srv_gpu_handle = renderTargetSrvDesc->GetGPUDescHandle<D3D12_GPU_DESCRIPTOR_HANDLE>();
+        cmdList->BindCbvHeap(gfxViewManager->GetCBVHeap());
+
+
+        CommandPool::getInstance()->RecycleCommand(cmdList);
+
+
+        Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> m_CommandList = cmdList->getCommandList<Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList>>();
+        ID3D12CommandList* rawCommandList = m_CommandList.Get();
+
+        cmdQueue->ExecuteCommandLists(1, (ID3D12CommandList* const*)&rawCommandList);
+        hr = cmdQueue->Signal(fence, 1);
+        IM_ASSERT(SUCCEEDED(hr));
+
+        fence->SetEventOnCompletion(1, event);
+        WaitForSingleObject(event, INFINITE);
+
+        cmdQueue->Release();
+        CloseHandle(event);
+        fence->Release();
+
 
     }
 

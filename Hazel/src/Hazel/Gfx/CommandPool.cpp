@@ -29,9 +29,15 @@ namespace Hazel
 		}
 		Ref<CommandList> command = m_IdleCommandListStack.top();
 		m_IdleCommandListStack.pop();
-		m_BusyCommandListStack.push(command);
+		//m_BusyCommandListStack.push(command);
 
         //command->Reset();
 		return command;
+    }
+
+    void CommandPool::RecycleCommand(Ref<CommandList> command) 
+    {
+        m_IdleCommandListStack.push(command);
+        command->Close();
     }
 }

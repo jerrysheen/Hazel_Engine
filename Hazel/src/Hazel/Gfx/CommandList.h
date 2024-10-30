@@ -26,7 +26,7 @@ namespace Hazel
 		virtual void ClearRenderTargetView(const Ref<GfxDesc>& desc, const glm::vec4& color) = 0;
 		virtual void ChangeResourceState(const Ref<TextureBuffer>& texture, const TextureRenderUsage& fromFormat, const TextureRenderUsage& toFormat) = 0;
 		virtual void BindCbvHeap(const Ref<GfxDescHeap>& cbvHeap) = 0;
-		virtual void Close() = 0;
+		virtual void Close() {};
 		virtual void Release() = 0;
 		virtual void Execute(ID3D12CommandQueue* & queue, ID3D12Fence* fence) = 0;
 

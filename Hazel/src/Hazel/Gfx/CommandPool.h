@@ -14,7 +14,7 @@ namespace Hazel {
             ~CommandPool() { std::cout << "CommandPool Destroyed\n"; }
 
             std::stack<Ref<CommandList>> m_IdleCommandListStack;
-            std::stack<Ref<CommandList>> m_BusyCommandListStack;
+            //std::stack<Ref<CommandList>> m_BusyCommandListStack;
         public:
             // 删除拷贝构造函数和赋值操作符
             CommandPool(const CommandPool&) = delete;
@@ -34,6 +34,7 @@ namespace Hazel {
             void Init();
 
             Ref<CommandList> GetCommand();
+            void RecycleCommand(Ref<CommandList> command);
     };
 
 }
