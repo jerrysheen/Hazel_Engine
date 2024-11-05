@@ -3,6 +3,7 @@
 
 #include "Hazel/Graphics/RenderAPI.h"
 #include "Platform/OpenGL/OpenGLShader.h"
+#include "Platform/D3D12/D3D12Shader.h"
 
 namespace Hazel {
 	Ref<Shader> Shader::Create(const std::string& filepath)
@@ -11,6 +12,7 @@ namespace Hazel {
 		{
 			case RenderAPI::API::None: HZ_CORE_ASSERT(false, "RenderAPI::None is currently not supported");
 			case RenderAPI::API::OpenGL: return std::make_shared<OpenGLShader>(filepath);
+			case RenderAPI::API::DirectX12: return std::make_shared<D3D12Shader>(filepath);
 		}
 		HZ_CORE_ASSERT(false, "Unknowed API...");
 		return nullptr;

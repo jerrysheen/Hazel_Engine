@@ -31,6 +31,8 @@ namespace Hazel {
 
 
 		inline boost::uuids::uuid GetUUID() const { return m_UUID; }
+		inline TextureRenderUsage GetTextureRenderUsage() const { return m_TextureRenderUsage; }		
+		inline void SetTextureRenderUsage(TextureRenderUsage usage) { m_TextureRenderUsage = usage; }
 
 		template<typename T>
 		T getCpuHandle() const {
@@ -63,7 +65,7 @@ namespace Hazel {
 		// 上层还要做的一个操作是bind，commandlist.settexture类似于这种操作，那么也就是说textureBuffer需要有一个资源描述符，来进行绑定操作，在绑定的时候只需要将对应的描述符的地址传递过来就好了。
 		// 也就是说，至少在textureBuffer层，我需要持有对应的资源，以及描述符。
 		boost::uuids::uuid m_UUID;
-	
+		TextureRenderUsage m_TextureRenderUsage;
 	};
 
 }

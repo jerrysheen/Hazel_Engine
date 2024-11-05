@@ -83,9 +83,11 @@ namespace Hazel
 		switch (toFormat)
 		{
 		case TextureRenderUsage::RENDER_TARGET:
+			texture->SetTextureRenderUsage(TextureRenderUsage::RENDER_TARGET);
 			toState = D3D12_RESOURCE_STATE_RENDER_TARGET;
 			break;
 		case TextureRenderUsage::RENDER_TEXTURE:
+			texture->SetTextureRenderUsage(TextureRenderUsage::RENDER_TEXTURE);
 			toState = D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
 			break;
 		default:

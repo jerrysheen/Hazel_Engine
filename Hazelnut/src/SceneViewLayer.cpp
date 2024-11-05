@@ -45,15 +45,8 @@ namespace Hazel
         TextureBufferSpecification spec = { 1280, 720, TextureType::TEXTURE2D, TextureFormat::RGBA32, TextureRenderUsage::RENDER_TARGET, MultiSample::NONE};
 
         m_BackBuffer = TextureBuffer::Create(spec);
-        /*Ref<GfxDesc> renderTargetHandle = GfxViewManager::getInstance()->GetRtvHandle(m_BackBuffer);
-        cmdList->ClearRenderTargetView(renderTargetHandle, Color::Black);
+        m_PbrShader = Shader::Create("assets/shaders/PBR.glsl");
 
-        cmdList->ChangeResourceState(m_BackBuffer, TextureRenderUsage::RENDER_TARGET, TextureRenderUsage::RENDER_TEXTURE);
-
-        auto gfxViewManager = GfxViewManager::getInstance();
-        Ref<GfxDesc> renderTargetSrvDesc = gfxViewManager->GetSrvHandle(m_BackBuffer);
-        my_texture_srv_gpu_handle = renderTargetSrvDesc->GetGPUDescHandle<D3D12_GPU_DESCRIPTOR_HANDLE>();
-        cmdList->BindCbvHeap(gfxViewManager->GetCBVHeap());*/
         cmdList->Close();
 
         Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> m_CommandList = cmdList->getCommandList<Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList>>();
@@ -145,6 +138,11 @@ namespace Hazel
         Ref<CommandList> cmdList = CommandPool::getInstance()->GetCommand();
         cmdList->Reset();
 
+        // 进行资源类型切换：
+        if (m_BackBuffer->GetTextureRenderUsage() == TextureRenderUsage::RENDER_TEXTURE) 
+        {
+            cmdList->ChangeResourceState(m_BackBuffer, TextureRenderUsage::RENDER_TEXTURE, TextureRenderUsage::RENDER_TARGET);
+        }
         Ref<GfxDesc> renderTargetHandle = GfxViewManager::getInstance()->GetRtvHandle(m_BackBuffer);
         cmdList->ClearRenderTargetView(renderTargetHandle, Color::White);
 
