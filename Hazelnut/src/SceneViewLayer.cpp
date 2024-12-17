@@ -45,7 +45,8 @@ namespace Hazel
         TextureBufferSpecification spec = { 1280, 720, TextureType::TEXTURE2D, TextureFormat::RGBA32, TextureRenderUsage::RENDER_TARGET, MultiSample::NONE};
 
         m_BackBuffer = TextureBuffer::Create(spec);
-        m_PbrShader = Shader::Create("assets/shaders/PBR.glsl");
+        //先硬写写死， 估计后面还要再考虑多平台的问题，也可能用一个编译器直接转过去。
+        m_PbrShader = Shader::Create("assets/shaders/PBR.hlsl");
 
         cmdList->Close();
 

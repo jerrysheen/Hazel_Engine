@@ -5,6 +5,10 @@ namespace Hazel
 {
 	D3D12Shader::D3D12Shader(const std::string& filepath)
 	{
+		std::wstring wstr(filepath.begin(), filepath.end());  // 直接使用构造函数
+		//m_VsByteCode = d3dUtil::CompileShader(wstr, nullptr, "VS", "ps_5_0");
+		//m_PsByteCode = d3dUtil::CompileShader(wstr, nullptr, "PS", "ps_5_0");
+
 	}
 
 	D3D12Shader::D3D12Shader(const std::string& name, const std::string& vertexSrc, const std::string& fragmentSrc)

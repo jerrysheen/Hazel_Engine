@@ -1,6 +1,8 @@
 #pragma once
 #include "hzpch.h"
 #include "Hazel/Renderer/Shader.h"
+#include <d3d12.h>
+using Microsoft::WRL::ComPtr;
 
 namespace Hazel 
 {
@@ -9,7 +11,7 @@ namespace Hazel
 		public:
 		D3D12Shader(const std::string& filepath);
 		D3D12Shader(const std::string& name, const std::string& vertexSrc, const std::string& fragmentSrc);
-		~D3D12Shader();
+		virtual ~D3D12Shader();
 
 		virtual void Bind() const override;
 		virtual void UnBind() const override;
@@ -25,6 +27,13 @@ namespace Hazel
 
 		private:
 		std::string m_Name;
+¡£
+		//ComPtr<BLOB> m_VsByteCode;
+		//ComPtr<BLOB> m_PsByteCode;
+
+		std::vector<D3D12_INPUT_ELEMENT_DESC> mInputLayout;
+
+
 	};
 
 }
