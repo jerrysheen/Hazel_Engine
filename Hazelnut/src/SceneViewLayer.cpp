@@ -46,7 +46,7 @@ namespace Hazel
 
         m_BackBuffer = TextureBuffer::Create(spec);
         //先硬写写死， 估计后面还要再考虑多平台的问题，也可能用一个编译器直接转过去。
-        m_PbrShader = Shader::Create("assets/shaders/PBR.hlsl");
+        m_PbrShader = Shader::Create("assets/shaders/color.hlsl");
 
         cmdList->Close();
 

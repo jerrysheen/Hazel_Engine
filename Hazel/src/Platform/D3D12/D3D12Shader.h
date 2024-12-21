@@ -27,9 +27,9 @@ namespace Hazel
 
 		private:
 		std::string m_Name;
-¡£
-		//ComPtr<BLOB> m_VsByteCode;
-		//ComPtr<BLOB> m_PsByteCode;
+
+		ComPtr<ID3DBlob> m_VsByteCode = nullptr;
+		ComPtr<ID3DBlob> m_PsByteCode = nullptr;
 
 		std::vector<D3D12_INPUT_ELEMENT_DESC> mInputLayout;
 
