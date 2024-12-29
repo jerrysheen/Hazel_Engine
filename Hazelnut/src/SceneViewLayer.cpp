@@ -7,8 +7,16 @@
 #include "Hazel/Gfx/GfxDesc.h"
 #include "Hazel/Gfx/GfxDesc.h"
 
+
+
 namespace Hazel
 {
+    struct D3DVertex
+    {
+        XMFLOAT3 Pos;
+        XMFLOAT4 Color;
+    };
+
     SceneViewLayer::SceneViewLayer(Window& window)
         :Layer("SceneViewLayer"),
         m_window(window)
@@ -45,13 +53,166 @@ namespace Hazel
         TextureBufferSpecification spec = { 1280, 720, TextureType::TEXTURE2D, TextureFormat::RGBA32, TextureRenderUsage::RENDER_TARGET, MultiSample::NONE};
 
         m_BackBuffer = TextureBuffer::Create(spec);
-        //先硬写写死， 估计后面还要再考虑多平台的问题，也可能用一个编译器直接转过去。
-        m_PbrShader = Shader::Create("assets/shaders/color.hlsl");
+
 
         cmdList->Close();
 
+
         Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> m_CommandList = cmdList->getCommandList<Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList>>();
         ID3D12CommandList* rawCommandList = m_CommandList.Get();
+        //先硬写写死， 估计后面还要再考虑多平台的问题，也可能用一个编译器直接转过去。
+        m_PbrShader = Shader::Create("assets/shaders/color.hlsl");
+        mvsByteCode = d3dUtil::CompileShader(L"assets/shaders/color.hlsl", nullptr, "VS", "vs_5_0");
+        mpsByteCode = d3dUtil::CompileShader(L"assets/shaders/color.hlsl", nullptr, "PS", "ps_5_0");
+        // build shader layoutinput
+        mInputLayout =
+        {
+            { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+            { "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }
+        };
+
+        // mesh gen:
+
+        std::array<D3DVertex, 8> vertices =
+        {
+            D3DVertex({ XMFLOAT3(-1.0f, -1.0f, -1.0f), XMFLOAT4(Colors::White) }),
+            D3DVertex({ XMFLOAT3(-1.0f, +1.0f, -1.0f), XMFLOAT4(Colors::Black) }),
+            D3DVertex({ XMFLOAT3(+1.0f, +1.0f, -1.0f), XMFLOAT4(Colors::Red) }),
+            D3DVertex({ XMFLOAT3(+1.0f, -1.0f, -1.0f), XMFLOAT4(Colors::Green) }),
+            D3DVertex({ XMFLOAT3(-1.0f, -1.0f, +1.0f), XMFLOAT4(Colors::Blue) }),
+            D3DVertex({ XMFLOAT3(-1.0f, +1.0f, +1.0f), XMFLOAT4(Colors::Yellow) }),
+            D3DVertex({ XMFLOAT3(+1.0f, +1.0f, +1.0f), XMFLOAT4(Colors::Cyan) }),
+            D3DVertex({ XMFLOAT3(+1.0f, -1.0f, +1.0f), XMFLOAT4(Colors::Magenta) })
+        };
+
+        std::array<std::uint16_t, 36> indices =
+        {
+            // front face
+            0, 1, 2,
+            0, 2, 3,
+
+            // back face
+            4, 6, 5,
+            4, 7, 6,
+
+            // left face
+            4, 5, 1,
+            4, 1, 0,
+
+            // right face
+            3, 2, 6,
+            3, 6, 7,
+
+            // top face
+            1, 5, 6,
+            1, 6, 2,
+
+            // bottom face
+            4, 0, 3,
+            4, 3, 7
+        };
+
+        const UINT vbByteSize = (UINT)vertices.size() * sizeof(Vertex);
+        const UINT ibByteSize = (UINT)indices.size() * sizeof(std::uint16_t);
+
+        mBoxGeo = std::make_unique<MeshGeometry>();
+        mBoxGeo->Name = "boxGeo";
+
+        ThrowIfFailed(D3DCreateBlob(vbByteSize, &mBoxGeo->VertexBufferCPU));
+        CopyMemory(mBoxGeo->VertexBufferCPU->GetBufferPointer(), vertices.data(), vbByteSize);
+
+        ThrowIfFailed(D3DCreateBlob(ibByteSize, &mBoxGeo->IndexBufferCPU));
+        CopyMemory(mBoxGeo->IndexBufferCPU->GetBufferPointer(), indices.data(), ibByteSize);
+
+        mBoxGeo->VertexBufferGPU = d3dUtil::CreateDefaultBuffer(device.Get(),
+            m_CommandList.Get(), vertices.data(), vbByteSize, mBoxGeo->VertexBufferUploader);
+
+        mBoxGeo->IndexBufferGPU = d3dUtil::CreateDefaultBuffer(device.Get(),
+            m_CommandList.Get(), indices.data(), ibByteSize, mBoxGeo->IndexBufferUploader);
+
+        mBoxGeo->VertexByteStride = sizeof(Vertex);
+        mBoxGeo->VertexBufferByteSize = vbByteSize;
+        mBoxGeo->IndexFormat = DXGI_FORMAT_R16_UINT;
+        mBoxGeo->IndexBufferByteSize = ibByteSize;
+
+        SubmeshGeometry submesh;
+        submesh.IndexCount = (UINT)indices.size();
+        submesh.StartIndexLocation = 0;
+        submesh.BaseVertexLocation = 0;
+
+        mBoxGeo->DrawArgs["box"] = submesh;
+
+
+        // build root signature
+        
+        // Shader programs typically require resources as input (constant buffers,
+    // textures, samplers).  The root signature defines the resources the shader
+    // programs expect.  If we think of the shader programs as a function, and
+    // the input resources as function parameters, then the root signature can be
+    // thought of as defining the function signature.  
+
+    // Root parameter can be a table, root descriptor or root constants.
+        CD3DX12_ROOT_PARAMETER slotRootParameter[1];
+
+        // Create a single descriptor table of CBVs.
+        CD3DX12_DESCRIPTOR_RANGE cbvTable;
+        cbvTable.Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 0);
+        slotRootParameter[0].InitAsDescriptorTable(1, &cbvTable);
+
+        // A root signature is an array of root parameters.
+        CD3DX12_ROOT_SIGNATURE_DESC rootSigDesc(1, slotRootParameter, 0, nullptr,
+            D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
+
+        // create a root signature with a single slot which points to a descriptor range consisting of a single constant buffer
+        ComPtr<ID3DBlob> serializedRootSig = nullptr;
+        ComPtr<ID3DBlob> errorBlob = nullptr;
+        hr = D3D12SerializeRootSignature(&rootSigDesc, D3D_ROOT_SIGNATURE_VERSION_1,
+            serializedRootSig.GetAddressOf(), errorBlob.GetAddressOf());
+
+        if (errorBlob != nullptr)
+        {
+            ::OutputDebugStringA((char*)errorBlob->GetBufferPointer());
+        }
+        ThrowIfFailed(hr);
+
+        ThrowIfFailed(device->CreateRootSignature(
+            0,
+            serializedRootSig->GetBufferPointer(),
+            serializedRootSig->GetBufferSize(),
+            IID_PPV_ARGS(&mRootSignature)));
+
+        // build pso
+
+        D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc;
+        ZeroMemory(&psoDesc, sizeof(D3D12_GRAPHICS_PIPELINE_STATE_DESC));
+        psoDesc.InputLayout = { mInputLayout.data(), (UINT)mInputLayout.size() };
+        psoDesc.pRootSignature = mRootSignature.Get();
+        psoDesc.VS =
+        {
+            reinterpret_cast<BYTE*>(mvsByteCode->GetBufferPointer()),
+            mvsByteCode->GetBufferSize()
+        };
+        psoDesc.PS =
+        {
+            reinterpret_cast<BYTE*>(mpsByteCode->GetBufferPointer()),
+            mpsByteCode->GetBufferSize()
+        };
+        psoDesc.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
+        psoDesc.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
+        psoDesc.DepthStencilState = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT);
+        psoDesc.SampleMask = UINT_MAX;
+        psoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
+        psoDesc.NumRenderTargets = 1;
+        psoDesc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;
+        psoDesc.SampleDesc.Count = 1;
+        psoDesc.SampleDesc.Quality = 0;
+        psoDesc.DSVFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
+        ThrowIfFailed(device->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(&mPSO)));
+
+
+
+
+
 
         cmdQueue->ExecuteCommandLists(1, (ID3D12CommandList* const*)&rawCommandList);
         hr = cmdQueue->Signal(fence, 1);

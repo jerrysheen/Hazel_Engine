@@ -9,7 +9,8 @@
 #include "Platform/D3D12/d3dUtil.h"
 #include "Platform/D3D12/D3D12RenderAPIManager.h"
 
-
+// temp:
+#include "platform/D3D12/d3dUtil.h"
 namespace Hazel
 {
 	class SceneViewLayer : public Layer
@@ -32,6 +33,18 @@ namespace Hazel
 		CD3DX12_CPU_DESCRIPTOR_HANDLE srvHandle;
 		D3D12_CPU_DESCRIPTOR_HANDLE my_texture_srv_cpu_handle;
 		D3D12_GPU_DESCRIPTOR_HANDLE my_texture_srv_gpu_handle;
+
+		std::vector<D3D12_INPUT_ELEMENT_DESC> mInputLayout;
+		ComPtr<ID3D12PipelineState> mPSO = nullptr;
+		XMFLOAT4X4 mWorld = MathHelper::Identity4x4();
+		XMFLOAT4X4 mView = MathHelper::Identity4x4();
+		XMFLOAT4X4 mProj = MathHelper::Identity4x4();
+		std::unique_ptr<MeshGeometry> mBoxGeo = nullptr;
+		ComPtr<ID3D12RootSignature> mRootSignature = nullptr;
+
+		ComPtr<ID3DBlob> mvsByteCode = nullptr;
+		ComPtr<ID3DBlob> mpsByteCode = nullptr;
+
 	};
 }
 
