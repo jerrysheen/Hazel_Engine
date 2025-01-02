@@ -28,7 +28,8 @@ namespace Hazel
 	enum TextureRenderUsage
 	{
 		RENDER_TARGET,
-		RENDER_TEXTURE
+		RENDER_TEXTURE,
+		RENDER_PRESENT
 	};
 
 	struct TextureBufferSpecification

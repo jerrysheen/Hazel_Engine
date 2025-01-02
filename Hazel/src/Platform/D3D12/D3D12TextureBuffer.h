@@ -12,7 +12,8 @@ namespace Hazel
 		//D3D12TextureBuffer() = default;
 		D3D12TextureBuffer(const TextureBufferSpecification& spec);
 		virtual ~D3D12TextureBuffer();
-		void CreateBufferResource();
+		void CreateRenderTargetBufferResource();
+		void CreateDepthStencilBufferResource();
 
 		virtual void Bind() override {};
 		virtual void Unbind() override {};
