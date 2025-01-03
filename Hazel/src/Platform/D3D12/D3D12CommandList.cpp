@@ -115,9 +115,7 @@ namespace Hazel
 
 	void D3D12CommandList::Close()
 	{
-		HRESULT hr = m_CommandListLocal->Close();
-		assert(SUCCEEDED(hr));
-
+		ThrowIfFailed(m_CommandListLocal->Close());
 	}
 	void D3D12CommandList::Release()
 	{

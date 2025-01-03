@@ -31,8 +31,7 @@ namespace Hazel
         D3D12RenderAPIManager* renderAPIManager = static_cast<D3D12RenderAPIManager*>(Application::Get().GetRenderAPIManager().get());
         Microsoft::WRL::ComPtr<ID3D12Device> device = renderAPIManager->GetD3DDevice();
 
-        ID3D12Fence* fence = NULL;
-        HRESULT hr = device->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&fence));
+        HRESULT hr = device->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&mFence));
         assert(SUCCEEDED(hr));
 
         HANDLE event = CreateEvent(0, 0, 0, 0);
@@ -43,19 +42,19 @@ namespace Hazel
         queueDesc.Flags = D3D12_COMMAND_QUEUE_FLAG_NONE;
         queueDesc.NodeMask = 1;
 
-        ID3D12CommandQueue* cmdQueue = NULL;
-        hr = device->CreateCommandQueue(&queueDesc, IID_PPV_ARGS(&cmdQueue));
+        
+        hr = device->CreateCommandQueue(&queueDesc, IID_PPV_ARGS(&mCommandQueue));
         assert(SUCCEEDED(hr));
 
-        Ref<CommandList> cmdList = CommandPool::getInstance()->GetCommand();
-        cmdList->Reset();
+
 
         TextureBufferSpecification spec = { 1280, 720, TextureType::TEXTURE2D, TextureFormat::RGBA32, TextureRenderUsage::RENDER_TARGET, MultiSample::NONE};
 
         m_BackBuffer = TextureBuffer::Create(spec);
+        m_DepthBuffer = TextureBuffer::Create({ 1280, 720, TextureType::TEXTURE2D, TextureFormat::DEPTH24STENCIL8, TextureRenderUsage::RENDER_TARGET, MultiSample::NONE });
 
-
-        cmdList->Close();
+        Ref<CommandList> cmdList = CommandPool::getInstance()->GetCommand();
+        cmdList->Reset();
 
 
         Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> m_CommandList = cmdList->getCommandList<Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList>>();
@@ -124,7 +123,7 @@ namespace Hazel
         ThrowIfFailed(D3DCreateBlob(ibByteSize, &mBoxGeo->IndexBufferCPU));
         CopyMemory(mBoxGeo->IndexBufferCPU->GetBufferPointer(), indices.data(), ibByteSize);
 
-        mBoxGeo->VertexBufferGPU = d3dUtil::CreateDefaultBuffer(device.Get(),
+       mBoxGeo->VertexBufferGPU = d3dUtil::CreateDefaultBuffer(device.Get(),
             m_CommandList.Get(), vertices.data(), vbByteSize, mBoxGeo->VertexBufferUploader);
 
         mBoxGeo->IndexBufferGPU = d3dUtil::CreateDefaultBuffer(device.Get(),
@@ -212,20 +211,13 @@ namespace Hazel
 
 
 
+        // Execute the initialization commands.
+        //cmdList->Close();
+        CommandPool::getInstance()->RecycleCommand(cmdList);
 
-
-        cmdQueue->ExecuteCommandLists(1, (ID3D12CommandList* const*)&rawCommandList);
-        hr = cmdQueue->Signal(fence, 1);
-        IM_ASSERT(SUCCEEDED(hr));
-
-        fence->SetEventOnCompletion(1, event);
-        WaitForSingleObject(event, INFINITE);
-
-        cmdList->Release();
-        cmdQueue->Release();
-        CloseHandle(event);
-        fence->Release();
-    }
+        mCommandQueue->ExecuteCommandLists(1, (ID3D12CommandList* const*)&rawCommandList);
+        FlushCommandQueue();
+      }
 
     void SceneViewLayer::OnDetach()
     {
@@ -236,47 +228,47 @@ namespace Hazel
     {
 
         
-        //boost::uuids::random_generator generator;
+        ////boost::uuids::random_generator generator;
 
-        //// 生成UUID
-        //boost::uuids::uuid id = generator();
+        ////// 生成UUID
+        ////boost::uuids::uuid id = generator();
 
-        //// 输出UUID
-        //HZ_CORE_INFO("UUID: {0}", id);
-        //cout << id << endl;
-        // 
-        //Culling result = Camera.Cull(Scene);
-        //
-        //Camera.Render(result);
-        //defaultRenderer.AddRenderPass(opaquePass);
-        //Camera.BindRenderer(defaultRenderer);
-        //Camera* sceneCamera = new Camera(60, 1920, 1080, 0.1f, 1000.0f);
-        //Scene* scene = new Scene();
-        ////sceneCamera->BindRenderer(defaultRenderer);
-        //RenderNode* node = Culling::Cull(sceneCamera, scene);
-        //RenderingData* renderingData = new RenderingData();
-        //sceneCamera->Render(node, renderingData);
-        // 
-        // 最后将这个colorattachment作为backbuffer输出。
+        ////// 输出UUID
+        ////HZ_CORE_INFO("UUID: {0}", id);
+        ////cout << id << endl;
+        //// 
+        ////Culling result = Camera.Cull(Scene);
+        ////
+        ////Camera.Render(result);
+        ////defaultRenderer.AddRenderPass(opaquePass);
+        ////Camera.BindRenderer(defaultRenderer);
+        ////Camera* sceneCamera = new Camera(60, 1920, 1080, 0.1f, 1000.0f);
+        ////Scene* scene = new Scene();
+        //////sceneCamera->BindRenderer(defaultRenderer);
+        ////RenderNode* node = Culling::Cull(sceneCamera, scene);
+        ////RenderingData* renderingData = new RenderingData();
+        ////sceneCamera->Render(node, renderingData);
+        //// 
+        //// 最后将这个colorattachment作为backbuffer输出。
  
-        // 
-        // 
-        // m_textureID = Camera.GetColorAttachment();
-        // 
-        // 参考unity的先写一版吧。
-        // 每个camera持有一个renderer，renderer里面有renderfeature，一个renderfeature执行一次绘制。
-        // 每个renderpass会声明自己对应的rendertarget，以及各自的渲染状态。
-        // 最后我的相机的输出就是一个cameraColorAttachment， 但是在这个地方我还要去考虑这些rt的管理。
-        // 我可能需要重构一下最底层那个代码。。就是imgui层。 把renderapi manager往上弄， 底层不需要这个东西。。
-        // 这一层layer持有一个rt？ 所有的内容其实就是叠加在这个上面进行绘制的。
+        //// 
+        //// 
+        //// m_textureID = Camera.GetColorAttachment();
+        //// 
+        //// 参考unity的先写一版吧。
+        //// 每个camera持有一个renderer，renderer里面有renderfeature，一个renderfeature执行一次绘制。
+        //// 每个renderpass会声明自己对应的rendertarget，以及各自的渲染状态。
+        //// 最后我的相机的输出就是一个cameraColorAttachment， 但是在这个地方我还要去考虑这些rt的管理。
+        //// 我可能需要重构一下最底层那个代码。。就是imgui层。 把renderapi manager往上弄， 底层不需要这个东西。。
+        //// 这一层layer持有一个rt？ 所有的内容其实就是叠加在这个上面进行绘制的。
 
-        // 所谓的sceneview到底应该干什么？这个窗口不应该承担任何渲染的逻辑，如果说sceneview底下有一个scene，然后里面有一些gameobject
-        // 那么我应该就是往这个scene里面添加gameobject，我的绘制应该在这个地方拉起来吗？ 其实感觉也不应该。。 不过先这么写吧。
-        // 后续的渲染逻辑肯定要更加细分，能想象到的就是这个地方，mtextureID的赋值应该是在postRender的地方，这个地方一切渲染的内容都已经绘制完了。
-        // 这个地方的多线程， 想一下profiler里面，相当于是我主线程提交一个pass，多线程里面就立即执行这个内容，这个过程中我们如果先不考虑feedback的东西，
-        // 那么GPU只需要按照command依次执行就好了，所以我们会看到主线程 -> 渲染线程 -> GPU 这样子的一个流程。
+        //// 所谓的sceneview到底应该干什么？这个窗口不应该承担任何渲染的逻辑，如果说sceneview底下有一个scene，然后里面有一些gameobject
+        //// 那么我应该就是往这个scene里面添加gameobject，我的绘制应该在这个地方拉起来吗？ 其实感觉也不应该。。 不过先这么写吧。
+        //// 后续的渲染逻辑肯定要更加细分，能想象到的就是这个地方，mtextureID的赋值应该是在postRender的地方，这个地方一切渲染的内容都已经绘制完了。
+        //// 这个地方的多线程， 想一下profiler里面，相当于是我主线程提交一个pass，多线程里面就立即执行这个内容，这个过程中我们如果先不考虑feedback的东西，
+        //// 那么GPU只需要按照command依次执行就好了，所以我们会看到主线程 -> 渲染线程 -> GPU 这样子的一个流程。
 
-        // 在这个地方尝试起一个渲染命令
+        //// 在这个地方尝试起一个渲染命令
 
         D3D12RenderAPIManager* renderAPIManager = static_cast<D3D12RenderAPIManager*>(Application::Get().GetRenderAPIManager().get());
         Microsoft::WRL::ComPtr<ID3D12Device> device = renderAPIManager->GetD3DDevice();
@@ -293,46 +285,72 @@ namespace Hazel
         queueDesc.Flags = D3D12_COMMAND_QUEUE_FLAG_NONE;
         queueDesc.NodeMask = 1;
 
-        ID3D12CommandQueue* cmdQueue = NULL;
-        hr = device->CreateCommandQueue(&queueDesc, IID_PPV_ARGS(&cmdQueue));
-        assert(SUCCEEDED(hr));
 
         Ref<CommandList> cmdList = CommandPool::getInstance()->GetCommand();
-        cmdList->Reset();
+
+        Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> m_CommandList = cmdList->getCommandList<Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList>>();
+        Microsoft::WRL::ComPtr<ID3D12CommandAllocator> m_CommandAllocator = cmdList->getCommandAllocator<Microsoft::WRL::ComPtr<ID3D12CommandAllocator>>();
+        
+        ThrowIfFailed(m_CommandAllocator->Reset());
+        // A command list can be reset after it has been added to the command queue via ExecuteCommandList.
+        // Reusing the command list reuses memory.
+        ThrowIfFailed(m_CommandList->Reset(m_CommandAllocator.Get(), mPSO.Get()));
+
 
         // 进行资源类型切换：
         if (m_BackBuffer->GetTextureRenderUsage() == TextureRenderUsage::RENDER_TEXTURE) 
         {
             cmdList->ChangeResourceState(m_BackBuffer, TextureRenderUsage::RENDER_TEXTURE, TextureRenderUsage::RENDER_TARGET);
         }
+
         Ref<GfxDesc> renderTargetHandle = GfxViewManager::getInstance()->GetRtvHandle(m_BackBuffer);
+        Ref<GfxDesc> deptgBufferHandle = GfxViewManager::getInstance()->GetDsvHandle(m_DepthBuffer);
+
+
+
+        auto depthHandle = deptgBufferHandle->GetCPUDescHandle<D3D12_CPU_DESCRIPTOR_HANDLE>();
+        auto rtDescHandle = renderTargetHandle->GetCPUDescHandle<D3D12_CPU_DESCRIPTOR_HANDLE>();
+
         cmdList->ClearRenderTargetView(renderTargetHandle, Color::White);
+        m_CommandList->ClearDepthStencilView(depthHandle, D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
+        m_CommandList->OMSetRenderTargets(1, &rtDescHandle, true, &depthHandle);
+        
+        
+        auto gfxViewManager = GfxViewManager::getInstance();
+        cmdList->BindCbvHeap(gfxViewManager->GetCBVHeap());
+
+        m_CommandList->SetGraphicsRootSignature(mRootSignature.Get());
+
+        m_CommandList->IASetVertexBuffers(0, 1, &mBoxGeo->VertexBufferView());
+        m_CommandList->IASetIndexBuffer(&mBoxGeo->IndexBufferView());
+        m_CommandList->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+
+        auto d3dCbvHeap = gfxViewManager->GetCBVHeap()->getHeap<Microsoft::WRL::ComPtr<ID3D12DescriptorHeap>>();
+        m_CommandList->SetGraphicsRootDescriptorTable(0, d3dCbvHeap->GetGPUDescriptorHandleForHeapStart());
+
+        m_CommandList->DrawIndexedInstanced(
+            mBoxGeo->DrawArgs["box"].IndexCount,
+            1, 0, 0, 0);
+
 
         cmdList->ChangeResourceState(m_BackBuffer, TextureRenderUsage::RENDER_TARGET, TextureRenderUsage::RENDER_TEXTURE);
 
-        auto gfxViewManager = GfxViewManager::getInstance();
         Ref<GfxDesc> renderTargetSrvDesc = gfxViewManager->GetSrvHandle(m_BackBuffer);
         my_texture_srv_gpu_handle = renderTargetSrvDesc->GetGPUDescHandle<D3D12_GPU_DESCRIPTOR_HANDLE>();
-        cmdList->BindCbvHeap(gfxViewManager->GetCBVHeap());
 
+
+
+
+
+        //m_CommandList->OMSetRenderTargets(1, &renderTargetHandle->GetCPUDescHandle<D3D12_CPU_DESCRIPTOR_HANDLE>(), true, nullptr);
 
         CommandPool::getInstance()->RecycleCommand(cmdList);
-
-
-        Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> m_CommandList = cmdList->getCommandList<Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList>>();
+        
         ID3D12CommandList* rawCommandList = m_CommandList.Get();
-
-        cmdQueue->ExecuteCommandLists(1, (ID3D12CommandList* const*)&rawCommandList);
-        hr = cmdQueue->Signal(fence, 1);
-        IM_ASSERT(SUCCEEDED(hr));
-
-        fence->SetEventOnCompletion(1, event);
-        WaitForSingleObject(event, INFINITE);
-
-        cmdQueue->Release();
-        CloseHandle(event);
-        fence->Release();
-
+        mCommandQueue->ExecuteCommandLists(1, (ID3D12CommandList* const*)&rawCommandList);
+        
+        FlushCommandQueue();
 
     }
 
@@ -462,6 +480,32 @@ namespace Hazel
 
     void SceneViewLayer::OnEvent(Event& e)
     {
+    }
+
+
+    // 暂时写这里，后续要变成event事件。
+    void SceneViewLayer::FlushCommandQueue()
+    {
+            // Advance the fence value to mark commands up to this fence point.
+            mCurrentFence++;
+
+            // Add an instruction to the command queue to set a new fence point.  Because we 
+            // are on the GPU timeline, the new fence point won't be set until the GPU finishes
+            // processing all the commands prior to this Signal().
+            ThrowIfFailed(mCommandQueue->Signal(mFence.Get(), mCurrentFence));
+
+            // Wait until the GPU has completed commands up to this fence point.
+            if (mFence->GetCompletedValue() < mCurrentFence)
+            {
+                HANDLE eventHandle = CreateEventEx(nullptr, false, false, EVENT_ALL_ACCESS);
+
+                // Fire event when GPU hits current fence.  
+                ThrowIfFailed(mFence->SetEventOnCompletion(mCurrentFence, eventHandle));
+
+                // Wait until the GPU hits current fence event is fired.
+                WaitForSingleObject(eventHandle, INFINITE);
+                CloseHandle(eventHandle);
+            }
     }
 
 }

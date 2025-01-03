@@ -25,9 +25,12 @@ namespace Hazel
 		void OnEvent(Event& e) override;
 
 	private:
+
+		void FlushCommandQueue();
 		Window& m_window;
 		Ref<Shader> m_PbrShader;
 		Ref<TextureBuffer> m_BackBuffer;
+		Ref<TextureBuffer> m_DepthBuffer;
 		Microsoft::WRL::ComPtr<ID3D12Resource> colorBuffer;
 		CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle;
 		CD3DX12_CPU_DESCRIPTOR_HANDLE srvHandle;
@@ -44,6 +47,10 @@ namespace Hazel
 
 		ComPtr<ID3DBlob> mvsByteCode = nullptr;
 		ComPtr<ID3DBlob> mpsByteCode = nullptr;
+
+		Microsoft::WRL::ComPtr<ID3D12Fence> mFence;
+		UINT64 mCurrentFence = 0;
+		Microsoft::WRL::ComPtr<ID3D12CommandQueue> mCommandQueue;
 
 	};
 }
