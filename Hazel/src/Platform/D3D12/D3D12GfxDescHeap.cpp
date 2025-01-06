@@ -21,6 +21,13 @@ namespace Hazel
 		switch (type)
 		{
 		case DescriptorType::DESCRIPTOR_TYPE_CBV:
+			m_DescriptorCount = 0; // 
+			cbvHeapDesc.NumDescriptors = 10;
+			cbvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
+			cbvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
+			device->CreateDescriptorHeap(&cbvHeapDesc, IID_PPV_ARGS(&m_HeapLocal));
+			m_HeapLocal->SetName(L"DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV");
+			break;
 		case DescriptorType::DESCRIPTOR_TYPE_UAV:
 		case DescriptorType::DESCRIPTOR_TYPE_SRV:
 			m_DescriptorCount = 1; // 默认有一个，匹配imgui中需要有一个descriptor？
@@ -146,12 +153,63 @@ namespace Hazel
 
 
 
+	Ref<GfxDesc> D3D12GfxDescHeap::GetOrCreateDesc(const Ref<ConstantBuffer> constantBuffer)
+	{
+		DescriptorType decritorType = DescriptorType::DESCRIPTOR_TYPE_CBV;
+		// 先try get, 这边我heap里有一个map，取到desc返回
+		// 加了一层， 这边会取到一个 std::map<DescriptorType, Ref<GfxDesc>>，然后根据这个map再去取。
+		boost::uuids::uuid keyToSearch = constantBuffer->GetUUID();
+		auto it = m_DescMap.find(keyToSearch);
+		if (it != m_DescMap.end()) {
+			// 找到了uuid， 继续找 std::map<DescriptorType, Ref<GfxDesc>>
+			std::map<DescriptorType, Ref<GfxDesc>>  descMap = it->second;
+			auto it = descMap.find(decritorType);
+			if (it != descMap.end()) {
+				// 找到了对应的Desc， 直接return。
+				return it->second;
+			}
+			else
+			{
+				// 只是没有desc， uuid是有的。
+				// todo 这个地方逻辑似乎有问题
+			}
+		}
+		else
+		{
+			m_DescMap[keyToSearch] = std::map<DescriptorType, Ref<GfxDesc>>();
+		}
+		// 现在一定有uuid， 但是没有对应的desc， 继续创建之路。。
 
-	//D3D12GfxDesc::D3D12GfxDesc(const DescriptorType& type, const GfxDescHeap& heap)
-	//{
-	//	// 在这个heap对应的位置创建
-	//}
-	//D3D12GfxDesc::~D3D12GfxDesc()
-	//{
-	//}
+		Ref<GfxDesc> newDesc = std::make_shared<GfxDesc>();
+		D3D12_CPU_DESCRIPTOR_HANDLE handle;
+		D3D12_GPU_DESCRIPTOR_HANDLE gpuHandle;
+		// 然后用这个handle创建描述符就好了。。
+		auto constantResource = constantBuffer->getResource<Microsoft::WRL::ComPtr<ID3D12Resource>>();
+		D3D12RenderAPIManager* renderAPIManager = static_cast<D3D12RenderAPIManager*>(Application::Get().GetRenderAPIManager().get());
+		Microsoft::WRL::ComPtr<ID3D12Device> device = renderAPIManager->GetD3DDevice();
+
+		D3D12_GPU_VIRTUAL_ADDRESS cbAddress = constantResource.Get()->GetGPUVirtualAddress();
+		// Offset to the ith object constant buffer in the buffer.
+		int boxCBufIndex = 0;
+		//cbAddress += boxCBufIndex * objCBByteSize;
+
+		D3D12_CONSTANT_BUFFER_VIEW_DESC cbvDesc;
+		cbvDesc.BufferLocation = cbAddress;
+		cbvDesc.SizeInBytes = d3dUtil::CalcConstantBufferByteSize(constantBuffer->GetBufferSize());
+
+		UINT descriptorSize = device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+		handle = { m_HeapLocal->GetCPUDescriptorHandleForHeapStart().ptr + descriptorSize * m_DescriptorCount };
+		gpuHandle = { m_HeapLocal->GetGPUDescriptorHandleForHeapStart().ptr + descriptorSize * m_DescriptorCount };
+		device->CreateConstantBufferView(
+			&cbvDesc,
+			handle);
+		// 增加heap地址， todo，这个应该改成写死的增加数量， 自动分配一个数量，比如现在已经有2个，这个是第三个，外面取应该用不到，
+		// 因为cpu 和gpu地址自动分配了已经。
+		m_DescriptorCount++;
+		m_DescMap[keyToSearch][decritorType] = newDesc;
+		newDesc->GetCPUHandlerVariant() = handle;
+		newDesc->GetGPUHandlerVariant() = gpuHandle;
+		return newDesc;
+		
+	}
 }

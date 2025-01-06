@@ -2,6 +2,7 @@
 #include "Hazel/Core/Core.h"
 #include "Hazel/Gfx/GfxDesc.h"
 #include "Hazel/Renderer/TextureBuffer.h"
+#include "Hazel/Renderer/Buffer.h"
 
 namespace Hazel {
     // viewManager用来管理各种descriptor以及descriptorHeap。
@@ -41,12 +42,17 @@ namespace Hazel {
         Ref<GfxDesc> GetRtvHandle(const Ref<TextureBuffer> textureBuffer);
         Ref<GfxDesc> GetSrvHandle(const Ref<TextureBuffer> textureBuffer);
         Ref<GfxDesc> GetDsvHandle(const Ref<TextureBuffer> textureBuffer);
+        Ref<GfxDesc> GetCbvHandle(const Ref<ConstantBuffer> constantBuffer);
 
-        inline Ref<GfxDescHeap> GetCBVHeap() { return m_SrvHeap; };
+        inline Ref<GfxDescHeap> GetSrvHeap() { return m_SrvHeap; };
+
+        // 用来存放主循环里面的资源，和imgui隔离开。
+        inline Ref<GfxDescHeap> GetCbvHeap() { return m_CbvHeap; };
     private:
         Ref<GfxDescHeap> m_RtvHeap;
         Ref<GfxDescHeap> m_SrvHeap;
         Ref<GfxDescHeap> m_DsvHeap;
+        Ref<GfxDescHeap> m_CbvHeap;
 
     };
 

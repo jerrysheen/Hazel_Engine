@@ -199,6 +199,7 @@
     <ClInclude Include="src\Hazel\Utility\Random.h" />
     <ClInclude Include="src\Hazel\Utility\Unique.h" />
     <ClInclude Include="src\Platform\D3D12\D3D12CommandList.h" />
+    <ClInclude Include="src\Platform\D3D12\D3D12ConstantBuffer.h" />
     <ClInclude Include="src\Platform\D3D12\D3D12GfxDescHeap.h" />
     <ClInclude Include="src\Platform\D3D12\D3D12RenderAPI.h" />
     <ClInclude Include="src\Platform\D3D12\D3D12RenderAPIManager.h" />
@@ -675,6 +676,7 @@
     <ClCompile Include="src\Hazel\Scene\Scene.cpp" />
     <ClCompile Include="src\Hazel\Utility\Random.cpp" />
     <ClCompile Include="src\Platform\D3D12\D3D12CommandList.cpp" />
+    <ClCompile Include="src\Platform\D3D12\D3D12ConstantBuffer.cpp" />
     <ClCompile Include="src\Platform\D3D12\D3D12GfxDescHeap.cpp" />
     <ClCompile Include="src\Platform\D3D12\D3D12RenderAPI.cpp" />
     <ClCompile Include="src\Platform\D3D12\D3D12RenderAPIManager.cpp" />

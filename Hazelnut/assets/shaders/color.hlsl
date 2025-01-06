@@ -1,18 +1,42 @@
+//***************************************************************************************
+// color.hlsl by Frank Luna (C) 2015 All Rights Reserved.
+//
+// Transforms and colors geometry.
+//***************************************************************************************
+
 cbuffer cbPerObject : register(b0)
 {
-    float4x4 gWorldViewProj;
+	float4x4 gWorldViewProj; 
+};
+
+struct VertexIn
+{
+	float3 PosL  : POSITION;
+    float4 Color : COLOR;
+};
+
+struct VertexOut
+{
+	float4 PosH  : SV_POSITION;
+    float4 Color : COLOR;
+};
+
+VertexOut VS(VertexIn vin)
+{
+	VertexOut vout;
+	
+	// Transform to homogeneous clip space.
+	vout.PosH = mul(float4(vin.PosL, 1.0f), gWorldViewProj);
+	
+	// Just pass vertex color into the pixel shader.
+    vout.Color = vin.Color;
+    
+    return vout;
 }
 
-void VS(float3 iPosL : POSITION,
-    float4 iColor : COLOR,
-    out float4 oPosH : SV_POSITION,
-    out float4 oColor : COLOR)
+float4 PS(VertexOut pin) : SV_Target
 {
-    oPosH = mul(float4(iPosL, 1.0f), gWorldViewProj);
-    oColor = iColor;
+    return pin.Color;
 }
 
-float4 PS(float4 posH : SV_POSITION, float4 color : COLOR) : SV_Target
-{
-    return color;
-}
+

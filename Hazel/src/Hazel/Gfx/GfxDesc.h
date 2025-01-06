@@ -1,6 +1,7 @@
 #pragma once
 #include "Hazel/Core/Core.h"
 #include "Hazel/Renderer/TextureBuffer.h"
+#include "Hazel/Renderer/Buffer.h"
 #include "Platform/D3D12/d3dx12.h"
 #include "Platform/D3D12/d3dUtil.h"
 namespace Hazel 
@@ -72,6 +73,7 @@ namespace Hazel
 		static Ref<GfxDescHeap> Create(const DescriptorType &type);
 
 		virtual Ref<GfxDesc> GetOrCreateDesc(const Ref<TextureBuffer> textureBuffer, const DescriptorType& type) = 0;
+		virtual Ref<GfxDesc> GetOrCreateDesc(const Ref<ConstantBuffer> constantBuffer) = 0;
 		DescriptorType m_Type;
 		int m_DescriptorCount = 0;
 

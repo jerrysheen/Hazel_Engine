@@ -89,6 +89,17 @@ public:
         return I;
     }
 
+	static DirectX::XMFLOAT4X4 Zero4x4()
+	{
+		static DirectX::XMFLOAT4X4 I(
+			0.0f, 0.0f, 0.0f, 0.0f,
+			0.0f, 0.0f, 0.0f, 0.0f,
+			0.0f, 0.0f, 0.0f, 0.0f,
+			0.0f, 0.0f, 0.0f, 0.0f);
+
+		return I;
+	}
+
     static DirectX::XMVECTOR RandUnitVec3();
     static DirectX::XMVECTOR RandHemisphereUnitVec3(DirectX::XMVECTOR n);
 

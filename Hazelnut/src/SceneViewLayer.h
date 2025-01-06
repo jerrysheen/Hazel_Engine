@@ -13,6 +13,12 @@
 #include "platform/D3D12/d3dUtil.h"
 namespace Hazel
 {
+
+	struct ObjectConstants
+	{
+		XMFLOAT4X4 WorldViewProj = MathHelper::Identity4x4();
+	};
+
 	class SceneViewLayer : public Layer
 	{
 	public:
@@ -51,7 +57,14 @@ namespace Hazel
 		Microsoft::WRL::ComPtr<ID3D12Fence> mFence;
 		UINT64 mCurrentFence = 0;
 		Microsoft::WRL::ComPtr<ID3D12CommandQueue> mCommandQueue;
+		D3D12_VIEWPORT mScreenViewport;
+		D3D12_RECT mScissorRect;
 
+		//std::unique_ptr<UploadBuffer<ObjectConstants>> mObjectCB = nullptr;
+
+		Ref<ConstantBuffer> objectCB;
 	};
+
+
 }
 

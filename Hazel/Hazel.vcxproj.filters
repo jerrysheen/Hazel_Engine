@@ -1544,6 +1544,7 @@
     <ClInclude Include="src\Platform\D3D12\D3D12GfxDescHeap.h" />
     <ClInclude Include="src\Hazel\Gfx\Color.h" />
     <ClInclude Include="src\Platform\D3D12\D3D12Shader.h" />
+    <ClInclude Include="src\Platform\D3D12\D3D12ConstantBuffer.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Hazel\Core\Application.cpp">
@@ -1716,5 +1717,6 @@
     <ClCompile Include="src\Platform\D3D12\D3D12GfxDescHeap.cpp" />
     <ClCompile Include="src\Hazel\Gfx\Color.cpp" />
     <ClCompile Include="src\Platform\D3D12\D3D12Shader.cpp" />
+    <ClCompile Include="src\Platform\D3D12\D3D12ConstantBuffer.cpp" />
   </ItemGroup>
 </Project>

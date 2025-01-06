@@ -48,10 +48,10 @@ namespace Hazel
 
 
 
-        TextureBufferSpecification spec = { 1280, 720, TextureType::TEXTURE2D, TextureFormat::RGBA32, TextureRenderUsage::RENDER_TARGET, MultiSample::NONE};
+        TextureBufferSpecification spec = { 800, 600, TextureType::TEXTURE2D, TextureFormat::RGBA32, TextureRenderUsage::RENDER_TARGET, MultiSample::NONE};
 
         m_BackBuffer = TextureBuffer::Create(spec);
-        m_DepthBuffer = TextureBuffer::Create({ 1280, 720, TextureType::TEXTURE2D, TextureFormat::DEPTH24STENCIL8, TextureRenderUsage::RENDER_TARGET, MultiSample::NONE });
+        m_DepthBuffer = TextureBuffer::Create({ 800, 600, TextureType::TEXTURE2D, TextureFormat::DEPTH24STENCIL8, TextureRenderUsage::RENDER_TARGET, MultiSample::NONE });
 
         Ref<CommandList> cmdList = CommandPool::getInstance()->GetCommand();
         cmdList->Reset();
@@ -217,7 +217,44 @@ namespace Hazel
 
         mCommandQueue->ExecuteCommandLists(1, (ID3D12CommandList* const*)&rawCommandList);
         FlushCommandQueue();
-      }
+
+        mScreenViewport.TopLeftX = 0;
+        mScreenViewport.TopLeftY = 0;
+        mScreenViewport.Width = static_cast<float>(800);
+        mScreenViewport.Height = static_cast<float>(600);
+        mScreenViewport.MinDepth = 0.0f;
+        mScreenViewport.MaxDepth = 1.0f;
+
+        mScissorRect = { 0, 0, 800, 600 };
+      
+        // Convert Spherical to Cartesian coordinates.
+        float mTheta = 1.5f * XM_PI;
+        float mPhi = XM_PIDIV4;
+        float mRadius = 5;
+        float x = mRadius * sinf(mPhi) * cosf(mTheta);
+        float z = mRadius * sinf(mPhi) * sinf(mTheta);
+        float y = mRadius * cosf(mPhi);
+
+        // Build the view matrix.
+        XMVECTOR pos = XMVectorSet(x, y, z, 1.0f);
+        XMVECTOR target = XMVectorZero();
+        XMVECTOR up = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
+
+        XMMATRIX view = XMMatrixLookAtLH(pos, target, up);
+        XMStoreFloat4x4(&mView, view);
+
+        XMMATRIX P = XMMatrixPerspectiveFovLH(0.25f * MathHelper::Pi, (800.0f/600.0f), 1.0f, 1000.0f);
+        XMStoreFloat4x4(&mProj, P);
+
+        XMMATRIX world = XMLoadFloat4x4(&mWorld);
+        XMMATRIX proj = XMLoadFloat4x4(&mProj);
+        XMMATRIX worldViewProj = world * view * proj;
+        XMStoreFloat4x4(&mWorld, XMMatrixTranspose(worldViewProj));
+        uint32_t size = sizeof(ObjectConstants);
+        objectCB = ConstantBuffer::Create(size);
+        objectCB->SetData(&mWorld, size);
+        GfxViewManager::getInstance()->GetCbvHandle(objectCB);
+    }
 
     void SceneViewLayer::OnDetach()
     {
@@ -296,7 +333,8 @@ namespace Hazel
         // Reusing the command list reuses memory.
         ThrowIfFailed(m_CommandList->Reset(m_CommandAllocator.Get(), mPSO.Get()));
 
-
+        m_CommandList->RSSetViewports(1, &mScreenViewport);
+        m_CommandList->RSSetScissorRects(1, &mScissorRect);
         // 进行资源类型切换：
         if (m_BackBuffer->GetTextureRenderUsage() == TextureRenderUsage::RENDER_TEXTURE) 
         {
@@ -316,8 +354,11 @@ namespace Hazel
         m_CommandList->OMSetRenderTargets(1, &rtDescHandle, true, &depthHandle);
         
         
+        //这个地方是激活使用到的heap，比如使用到了CBV，就激活这个heap。
         auto gfxViewManager = GfxViewManager::getInstance();
-        cmdList->BindCbvHeap(gfxViewManager->GetCBVHeap());
+        auto d3dCbvHeap = gfxViewManager->GetCbvHeap()->getHeap<Microsoft::WRL::ComPtr<ID3D12DescriptorHeap>>();
+        ID3D12DescriptorHeap* descriptorHeaps[] = { d3dCbvHeap.Get() };
+        m_CommandList->SetDescriptorHeaps(_countof(descriptorHeaps), descriptorHeaps);
 
         m_CommandList->SetGraphicsRootSignature(mRootSignature.Get());
 
@@ -326,7 +367,6 @@ namespace Hazel
         m_CommandList->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 
-        auto d3dCbvHeap = gfxViewManager->GetCBVHeap()->getHeap<Microsoft::WRL::ComPtr<ID3D12DescriptorHeap>>();
         m_CommandList->SetGraphicsRootDescriptorTable(0, d3dCbvHeap->GetGPUDescriptorHandleForHeapStart());
 
         m_CommandList->DrawIndexedInstanced(
@@ -463,7 +503,7 @@ namespace Hazel
         //{
         //case RenderTargetEnum::OPAQUE_TEXTURE:
         //    textureID = m_FrameBuffer->GetColorAttachmentRendererID();
-          ImGui::Image((void*)my_texture_srv_gpu_handle.ptr, ImVec2(1280, 720), ImVec2(0, 1), ImVec2(1, 0));
+          ImGui::Image((void*)my_texture_srv_gpu_handle.ptr, ImVec2(800, 600), ImVec2(0, 1), ImVec2(1, 0));
         //    break;
         //}
 

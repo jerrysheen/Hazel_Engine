@@ -1,4 +1,5 @@
 #pragma once
+#include "hzpch.h"
 
 namespace Hazel {
 
@@ -137,6 +138,60 @@ namespace Hazel {
 		virtual uint32_t GetCount() const = 0;
 		static IndexBuffer* Create(uint32_t* indices, uint32_t size);
 
+	};
+
+	class ConstantBuffer
+	{
+	public:
+		ConstantBuffer() 
+		{
+#ifdef RENDER_API_OPENGL
+			m_CpuHandle  = 0
+			m_BufferResource = 0;
+#elif RENDER_API_DIRECTX12 // RENDER_API_OPENGL
+			m_CpuHandle = CD3DX12_CPU_DESCRIPTOR_HANDLE{};
+			m_BufferResource = Microsoft::WRL::ComPtr<ID3D12Resource>{};
+#endif // DEBUG
+		};
+		virtual ~ConstantBuffer() {}
+
+		virtual void SetData(void* srcData, int length) = 0;
+		//virtual void Unbind() const = 0;
+		//
+		//virtual uint32_t GetCount() const = 0;
+		// 根据buffer的element个数创建一个大的buffer
+		ConstantBuffer& operator=(const ConstantBuffer& rhs) = delete;
+		static Ref<ConstantBuffer> Create(uint32_t bufferSize);
+		inline boost::uuids::uuid GetUUID() const { return m_UUID; }
+		inline uint32_t GetBufferSize() const { return m_BufferSize; }
+
+		template<typename T>
+		T getCpuHandle() const {
+			if constexpr (std::is_same_v<T, uint32_t> || std::is_same_v<T, CD3DX12_CPU_DESCRIPTOR_HANDLE>) {
+				return std::get<T>(m_CpuHandle);  // 尝试获取 T 类型的值
+			}
+			else {
+				static_assert(false, "T must be either uint32_t or CD3DX12_CPU_DESCRIPTOR_HANDLE");
+			}
+		}
+
+		template<typename T>
+		T getResource() const {
+			if constexpr (std::is_same_v<T, uint32_t> || std::is_same_v<T, Microsoft::WRL::ComPtr<ID3D12Resource>>) {
+				return std::get<T>(m_BufferResource);  // 尝试获取 T 类型的值
+			}
+			else {
+				static_assert(false, "T must be either uint32_t or ID3D12Resource");
+			}
+		}
+
+	protected:
+
+		std::variant<uint32_t, CD3DX12_CPU_DESCRIPTOR_HANDLE> m_CpuHandle;
+		std::variant<uint32_t, Microsoft::WRL::ComPtr<ID3D12Resource>> m_BufferResource;
+		
+		boost::uuids::uuid m_UUID;
+		uint32_t m_BufferSize;
 	};
 
 }

@@ -1,5 +1,6 @@
 #pragma once
 #include "Hazel/Graphics/RenderAPIManager.h"
+#include "Hazel/Renderer/Buffer.h"
 
 #include "Platform/D3D12/d3dUtil.h"
 #include "Platform/D3D12/d3dx12.h"
@@ -32,7 +33,7 @@ namespace Hazel {
 		inline Microsoft::WRL::ComPtr<ID3D12Device> GetD3DDevice() { return md3dDevice; }
 		inline DXGI_FORMAT GetBackBufferFormat() { return mBackBufferFormat; }
 		inline Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> GetCbvHeap() { return mCbvHeap; }
-		inline Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> GetSrvHeap() { return mSrvHeap; }
+		//inline Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> GetSrvHeap() { return mSrvHeap; }
 		
 		// RTV Heap and Handle Size;
 		inline Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> GetRtvHeap() { return mRtvHeap; }
