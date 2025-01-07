@@ -111,17 +111,17 @@ namespace Hazel
             4, 3, 7
         };
 
-        const UINT vbByteSize = (UINT)vertices.size() * sizeof(Vertex);
+        const UINT vbByteSize = (UINT)vertices.size() * sizeof(D3DVertex);
         const UINT ibByteSize = (UINT)indices.size() * sizeof(std::uint16_t);
 
         mBoxGeo = std::make_unique<MeshGeometry>();
         mBoxGeo->Name = "boxGeo";
 
-        ThrowIfFailed(D3DCreateBlob(vbByteSize, &mBoxGeo->VertexBufferCPU));
-        CopyMemory(mBoxGeo->VertexBufferCPU->GetBufferPointer(), vertices.data(), vbByteSize);
+        //ThrowIfFailed(D3DCreateBlob(vbByteSize, &mBoxGeo->VertexBufferCPU));
+        //CopyMemory(mBoxGeo->VertexBufferCPU->GetBufferPointer(), vertices.data(), vbByteSize);
 
-        ThrowIfFailed(D3DCreateBlob(ibByteSize, &mBoxGeo->IndexBufferCPU));
-        CopyMemory(mBoxGeo->IndexBufferCPU->GetBufferPointer(), indices.data(), ibByteSize);
+        //ThrowIfFailed(D3DCreateBlob(ibByteSize, &mBoxGeo->IndexBufferCPU));
+        //CopyMemory(mBoxGeo->IndexBufferCPU->GetBufferPointer(), indices.data(), ibByteSize);
 
        mBoxGeo->VertexBufferGPU = d3dUtil::CreateDefaultBuffer(device.Get(),
             m_CommandList.Get(), vertices.data(), vbByteSize, mBoxGeo->VertexBufferUploader);
@@ -129,7 +129,7 @@ namespace Hazel
         mBoxGeo->IndexBufferGPU = d3dUtil::CreateDefaultBuffer(device.Get(),
             m_CommandList.Get(), indices.data(), ibByteSize, mBoxGeo->IndexBufferUploader);
 
-        mBoxGeo->VertexByteStride = sizeof(Vertex);
+        mBoxGeo->VertexByteStride = sizeof(D3DVertex);
         mBoxGeo->VertexBufferByteSize = vbByteSize;
         mBoxGeo->IndexFormat = DXGI_FORMAT_R16_UINT;
         mBoxGeo->IndexBufferByteSize = ibByteSize;
