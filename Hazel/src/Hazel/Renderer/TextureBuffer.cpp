@@ -7,8 +7,6 @@
 namespace Hazel 
 {
 
-
-
 	Ref<TextureBuffer> TextureBuffer::Create(const TextureBufferSpecification& spec)
 	{
 		// 创建一个uuid给这个TextureBuffer

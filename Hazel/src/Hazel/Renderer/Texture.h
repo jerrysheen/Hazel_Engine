@@ -2,6 +2,7 @@
 
 namespace Hazel {
 
+	// 应该没什么问题， Texture下面有两个派生类texture2d + texture3d
 	class Texture 
 	{
 	public:

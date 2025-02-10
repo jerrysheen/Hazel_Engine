@@ -34,8 +34,6 @@ namespace Hazel
         HRESULT hr = device->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&mFence));
         assert(SUCCEEDED(hr));
 
-        HANDLE event = CreateEvent(0, 0, 0, 0);
-        assert(event != NULL);
 
         D3D12_COMMAND_QUEUE_DESC queueDesc = {};
         queueDesc.Type = D3D12_COMMAND_LIST_TYPE_DIRECT;
@@ -254,6 +252,8 @@ namespace Hazel
         objectCB = ConstantBuffer::Create(size);
         objectCB->SetData(&mWorld, size);
         GfxViewManager::getInstance()->GetCbvHandle(objectCB);
+
+        //开始加载一张贴图进来：
     }
 
     void SceneViewLayer::OnDetach()
@@ -313,14 +313,6 @@ namespace Hazel
         ID3D12Fence* fence = NULL;
         HRESULT hr = device->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&fence));
         assert(SUCCEEDED(hr));
-
-        HANDLE event = CreateEvent(0, 0, 0, 0);
-        assert(event != NULL);
-
-        D3D12_COMMAND_QUEUE_DESC queueDesc = {};
-        queueDesc.Type = D3D12_COMMAND_LIST_TYPE_DIRECT;
-        queueDesc.Flags = D3D12_COMMAND_QUEUE_FLAG_NONE;
-        queueDesc.NodeMask = 1;
 
 
         Ref<CommandList> cmdList = CommandPool::getInstance()->GetCommand();

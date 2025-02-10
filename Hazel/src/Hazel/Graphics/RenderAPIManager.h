@@ -9,6 +9,7 @@
 /// </summary>
 namespace Hazel {
 
+	// 这个api，只会在对应的renderapi层被调用，所以这个地方依旧使用variant的方式去取值。
 	class HAZEL_API RenderAPIManager
 	{
 	public:

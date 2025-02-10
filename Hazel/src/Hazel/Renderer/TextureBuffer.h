@@ -8,10 +8,11 @@
 
 namespace Hazel {
 
+	// TextureBuffer 包含 rendertarget 和 rendertexture, 需要去包含texture2d吗，因为看起来会有点奇怪？
+	// 这个地方就不包括texture2d了，额外写一套texture2d，texture2d就是写死只有shader可读的texture。
 	class TextureBuffer
 	{
 	public:
-		//TextureBuffer() : m_BufferResource(uint32_t(0)), m_CpuHandle(uint32_t(0)){}
 		virtual ~TextureBuffer() = default;
 
 		virtual void Bind() = 0;

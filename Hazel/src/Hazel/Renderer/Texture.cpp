@@ -5,6 +5,7 @@
 #include "Hazel/Graphics/RenderAPI.h"
 #include "Platform/OpenGL/OpenGLTexture2D.h"
 #include "Platform/OpenGL/OpenGLTexture3D.h"
+#include "Platform/D3D12/D3D12Texture2D.h"
 
 namespace Hazel {
 	Ref<Texture2D> Texture2D::Create(uint32_t width, uint32_t height, uint32_t colorFormat)
@@ -26,6 +27,7 @@ namespace Hazel {
 		{
 			case RenderAPI::API::None: HZ_CORE_ASSERT(false, "RenderAPI::None is currently not supported");
 			case RenderAPI::API::OpenGL: return std::make_shared<OpenGLTexture2D>(path);
+			//case RenderAPI::API::DirectX12 : return std::make_shared<D3D12Texture2D>(path);
 		}
 		HZ_CORE_ASSERT(false, "Unknowed API...");
 		return nullptr;

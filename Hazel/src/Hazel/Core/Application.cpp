@@ -24,7 +24,9 @@ namespace Hazel{
 		m_Window = Scope<Window>(Window::Create(props));
 		m_Window->SetEventCallback(BIND_EVENT_FN(OnEvent));
 		
-		// 初始化RenderAPI。
+		// 初始化RenderAPI, 其实这个类有点宽泛？ 
+		// 先这么写吧，这个地方需求比较简单，就是要在别的地方能简单取到devices，
+		//m_RenderAPIManager = Ref<RenderAPIManager>(RenderAPIManager::Create());
 		m_RenderAPIManager = Ref<RenderAPIManager>(RenderAPIManager::Create());
 		CommandPool::getInstance()->Init();
 		GfxViewManager::getInstance()->Init();
