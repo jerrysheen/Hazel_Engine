@@ -103,7 +103,7 @@ namespace Hazel {
 		ImGui_ImplWin32_Init(Application::Get().GetWindow().GetNativeWindow());
 		//if (D3D12RenderAPIManager* renderAPIManager = dynamic_cast<D3D12RenderAPIManager*>(basePtr)) {
 		//	derivedPtr->show();
-		renderAPIManager = static_cast<D3D12RenderAPIManager*>(Application::Get().GetRenderAPIManager().get());
+		renderAPIManager = dynamic_cast<D3D12RenderAPIManager*>(RenderAPIManager::getInstance()->GetManager().get());
 		//ID3D12DescriptorHeap* srvDescHeap = renderAPIManager->GetCbvHeap().Get();
 		ID3D12DescriptorHeap* srvDescHeap = GfxViewManager::getInstance()->GetSrvHeap()->getHeap< Microsoft::WRL::ComPtr<ID3D12DescriptorHeap>>().Get();
 		ImGui_ImplDX12_Init(renderAPIManager->GetD3DDevice().Get(), NUM_FRAMES_IN_FLIGHT,

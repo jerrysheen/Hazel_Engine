@@ -10,7 +10,7 @@ namespace Hazel
 		m_HeapLocal(std::get<Microsoft::WRL::ComPtr<ID3D12DescriptorHeap>>(m_Heap))
 	{
 
-		D3D12RenderAPIManager* renderAPIManager = static_cast<D3D12RenderAPIManager*>(Application::Get().GetRenderAPIManager().get());
+		D3D12RenderAPIManager* renderAPIManager = dynamic_cast<D3D12RenderAPIManager*>(RenderAPIManager::getInstance()->GetManager().get());
 		Microsoft::WRL::ComPtr<ID3D12Device> device = renderAPIManager->GetD3DDevice();
 		m_Type = type;
 
@@ -92,7 +92,7 @@ namespace Hazel
 		D3D12_GPU_DESCRIPTOR_HANDLE gpuHandle;
 		// 然后用这个handle创建描述符就好了。。
 		auto d3dTextureResource = textureBuffer->getResource<Microsoft::WRL::ComPtr<ID3D12Resource>>();
-		D3D12RenderAPIManager* renderAPIManager = static_cast<D3D12RenderAPIManager*>(Application::Get().GetRenderAPIManager().get());
+		D3D12RenderAPIManager* renderAPIManager = dynamic_cast<D3D12RenderAPIManager*>(RenderAPIManager::getInstance()->GetManager().get());
 		Microsoft::WRL::ComPtr<ID3D12Device> device = renderAPIManager->GetD3DDevice();
 		
 		D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
@@ -185,7 +185,7 @@ namespace Hazel
 		D3D12_GPU_DESCRIPTOR_HANDLE gpuHandle;
 		// 然后用这个handle创建描述符就好了。。
 		auto constantResource = constantBuffer->getResource<Microsoft::WRL::ComPtr<ID3D12Resource>>();
-		D3D12RenderAPIManager* renderAPIManager = static_cast<D3D12RenderAPIManager*>(Application::Get().GetRenderAPIManager().get());
+		D3D12RenderAPIManager* renderAPIManager = dynamic_cast<D3D12RenderAPIManager*>(RenderAPIManager::getInstance()->GetManager().get());
 		Microsoft::WRL::ComPtr<ID3D12Device> device = renderAPIManager->GetD3DDevice();
 
 		D3D12_GPU_VIRTUAL_ADDRESS cbAddress = constantResource.Get()->GetGPUVirtualAddress();

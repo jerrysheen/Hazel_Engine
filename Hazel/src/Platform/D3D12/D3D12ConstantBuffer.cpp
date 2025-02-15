@@ -13,7 +13,7 @@ namespace Hazel
 		elementSize = d3dUtil::CalcConstantBufferByteSize(elementSize);
         m_BufferSize = elementSize;
         // todo:: 这个地方肯定需要修改， 不依赖application。。。
-        D3D12RenderAPIManager* renderAPIManager = static_cast<D3D12RenderAPIManager*>(Application::Get().GetRenderAPIManager().get());
+        D3D12RenderAPIManager* renderAPIManager = dynamic_cast<D3D12RenderAPIManager*>(RenderAPIManager::getInstance()->GetManager().get());
         Microsoft::WRL::ComPtr<ID3D12Device> device = renderAPIManager->GetD3DDevice();
         
         

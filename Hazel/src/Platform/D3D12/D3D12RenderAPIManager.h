@@ -28,7 +28,7 @@ namespace Hazel {
 		D3D12RenderAPIManager();
 		virtual ~D3D12RenderAPIManager();
 
-		virtual void OnUpdate() override;
+		//virtual void OnUpdate() override;
 
 		inline Microsoft::WRL::ComPtr<ID3D12Device> GetD3DDevice() { return md3dDevice; }
 		inline DXGI_FORMAT GetBackBufferFormat() { return mBackBufferFormat; }

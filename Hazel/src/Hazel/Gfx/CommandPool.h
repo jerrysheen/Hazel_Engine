@@ -10,7 +10,10 @@ namespace Hazel {
             static std::mutex mutex;
             
             // 私有构造函数和析构函数
-            CommandPool() { Init(); }
+            CommandPool() 
+            {
+                //Init(); 
+            }
             ~CommandPool() { std::cout << "CommandPool Destroyed\n"; }
 
             std::stack<Ref<CommandList>> m_IdleCommandListStack;

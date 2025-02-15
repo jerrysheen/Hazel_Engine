@@ -6,7 +6,7 @@ namespace Hazel
 {
 	D3D12RenderTarget::D3D12RenderTarget(const RenderTargetDescriptor& spec)
 	{
-        D3D12RenderAPIManager* renderAPIManager = static_cast<D3D12RenderAPIManager*>(Application::Get().GetRenderAPIManager().get());
+        D3D12RenderAPIManager* renderAPIManager = dynamic_cast<D3D12RenderAPIManager*>(RenderAPIManager::getInstance()->GetManager().get());
         Microsoft::WRL::ComPtr<ID3D12Device> device = renderAPIManager->GetD3DDevice();
 
         ID3D12Fence* fence = NULL;

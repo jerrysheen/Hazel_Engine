@@ -38,7 +38,6 @@ namespace Hazel
 		inline void SetWindowWidth(const int& windowWidth) { m_WindowWidth = windowWidth; }
 		inline int GetWindowHeight() { return m_WindowHeight; }
 		inline void SetWindowHeight(const int& windowHeight) { m_WindowHeight = windowHeight; }
-		inline Ref<RenderAPIManager> GetRenderAPIManager() { return m_RenderAPIManager; }
 
 		inline Window& GetWindow() { return *m_Window; }
 		std::string m_title;
@@ -49,7 +48,6 @@ namespace Hazel
 		bool OnMouseButtonPressed(MouseButtonPressedEvent& e);
 	private:
 		Scope<Window> m_Window;
-		Ref<RenderAPIManager> m_RenderAPIManager;
 		ImGuiLayer* m_ImGuiLayer;
 		bool m_Running = true;
 		bool m_Minimized = false;

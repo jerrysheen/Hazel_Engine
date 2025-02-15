@@ -27,7 +27,8 @@ namespace Hazel{
 		// 初始化RenderAPI, 其实这个类有点宽泛？ 
 		// 先这么写吧，这个地方需求比较简单，就是要在别的地方能简单取到devices，
 		//m_RenderAPIManager = Ref<RenderAPIManager>(RenderAPIManager::Create());
-		m_RenderAPIManager = Ref<RenderAPIManager>(RenderAPIManager::Create());
+		RenderAPIManager::Register<D3D12RenderAPIManager>();
+		RenderAPIManager::getInstance();
 		CommandPool::getInstance()->Init();
 		GfxViewManager::getInstance()->Init();
 
@@ -82,7 +83,7 @@ namespace Hazel{
 		while (true) 
 		{
 			m_Window->OnUpdate();
-			m_RenderAPIManager->OnUpdate();
+			//m_RenderAPIManager->OnUpdate();
 			//float time = (float)glfwGetTime();		// platform gettime();
 			//Timestep timestep = time - m_LastFrameTime;
 			//m_LastFrameTime = time;

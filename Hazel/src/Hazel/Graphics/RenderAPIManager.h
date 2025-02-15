@@ -10,12 +10,42 @@
 namespace Hazel {
 
 	// 这个api，只会在对应的renderapi层被调用，所以这个地方依旧使用variant的方式去取值。
+    // 只有子类能访问构造函数
 	class HAZEL_API RenderAPIManager
 	{
-	public:
-		virtual ~RenderAPIManager() {}
-		static void Init();
-		virtual void OnUpdate() {};
-		static RenderAPIManager* Create();
+    protected:
+        static Ref<RenderAPIManager> instance;
+        static std::mutex mutex;
+        static std::function<Ref<RenderAPIManager>()> createFunction;
+
+        // 私有构造函数和析构函数
+        RenderAPIManager() = default;
+        virtual ~RenderAPIManager() = default;
+
+    public:
+        // 删除拷贝构造函数和赋值操作符
+        RenderAPIManager(const RenderAPIManager&) = delete;
+        RenderAPIManager& operator=(const RenderAPIManager&) = delete;
+
+        // 注册具体子类的创建函数
+        template <typename T>
+        static void Register() 
+        {
+            createFunction = [] { return CreateRef<T>(); };
+        }
+
+        // getInstance 方法
+        static Ref<RenderAPIManager> getInstance() {
+            std::lock_guard<std::mutex> lock(mutex);
+            if (!instance) {
+                if (!createFunction) {
+                    throw std::runtime_error("No render API manager registered.");
+                }
+                instance = createFunction();
+            }
+            return instance;
+        }
+        inline Ref<RenderAPIManager> GetManager() { return instance; };
+        //void Init();
 	};
 }

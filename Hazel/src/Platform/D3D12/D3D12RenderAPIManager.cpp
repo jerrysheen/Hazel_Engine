@@ -190,10 +190,10 @@ namespace Hazel
 		}
 	}
 
-	void D3D12RenderAPIManager::OnUpdate()
-	{
-		//Draw();
-	}
+	//void D3D12RenderAPIManager::OnUpdate()
+	//{
+	//	//Draw();
+	//}
 
 	// resetµƒ ±∫Ú »√current buffer + 1 ¡À°£°£°£
 	void D3D12RenderAPIManager::ResetCommandList()
