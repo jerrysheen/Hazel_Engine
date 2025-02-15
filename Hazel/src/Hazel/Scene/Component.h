@@ -53,7 +53,7 @@ namespace Hazel {
 		MeshFilterComponent(const std::string& meshAddress)
 		{
 			mesh = Mesh::Create();
-			mesh->Create();
+			//mesh->Create();
 			mesh->LoadMesh(meshAddress);
 		}
 	};

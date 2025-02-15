@@ -37,8 +37,8 @@ namespace Hazel
         Ref<VertexArray> meshData;
 
     private:
-        std::vector<float> vertexBuffer;
-        std::vector<uint32_t> indexBuffer;
+        std::vector<float> vertexData;
+        std::vector<uint32_t> indexData;
         //void LoadModel(const std::string& path);
         void processNode(aiNode* node, const aiScene* scene);
 

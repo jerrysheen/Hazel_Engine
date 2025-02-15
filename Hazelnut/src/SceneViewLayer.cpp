@@ -253,7 +253,14 @@ namespace Hazel
         objectCB->SetData(&mWorld, size);
         GfxViewManager::getInstance()->GetCbvHandle(objectCB);
 
-        //开始加载一张贴图进来：
+        // mesh加载：
+        std::string abpath = std::filesystem::current_path().u8string();
+        std::string cubeModelPath = abpath + std::string("/assets/Resources/Models/Cube/Cube.obj");
+        mesh = Mesh::Create();
+        //mesh->Create();
+        mesh->LoadMesh(meshAddress);
+
+
     }
 
     void SceneViewLayer::OnDetach()

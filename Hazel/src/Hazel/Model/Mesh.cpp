@@ -5,7 +5,8 @@
 
 namespace Hazel 
 {
-
+	// todo: 导入的mesh相关通道肯定是要根据用户设置取调整的， 这个地方先写死了。。
+	// Mesh需要做具体的接口吗？
 	Ref<Mesh> Mesh::Create()
 	{
 		
@@ -32,9 +33,9 @@ namespace Hazel
 
 
 		Ref<VertexBuffer> squareVB;
-		float* p = &vertexBuffer[0];
+		float* p = &vertexData[0];
 		//HZ_CORE_INFO("vertexBuffer size : {0}", vertexBuffer.size());
-		squareVB.reset(VertexBuffer::Create(p, vertexBuffer.size() * sizeof(float)));
+		squareVB.reset(VertexBuffer::Create(p, vertexData.size() * sizeof(float)));
 		squareVB->SetLayout({
 				{ ShaderDataType::Float3, "a_Position" },
 				{ ShaderDataType::Float3, "a_Normal" },
@@ -47,9 +48,9 @@ namespace Hazel
 
 		//HZ_CORE_INFO("indexBuffer size : {0}", indexBuffer.size());
 		Ref<IndexBuffer> squareIB;
-		uint32_t* indexP = &indexBuffer[0];
+		uint32_t* indexP = &indexData[0];
 		//squareIB.reset(IndexBuffer::Create(indexP, sizeof(indexBuffer) / sizeof(uint32_t)));
-		squareIB.reset(IndexBuffer::Create(indexP, indexBuffer.size()));
+		squareIB.reset(IndexBuffer::Create(indexP, indexData.size()));
 		meshData->SetIndexBuffer(squareIB);
 		return true;
 	}
@@ -74,29 +75,30 @@ namespace Hazel
 	{
 		//VertexArray
 		// 对于里面每一个节点， 都有Vertex, Normal, TexCoords
+		// todo： 这个地方或许会有问题，导入的通道有点太单一了，不太对。
 		// add vertexbuffer to mesh.
 		HZ_CORE_INFO("vertices size :{0}", aiMesh->mNumVertices);
 		for (unsigned int i = 0; i < aiMesh->mNumVertices; i++)
 		{
-			vertexBuffer.push_back(aiMesh->mVertices[i].x);
-			vertexBuffer.push_back(aiMesh->mVertices[i].y);
-			vertexBuffer.push_back(aiMesh->mVertices[i].z);
-			vertexBuffer.push_back(aiMesh->mNormals[i].x);
-			vertexBuffer.push_back(aiMesh->mNormals[i].y);
-			vertexBuffer.push_back(aiMesh->mNormals[i].z);
-			vertexBuffer.push_back(aiMesh->mTangents[i].x);
-			vertexBuffer.push_back(aiMesh->mTangents[i].y);
-			vertexBuffer.push_back(aiMesh->mTangents[i].z);
+			vertexData.push_back(aiMesh->mVertices[i].x);
+			vertexData.push_back(aiMesh->mVertices[i].y);
+			vertexData.push_back(aiMesh->mVertices[i].z);
+			vertexData.push_back(aiMesh->mNormals[i].x);
+			vertexData.push_back(aiMesh->mNormals[i].y);
+			vertexData.push_back(aiMesh->mNormals[i].z);
+			vertexData.push_back(aiMesh->mTangents[i].x);
+			vertexData.push_back(aiMesh->mTangents[i].y);
+			vertexData.push_back(aiMesh->mTangents[i].z);
 
 			if (aiMesh->mTextureCoords[0]) // 网格是否有纹理坐标？
 			{
-				vertexBuffer.push_back(aiMesh->mTextureCoords[0][i].x);
-				vertexBuffer.push_back(aiMesh->mTextureCoords[0][i].y);
+				vertexData.push_back(aiMesh->mTextureCoords[0][i].x);
+				vertexData.push_back(aiMesh->mTextureCoords[0][i].y);
 			}
 			else
 			{
-				vertexBuffer.push_back(0.0f);
-				vertexBuffer.push_back(0.0f);
+				vertexData.push_back(0.0f);
+				vertexData.push_back(0.0f);
 			}
 		}
 
@@ -107,7 +109,7 @@ namespace Hazel
 			aiFace face = aiMesh->mFaces[i];
 			for (unsigned int j = 0; j < face.mNumIndices; j++)
 			{
-				indexBuffer.push_back(face.mIndices[j]);
+				indexData.push_back(face.mIndices[j]);
 			}
 		}
 
