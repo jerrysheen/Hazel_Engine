@@ -30,14 +30,19 @@ namespace Hazel
         void Draw(Shader shader);
 
         static Ref<Mesh> Create();
-        //Ref<VertexArray> VertexArray;
-        Ref<Texture2D> Texture;
 
         bool LoadMesh(const std::string& path);
         Ref<VertexArray> meshData;
 
     private:
+        bool hasPosition = false;
+        bool hasNormal = false;
+        bool hastexCoord0 = false;
+        bool hasTangent = false;
+        bool hastexCoord1 = false;
+        bool hasVertexColor = false;
         std::vector<float> vertexData;
+
         std::vector<uint32_t> indexData;
         //void LoadModel(const std::string& path);
         void processNode(aiNode* node, const aiScene* scene);

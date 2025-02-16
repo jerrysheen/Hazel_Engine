@@ -234,9 +234,9 @@ namespace Hazel
         //        meshRenderer.material->shader->SetFloat3("u_CameraPos", m_CameraController.GetCamera().GetCamPos());
         //        meshRenderer.material->shader->SetMat4("u_LightSpaceViewProjection", lightSpaceMatrix);
 
-        //        MeshFilterComponent& meshFilter = m_GunObj.GetComponent<MeshFilterComponent>();
-        //        meshFilter.mesh->meshData->Bind();
-        //        RendererCommand::DrawIndexed(meshFilter.mesh->meshData);
+                MeshFilterComponent& meshFilter = m_GunObj.GetComponent<MeshFilterComponent>();
+                meshFilter.mesh->meshData->Bind();
+                RendererCommand::DrawIndexed(meshFilter.mesh->meshData);
         //}
 
         // draw plane

@@ -4,26 +4,30 @@
 #include "Hazel/Graphics/RenderAPI.h"
 
 #include "Platform/OpenGL/OpenGLBuffer.h"
+#include "Platform/D3D12/D3D12Buffer.h"
 #include "Platform/D3D12/D3D12ConstantBuffer.h"
 namespace Hazel {
-	VertexBuffer* VertexBuffer::Create(float* vertices, uint32_t size)
+	Ref<VertexBuffer> VertexBuffer::Create(float* vertices, uint32_t size)
 	{
 		switch (RenderAPI::GetAPI())
 		{
-			case RenderAPI::API::None: HZ_CORE_ASSERT(false, "RenderAPI::None is currently not supported");
-			case RenderAPI::API::OpenGL: return new OpenGLVertexBuffer(vertices, size);
+		case RenderAPI::API::None: HZ_CORE_ASSERT(false, "RenderAPI::None is currently not supported"); break;
+		case RenderAPI::API::OpenGL: return std::make_shared<OpenGLVertexBuffer>(vertices, size); break;
+		case RenderAPI::API::DirectX12: return std::make_shared<D3D12VertexBuffer>(vertices, size); break;
+
 		}
 		HZ_CORE_ASSERT(false, "Unknowed API...");
 		return nullptr;
 	}
 
 	
-	IndexBuffer* IndexBuffer::Create(uint32_t* indices, uint32_t size)
+	Ref<IndexBuffer> IndexBuffer::Create(uint32_t* indices, uint32_t size)
 	{
 		switch (RenderAPI::GetAPI())
 		{
 			case RenderAPI::API::None: HZ_CORE_ASSERT(false, "RenderAPI::None is currently not supported");
-			case RenderAPI::API::OpenGL: return new OpenGLIndexBuffer(indices, size);
+			case RenderAPI::API::DirectX12: return std::make_shared<D3D12IndexBuffer>(indices, size);
+			case RenderAPI::API::OpenGL: return std::make_shared<OpenGLIndexBuffer>(indices, size);
 		}
 		HZ_CORE_ASSERT(false, "Unknowed API...");
 		return nullptr;
@@ -37,7 +41,7 @@ namespace Hazel {
 		
 		switch (RenderAPI::GetAPI())
 		{
-		case RenderAPI::API::DirectX12: return std::make_shared<D3D12ConstantBuffer>(bufferSize); break;
+			case RenderAPI::API::DirectX12: return std::make_shared<D3D12ConstantBuffer>(bufferSize); break;
 			default: HZ_CORE_ASSERT(false, "RenderAPI::None is currently not supported");
 			//case RenderAPI::API::OpenGL: return new OpenGLIndexBuffer(size);
 		}

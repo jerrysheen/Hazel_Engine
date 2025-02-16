@@ -46,67 +46,67 @@ namespace Hazel {
 
 	void Renderer3D::RenderGround() 
 	{
-		Renderer3D::Renderer3DStorage* s_Data = new Renderer3DStorage();
-		s_Data->QuadVertexArray = VertexArray::Create();
-		Ref<VertexBuffer> squareVB;
-		squareVB.reset(VertexBuffer::Create(Renderer3D::m_ground, sizeof(m_ground)));
-		squareVB->SetLayout({
-				{ ShaderDataType::Float3, "a_Position" },
-				//{ ShaderDataType::	Float2, "a_TexCoord" }
+		//Renderer3D::Renderer3DStorage* s_Data = new Renderer3DStorage();
+		//s_Data->QuadVertexArray = VertexArray::Create();
+		//Ref<VertexBuffer> squareVB;
+		//squareVB.reset(VertexBuffer::Create(Renderer3D::m_ground, sizeof(m_ground)));
+		//squareVB->SetLayout({
+		//		{ ShaderDataType::Float3, "a_Position" },
+		//		//{ ShaderDataType::	Float2, "a_TexCoord" }
 
-			});
-		s_Data->QuadVertexArray->AddVertexBuffer(squareVB);
+		//	});
+		//s_Data->QuadVertexArray->AddVertexBuffer(squareVB);
 
-		Ref<IndexBuffer> squareIB;
-		squareIB.reset(IndexBuffer::Create(m_groundIndices, sizeof(m_groundIndices) / sizeof(uint32_t)));
-		s_Data->QuadVertexArray->SetIndexBuffer(squareIB);
+		//Ref<IndexBuffer> squareIB;
+		//squareIB.reset(IndexBuffer::Create(m_groundIndices, sizeof(m_groundIndices) / sizeof(uint32_t)));
+		//s_Data->QuadVertexArray->SetIndexBuffer(squareIB);
 
-		s_Data->WhiteTexture = Texture2D::Create(1, 1, 0x8058);
-		uint32_t whiteTextureData = 0xffffffff;
-		s_Data->WhiteTexture->SetData(&whiteTextureData, sizeof(uint32_t));
+		//s_Data->WhiteTexture = Texture2D::Create(1, 1, 0x8058);
+		//uint32_t whiteTextureData = 0xffffffff;
+		//s_Data->WhiteTexture->SetData(&whiteTextureData, sizeof(uint32_t));
 
-		//HZ_CORE_INFO("x : {0}", s_ObjData->size());
-		s_Data->TextureShader = Shader::Create("assets/shaders/Ground.glsl");
+		////HZ_CORE_INFO("x : {0}", s_ObjData->size());
+		//s_Data->TextureShader = Shader::Create("assets/shaders/Ground.glsl");
 
-		s_Data->Color = std::make_shared<glm::vec4>(1.0, 1.0, 1.0, 1.0);
-		s_Data->Scale = std::make_shared<glm::vec3>(1.0, 1.0, 1.0);
-		s_Data->DrawType = DRAW_TYPE::HZ_LINES;
-		s_ObjData->push_back(s_Data);
+		//s_Data->Color = std::make_shared<glm::vec4>(1.0, 1.0, 1.0, 1.0);
+		//s_Data->Scale = std::make_shared<glm::vec3>(1.0, 1.0, 1.0);
+		//s_Data->DrawType = DRAW_TYPE::HZ_LINES;
+		//s_ObjData->push_back(s_Data);
 	}
 
 
 	void Renderer3D::CreatePlane(const glm::vec3& position)
 	{
-		Renderer3D::Renderer3DStorage*  s_Data = new Renderer3DStorage();
-		
-		s_Data->QuadVertexArray = VertexArray::Create();
+		//Renderer3D::Renderer3DStorage*  s_Data = new Renderer3DStorage();
+		//
+		//s_Data->QuadVertexArray = VertexArray::Create();
 
 
-		Ref<VertexBuffer> squareVB;
-		squareVB.reset(VertexBuffer::Create(Renderer3D::m_squareVertices, sizeof(m_squareVertices)));
-		squareVB->SetLayout({
-				{ ShaderDataType::Float3, "a_Position" },
-				{ ShaderDataType::Float2, "a_TexCoord" }
+		//Ref<VertexBuffer> squareVB;
+		//squareVB.reset(VertexBuffer::Create(Renderer3D::m_squareVertices, sizeof(m_squareVertices)));
+		//squareVB->SetLayout({
+		//		{ ShaderDataType::Float3, "a_Position" },
+		//		{ ShaderDataType::Float2, "a_TexCoord" }
 
-			});
-		s_Data->QuadVertexArray->AddVertexBuffer(squareVB);
+		//	});
+		//s_Data->QuadVertexArray->AddVertexBuffer(squareVB);
 
-		uint32_t squareIndices[6] = { 0, 1, 2, 2, 3, 0 };
-		Ref<IndexBuffer> squareIB;
-		squareIB.reset(IndexBuffer::Create(m_squareIndices, sizeof(m_squareIndices) / sizeof(uint32_t)));
-		s_Data->QuadVertexArray->SetIndexBuffer(squareIB);
+		//uint32_t squareIndices[6] = { 0, 1, 2, 2, 3, 0 };
+		//Ref<IndexBuffer> squareIB;
+		//squareIB.reset(IndexBuffer::Create(m_squareIndices, sizeof(m_squareIndices) / sizeof(uint32_t)));
+		//s_Data->QuadVertexArray->SetIndexBuffer(squareIB);
 
-		s_Data->WhiteTexture = Texture2D::Create(1, 1, 0x8058);
-		uint32_t whiteTextureData = 0xffffffff;
-		s_Data->WhiteTexture->SetData(&whiteTextureData, sizeof(uint32_t));
+		//s_Data->WhiteTexture = Texture2D::Create(1, 1, 0x8058);
+		//uint32_t whiteTextureData = 0xffffffff;
+		//s_Data->WhiteTexture->SetData(&whiteTextureData, sizeof(uint32_t));
 	
-		//HZ_CORE_INFO("x : {0}", s_ObjData->size());
-		s_Data->TextureShader = Shader::Create("assets/shaders/Texture.glsl");
+		////HZ_CORE_INFO("x : {0}", s_ObjData->size());
+		//s_Data->TextureShader = Shader::Create("assets/shaders/Texture.glsl");
 
-		s_Data->Color = std::make_shared<glm::vec4>(1.0, 1.0, 1.0, 1.0);
-		s_Data->Scale = std::make_shared<glm::vec3>(1.0, 1.0, 1.0);
-		s_Data->DrawType = DRAW_TYPE::HZ_TRIANGLES;
-		s_ObjData->push_back(s_Data);
+		//s_Data->Color = std::make_shared<glm::vec4>(1.0, 1.0, 1.0, 1.0);
+		//s_Data->Scale = std::make_shared<glm::vec3>(1.0, 1.0, 1.0);
+		//s_Data->DrawType = DRAW_TYPE::HZ_TRIANGLES;
+		//s_ObjData->push_back(s_Data);
 	}
 
 

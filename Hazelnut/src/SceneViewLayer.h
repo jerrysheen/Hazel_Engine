@@ -63,6 +63,7 @@ namespace Hazel
 		//std::unique_ptr<UploadBuffer<ObjectConstants>> mObjectCB = nullptr;
 
 		Ref<ConstantBuffer> objectCB;
+		Ref<Mesh> mesh;
 	};
 
 

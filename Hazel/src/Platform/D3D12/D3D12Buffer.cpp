@@ -1,0 +1,120 @@
+#include "hzpch.h"
+#include "D3D12Buffer.h"
+#include "Platform/D3D12/D3D12RenderAPIManager.h"
+#include "Hazel/Core/Application.h"
+
+namespace Hazel
+{
+	D3D12Buffer::D3D12Buffer(uint32_t elementSize)
+		: mUploadBuffer(std::get<Microsoft::WRL::ComPtr<ID3D12Resource>>(m_BufferResource)), mMappedData(nullptr)
+	{
+        m_UUID = Unique::GetUUID();
+		//在这里进行buffer初始化， 然后将内容换成Sharedpointer吧
+		elementSize = d3dUtil::CalcConstantBufferByteSize(elementSize);
+        m_BufferSize = elementSize;
+        // todo:: 这个地方肯定需要修改， 不依赖application。。。
+        D3D12RenderAPIManager* renderAPIManager = dynamic_cast<D3D12RenderAPIManager*>(RenderAPIManager::getInstance()->GetManager().get());
+        Microsoft::WRL::ComPtr<ID3D12Device> device = renderAPIManager->GetD3DDevice();
+        
+        
+        ThrowIfFailed(device->CreateCommittedResource(
+            &CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD),
+            D3D12_HEAP_FLAG_NONE,
+            &CD3DX12_RESOURCE_DESC::Buffer(elementSize),
+            D3D12_RESOURCE_STATE_GENERIC_READ,
+            nullptr,
+            IID_PPV_ARGS(&mUploadBuffer)));
+
+        ThrowIfFailed(mUploadBuffer->Map(0, nullptr, reinterpret_cast<void**>(&mMappedData)));
+	}
+
+
+
+    D3D12Buffer::~D3D12Buffer()
+    {
+        if (mUploadBuffer != nullptr)
+            mUploadBuffer->Unmap(0, nullptr);
+
+        mMappedData = nullptr;
+    }
+
+    void D3D12Buffer::SetData(void* srcData, int length)
+    {
+        // 确保源数据指针和目标缓存区已正确映射
+        if (srcData && mMappedData) {
+            memcpy(mMappedData, srcData, length);
+        }
+        else {
+            // 处理错误情况，例如无效的指针
+            std::cerr << "Invalid source or destination pointer." << std::endl;
+        }
+    }
+
+    
+    D3D12VertexBuffer::D3D12VertexBuffer(float* vertices, uint32_t size)
+    {
+    }
+
+    D3D12VertexBuffer::~D3D12VertexBuffer()
+    {
+    }
+
+    // bind unbind 可能要想一想怎么做
+    void D3D12VertexBuffer::Bind() const
+    {
+    }
+
+    void D3D12VertexBuffer::Unbind() const
+    {
+    }
+
+
+
+    DXGI_FORMAT D3D12VertexBuffer::GetLayOutFormat(const ShaderDataType& type)
+    {
+        switch (type)
+        {
+        case ShaderDataType::Float2: return DXGI_FORMAT_R32G32_FLOAT;
+        case ShaderDataType::Float3: return DXGI_FORMAT_R32G32B32_FLOAT;
+        case ShaderDataType::Float4: return DXGI_FORMAT_R32G32B32A32_FLOAT;
+        default:
+            HZ_CORE_ERROR("This Format are not implemented yet.");
+            break;
+        }
+        return DXGI_FORMAT();
+    }
+
+    // todo: 拆分输入槽
+    //typedef struct D3D12_INPUT_ELEMENT_DESC {
+    //    LPCSTR                     SemanticName;          // 语义名称, 一般POSITION等是规定写死的。
+    //    UINT                       SemanticIndex;         // 语义索引, Texcoord0, Texcoord1,语义名称就是0，1
+    //    DXGI_FORMAT                Format;                // 数据格式, float3/ float4
+    //    UINT                       InputSlot;             // 输入槽索引， 相当于可以实现拆分position，和其他normal tangent的功能，之后可以实现一下，现在先写到一起。
+    //    UINT                       AlignedByteOffset;     // 对齐字节偏移量
+    //    D3D12_INPUT_CLASSIFICATION InputSlotClass;        // 输入槽分类
+    //    UINT                       InstanceDataStepRate;  // 实例数据步进率
+    //} D3D12_INPUT_ELEMENT_DESC;
+    void D3D12VertexBuffer::SetD3D12InputLayout()
+    {
+        for (int i = 0; i < m_Layout.GetCount(); i++) 
+        {
+            auto element = m_Layout.GetElements()[i];
+            m_D3DInputLayout.push_back(D3D12_INPUT_ELEMENT_DESC{element.Name.c_str(), 0, GetLayOutFormat(element.Type), 0, element.Offset, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA ,0});
+        }
+    }
+
+    D3D12IndexBuffer::D3D12IndexBuffer(uint32_t* indices, uint32_t size)
+    {
+
+    }
+
+    D3D12IndexBuffer::~D3D12IndexBuffer()
+    {
+    }
+    void D3D12IndexBuffer::Bind() const
+    {
+    }
+    void D3D12IndexBuffer::Unbind() const
+    {
+    }
+}

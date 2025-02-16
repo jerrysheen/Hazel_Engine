@@ -253,12 +253,12 @@ namespace Hazel
         objectCB->SetData(&mWorld, size);
         GfxViewManager::getInstance()->GetCbvHandle(objectCB);
 
-        // mesh加载：
+        // mesh加载, mesh里面应该加载通用内容？upload的时候进行一个转译就好了？
         std::string abpath = std::filesystem::current_path().u8string();
         std::string cubeModelPath = abpath + std::string("/assets/Resources/Models/Cube/Cube.obj");
         mesh = Mesh::Create();
         //mesh->Create();
-        mesh->LoadMesh(meshAddress);
+        mesh->LoadMesh(cubeModelPath);
 
 
     }

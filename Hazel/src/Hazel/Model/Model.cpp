@@ -46,26 +46,26 @@ namespace Hazel
 		processNode(scene->mRootNode, scene);
 
 
-		Ref<VertexBuffer> squareVB;
-		float* p = &vertexBuffer[0];
-		//HZ_CORE_INFO("vertexBuffer size : {0}", vertexBuffer.size());
-		squareVB.reset(VertexBuffer::Create(p, vertexBuffer.size() * sizeof(float)));
-		squareVB->SetLayout({
-				{ ShaderDataType::Float3, "a_Position" },
-				{ ShaderDataType::Float3, "a_Normal" },
-				{ ShaderDataType::Float3, "a_Tangent" },
-				{ ShaderDataType::Float2, "a_TexCoord" }
+		//Ref<VertexBuffer> vertexDataBuffer;
+		//float* p = &vertexBuffer[0];
+		////HZ_CORE_INFO("vertexBuffer size : {0}", vertexBuffer.size());
+		//vertexDataBuffer = (VertexBuffer::Create(p, vertexBuffer.size() * sizeof(float)));
+		//squareVB->SetLayout({
+		//		{ ShaderDataType::Float3, "a_Position" },
+		//		{ ShaderDataType::Float3, "a_Normal" },
+		//		{ ShaderDataType::Float3, "a_Tangent" },
+		//		{ ShaderDataType::Float2, "a_TexCoord" }
 
-			});
-		mesh->AddVertexBuffer(squareVB);
+		//	});
+		//mesh->AddVertexBuffer(squareVB);
 
 
-		//HZ_CORE_INFO("indexBuffer size : {0}", indexBuffer.size());
-		Ref<IndexBuffer> squareIB;
-		uint32_t* indexP = &indexBuffer[0];
-		//squareIB.reset(IndexBuffer::Create(indexP, sizeof(indexBuffer) / sizeof(uint32_t)));
-		squareIB.reset(IndexBuffer::Create(indexP, indexBuffer.size()));
-		mesh->SetIndexBuffer(squareIB);
+		////HZ_CORE_INFO("indexBuffer size : {0}", indexBuffer.size());
+		//Ref<IndexBuffer> indexDataBuffer;
+		//uint32_t* indexP = &indexBuffer[0];
+		////squareIB.reset(IndexBuffer::Create(indexP, sizeof(indexBuffer) / sizeof(uint32_t)));
+		//squareIB.reset(IndexBuffer::Create(indexP, indexBuffer.size()));
+		//mesh->SetIndexBuffer(squareIB);
 	}
 
 	void Model::processNode(aiNode* node, const aiScene* scene)

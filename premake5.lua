@@ -30,7 +30,6 @@ group "Dependencies"
 	include "Hazel/vendor/imgui"
 	include "Hazel/vendor/assimp"
 	include "Hazel/vendor/boost"
-	include "Hazel/vendor/glm"
 group ""
 
 

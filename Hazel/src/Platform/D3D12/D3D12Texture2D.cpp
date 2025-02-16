@@ -44,7 +44,7 @@ namespace Hazel
 		uploadHeapDesc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;  // 布局方式，缓冲区通常是行主顺序
 		uploadHeapDesc.Flags = D3D12_RESOURCE_FLAG_NONE;  // 无特殊标志
 
-		D3D12RenderAPIManager* renderAPIManager = static_cast<D3D12RenderAPIManager*>(Application::Get().GetRenderAPIManager().get());
+		D3D12RenderAPIManager* renderAPIManager = static_cast<D3D12RenderAPIManager*>(RenderAPIManager::getInstance()->GetManager().get());
 		Microsoft::WRL::ComPtr<ID3D12Device> device = renderAPIManager->GetD3DDevice();
 		device->CreateCommittedResource(
 			&CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD),  // 上传类型的内存

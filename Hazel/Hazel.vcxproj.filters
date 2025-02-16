@@ -129,6 +129,9 @@
     <ClInclude Include="src\Hazel\Events\MouseEvent.h">
       <Filter>src\Hazel\Events</Filter>
     </ClInclude>
+    <ClInclude Include="src\Hazel\Gfx\Color.h">
+      <Filter>src\Hazel\Gfx</Filter>
+    </ClInclude>
     <ClInclude Include="src\Hazel\Gfx\CommandList.h">
       <Filter>src\Hazel\Gfx</Filter>
     </ClInclude>
@@ -143,6 +146,12 @@
     </ClInclude>
     <ClInclude Include="src\Hazel\Gfx\CustomRenderPass\OpaqueRenderPass.h">
       <Filter>src\Hazel\Gfx\CustomRenderPass</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Hazel\Gfx\GfxDesc.h">
+      <Filter>src\Hazel\Gfx</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Hazel\Gfx\GfxViewManager.h">
+      <Filter>src\Hazel\Gfx</Filter>
     </ClInclude>
     <ClInclude Include="src\Hazel\Gfx\RenderPass.h">
       <Filter>src\Hazel\Gfx</Filter>
@@ -237,6 +246,9 @@
     <ClInclude Include="src\Platform\D3D12\D3D12CommandList.h">
       <Filter>src\Platform\D3D12</Filter>
     </ClInclude>
+    <ClInclude Include="src\Platform\D3D12\D3D12GfxDescHeap.h">
+      <Filter>src\Platform\D3D12</Filter>
+    </ClInclude>
     <ClInclude Include="src\Platform\D3D12\D3D12RenderAPI.h">
       <Filter>src\Platform\D3D12</Filter>
     </ClInclude>
@@ -244,6 +256,12 @@
       <Filter>src\Platform\D3D12</Filter>
     </ClInclude>
     <ClInclude Include="src\Platform\D3D12\D3D12RenderTarget.h">
+      <Filter>src\Platform\D3D12</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Platform\D3D12\D3D12Shader.h">
+      <Filter>src\Platform\D3D12</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Platform\D3D12\D3D12Texture2D.h">
       <Filter>src\Platform\D3D12</Filter>
     </ClInclude>
     <ClInclude Include="src\Platform\D3D12\D3D12TextureBuffer.h">
@@ -1539,12 +1557,13 @@
     <ClInclude Include="vendor\stb_image\stb_image.h">
       <Filter>vendor\stb_image</Filter>
     </ClInclude>
-    <ClInclude Include="src\Hazel\Gfx\GfxViewManager.h" />
-    <ClInclude Include="src\Hazel\Gfx\GfxDesc.h" />
-    <ClInclude Include="src\Platform\D3D12\D3D12GfxDescHeap.h" />
-    <ClInclude Include="src\Hazel\Gfx\Color.h" />
-    <ClInclude Include="src\Platform\D3D12\D3D12Shader.h" />
-    <ClInclude Include="src\Platform\D3D12\D3D12ConstantBuffer.h" />
+    <ClInclude Include="src\Platform\D3D12\D3D12Buffer.h" />
+    <ClInclude Include="src\Platform\D3D12\D3D12ConstantBuffer.h">
+      <Filter>src\Platform\D3D12</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Platform\D3D12\D3D12VertexArray.h">
+      <Filter>src\Platform\D3D12</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Hazel\Core\Application.cpp">
@@ -1558,6 +1577,9 @@
     </ClCompile>
     <ClCompile Include="src\Hazel\Core\Log.cpp">
       <Filter>src\Hazel\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Hazel\Gfx\Color.cpp">
+      <Filter>src\Hazel\Gfx</Filter>
     </ClCompile>
     <ClCompile Include="src\Hazel\Gfx\CommandList.cpp">
       <Filter>src\Hazel\Gfx</Filter>
@@ -1573,6 +1595,12 @@
     </ClCompile>
     <ClCompile Include="src\Hazel\Gfx\CustomRenderPass\OpaqueRenderPass.cpp">
       <Filter>src\Hazel\Gfx\CustomRenderPass</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Hazel\Gfx\GfxDesc.cpp">
+      <Filter>src\Hazel\Gfx</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Hazel\Gfx\GfxViewManager.cpp">
+      <Filter>src\Hazel\Gfx</Filter>
     </ClCompile>
     <ClCompile Include="src\Hazel\Gfx\RenderPass.cpp">
       <Filter>src\Hazel\Gfx</Filter>
@@ -1652,6 +1680,9 @@
     <ClCompile Include="src\Platform\D3D12\D3D12CommandList.cpp">
       <Filter>src\Platform\D3D12</Filter>
     </ClCompile>
+    <ClCompile Include="src\Platform\D3D12\D3D12GfxDescHeap.cpp">
+      <Filter>src\Platform\D3D12</Filter>
+    </ClCompile>
     <ClCompile Include="src\Platform\D3D12\D3D12RenderAPI.cpp">
       <Filter>src\Platform\D3D12</Filter>
     </ClCompile>
@@ -1659,6 +1690,12 @@
       <Filter>src\Platform\D3D12</Filter>
     </ClCompile>
     <ClCompile Include="src\Platform\D3D12\D3D12RenderTarget.cpp">
+      <Filter>src\Platform\D3D12</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Platform\D3D12\D3D12Shader.cpp">
+      <Filter>src\Platform\D3D12</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Platform\D3D12\D3D12Texture2D.cpp">
       <Filter>src\Platform\D3D12</Filter>
     </ClCompile>
     <ClCompile Include="src\Platform\D3D12\D3D12TextureBuffer.cpp">
@@ -1712,11 +1749,12 @@
     <ClCompile Include="vendor\stb_image\stb_image.cpp">
       <Filter>vendor\stb_image</Filter>
     </ClCompile>
-    <ClCompile Include="src\Hazel\Gfx\GfxViewManager.cpp" />
-    <ClCompile Include="src\Hazel\Gfx\GfxDesc.cpp" />
-    <ClCompile Include="src\Platform\D3D12\D3D12GfxDescHeap.cpp" />
-    <ClCompile Include="src\Hazel\Gfx\Color.cpp" />
-    <ClCompile Include="src\Platform\D3D12\D3D12Shader.cpp" />
-    <ClCompile Include="src\Platform\D3D12\D3D12ConstantBuffer.cpp" />
+    <ClCompile Include="src\Platform\D3D12\D3D12Buffer.cpp" />
+    <ClCompile Include="src\Platform\D3D12\D3D12ConstantBuffer.cpp">
+      <Filter>src\Platform\D3D12</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Platform\D3D12\D3D12VertexArray.cpp">
+      <Filter>src\Platform\D3D12</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
