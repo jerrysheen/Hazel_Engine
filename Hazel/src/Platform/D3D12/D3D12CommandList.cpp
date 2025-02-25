@@ -38,8 +38,9 @@ namespace Hazel
 
 	D3D12CommandList::~D3D12CommandList()
 	{
-		m_CommandAllocatorLocal->Release();
-		m_CommandListLocal->Release();
+		//COMPtr析构的时候自动会去Release();
+		//m_CommandAllocatorLocal->Release();
+		//m_CommandListLocal->Release();
 	}
 
 
