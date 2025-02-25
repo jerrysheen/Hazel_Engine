@@ -75,8 +75,9 @@ namespace Hazel
         VertexByteStride = m_Layout.GetStride();
         VertexBufferByteSize = size;
 
-        //ID3D12CommandList* rawCommandList = m_CommandList.Get();
-        //commandQueue->ExecuteCommandLists(1, (ID3D12CommandList* const*)&rawCommandList);
+        CommandPool::getInstance()->RecycleCommand(cmdList);
+        ID3D12CommandList* rawCommandList = m_CommandList.Get();
+        commandQueue->ExecuteCommandLists(1, (ID3D12CommandList* const*)&rawCommandList);
     }
 
     D3D12VertexBuffer::~D3D12VertexBuffer()
