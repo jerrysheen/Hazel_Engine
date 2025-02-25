@@ -6,6 +6,7 @@
 #include "Hazel/Gfx/GfxViewManager.h"
 #include "Hazel/Gfx/GfxDesc.h"
 #include "Hazel/Gfx/GfxDesc.h"
+#include "Platform/D3D12/D3D12Buffer.h"
 
 
 
@@ -40,9 +41,9 @@ namespace Hazel
         queueDesc.Flags = D3D12_COMMAND_QUEUE_FLAG_NONE;
         queueDesc.NodeMask = 1;
 
-        
-        hr = device->CreateCommandQueue(&queueDesc, IID_PPV_ARGS(&mCommandQueue));
-        assert(SUCCEEDED(hr));
+        mCommandQueue = renderAPIManager->GetCommandQueue();
+        //hr = device->CreateCommandQueue(&queueDesc, IID_PPV_ARGS(&mCommandQueue));
+        //assert(SUCCEEDED(hr));
 
 
 
@@ -62,10 +63,25 @@ namespace Hazel
         mvsByteCode = d3dUtil::CompileShader(L"assets/shaders/color.hlsl", nullptr, "VS", "vs_5_0");
         mpsByteCode = d3dUtil::CompileShader(L"assets/shaders/color.hlsl", nullptr, "PS", "ps_5_0");
         // build shader layoutinput
+        //mInputLayout =
+        //{
+        //    { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+        //    { "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }
+        //};
+        //{ ShaderDataType::Float3, "POSITION" },
+        //{ ShaderDataType::Float3, "NORMAL" },
+        //{ ShaderDataType::Float3, "TANGENT" },
+        //{ ShaderDataType::Float2, "TEXCOORD" },
+        //{ ShaderDataType::Float2, "TEXCOORD" },
+        //{ ShaderDataType::Float4, "COLOR" }
         mInputLayout =
         {
             { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
-            { "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }
+            { "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+            { "TANGENT", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 24, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+            { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 36, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+            { "TEXCOORD", 1, DXGI_FORMAT_R32G32_FLOAT, 0, 44, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+            { "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 52, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }
         };
 
         // mesh gen:
@@ -82,31 +98,48 @@ namespace Hazel
             D3DVertex({ XMFLOAT3(+1.0f, -1.0f, +1.0f), XMFLOAT4(Colors::Magenta) })
         };
 
+        //std::array<std::uint16_t, 36> indices =
+        //{
+        //    // front face
+        //    0, 1, 2,
+        //    0, 2, 3,
+
+        //    // back face
+        //    4, 6, 5,
+        //    4, 7, 6,
+
+        //    // left face
+        //    4, 5, 1,
+        //    4, 1, 0,
+
+        //    // right face
+        //    3, 2, 6,
+        //    3, 6, 7,
+
+        //    // top face
+        //    1, 5, 6,
+        //    1, 6, 2,
+
+        //    // bottom face
+        //    4, 0, 3,
+        //    4, 3, 7
+        //};
+        
+        
         std::array<std::uint16_t, 36> indices =
         {
-            // front face
-            0, 1, 2,
-            0, 2, 3,
-
-            // back face
-            4, 6, 5,
-            4, 7, 6,
-
-            // left face
-            4, 5, 1,
-            4, 1, 0,
-
-            // right face
-            3, 2, 6,
-            3, 6, 7,
-
-            // top face
-            1, 5, 6,
-            1, 6, 2,
-
-            // bottom face
-            4, 0, 3,
-            4, 3, 7
+            5, 3, 1,
+            3, 8, 4,
+            7, 6, 8,
+            2, 8, 6,
+            1, 4, 2,
+            5, 2, 6,
+            5, 7, 3,
+            3, 7, 8,
+            7, 5, 6,
+            2, 4, 8,
+            1, 3, 4,
+            5, 1, 2,
         };
 
         const UINT vbByteSize = (UINT)vertices.size() * sizeof(D3DVertex);
@@ -182,6 +215,8 @@ namespace Hazel
 
         D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc;
         ZeroMemory(&psoDesc, sizeof(D3D12_GRAPHICS_PIPELINE_STATE_DESC));
+        
+        
         psoDesc.InputLayout = { mInputLayout.data(), (UINT)mInputLayout.size() };
         psoDesc.pRootSignature = mRootSignature.Get();
         psoDesc.VS =
@@ -361,28 +396,31 @@ namespace Hazel
 
         m_CommandList->SetGraphicsRootSignature(mRootSignature.Get());
 
-        m_CommandList->IASetVertexBuffers(0, 1, &mBoxGeo->VertexBufferView());
+        D3D12VertexBuffer* vertexBuffer = dynamic_cast<D3D12VertexBuffer*>
+            (mesh->meshData->GetVertexBuffers()[0].get());
+        D3D12_VERTEX_BUFFER_VIEW vbv;
+        vbv.BufferLocation = vertexBuffer->VertexBufferGPU->GetGPUVirtualAddress();
+        vbv.StrideInBytes = vertexBuffer->VertexByteStride;
+        vbv.SizeInBytes = vertexBuffer->VertexBufferByteSize;
+        m_CommandList->IASetVertexBuffers(0, 1, &vbv);
         m_CommandList->IASetIndexBuffer(&mBoxGeo->IndexBufferView());
         m_CommandList->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 
         m_CommandList->SetGraphicsRootDescriptorTable(0, d3dCbvHeap->GetGPUDescriptorHandleForHeapStart());
 
-        m_CommandList->DrawIndexedInstanced(
+        /*m_CommandList->DrawIndexedInstanced(
             mBoxGeo->DrawArgs["box"].IndexCount,
-            1, 0, 0, 0);
-
+            1, 0, 0, 0);*/
+        m_CommandList->DrawInstanced(
+            mBoxGeo->DrawArgs["box"].IndexCount,
+            1, 0, 0);
 
         cmdList->ChangeResourceState(m_BackBuffer, TextureRenderUsage::RENDER_TARGET, TextureRenderUsage::RENDER_TEXTURE);
 
         Ref<GfxDesc> renderTargetSrvDesc = gfxViewManager->GetSrvHandle(m_BackBuffer);
         my_texture_srv_gpu_handle = renderTargetSrvDesc->GetGPUDescHandle<D3D12_GPU_DESCRIPTOR_HANDLE>();
 
-
-
-
-
-        //m_CommandList->OMSetRenderTargets(1, &renderTargetHandle->GetCPUDescHandle<D3D12_CPU_DESCRIPTOR_HANDLE>(), true, nullptr);
 
         CommandPool::getInstance()->RecycleCommand(cmdList);
         

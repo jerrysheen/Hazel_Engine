@@ -98,6 +98,7 @@ namespace Hazel {
 		std::vector<BufferElement>::const_iterator begin() const { return m_Elements.begin(); }
 		std::vector<BufferElement>::const_iterator end() const { return m_Elements.end(); }
 		inline int GetCount() const { return m_Elements.size(); }
+
 	private:
 		void CalculateOffsetsAndStride() 
 		{
@@ -123,11 +124,13 @@ namespace Hazel {
 		virtual void Unbind() const = 0;
 		
 		inline const BufferLayout& GetLayout() { return m_Layout; };
-		inline virtual void SetLayout(const BufferLayout& layout) { m_Layout = layout; };
-		
+		inline virtual void SetLayout(const BufferLayout& layout) = 0;
+		inline const uint32_t GetBufferSize() { return m_BufferSize; };
+
 		static Ref<VertexBuffer> Create(float* vertices, uint32_t size);
 	protected:
 		BufferLayout m_Layout;
+		uint32_t m_BufferSize;
 	};
 
 	class IndexBuffer 

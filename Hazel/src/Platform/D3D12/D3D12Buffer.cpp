@@ -2,6 +2,7 @@
 #include "D3D12Buffer.h"
 #include "Platform/D3D12/D3D12RenderAPIManager.h"
 #include "Hazel/Core/Application.h"
+#include "Hazel/Gfx/CommandPool.h"
 
 namespace Hazel
 {
@@ -53,6 +54,29 @@ namespace Hazel
     
     D3D12VertexBuffer::D3D12VertexBuffer(float* vertices, uint32_t size)
     {
+        D3D12RenderAPIManager* renderAPIManager = dynamic_cast<D3D12RenderAPIManager*>(RenderAPIManager::getInstance()->GetManager().get());
+        Microsoft::WRL::ComPtr<ID3D12CommandQueue> commandQueue = renderAPIManager->GetCommandQueue();
+        Microsoft::WRL::ComPtr<ID3D12Device> device = renderAPIManager->GetD3DDevice();
+        Ref<CommandList> cmdList = CommandPool::getInstance()->GetCommand();
+
+        Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> m_CommandList = cmdList->getCommandList<Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList>>();
+        Microsoft::WRL::ComPtr<ID3D12CommandAllocator> m_CommandAllocator = cmdList->getCommandAllocator<Microsoft::WRL::ComPtr<ID3D12CommandAllocator>>();
+
+        ThrowIfFailed(m_CommandAllocator->Reset());
+        // A command list can be reset after it has been added to the command queue via ExecuteCommandList.
+        // Reusing the command list reuses memory.
+        ThrowIfFailed(m_CommandList->Reset(m_CommandAllocator.Get(), NULL));
+
+
+        const UINT vbByteSize = (UINT)size;
+        VertexBufferGPU = d3dUtil::CreateDefaultBuffer(device.Get(),
+            m_CommandList.Get(), vertices, vbByteSize, VertexBufferUploader);
+        // 此时可能为空
+        VertexByteStride = m_Layout.GetStride();
+        VertexBufferByteSize = size;
+
+        //ID3D12CommandList* rawCommandList = m_CommandList.Get();
+        //commandQueue->ExecuteCommandLists(1, (ID3D12CommandList* const*)&rawCommandList);
     }
 
     D3D12VertexBuffer::~D3D12VertexBuffer()
@@ -68,7 +92,27 @@ namespace Hazel
     {
     }
 
-
+    // todo: 拆分输入槽
+    //typedef struct D3D12_INPUT_ELEMENT_DESC {
+    //    LPCSTR                     SemanticName;          // 语义名称, 一般POSITION等是规定写死的。
+    //    UINT                       SemanticIndex;         // 语义索引, Texcoord0, Texcoord1,语义名称就是0，1
+    //    DXGI_FORMAT                Format;                // 数据格式, float3/ float4
+    //    UINT                       InputSlot;             // 输入槽索引， 相当于可以实现拆分position，和其他normal tangent的功能，之后可以实现一下，现在先写到一起。
+    //    UINT                       AlignedByteOffset;     // 对齐字节偏移量
+    //    D3D12_INPUT_CLASSIFICATION InputSlotClass;        // 输入槽分类
+    //    UINT                       InstanceDataStepRate;  // 实例数据步进率
+    //} D3D12_INPUT_ELEMENT_DESC;
+    void D3D12VertexBuffer::SetLayout(const BufferLayout& layout)
+    {
+        m_Layout = layout;
+        VertexByteStride = layout.GetStride();
+        // Data about the buffers.
+        for (int i = 0; i < m_Layout.GetCount(); i++)
+        {
+            auto& element = m_Layout.GetElements()[i];
+            m_D3DInputLayout.push_back(D3D12_INPUT_ELEMENT_DESC{ element.Name.c_str(), 0, GetLayOutFormat(element.Type), 0, element.Offset, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA ,0 });
+        }
+    }
 
     DXGI_FORMAT D3D12VertexBuffer::GetLayOutFormat(const ShaderDataType& type)
     {
@@ -82,25 +126,6 @@ namespace Hazel
             break;
         }
         return DXGI_FORMAT();
-    }
-
-    // todo: 拆分输入槽
-    //typedef struct D3D12_INPUT_ELEMENT_DESC {
-    //    LPCSTR                     SemanticName;          // 语义名称, 一般POSITION等是规定写死的。
-    //    UINT                       SemanticIndex;         // 语义索引, Texcoord0, Texcoord1,语义名称就是0，1
-    //    DXGI_FORMAT                Format;                // 数据格式, float3/ float4
-    //    UINT                       InputSlot;             // 输入槽索引， 相当于可以实现拆分position，和其他normal tangent的功能，之后可以实现一下，现在先写到一起。
-    //    UINT                       AlignedByteOffset;     // 对齐字节偏移量
-    //    D3D12_INPUT_CLASSIFICATION InputSlotClass;        // 输入槽分类
-    //    UINT                       InstanceDataStepRate;  // 实例数据步进率
-    //} D3D12_INPUT_ELEMENT_DESC;
-    void D3D12VertexBuffer::SetD3D12InputLayout()
-    {
-        for (int i = 0; i < m_Layout.GetCount(); i++) 
-        {
-            auto element = m_Layout.GetElements()[i];
-            m_D3DInputLayout.push_back(D3D12_INPUT_ELEMENT_DESC{element.Name.c_str(), 0, GetLayOutFormat(element.Type), 0, element.Offset, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA ,0});
-        }
     }
 
     D3D12IndexBuffer::D3D12IndexBuffer(uint32_t* indices, uint32_t size)

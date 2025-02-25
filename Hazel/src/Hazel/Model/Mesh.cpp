@@ -19,7 +19,7 @@ namespace Hazel
 		//vertexBuffer.push_back(0.0);
 		//std::vector<uint32_t> indexBuffer;
 		Assimp::Importer import;
-		const aiScene* scene = import.ReadFile(path, aiProcess_Triangulate | aiProcess_CalcTangentSpace | aiProcess_GenSmoothNormals);
+		const aiScene* scene = import.ReadFile(path, aiProcess_Triangulate | aiProcess_JoinIdenticalVertices);
 
 		if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
 		{
@@ -30,10 +30,8 @@ namespace Hazel
 		
 		processNode(scene->mRootNode, scene);
 
-		// 这个结构需要重新想一下。
 		Ref<VertexBuffer> vertexBuffer;
 		float* p = &vertexData[0];
-		//HZ_CORE_INFO("vertexBuffer size : {0}", vertexBuffer.size());
 		vertexBuffer = (VertexBuffer::Create(p, vertexData.size() * sizeof(float)));
 		vertexBuffer->SetLayout({
 				{ ShaderDataType::Float3, "POSITION" },
