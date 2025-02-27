@@ -1,0 +1,110 @@
+Hazel Engine Structure
+
+- **Hazel**：
+  - **Core**：引擎的核心模块，负责基本的引擎功能和架构。
+    - `Application.h/cpp` - 应用程序基类，处理主循环和层管理
+    - `Layer.h/cpp` - 抽象层系统，用于组织代码和功能模块
+    - `Log.h/cpp` - 日志系统，用于调试和错误报告
+    - `Window.h` - 窗口抽象接口
+    - `Timestep.h` - 处理时间和帧率
+    - `EntryPoint.h` - 应用程序入口点
+    - `Input.h` - 输入系统接口
+    - `KeyCode.h` - 键码定义
+    - `MouseButtonCode.h` - 鼠标按钮代码定义
+
+  - **Events**：事件系统，处理各类事件的分发和处理。
+    - `Event.h` - 事件基类和事件系统
+    - `ApplicationEvent.h` - 应用程序相关事件(窗口调整、关闭等)
+    - `KeyEvent.h` - 键盘事件(按键、释放)
+    - `MouseEvent.h` - 鼠标事件(移动、点击、滚轮)
+
+  - **Renderer**：渲染系统，处理图形渲染和资源管理。
+    - `Renderer3D.h/cpp` - 3D渲染器实现
+    - `RendererCommand.h/cpp` - 渲染命令抽象
+    - `Buffer.h/cpp` - 顶点和索引缓冲区抽象
+    - `Shader.h/cpp` - 着色器程序管理
+    - `Texture.h/cpp` - 纹理资源管理
+    - `TextureBuffer.h/cpp` - 纹理缓冲区管理
+    - `VertexArray.h/cpp` - 顶点数组对象管理
+    - `OrthographicCameraController.h/cpp` - 2D相机控制器
+    - `PerspectiveCameraController.h/cpp` - 3D相机控制器
+
+  - **Model**：3D模型管理。
+    - `Mesh.h/cpp` - 网格数据结构和处理
+    - `Model.h/cpp` - 模型加载和管理
+    - `Material.h/cpp` - 材质系统
+
+  - **ImGui**：集成ImGui用于调试和编辑器UI。
+    - `ImGuiLayer.h/cpp` - ImGui集成层
+
+  - **Utility**：工具函数和类。
+    - `Random.h` - 随机数生成
+    - `Unique.h` - 独特ID和对象管理
+
+- **Platform**：平台特定实现。
+  - **Windows**：Windows平台实现。
+    - `WindowsWindow.h/cpp` - Windows窗口实现
+    - `WindowsInput.h/cpp` - Windows输入系统实现
+  
+  - **OpenGL**：OpenGL渲染API实现。
+    - `OpenGLContext.h/cpp` - OpenGL上下文管理
+    - `OpenGLBuffer.h/cpp` - OpenGL缓冲区实现
+    - `OpenGLShader.h/cpp` - OpenGL着色器实现
+    - `OpenGLTexture.h/cpp` - OpenGL纹理实现
+    - `OpenGLVertexArray.h/cpp` - OpenGL顶点数组实现
+    - `OpenGLRendererAPI.h/cpp` - OpenGL渲染API实现
+
+  - **D3D12**：DirectX 12渲染API实现。
+    - `D3D12Context.h/cpp` - DirectX上下文管理
+    - `D3D12Buffer.h/cpp` - DirectX缓冲区实现
+    - `D3D12Shader.h/cpp` - DirectX着色器实现
+    - `D3D12Texture.h/cpp` - DirectX纹理实现
+    - `D3D12RendererAPI.h/cpp` - DirectX渲染API实现
+
+- **Hazelnut**：
+  - **Editor**：提供图形用户界面，用于编辑和管理游戏资源。
+    - `HazelEditorApp.cpp` - 编辑器应用程序入口
+    - `EditorLayer.h/cpp` - 编辑器主层
+    - `SceneViewLayer.h/cpp` - 场景视图层，用于预览和编辑场景
+
+  - **Scripting**：支持脚本编写和执行，允许用户自定义游戏逻辑。
+    - `ScriptEngine.h/cpp` - 脚本引擎管理
+    - `ScriptBindings.h/cpp` - 引擎功能绑定到脚本
+
+  - **Assets**：管理游戏资源的导入、导出和组织。
+    - `AssetManager.h/cpp` - 资源管理系统
+    - `AssetImporter.h/cpp` - 资源导入器
+
+  - **Panels**：编辑器面板组件。
+    - `SceneHierarchyPanel.h/cpp` - 场景层次结构面板
+    - `PropertiesPanel.h/cpp` - 属性编辑面板
+    - `ContentBrowserPanel.h/cpp` - 内容浏览面板
+
+  - **Tools**：编辑器工具。
+    - `SceneSerializer.h/cpp` - 场景序列化工具
+    - `ProjectManager.h/cpp` - 项目管理工具
+
+文件组织结构:
+/Hazel
+  /src
+    /Hazel
+      /Core
+      /Events
+      /Renderer
+      /Model
+      /ImGui
+      /Utility
+    /Platform
+      /Windows
+      /OpenGL
+      /D3D12
+  /vendor - 第三方库
+
+/Hazelnut
+  /src
+    /Editor
+    /Scripting
+    /Assets
+    /Panels
+    /Tools
+  /assets - 编辑器资源文件
