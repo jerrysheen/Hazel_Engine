@@ -45,16 +45,29 @@ namespace Hazel
 	class D3D12IndexBuffer : public IndexBuffer
 	{
 	public:
-		D3D12IndexBuffer(uint32_t* indices, uint32_t size);
+		D3D12IndexBuffer(uint16_t* indices, uint32_t size);
 		virtual ~D3D12IndexBuffer();
 
 		virtual void Bind() const;
 		virtual void Unbind() const;
 
 		virtual uint32_t GetCount() const { return m_Count; };
+
+		Microsoft::WRL::ComPtr<ID3D12Resource> IndexBufferGPU = nullptr;
+		inline DXGI_FORMAT GetIndexFormat() { return DXGI_FORMAT_R16_UINT; }
+		inline uint32_t GetIndexBufferSize() { return IndexBufferByteSize; }
 	private:
 		uint32_t m_Count;
 		uint32_t m_RendererID;
+
+		// 一个GPU buffer，一个Upload buffer来上传数据
+		Microsoft::WRL::ComPtr<ID3DBlob> IndexBufferCPU = nullptr;
+		Microsoft::WRL::ComPtr<ID3D12Resource> IndexBufferUploader = nullptr;
+		DXGI_FORMAT IndexFormat = DXGI_FORMAT_R16_UINT;
+		UINT IndexBufferByteSize = 0;
+		// Data about the buffers.
+		//UINT VertexByteStride = 0;
+		//UINT VertexBufferByteSize = 0;
 	};
 
 

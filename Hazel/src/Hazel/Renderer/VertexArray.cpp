@@ -35,6 +35,7 @@ namespace Hazel {
 
 	void VertexArray::SetIndexBuffer(const Ref<IndexBuffer>& indexBuffer)
 	{
+
 	}
 
 }

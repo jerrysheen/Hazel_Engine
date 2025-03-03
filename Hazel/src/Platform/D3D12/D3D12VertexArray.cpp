@@ -29,5 +29,6 @@ namespace Hazel
 
 	void D3D12VertexArray::SetIndexBuffer(const Ref<IndexBuffer>& indexBuffer)
 	{
+		m_IndexBuffer = indexBuffer;
 	}
 }

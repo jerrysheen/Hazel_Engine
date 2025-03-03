@@ -12,11 +12,6 @@
 
 namespace Hazel
 {
-    struct D3DVertex
-    {
-        XMFLOAT3 Pos;
-        XMFLOAT4 Color;
-    };
 
     SceneViewLayer::SceneViewLayer(Window& window)
         :Layer("SceneViewLayer"),
@@ -62,18 +57,7 @@ namespace Hazel
         m_PbrShader = Shader::Create("assets/shaders/color.hlsl");
         mvsByteCode = d3dUtil::CompileShader(L"assets/shaders/color.hlsl", nullptr, "VS", "vs_5_0");
         mpsByteCode = d3dUtil::CompileShader(L"assets/shaders/color.hlsl", nullptr, "PS", "ps_5_0");
-        // build shader layoutinput
-        //mInputLayout =
-        //{
-        //    { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
-        //    { "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }
-        //};
-        //{ ShaderDataType::Float3, "POSITION" },
-        //{ ShaderDataType::Float3, "NORMAL" },
-        //{ ShaderDataType::Float3, "TANGENT" },
-        //{ ShaderDataType::Float2, "TEXCOORD" },
-        //{ ShaderDataType::Float2, "TEXCOORD" },
-        //{ ShaderDataType::Float4, "COLOR" }
+
         mInputLayout =
         {
             { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
@@ -84,94 +68,13 @@ namespace Hazel
             { "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 52, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }
         };
 
-        // mesh gen:
 
-        std::array<D3DVertex, 8> vertices =
-        {
-            D3DVertex({ XMFLOAT3(-1.0f, -1.0f, -1.0f), XMFLOAT4(Colors::White) }),
-            D3DVertex({ XMFLOAT3(-1.0f, +1.0f, -1.0f), XMFLOAT4(Colors::Black) }),
-            D3DVertex({ XMFLOAT3(+1.0f, +1.0f, -1.0f), XMFLOAT4(Colors::Red) }),
-            D3DVertex({ XMFLOAT3(+1.0f, -1.0f, -1.0f), XMFLOAT4(Colors::Green) }),
-            D3DVertex({ XMFLOAT3(-1.0f, -1.0f, +1.0f), XMFLOAT4(Colors::Blue) }),
-            D3DVertex({ XMFLOAT3(-1.0f, +1.0f, +1.0f), XMFLOAT4(Colors::Yellow) }),
-            D3DVertex({ XMFLOAT3(+1.0f, +1.0f, +1.0f), XMFLOAT4(Colors::Cyan) }),
-            D3DVertex({ XMFLOAT3(+1.0f, -1.0f, +1.0f), XMFLOAT4(Colors::Magenta) })
-        };
 
-        //std::array<std::uint16_t, 36> indices =
-        //{
-        //    // front face
-        //    0, 1, 2,
-        //    0, 2, 3,
-
-        //    // back face
-        //    4, 6, 5,
-        //    4, 7, 6,
-
-        //    // left face
-        //    4, 5, 1,
-        //    4, 1, 0,
-
-        //    // right face
-        //    3, 2, 6,
-        //    3, 6, 7,
-
-        //    // top face
-        //    1, 5, 6,
-        //    1, 6, 2,
-
-        //    // bottom face
-        //    4, 0, 3,
-        //    4, 3, 7
-        //};
-        
-        
-        std::array<std::uint16_t, 36> indices =
-        {
-            5, 3, 1,
-            3, 8, 4,
-            7, 6, 8,
-            2, 8, 6,
-            1, 4, 2,
-            5, 2, 6,
-            5, 7, 3,
-            3, 7, 8,
-            7, 5, 6,
-            2, 4, 8,
-            1, 3, 4,
-            5, 1, 2,
-        };
-
-        const UINT vbByteSize = (UINT)vertices.size() * sizeof(D3DVertex);
-        const UINT ibByteSize = (UINT)indices.size() * sizeof(std::uint16_t);
-
-        mBoxGeo = std::make_unique<MeshGeometry>();
-        mBoxGeo->Name = "boxGeo";
-
-        //ThrowIfFailed(D3DCreateBlob(vbByteSize, &mBoxGeo->VertexBufferCPU));
-        //CopyMemory(mBoxGeo->VertexBufferCPU->GetBufferPointer(), vertices.data(), vbByteSize);
-
-        //ThrowIfFailed(D3DCreateBlob(ibByteSize, &mBoxGeo->IndexBufferCPU));
-        //CopyMemory(mBoxGeo->IndexBufferCPU->GetBufferPointer(), indices.data(), ibByteSize);
-
-       mBoxGeo->VertexBufferGPU = d3dUtil::CreateDefaultBuffer(device.Get(),
-            m_CommandList.Get(), vertices.data(), vbByteSize, mBoxGeo->VertexBufferUploader);
-
-        mBoxGeo->IndexBufferGPU = d3dUtil::CreateDefaultBuffer(device.Get(),
-            m_CommandList.Get(), indices.data(), ibByteSize, mBoxGeo->IndexBufferUploader);
-
-        mBoxGeo->VertexByteStride = sizeof(D3DVertex);
-        mBoxGeo->VertexBufferByteSize = vbByteSize;
-        mBoxGeo->IndexFormat = DXGI_FORMAT_R16_UINT;
-        mBoxGeo->IndexBufferByteSize = ibByteSize;
-
-        SubmeshGeometry submesh;
-        submesh.IndexCount = (UINT)indices.size();
-        submesh.StartIndexLocation = 0;
-        submesh.BaseVertexLocation = 0;
-
-        mBoxGeo->DrawArgs["box"] = submesh;
-
+        std::string abpath = std::filesystem::current_path().u8string();
+        std::string cubeModelPath = abpath + std::string("/assets/Resources/Models/Cube/Cube.obj");
+        mesh = Mesh::Create();
+        //mesh->Create();
+        mesh->LoadMesh(cubeModelPath);
 
         // build root signature
         
@@ -249,7 +152,8 @@ namespace Hazel
         CommandPool::getInstance()->RecycleCommand(cmdList);
 
         mCommandQueue->ExecuteCommandLists(1, (ID3D12CommandList* const*)&rawCommandList);
-        FlushCommandQueue();
+        renderAPIManager->FlushCommandQueue();
+        //FlushCommandQueue();
 
         mScreenViewport.TopLeftX = 0;
         mScreenViewport.TopLeftY = 0;
@@ -289,11 +193,7 @@ namespace Hazel
         GfxViewManager::getInstance()->GetCbvHandle(objectCB);
 
         // mesh加载, mesh里面应该加载通用内容？upload的时候进行一个转译就好了？
-        std::string abpath = std::filesystem::current_path().u8string();
-        std::string cubeModelPath = abpath + std::string("/assets/Resources/Models/Cube/Cube.obj");
-        mesh = Mesh::Create();
-        //mesh->Create();
-        mesh->LoadMesh(cubeModelPath);
+
 
 
     }
@@ -398,12 +298,19 @@ namespace Hazel
 
         D3D12VertexBuffer* vertexBuffer = dynamic_cast<D3D12VertexBuffer*>
             (mesh->meshData->GetVertexBuffers()[0].get());
+        D3D12IndexBuffer* indexBuffer = dynamic_cast<D3D12IndexBuffer*>
+            (mesh->meshData->GetIndexBuffer().get());
         D3D12_VERTEX_BUFFER_VIEW vbv;
         vbv.BufferLocation = vertexBuffer->VertexBufferGPU->GetGPUVirtualAddress();
         vbv.StrideInBytes = vertexBuffer->VertexByteStride;
         vbv.SizeInBytes = vertexBuffer->VertexBufferByteSize;
+
+        D3D12_INDEX_BUFFER_VIEW ibv;
+        ibv.BufferLocation = indexBuffer->IndexBufferGPU->GetGPUVirtualAddress();
+        ibv.Format = indexBuffer->GetIndexFormat();
+        ibv.SizeInBytes = indexBuffer->GetIndexBufferSize();
         m_CommandList->IASetVertexBuffers(0, 1, &vbv);
-        m_CommandList->IASetIndexBuffer(&mBoxGeo->IndexBufferView());
+        m_CommandList->IASetIndexBuffer(&ibv);
         m_CommandList->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 
@@ -413,7 +320,7 @@ namespace Hazel
             mBoxGeo->DrawArgs["box"].IndexCount,
             1, 0, 0, 0);*/
         m_CommandList->DrawInstanced(
-            mBoxGeo->DrawArgs["box"].IndexCount,
+            indexBuffer->GetIndexBufferSize(),
             1, 0, 0);
 
         cmdList->ChangeResourceState(m_BackBuffer, TextureRenderUsage::RENDER_TARGET, TextureRenderUsage::RENDER_TEXTURE);
@@ -427,8 +334,7 @@ namespace Hazel
         ID3D12CommandList* rawCommandList = m_CommandList.Get();
         mCommandQueue->ExecuteCommandLists(1, (ID3D12CommandList* const*)&rawCommandList);
         
-        FlushCommandQueue();
-
+		renderAPIManager->FlushCommandQueue();
     }
 
     void SceneViewLayer::OnImGuiRender()
@@ -560,29 +466,6 @@ namespace Hazel
     }
 
 
-    // 暂时写这里，后续要变成event事件。
-    void SceneViewLayer::FlushCommandQueue()
-    {
-            // Advance the fence value to mark commands up to this fence point.
-            mCurrentFence++;
 
-            // Add an instruction to the command queue to set a new fence point.  Because we 
-            // are on the GPU timeline, the new fence point won't be set until the GPU finishes
-            // processing all the commands prior to this Signal().
-            ThrowIfFailed(mCommandQueue->Signal(mFence.Get(), mCurrentFence));
-
-            // Wait until the GPU has completed commands up to this fence point.
-            if (mFence->GetCompletedValue() < mCurrentFence)
-            {
-                HANDLE eventHandle = CreateEventEx(nullptr, false, false, EVENT_ALL_ACCESS);
-
-                // Fire event when GPU hits current fence.  
-                ThrowIfFailed(mFence->SetEventOnCompletion(mCurrentFence, eventHandle));
-
-                // Wait until the GPU hits current fence event is fired.
-                WaitForSingleObject(eventHandle, INFINITE);
-                CloseHandle(eventHandle);
-            }
-    }
 
 }

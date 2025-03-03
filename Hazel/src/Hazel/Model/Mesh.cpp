@@ -33,6 +33,7 @@ namespace Hazel
 		Ref<VertexBuffer> vertexBuffer;
 		float* p = &vertexData[0];
 		vertexBuffer = (VertexBuffer::Create(p, vertexData.size() * sizeof(float)));
+		// layout应该设置在VertexArray中。
 		vertexBuffer->SetLayout({
 				{ ShaderDataType::Float3, "POSITION" },
 				{ ShaderDataType::Float3, "NORMAL" },
@@ -47,7 +48,7 @@ namespace Hazel
 
 		//HZ_CORE_INFO("indexBuffer size : {0}", indexBuffer.size());
 		Ref<IndexBuffer> indexBuffer;
-		uint32_t* indexP = &indexData[0];
+		uint16_t* indexP = &indexData[0];
 		//squareIB.reset(IndexBuffer::Create(indexP, sizeof(indexBuffer) / sizeof(uint32_t)));
 		indexBuffer = (IndexBuffer::Create(indexP, indexData.size()));
 		meshData->SetIndexBuffer(indexBuffer);

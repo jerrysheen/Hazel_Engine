@@ -43,7 +43,7 @@ namespace Hazel
         bool hasVertexColor = false;
         std::vector<float> vertexData;
 
-        std::vector<uint32_t> indexData;
+        std::vector<uint16_t> indexData;
         //void LoadModel(const std::string& path);
         void processNode(aiNode* node, const aiScene* scene);
 

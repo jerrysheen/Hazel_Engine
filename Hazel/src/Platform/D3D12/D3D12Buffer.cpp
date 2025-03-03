@@ -78,6 +78,8 @@ namespace Hazel
         CommandPool::getInstance()->RecycleCommand(cmdList);
         ID3D12CommandList* rawCommandList = m_CommandList.Get();
         commandQueue->ExecuteCommandLists(1, (ID3D12CommandList* const*)&rawCommandList);
+		renderAPIManager->FlushCommandQueue();
+
     }
 
     D3D12VertexBuffer::~D3D12VertexBuffer()
@@ -129,9 +131,33 @@ namespace Hazel
         return DXGI_FORMAT();
     }
 
-    D3D12IndexBuffer::D3D12IndexBuffer(uint32_t* indices, uint32_t size)
+    D3D12IndexBuffer::D3D12IndexBuffer(uint16_t* indices, uint32_t size)
     {
+        D3D12RenderAPIManager* renderAPIManager = dynamic_cast<D3D12RenderAPIManager*>(RenderAPIManager::getInstance()->GetManager().get());
+        Microsoft::WRL::ComPtr<ID3D12CommandQueue> commandQueue = renderAPIManager->GetCommandQueue();
+        Microsoft::WRL::ComPtr<ID3D12Device> device = renderAPIManager->GetD3DDevice();
+        Ref<CommandList> cmdList = CommandPool::getInstance()->GetCommand();
 
+        Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> m_CommandList = cmdList->getCommandList<Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList>>();
+        Microsoft::WRL::ComPtr<ID3D12CommandAllocator> m_CommandAllocator = cmdList->getCommandAllocator<Microsoft::WRL::ComPtr<ID3D12CommandAllocator>>();
+
+        ThrowIfFailed(m_CommandAllocator->Reset());
+        // A command list can be reset after it has been added to the command queue via ExecuteCommandList.
+        // Reusing the command list reuses memory.
+        ThrowIfFailed(m_CommandList->Reset(m_CommandAllocator.Get(), NULL));
+
+
+        const UINT indexSize = (UINT)size;
+        IndexBufferGPU = d3dUtil::CreateDefaultBuffer(device.Get(),
+            m_CommandList.Get(), indices, size, IndexBufferUploader);
+        // 此时可能为空
+        //VertexByteStride = m_Layout.GetStride();
+        IndexBufferByteSize = size;
+
+        CommandPool::getInstance()->RecycleCommand(cmdList);
+        ID3D12CommandList* rawCommandList = m_CommandList.Get();
+        commandQueue->ExecuteCommandLists(1, (ID3D12CommandList* const*)&rawCommandList);
+        renderAPIManager->FlushCommandQueue();
     }
 
     D3D12IndexBuffer::~D3D12IndexBuffer()

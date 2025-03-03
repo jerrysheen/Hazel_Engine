@@ -23,7 +23,7 @@ namespace Hazel {
 	class OpenGLIndexBuffer : public IndexBuffer
 	{
 		public:
-			OpenGLIndexBuffer(uint32_t* indices, uint32_t size);
+			OpenGLIndexBuffer(uint16_t* indices, uint32_t size);
 			virtual ~OpenGLIndexBuffer();
 
 			virtual void Bind() const;

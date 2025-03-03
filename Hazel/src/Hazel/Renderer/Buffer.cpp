@@ -21,7 +21,7 @@ namespace Hazel {
 	}
 
 	
-	Ref<IndexBuffer> IndexBuffer::Create(uint32_t* indices, uint32_t size)
+	Ref<IndexBuffer> IndexBuffer::Create(uint16_t* indices, uint32_t size)
 	{
 		switch (RenderAPI::GetAPI())
 		{

@@ -32,7 +32,6 @@ namespace Hazel
 
 	private:
 
-		void FlushCommandQueue();
 		Window& m_window;
 		Ref<Shader> m_PbrShader;
 		Ref<TextureBuffer> m_BackBuffer;
