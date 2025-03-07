@@ -1,0 +1,319 @@
+# 材质系统实现计划
+
+## 总体设计
+
+材质系统是渲染管线中连接着色器、纹理和渲染参数的关键组件。一个好的材质系统应该灵活、高效，并支持各种渲染技术（PBR、卡通渲染等）。
+
+## 类结构设计
+
+### 1. 材质属性基础类型
+
+```cpp
+// 在 Hazel/src/Hazel/Renderer/Material.h 中定义
+
+namespace Hazel {
+
+    // 材质属性类型
+    enum class MaterialPropertyType {
+        None = 0,
+        Float,
+        Float2,
+        Float3,
+        Float4,
+        Int,
+        Int2,
+        Int3,
+        Int4,
+        Bool,
+        Matrix3,
+        Matrix4,
+        Texture2D,
+        TextureCube,
+        Texture3D
+    };
+
+    // 材质属性值（使用变体模式）
+    class MaterialProperty {
+    public:
+        // 构造函数重载，用于创建不同类型的属性
+        MaterialProperty() = default;
+        MaterialProperty(float value);
+        MaterialProperty(const glm::vec2& value);
+        MaterialProperty(const glm::vec3& value);
+        MaterialProperty(const glm::vec4& value);
+        MaterialProperty(int value);
+        MaterialProperty(const glm::ivec2& value);
+        MaterialProperty(const glm::ivec3& value);
+        MaterialProperty(const glm::ivec4& value);
+        MaterialProperty(bool value);
+        MaterialProperty(const glm::mat3& value);
+        MaterialProperty(const glm::mat4& value);
+        MaterialProperty(const Ref<Texture2D>& value);
+        MaterialProperty(const Ref<TextureCube>& value);
+        MaterialProperty(const Ref<Texture3D>& value);
+
+        // 获取属性类型
+        MaterialPropertyType GetType() const { return m_Type; }
+
+        // 获取属性值（类型安全的访问器）
+        template<typename T>
+        T& GetValue();
+
+        template<typename T>
+        const T& GetValue() const;
+
+    private:
+        MaterialPropertyType m_Type = MaterialPropertyType::None;
+        
+        // 使用std::variant存储多种属性类型
+        std::variant<
+            std::monostate,  // 空类型
+            float, glm::vec2, glm::vec3, glm::vec4,
+            int, glm::ivec2, glm::ivec3, glm::ivec4,
+            bool,
+            glm::mat3, glm::mat4,
+            Ref<Texture2D>, Ref<TextureCube>, Ref<Texture3D>
+        > m_Value;
+    };
+
+} // namespace Hazel
+```
+
+### 2. 材质基类
+
+```cpp
+class Material {
+public:
+    virtual ~Material() = default;
+
+    // 创建一个材质
+    static Ref<Material> Create(const Ref<Shader>& shader);
+    
+    // 绑定材质（上传属性到着色器）
+    virtual void Bind() const;
+    
+    // 复制材质（创建一个新的材质实例）
+    virtual Ref<Material> Clone() const;
+    
+    // 属性设置方法
+    void Set(const std::string& name, float value);
+    void Set(const std::string& name, const glm::vec2& value);
+    void Set(const std::string& name, const glm::vec3& value);
+    void Set(const std::string& name, const glm::vec4& value);
+    void Set(const std::string& name, int value);
+    void Set(const std::string& name, const glm::ivec2& value);
+    void Set(const std::string& name, const glm::ivec3& value);
+    void Set(const std::string& name, const glm::ivec4& value);
+    void Set(const std::string& name, bool value);
+    void Set(const std::string& name, const glm::mat3& value);
+    void Set(const std::string& name, const glm::mat4& value);
+    void Set(const std::string& name, const Ref<Texture2D>& value);
+    void Set(const std::string& name, const Ref<TextureCube>& value);
+    void Set(const std::string& name, const Ref<Texture3D>& value);
+    
+    // 属性获取方法
+    template<typename T>
+    T Get(const std::string& name) const;
+    
+    bool HasProperty(const std::string& name) const;
+    
+    // 获取关联的着色器
+    const Ref<Shader>& GetShader() const { return m_Shader; }
+    
+    // 获取或创建图形管线状态对象
+    Ref<GraphicsPipeline> GetPipeline();
+    
+    // 设置基础渲染状态
+    void SetTransparent(bool transparent);
+    void SetCullMode(CullMode mode);
+    void SetDepthTest(bool enable);
+    void SetDepthWrite(bool enable);
+    
+    // 标记材质为已修改（需要重新上传）
+    void MarkDirty() { m_IsDirty = true; }
+    bool IsDirty() const { return m_IsDirty; }
+
+protected:
+    Material(const Ref<Shader>& shader);
+    
+    Ref<Shader> m_Shader;
+    std::unordered_map<std::string, MaterialProperty> m_Properties;
+    bool m_IsDirty = true;
+    
+    // 关联的管线状态
+    GraphicsPipelineDesc m_PipelineDesc;
+    Ref<GraphicsPipeline> m_Pipeline;
+};
+```
+
+### 3. 特定材质实现
+
+```cpp
+// 基础PBR材质
+class PBRMaterial : public Material {
+public:
+    PBRMaterial();
+    
+    // PBR特定属性访问器
+    void SetAlbedo(const glm::vec3& albedo);
+    glm::vec3 GetAlbedo() const;
+    
+    void SetMetallic(float metallic);
+    float GetMetallic() const;
+    
+    void SetRoughness(float roughness);
+    float GetRoughness() const;
+    
+    void SetAlbedoMap(const Ref<Texture2D>& albedoMap);
+    Ref<Texture2D> GetAlbedoMap() const;
+    
+    void SetNormalMap(const Ref<Texture2D>& normalMap);
+    Ref<Texture2D> GetNormalMap() const;
+    
+    void SetMetallicMap(const Ref<Texture2D>& metallicMap);
+    Ref<Texture2D> GetMetallicMap() const;
+    
+    void SetRoughnessMap(const Ref<Texture2D>& roughnessMap);
+    Ref<Texture2D> GetRoughnessMap() const;
+    
+    void SetAOMap(const Ref<Texture2D>& aoMap);
+    Ref<Texture2D> GetAOMap() const;
+    
+    void SetEmissiveMap(const Ref<Texture2D>& emissiveMap);
+    Ref<Texture2D> GetEmissiveMap() const;
+    
+    void SetEmissiveColor(const glm::vec3& emissive);
+    glm::vec3 GetEmissiveColor() const;
+};
+
+// 简单无光照材质
+class UnlitMaterial : public Material {
+public:
+    UnlitMaterial();
+    
+    void SetColor(const glm::vec4& color);
+    glm::vec4 GetColor() const;
+    
+    void SetTexture(const Ref<Texture2D>& texture);
+    Ref<Texture2D> GetTexture() const;
+};
+```
+
+### 4. 材质库
+
+```cpp
+class MaterialLibrary {
+public:
+    static MaterialLibrary& Get();
+    
+    // 注册材质到库中
+    void Register(const std::string& name, const Ref<Material>& material);
+    
+    // 获取材质
+    Ref<Material> Get(const std::string& name);
+    
+    // 检查材质是否存在
+    bool Exists(const std::string& name) const;
+    
+    // 保存/加载材质
+    bool Save(const std::string& name, const std::string& filepath);
+    Ref<Material> Load(const std::string& filepath);
+    
+private:
+    MaterialLibrary() = default;
+    
+    std::unordered_map<std::string, Ref<Material>> m_Materials;
+};
+```
+
+## 材质序列化格式
+
+使用JSON作为材质序列化格式，例如：
+
+```json
+{
+  "name": "BrickWall",
+  "type": "PBR",
+  "shader": "assets/shaders/PBR.glsl",
+  "properties": {
+    "u_Albedo": { "type": "vec3", "value": [0.8, 0.2, 0.2] },
+    "u_Metallic": { "type": "float", "value": 0.2 },
+    "u_Roughness": { "type": "float", "value": 0.8 },
+    "u_AlbedoMap": { "type": "texture2d", "value": "assets/textures/brick_albedo.png" },
+    "u_NormalMap": { "type": "texture2d", "value": "assets/textures/brick_normal.png" },
+    "u_RoughnessMap": { "type": "texture2d", "value": "assets/textures/brick_roughness.png" }
+  },
+  "renderState": {
+    "transparent": false,
+    "cullMode": "back",
+    "depthTest": true,
+    "depthWrite": true
+  }
+}
+```
+
+## 使用示例
+
+```cpp
+// 创建一个基础PBR材质
+Ref<PBRMaterial> material = CreateRef<PBRMaterial>();
+material->SetAlbedo({ 0.8f, 0.2f, 0.2f });
+material->SetMetallic(0.2f);
+material->SetRoughness(0.8f);
+material->SetAlbedoMap(Texture2D::Create("assets/textures/brick_albedo.png"));
+material->SetNormalMap(Texture2D::Create("assets/textures/brick_normal.png"));
+
+// 通用属性设置
+material->Set("u_TilingFactor", glm::vec2(2.0f, 2.0f));
+
+// 使用材质进行渲染
+renderer->Submit(mesh, material, transform);
+
+// 保存到材质库
+MaterialLibrary::Get().Register("BrickWall", material);
+MaterialLibrary::Get().Save("BrickWall", "assets/materials/brick_wall.mat");
+
+// 从材质库加载
+Ref<Material> loadedMaterial = MaterialLibrary::Get().Load("assets/materials/brick_wall.mat");
+```
+
+## 实现步骤
+
+1. 定义材质属性类型和属性值类
+2. 实现材质基类
+   - 属性设置方法
+   - 绑定逻辑（上传到着色器）
+   - 克隆功能
+3. 实现PBR材质和Unlit材质等特定材质类型
+4. 实现材质库
+   - 注册和获取功能
+   - 序列化和反序列化
+5. 集成到渲染系统
+   - 让Renderer类支持使用材质进行绘制
+   - 设置渲染队列（透明/不透明排序）
+6. 添加编辑器支持（如果有）
+   - 材质检查器
+   - 属性编辑控件
+
+## 注意事项
+
+1. **性能考虑**
+   - 避免每帧重复上传相同的材质属性
+   - 使用材质实例进行高效渲染
+   - 考虑材质批处理优化
+
+2. **内存管理**
+   - 确保纹理资源的正确引用计数和释放
+   - 考虑使用纹理池避免重复加载
+
+3. **可扩展性**
+   - 设计应允许轻松添加新的材质类型
+   - 支持自定义着色器属性
+
+4. **多线程安全**
+   - 确保材质库在多线程环境中安全使用
+   - 考虑读/写锁以优化并发访问
+
+5. **默认值**
+   - 为所有材质属性提供合理的默认值
+   - 在缺少纹理时使用默认纹理（如白色1x1纹理） 

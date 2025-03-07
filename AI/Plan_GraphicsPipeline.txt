@@ -1,0 +1,240 @@
+# 图形管线状态对象 (GraphicsPipeline) 实现计划
+
+## 总体设计
+
+GraphicsPipeline将作为渲染管线状态的核心抽象，封装不同图形API中的管线状态对象概念（如D3D12的PSO、OpenGL的Program和State集合）。
+
+## 类结构设计
+
+### 1. 基础枚举和结构体
+
+```cpp
+// 在 Hazel/src/Hazel/Renderer/Pipeline.h 中定义
+
+namespace Hazel {
+
+    // 混合模式
+    enum class BlendMode {
+        None,
+        Alpha,
+        Additive,
+        Multiply,
+        Custom
+    };
+
+    // 深度测试函数
+    enum class DepthFunc {
+        Never,
+        Less,
+        LessEqual,
+        Equal,
+        NotEqual,
+        GreaterEqual,
+        Greater,
+        Always
+    };
+
+    // 表面剔除模式
+    enum class CullMode {
+        None,
+        Front,
+        Back
+    };
+
+    // 多边形填充模式
+    enum class FillMode {
+        Solid,
+        Wireframe,
+        Point
+    };
+
+    // 原语拓扑类型
+    enum class PrimitiveTopology {
+        PointList,
+        LineList,
+        LineStrip,
+        TriangleList,
+        TriangleStrip
+    };
+
+    // 光栅化状态描述
+    struct RasterizerState {
+        FillMode fillMode = FillMode::Solid;
+        CullMode cullMode = CullMode::Back;
+        bool frontCounterClockwise = false;
+        bool depthClipEnable = true;
+        bool scissorEnable = false;
+        bool multisampleEnable = false;
+        bool antialiasedLineEnable = false;
+        float depthBias = 0.0f;
+        float depthBiasClamp = 0.0f;
+        float slopeScaledDepthBias = 0.0f;
+    };
+
+    // 混合状态描述
+    struct BlendState {
+        bool alphaToCoverageEnable = false;
+        bool independentBlendEnable = false;
+
+        struct RenderTargetBlend {
+            bool blendEnable = false;
+            BlendMode blendMode = BlendMode::Alpha;
+            // 如果需要自定义混合模式，以下属性将被使用
+            // 在简单使用时，可以通过blendMode快速设置常用预设
+            BlendFactor srcColorBlendFactor = BlendFactor::One;
+            BlendFactor dstColorBlendFactor = BlendFactor::Zero;
+            BlendOp colorBlendOp = BlendOp::Add;
+            BlendFactor srcAlphaBlendFactor = BlendFactor::One;
+            BlendFactor dstAlphaBlendFactor = BlendFactor::Zero;
+            BlendOp alphaBlendOp = BlendOp::Add;
+            uint8_t colorWriteMask = 0xF; // RGBA全部启用
+        };
+
+        RenderTargetBlend renderTargetBlend[8]; // 支持多个渲染目标
+    };
+
+    // 深度模板状态描述
+    struct DepthStencilState {
+        bool depthEnable = true;
+        bool depthWriteEnable = true;
+        DepthFunc depthFunc = DepthFunc::Less;
+        bool stencilEnable = false;
+        uint8_t stencilReadMask = 0xFF;
+        uint8_t stencilWriteMask = 0xFF;
+        
+        // 更多模板测试相关配置...
+    };
+
+    // 管线状态描述
+    struct GraphicsPipelineDesc {
+        Ref<Shader> shader;
+        Ref<VertexBufferLayout> layout;
+        RasterizerState rasterizerState;
+        BlendState blendState;
+        DepthStencilState depthStencilState;
+        PrimitiveTopology primitiveTopology = PrimitiveTopology::TriangleList;
+        TextureFormat colorFormat = TextureFormat::RGBA8;
+        TextureFormat depthStencilFormat = TextureFormat::DEPTH24STENCIL8;
+        uint32_t sampleCount = 1;
+        uint32_t sampleQuality = 0;
+    };
+
+} // namespace Hazel
+```
+
+### 2. 图形管线抽象基类
+
+```cpp
+class GraphicsPipeline {
+public:
+    virtual ~GraphicsPipeline() = default;
+
+    // 创建一个图形管线
+    static Ref<GraphicsPipeline> Create(const GraphicsPipelineDesc& desc);
+
+    // 绑定管线以进行渲染
+    virtual void Bind() const = 0;
+    
+    // 获取管线描述
+    const GraphicsPipelineDesc& GetDescription() const { return m_Description; }
+
+protected:
+    GraphicsPipelineDesc m_Description;
+};
+```
+
+### 3. D3D12 实现
+
+```cpp
+// 在 Platform/D3D12/D3D12GraphicsPipeline.h 中定义
+
+class D3D12GraphicsPipeline : public GraphicsPipeline {
+public:
+    D3D12GraphicsPipeline(const GraphicsPipelineDesc& desc);
+    virtual ~D3D12GraphicsPipeline();
+
+    virtual void Bind() const override;
+
+    // D3D12 特定接口
+    ID3D12PipelineState* GetNativePipelineState() const { return m_PipelineState.Get(); }
+    ID3D12RootSignature* GetRootSignature() const { return m_RootSignature.Get(); }
+
+private:
+    void CreateRootSignature();
+    void CreatePipelineState();
+
+    Microsoft::WRL::ComPtr<ID3D12PipelineState> m_PipelineState;
+    Microsoft::WRL::ComPtr<ID3D12RootSignature> m_RootSignature;
+};
+```
+
+### 4. OpenGL 实现
+
+```cpp
+// 在 Platform/OpenGL/OpenGLGraphicsPipeline.h 中定义
+
+class OpenGLGraphicsPipeline : public GraphicsPipeline {
+public:
+    OpenGLGraphicsPipeline(const GraphicsPipelineDesc& desc);
+    virtual ~OpenGLGraphicsPipeline();
+
+    virtual void Bind() const override;
+
+private:
+    // OpenGL 没有显式的 PSO 对象，而是通过多个状态函数来设置
+    // 我们可以在 Bind() 中设置所有状态
+    uint32_t m_VertexArray = 0;
+    uint32_t m_ProgramID = 0;
+};
+```
+
+## 使用示例
+
+```cpp
+// 创建一个基本的管线状态对象
+GraphicsPipelineDesc pipelineDesc;
+pipelineDesc.shader = Shader::Create("assets/shaders/PBRShader.glsl");
+pipelineDesc.layout = CreateRef<VertexBufferLayout>(); // 设置布局...
+pipelineDesc.primitiveTopology = PrimitiveTopology::TriangleList;
+
+// 设置光栅化状态
+pipelineDesc.rasterizerState.cullMode = CullMode::Back;
+pipelineDesc.rasterizerState.fillMode = FillMode::Solid;
+
+// 设置混合状态（默认不透明）
+pipelineDesc.blendState.renderTargetBlend[0].blendEnable = false;
+
+// 设置深度/模板状态
+pipelineDesc.depthStencilState.depthEnable = true;
+pipelineDesc.depthStencilState.depthWriteEnable = true;
+pipelineDesc.depthStencilState.depthFunc = DepthFunc::Less;
+
+// 创建并使用管线
+Ref<GraphicsPipeline> pipeline = GraphicsPipeline::Create(pipelineDesc);
+pipeline->Bind();
+
+// 绘制...
+```
+
+## 实现步骤
+
+1. 定义基础枚举和结构体
+2. 实现GraphicsPipeline抽象基类
+3. 实现D3D12GraphicsPipeline
+   - 实现 D3D12 光栅化状态转换
+   - 实现 D3D12 混合状态转换
+   - 实现 D3D12 深度/模板状态转换
+   - 实现 D3D12 输入布局转换
+   - 实现 D3D12 根签名生成
+   - 实现 PSO 创建
+4. 实现OpenGLGraphicsPipeline（如需要）
+5. 更新工厂方法，根据当前渲染API创建适当的实现
+6. 集成到渲染系统
+
+## 注意事项
+
+1. **性能考虑**：管线状态对象的创建开销较大，应该缓存和重用
+2. **内存管理**：确保所有资源都被正确释放
+3. **错误处理**：添加适当的错误检查和日志记录
+4. **扩展性**：设计应该允许未来添加更多的管线状态设置
+5. **默认值**：为所有状态提供合理的默认值，以简化简单场景的使用 
