@@ -42,6 +42,7 @@ namespace Hazel
         bool hastexCoord1 = false;
         bool hasVertexColor = false;
         std::vector<float> vertexData;
+		uint32_t bufferStride = 0;
 
         std::vector<uint16_t> indexData;
         //void LoadModel(const std::string& path);

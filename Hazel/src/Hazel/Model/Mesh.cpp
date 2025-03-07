@@ -5,8 +5,8 @@
 
 namespace Hazel 
 {
-	// todo: µ¼ÈëµÄmeshÏà¹ØÍ¨µÀ¿Ï¶¨ÊÇÒª¸ù¾İÓÃ»§ÉèÖÃÈ¡µ÷ÕûµÄ£¬ Õâ¸öµØ·½ÏÈĞ´ËÀÁË¡£¡£
-	// MeshĞèÒª×ö¾ßÌåµÄ½Ó¿ÚÂğ£¿²»ĞèÒª£¬ meshÖ»ÊÇÊı¾İ + layout¶øÒÑ¡£
+	// todo: ï¿½ï¿½ï¿½ï¿½ï¿½meshï¿½ï¿½ï¿½Í¨ï¿½ï¿½ï¿½Ï¶ï¿½ï¿½ï¿½Òªï¿½ï¿½ï¿½ï¿½ï¿½Ã»ï¿½ï¿½ï¿½ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½ï¿½Ä£ï¿½ ï¿½ï¿½ï¿½ï¿½Ø·ï¿½ï¿½ï¿½Ğ´ï¿½ï¿½ï¿½Ë¡ï¿½ï¿½ï¿½
+	// Meshï¿½ï¿½Òªï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä½Ó¿ï¿½ï¿½ğ£¿²ï¿½ï¿½ï¿½Òªï¿½ï¿½ meshÖ»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ + layoutï¿½ï¿½ï¿½Ñ¡ï¿½
 	Ref<Mesh> Mesh::Create()
 	{
 		return std::make_shared<Mesh>();
@@ -32,9 +32,10 @@ namespace Hazel
 
 		Ref<VertexBuffer> vertexBuffer;
 		float* p = &vertexData[0];
-		vertexBuffer = (VertexBuffer::Create(p, vertexData.size() * sizeof(float)));
-		// layoutÓ¦¸ÃÉèÖÃÔÚVertexArrayÖĞ¡£
-		vertexBuffer->SetLayout({
+		// ç›®å‰stride å†™æ­»ï¼Œ åç»­éœ€è¦æ ¹æ®layoutæ¥è®¡ç®—
+		bufferStride = 17 * sizeof(float);
+		vertexBuffer = (VertexBuffer::Create(p, vertexData.size() * sizeof(float), bufferStride));
+		meshData->SetLayout({
 				{ ShaderDataType::Float3, "POSITION" },
 				{ ShaderDataType::Float3, "NORMAL" },
 				{ ShaderDataType::Float3, "TANGENT" },
@@ -57,14 +58,14 @@ namespace Hazel
 
 	void Mesh::processNode(aiNode* node, const aiScene* scene)
 	{
-		// ´¦Àí½ÚµãËùÓĞµÄÍø¸ñ£¨Èç¹ûÓĞµÄ»°£©
+		// ï¿½ï¿½ï¿½ï¿½ï¿½Úµï¿½ï¿½ï¿½ï¿½Ğµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ĞµÄ»ï¿½ï¿½ï¿½
 		//HZ_CORE_INFO("{0}, {1}", node->mNumMeshes, node->mNumChildren);
 		for (unsigned int i = 0; i < node->mNumMeshes; i++)
 		{
 			aiMesh* aimesh = scene->mMeshes[node->mMeshes[i]];
 			processMesh(aimesh, scene);
 		}
-		// ½ÓÏÂÀ´¶ÔËüµÄ×Ó½ÚµãÖØ¸´ÕâÒ»¹ı³Ì
+		// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ó½Úµï¿½ï¿½Ø¸ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½
 		for (unsigned int i = 0; i < node->mNumChildren; i++)
 		{
 			processNode(node->mChildren[i], scene);
@@ -74,11 +75,11 @@ namespace Hazel
 	void Mesh::processMesh(aiMesh* aiMesh, const aiScene* scene)
 	{
 		//VertexArray
-		// ¶ÔÓÚÀïÃæÃ¿Ò»¸ö½Úµã£¬ ¶¼ÓĞVertex, Normal, TexCoords
-		// todo£º Õâ¸öµØ·½»òĞí»áÓĞÎÊÌâ£¬µ¼ÈëµÄÍ¨µÀÓĞµãÌ«µ¥Ò»ÁË£¬²»Ì«¶Ô¡£
-		// Õâ¸öµØ·½²»Ó¦¸ÃÊÇÕâÑù£¬ ¶øÊÇÓĞÒ»¸öÄ¬ÈÏµÄĞèÒªÄÄ¼¸¸öÍ¨µÀµÄ²ÎÊı£¬ needposition£¬neednormalÖ®ÀàµÄ¶«Î÷¡£
-		// µ«ÊÇ×îºóµÄ½á¹ûĞèÒª½áºÏÔÚÒ»Æğ±ä³ÉÒ»¸övertexdata array£¬ Ö»ÊÇ¼ÇÂ¼ÏÂµ±Ç°ÓÃÁËÄÄĞ©Í¨µÀ¡£
-		// Õâ¸öµØ·½ÎªÁË·½±ãÔËĞĞ£¬ ÏÈĞ´³ÉÈ«Á¿¼ÓÔØ£¬¼ÓÔØÈ«²¿position normal£¬colorµÈÊı¾İ¡£
+		// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ã¿Ò»ï¿½ï¿½ï¿½Úµã£¬ ï¿½ï¿½ï¿½ï¿½Vertex, Normal, TexCoords
+		// todoï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ø·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½â£¬ï¿½ï¿½ï¿½ï¿½ï¿½Í¨ï¿½ï¿½ï¿½Ğµï¿½Ì«ï¿½ï¿½Ò»ï¿½Ë£ï¿½ï¿½ï¿½Ì«ï¿½Ô¡ï¿½
+		// ï¿½ï¿½ï¿½ï¿½Ø·ï¿½ï¿½ï¿½Ó¦ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½Ä¬ï¿½Ïµï¿½ï¿½ï¿½Òªï¿½Ä¼ï¿½ï¿½ï¿½Í¨ï¿½ï¿½ï¿½Ä²ï¿½ï¿½ï¿½ï¿½ï¿½ needpositionï¿½ï¿½neednormalÖ®ï¿½ï¿½Ä¶ï¿½ï¿½ï¿½ï¿½ï¿½
+		// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä½ï¿½ï¿½ï¿½ï¿½Òªï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½vertexdata arrayï¿½ï¿½ Ö»ï¿½Ç¼ï¿½Â¼ï¿½Âµï¿½Ç°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ğ©Í¨ï¿½ï¿½ï¿½ï¿½
+		// ï¿½ï¿½ï¿½ï¿½Ø·ï¿½Îªï¿½Ë·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ğ£ï¿½ ï¿½ï¿½Ğ´ï¿½ï¿½È«ï¿½ï¿½ï¿½ï¿½ï¿½Ø£ï¿½ï¿½ï¿½ï¿½ï¿½È«ï¿½ï¿½position normalï¿½ï¿½colorï¿½ï¿½ï¿½ï¿½ï¿½İ¡ï¿½
 		HZ_CORE_INFO("vertices size :{0}", aiMesh->mNumVertices);
 		for (unsigned int i = 0; i < aiMesh->mNumVertices; i++)
 		{
@@ -128,7 +129,7 @@ namespace Hazel
 			}
 
 
-			if (aiMesh->mTextureCoords[0]) // Íø¸ñÊÇ·ñÓĞÎÆÀí×ø±ê£¿
+			if (aiMesh->mTextureCoords[0]) // ï¿½ï¿½ï¿½ï¿½ï¿½Ç·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ê£¿
 			{
 				hastexCoord0 = true;
 				vertexData.push_back(aiMesh->mTextureCoords[0][i].x);
@@ -141,7 +142,7 @@ namespace Hazel
 				vertexData.push_back(0);
 			}
 
-			if (aiMesh->mTextureCoords[1]) // Íø¸ñÊÇ·ñÓĞÎÆÀí×ø±ê£¿
+			if (aiMesh->mTextureCoords[1]) // ï¿½ï¿½ï¿½ï¿½ï¿½Ç·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ê£¿
 			{
 				hastexCoord1 = true;
 				vertexData.push_back(aiMesh->mTextureCoords[1][i].x);

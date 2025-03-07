@@ -302,8 +302,8 @@ namespace Hazel
             (mesh->meshData->GetIndexBuffer().get());
         D3D12_VERTEX_BUFFER_VIEW vbv;
         vbv.BufferLocation = vertexBuffer->VertexBufferGPU->GetGPUVirtualAddress();
-        vbv.StrideInBytes = vertexBuffer->VertexByteStride;
-        vbv.SizeInBytes = vertexBuffer->VertexBufferByteSize;
+        vbv.StrideInBytes = (mesh->meshData->GetVertexBuffers()[0].get())->GetStride();
+        vbv.SizeInBytes = (mesh->meshData->GetVertexBuffers()[0].get())->GetCount();
 
         D3D12_INDEX_BUFFER_VIEW ibv;
         ibv.BufferLocation = indexBuffer->IndexBufferGPU->GetGPUVirtualAddress();
@@ -316,9 +316,6 @@ namespace Hazel
 
         m_CommandList->SetGraphicsRootDescriptorTable(0, d3dCbvHeap->GetGPUDescriptorHandleForHeapStart());
 
-        /*m_CommandList->DrawIndexedInstanced(
-            mBoxGeo->DrawArgs["box"].IndexCount,
-            1, 0, 0, 0);*/
         m_CommandList->DrawInstanced(
             indexBuffer->GetIndexBufferSize(),
             1, 0, 0);

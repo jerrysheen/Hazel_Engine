@@ -123,14 +123,18 @@ namespace Hazel {
 		virtual void Bind() const = 0;
 		virtual void Unbind() const = 0;
 		
-		inline const BufferLayout& GetLayout() { return m_Layout; };
-		inline virtual void SetLayout(const BufferLayout& layout) = 0;
+		//inline const BufferLayout& GetLayout() { return m_Layout; };
+		//inline virtual void SetLayout(const BufferLayout& layout) = 0;
 		inline const uint32_t GetBufferSize() { return m_BufferSize; };
+		inline uint32_t GetCount() const { return m_BufferSize; }
+		inline uint32_t GetStride() const { return m_BufferStride; }
+		inline const int SetStride(uint32_t stride) { m_BufferStride = stride; }
+		inline const int SetSize(uint32_t size) { m_BufferSize = size; }
 
-		static Ref<VertexBuffer> Create(float* vertices, uint32_t size);
+		static Ref<VertexBuffer> Create(float* vertices, uint32_t size, uint32_t stride);
 	protected:
-		BufferLayout m_Layout;
 		uint32_t m_BufferSize;
+		uint32_t m_BufferStride;
 	};
 
 	class IndexBuffer 

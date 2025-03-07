@@ -1,6 +1,22 @@
 Hazel Engine Structure
 
-- **Hazel**：
+项目结构：
+/
+  /3rdTools - 第三方工具
+  /AI - AI相关文档和配置
+  /bin - 编译输出目录
+  /bin-int - 中间文件目录
+  /build_scripts - 构建脚本
+  /ReadMe - 文档
+  /vendor - 第三方库源码
+  .gitignore
+  .gitmodules
+  LICENSE
+  README.md
+  premake5.lua - 项目生成配置文件
+  Hazel.sln - Visual Studio解决方案文件
+
+- **Hazel**：核心引擎项目
   - **Core**：引擎的核心模块，负责基本的引擎功能和架构。
     - `Application.h/cpp` - 应用程序基类，处理主循环和层管理
     - `Layer.h/cpp` - 抽象层系统，用于组织代码和功能模块
@@ -61,7 +77,7 @@ Hazel Engine Structure
     - `D3D12Texture.h/cpp` - DirectX纹理实现
     - `D3D12RendererAPI.h/cpp` - DirectX渲染API实现
 
-- **Hazelnut**：
+- **Hazelnut**：编辑器项目
   - **Editor**：提供图形用户界面，用于编辑和管理游戏资源。
     - `HazelEditorApp.cpp` - 编辑器应用程序入口
     - `EditorLayer.h/cpp` - 编辑器主层
@@ -83,6 +99,17 @@ Hazel Engine Structure
   - **Tools**：编辑器工具。
     - `SceneSerializer.h/cpp` - 场景序列化工具
     - `ProjectManager.h/cpp` - 项目管理工具
+
+- **Sandbox**：示例项目
+  - 用于测试和展示引擎功能的示例应用程序
+  - 包含各种演示场景和测试用例
+
+依赖项目：
+- GLFW - 跨平台窗口和输入管理
+- Glad - OpenGL加载器
+- ImGui - 即时模式GUI库
+- assimp - 3D模型导入库
+- boost - C++通用工具库
 
 文件组织结构:
 /Hazel

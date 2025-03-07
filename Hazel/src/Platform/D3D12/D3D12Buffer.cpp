@@ -52,8 +52,10 @@ namespace Hazel
     }
 
     
-    D3D12VertexBuffer::D3D12VertexBuffer(float* vertices, uint32_t size)
+    D3D12VertexBuffer::D3D12VertexBuffer(float* vertices, uint32_t size, uint32_t stride)
     {
+        m_BufferSize = size;
+		m_BufferStride = stride;
         D3D12RenderAPIManager* renderAPIManager = dynamic_cast<D3D12RenderAPIManager*>(RenderAPIManager::getInstance()->GetManager().get());
         Microsoft::WRL::ComPtr<ID3D12CommandQueue> commandQueue = renderAPIManager->GetCommandQueue();
         Microsoft::WRL::ComPtr<ID3D12Device> device = renderAPIManager->GetD3DDevice();
@@ -72,8 +74,6 @@ namespace Hazel
         VertexBufferGPU = d3dUtil::CreateDefaultBuffer(device.Get(),
             m_CommandList.Get(), vertices, vbByteSize, VertexBufferUploader);
         // 此时可能为空
-        VertexByteStride = m_Layout.GetStride();
-        VertexBufferByteSize = size;
 
         CommandPool::getInstance()->RecycleCommand(cmdList);
         ID3D12CommandList* rawCommandList = m_CommandList.Get();
@@ -105,31 +105,18 @@ namespace Hazel
     //    D3D12_INPUT_CLASSIFICATION InputSlotClass;        // 输入槽分类
     //    UINT                       InstanceDataStepRate;  // 实例数据步进率
     //} D3D12_INPUT_ELEMENT_DESC;
-    void D3D12VertexBuffer::SetLayout(const BufferLayout& layout)
-    {
-        m_Layout = layout;
-        VertexByteStride = layout.GetStride();
-        // Data about the buffers.
-        for (int i = 0; i < m_Layout.GetCount(); i++)
-        {
-            auto& element = m_Layout.GetElements()[i];
-            m_D3DInputLayout.push_back(D3D12_INPUT_ELEMENT_DESC{ element.Name.c_str(), 0, GetLayOutFormat(element.Type), 0, element.Offset, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA ,0 });
-        }
-    }
+    //void D3D12VertexBuffer::SetLayout(const BufferLayout& layout)
+    //{
+    //    //m_Layout = layout;
+    //    //VertexByteStride = layout.GetStride();
+    //    //// Data about the buffers.
+    //    //for (int i = 0; i < m_Layout.GetCount(); i++)
+    //    //{
+    //    //    auto& element = m_Layout.GetElements()[i];
+    //    //    m_D3DInputLayout.push_back(D3D12_INPUT_ELEMENT_DESC{ element.Name.c_str(), 0, GetLayOutFormat(element.Type), 0, element.Offset, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA ,0 });
+    //    //}
+    //}
 
-    DXGI_FORMAT D3D12VertexBuffer::GetLayOutFormat(const ShaderDataType& type)
-    {
-        switch (type)
-        {
-        case ShaderDataType::Float2: return DXGI_FORMAT_R32G32_FLOAT;
-        case ShaderDataType::Float3: return DXGI_FORMAT_R32G32B32_FLOAT;
-        case ShaderDataType::Float4: return DXGI_FORMAT_R32G32B32A32_FLOAT;
-        default:
-            HZ_CORE_ERROR("This Format are not implemented yet.");
-            break;
-        }
-        return DXGI_FORMAT();
-    }
 
     D3D12IndexBuffer::D3D12IndexBuffer(uint16_t* indices, uint32_t size)
     {

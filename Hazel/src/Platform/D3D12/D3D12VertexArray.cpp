@@ -22,8 +22,8 @@ namespace Hazel
 
 	void D3D12VertexArray::AddVertexBuffer(const Ref<VertexBuffer>& vertexBuffer)
 	{
-		// add的时候，相当于将数据上传gpu的过程，这个地方应不应该写一个view呢？ 应该是要的，
-		// 后面bind的时候其实就是bind desc
+		// add锟斤拷时锟斤拷锟洁当锟节斤拷锟斤拷锟斤拷锟较达拷gpu锟侥癸拷锟教ｏ拷锟斤拷锟斤拷胤锟接︼拷锟接︼拷锟叫匆伙拷锟絭iew锟截ｏ拷 应锟斤拷锟斤拷要锟侥ｏ拷
+		// 锟斤拷锟斤拷bind锟斤拷时锟斤拷锟斤拷实锟斤拷锟斤拷bind desc
 		m_VertexBuffers.push_back(vertexBuffer);
 	}
 
@@ -31,4 +31,31 @@ namespace Hazel
 	{
 		m_IndexBuffer = indexBuffer;
 	}
+
+	void D3D12VertexArray::SetLayout(const BufferLayout& layout)
+	{
+		m_Layout = layout;
+		VertexByteStride = layout.GetStride();
+		// Data about the buffers.
+		for (int i = 0; i < m_Layout.GetCount(); i++)
+		{
+			auto& element = m_Layout.GetElements()[i];
+			m_D3DInputLayout.push_back(D3D12_INPUT_ELEMENT_DESC{ element.Name.c_str(), 0, GetLayOutFormat(element.Type), 0, element.Offset, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA ,0 });
+		}
+	}
+
+	DXGI_FORMAT D3D12VertexArray::GetLayOutFormat(const ShaderDataType& type)
+	{
+		switch (type)
+		{
+		case ShaderDataType::Float2: return DXGI_FORMAT_R32G32_FLOAT;
+		case ShaderDataType::Float3: return DXGI_FORMAT_R32G32B32_FLOAT;
+		case ShaderDataType::Float4: return DXGI_FORMAT_R32G32B32A32_FLOAT;
+		default:
+			HZ_CORE_ERROR("This Format are not implemented yet.");
+			break;
+		}
+		return DXGI_FORMAT();
+	}
+
 }

@@ -7,13 +7,13 @@
 #include "Platform/D3D12/D3D12Buffer.h"
 #include "Platform/D3D12/D3D12ConstantBuffer.h"
 namespace Hazel {
-	Ref<VertexBuffer> VertexBuffer::Create(float* vertices, uint32_t size)
+	Ref<VertexBuffer> VertexBuffer::Create(float* vertices, uint32_t size, uint32_t stride)
 	{
 		switch (RenderAPI::GetAPI())
 		{
 		case RenderAPI::API::None: HZ_CORE_ASSERT(false, "RenderAPI::None is currently not supported"); break;
-		case RenderAPI::API::OpenGL: return std::make_shared<OpenGLVertexBuffer>(vertices, size); break;
-		case RenderAPI::API::DirectX12: return std::make_shared<D3D12VertexBuffer>(vertices, size); break;
+		case RenderAPI::API::OpenGL: return std::make_shared<OpenGLVertexBuffer>(vertices, size, stride); break;
+		case RenderAPI::API::DirectX12: return std::make_shared<D3D12VertexBuffer>(vertices, size, stride); break;
 
 		}
 		HZ_CORE_ASSERT(false, "Unknowed API...");

@@ -21,5 +21,9 @@ namespace Hazel {
 
 		static Ref<VertexArray> Create();
 
+		inline virtual void SetLayout(const BufferLayout& layout) = 0;
+	protected:
+		BufferLayout m_Layout;
+
 	};
 }
