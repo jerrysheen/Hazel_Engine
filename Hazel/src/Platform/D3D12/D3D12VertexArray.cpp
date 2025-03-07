@@ -40,7 +40,7 @@ namespace Hazel
 		for (int i = 0; i < m_Layout.GetCount(); i++)
 		{
 			auto& element = m_Layout.GetElements()[i];
-			m_D3DInputLayout.push_back(D3D12_INPUT_ELEMENT_DESC{ element.Name.c_str(), 0, GetLayOutFormat(element.Type), 0, element.Offset, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA ,0 });
+			m_D3DInputLayout.push_back(D3D12_INPUT_ELEMENT_DESC{ element.Name.c_str(), element.CoordIndex, GetLayOutFormat(element.Type), 0, element.Offset, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA ,0 });
 		}
 	}
 

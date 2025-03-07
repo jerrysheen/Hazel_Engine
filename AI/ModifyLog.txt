@@ -1,0 +1,16 @@
+日期: 2025年03月08日
+Commit Hash: b3bdca671dac0efa3f02f6260421188b1bd326c4
+
+# 提交信息
+
+refactor(Renderer): 重构顶点属性系统支持语义索引
+
+增加BufferElement的CoordIndex字段用于支持带索引的语义（如TEXCOORD0、TEXCOORD1）。
+移除了SceneViewLayer中硬编码的输入布局，改为从网格顶点数组中获取。
+修改相关构造函数和方法支持新的协调索引字段。
+
+- 在Buffer.h中添加CoordIndex字段及更新构造函数
+- 在D3D12VertexArray中使用元素的CoordIndex
+- 在D3D12VertexArray中添加GetInputLayout()方法
+- 修改Mesh.cpp中的布局定义包含协调索引
+- 重构SceneViewLayer使用顶点数组的输入布局而非硬编码布局 

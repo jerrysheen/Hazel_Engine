@@ -36,13 +36,12 @@ namespace Hazel
 		bufferStride = 17 * sizeof(float);
 		vertexBuffer = (VertexBuffer::Create(p, vertexData.size() * sizeof(float), bufferStride));
 		meshData->SetLayout({
-				{ ShaderDataType::Float3, "POSITION" },
-				{ ShaderDataType::Float3, "NORMAL" },
-				{ ShaderDataType::Float3, "TANGENT" },
-				{ ShaderDataType::Float2, "TEXCOORD" },
-				{ ShaderDataType::Float2, "TEXCOORD" },
-				{ ShaderDataType::Float4, "COLOR" }
-
+				{ ShaderDataType::Float3, "POSITION",0 },
+				{ ShaderDataType::Float3, "NORMAL",0 },
+				{ ShaderDataType::Float3, "TANGENT",0 },
+				{ ShaderDataType::Float2, "TEXCOORD",0 },
+				{ ShaderDataType::Float2, "TEXCOORD",1 },
+				{ ShaderDataType::Float4, "COLOR",0 }
 			});
 		meshData->AddVertexBuffer(vertexBuffer);
 

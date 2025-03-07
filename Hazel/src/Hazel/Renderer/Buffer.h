@@ -51,11 +51,12 @@ namespace Hazel {
 		uint32_t Size;
 		uint32_t Offset;
 		bool Normalized;
+		uint32_t CoordIndex;
 
 		BufferElement() {}
 
-		BufferElement(ShaderDataType type,const std::string& name, bool normalized = false)
-			: Name(name), Type(type), Size(GetShdaerDataTypeSize(type)), Offset(0), Normalized(normalized)
+		BufferElement(ShaderDataType type,const std::string& name,uint32_t coordIndex, bool normalized = false)
+			: Name(name), Type(type), Size(GetShdaerDataTypeSize(type)), Offset(0), Normalized(normalized), CoordIndex(coordIndex)
 		{
 		}
 

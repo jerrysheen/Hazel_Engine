@@ -7,6 +7,7 @@
 #include "Hazel/Gfx/GfxDesc.h"
 #include "Hazel/Gfx/GfxDesc.h"
 #include "Platform/D3D12/D3D12Buffer.h"
+#include "Platform/D3D12/D3D12VertexArray.h"
 
 
 
@@ -57,16 +58,6 @@ namespace Hazel
         m_PbrShader = Shader::Create("assets/shaders/color.hlsl");
         mvsByteCode = d3dUtil::CompileShader(L"assets/shaders/color.hlsl", nullptr, "VS", "vs_5_0");
         mpsByteCode = d3dUtil::CompileShader(L"assets/shaders/color.hlsl", nullptr, "PS", "ps_5_0");
-
-        mInputLayout =
-        {
-            { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
-            { "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
-            { "TANGENT", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 24, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
-            { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 36, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
-            { "TEXCOORD", 1, DXGI_FORMAT_R32G32_FLOAT, 0, 44, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
-            { "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 52, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }
-        };
 
 
 
@@ -120,7 +111,10 @@ namespace Hazel
         ZeroMemory(&psoDesc, sizeof(D3D12_GRAPHICS_PIPELINE_STATE_DESC));
         
         
-        psoDesc.InputLayout = { mInputLayout.data(), (UINT)mInputLayout.size() };
+        D3D12VertexArray* vertexArray = dynamic_cast<D3D12VertexArray*>
+            (mesh->meshData.get());
+		mInputLayout = vertexArray->GetInputLayout();
+        psoDesc.InputLayout = { mInputLayout.data(), (UINT)mInputLayout.size()};
         psoDesc.pRootSignature = mRootSignature.Get();
         psoDesc.VS =
         {

@@ -1,0 +1,78 @@
+[1mdiff --git a/Hazel/src/Hazel/Model/Mesh.cpp b/Hazel/src/Hazel/Model/Mesh.cpp[m
+[1mindex 6b90d0c9..1d448a76 100644[m
+[1m--- a/Hazel/src/Hazel/Model/Mesh.cpp[m
+[1m+++ b/Hazel/src/Hazel/Model/Mesh.cpp[m
+[36m@@ -36,13 +36,12 @@[m [mnamespace Hazel[m
+ 		bufferStride = 17 * sizeof(float);[m
+ 		vertexBuffer = (VertexBuffer::Create(p, vertexData.size() * sizeof(float), bufferStride));[m
+ 		meshData->SetLayout({[m
+[31m-				{ ShaderDataType::Float3, "POSITION" },[m
+[31m-				{ ShaderDataType::Float3, "NORMAL" },[m
+[31m-				{ ShaderDataType::Float3, "TANGENT" },[m
+[31m-				{ ShaderDataType::Float2, "TEXCOORD" },[m
+[31m-				{ ShaderDataType::Float2, "TEXCOORD" },[m
+[31m-				{ ShaderDataType::Float4, "COLOR" }[m
+[31m-[m
+[32m+[m				[32m{ ShaderDataType::Float3, "POSITION",0 },[m
+[32m+[m				[32m{ ShaderDataType::Float3, "NORMAL",0 },[m
+[32m+[m				[32m{ ShaderDataType::Float3, "TANGENT",0 },[m
+[32m+[m				[32m{ ShaderDataType::Float2, "TEXCOORD",0 },[m
+[32m+[m				[32m{ ShaderDataType::Float2, "TEXCOORD",1 },[m
+[32m+[m				[32m{ ShaderDataType::Float4, "COLOR",0 }[m
+ 			});[m
+ 		meshData->AddVertexBuffer(vertexBuffer);[m
+ [m
+[1mdiff --git a/Hazel/src/Hazel/Renderer/Buffer.h b/Hazel/src/Hazel/Renderer/Buffer.h[m
+[1mindex 4de8cdd1..f7ba124d 100644[m
+[1m--- a/Hazel/src/Hazel/Renderer/Buffer.h[m
+[1m+++ b/Hazel/src/Hazel/Renderer/Buffer.h[m
+[36m@@ -51,11 +51,12 @@[m [mnamespace Hazel {[m
+ 		uint32_t Size;[m
+ 		uint32_t Offset;[m
+ 		bool Normalized;[m
+[32m+[m		[32muint32_t CoordIndex;[m
+ [m
+ 		BufferElement() {}[m
+ [m
+[31m-		BufferElement(ShaderDataType type,const std::string& name, bool normalized = false)[m
+[31m-			: Name(name), Type(type), Size(GetShdaerDataTypeSize(type)), Offset(0), Normalized(normalized)[m
+[32m+[m		[32mBufferElement(ShaderDataType type,const std::string& name,uint32_t coordIndex, bool normalized = false)[m
+[32m+[m			[32m: Name(name), Type(type), Size(GetShdaerDataTypeSize(type)), Offset(0), Normalized(normalized), CoordIndex(coordIndex)[m
+ 		{[m
+ 		}[m
+ [m
+[1mdiff --git a/Hazel/src/Platform/D3D12/D3D12VertexArray.cpp b/Hazel/src/Platform/D3D12/D3D12VertexArray.cpp[m
+[1mindex ab5ed8cb..bf18a869 100644[m
+[1m--- a/Hazel/src/Platform/D3D12/D3D12VertexArray.cpp[m
+[1m+++ b/Hazel/src/Platform/D3D12/D3D12VertexArray.cpp[m
+[36m@@ -40,7 +40,7 @@[m [mnamespace Hazel[m
+ 		for (int i = 0; i < m_Layout.GetCount(); i++)[m
+ 		{[m
+ 			auto& element = m_Layout.GetElements()[i];[m
+[31m-			m_D3DInputLayout.push_back(D3D12_INPUT_ELEMENT_DESC{ element.Name.c_str(), 0, GetLayOutFormat(element.Type), 0, element.Offset, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA ,0 });[m
+[32m+[m			[32mm_D3DInputLayout.push_back(D3D12_INPUT_ELEMENT_DESC{ element.Name.c_str(), element.CoordIndex, GetLayOutFormat(element.Type), 0, element.Offset, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA ,0 });[m
+ 		}[m
+ 	}[m
+ [m
+[1mdiff --git a/Hazel/src/Platform/D3D12/D3D12VertexArray.h b/Hazel/src/Platform/D3D12/D3D12VertexArray.h[m
+[1mindex 28abb9a0..fc5c59ee 100644[m
+[1m--- a/Hazel/src/Platform/D3D12/D3D12VertexArray.h[m
+[1m+++ b/Hazel/src/Platform/D3D12/D3D12VertexArray.h[m
+[36m@@ -22,6 +22,7 @@[m [mnamespace Hazel {[m
+ 		virtual const std::vector<Ref<VertexBuffer>>& GetVertexBuffers() const override { return m_VertexBuffers; }[m
+ 		virtual const Ref<IndexBuffer>& GetIndexBuffer() const override { return m_IndexBuffer; };[m
+ [m
+[32m+[m		[32mvirtual const std::vector<D3D12_INPUT_ELEMENT_DESC>& GetInputLayout() const { return m_D3DInputLayout; }[m
+ 	private:[m
+ 		DXGI_FORMAT GetLayOutFormat(const ShaderDataType& type);[m
+ [m
+[1mdiff --git a/Hazel/vendor/GLFW b/Hazel/vendor/GLFW[m
+[1m--- a/Hazel/vendor/GLFW[m
+[1m+++ b/Hazel/vendor/GLFW[m
+[36m@@ -1 +1 @@[m
+[31m-Subproject commit 1a3b9eacfc729503d54d127ff4afe394947e4d61[m
+[32m+[m[32mSubproject commit 1a3b9eacfc729503d54d127ff4afe394947e4d61-dirty[m
+[1mdiff --git a/Hazel/vendor/glm b/Hazel/vendor/glm[m
+[1m--- a/Hazel/vendor/glm[m
+[1m+++ b/Hazel/vendor/glm[m
+[36m@@ -1 +1 @@

@@ -22,6 +22,7 @@ namespace Hazel {
 		virtual const std::vector<Ref<VertexBuffer>>& GetVertexBuffers() const override { return m_VertexBuffers; }
 		virtual const Ref<IndexBuffer>& GetIndexBuffer() const override { return m_IndexBuffer; };
 
+		virtual const std::vector<D3D12_INPUT_ELEMENT_DESC>& GetInputLayout() const { return m_D3DInputLayout; }
 	private:
 		DXGI_FORMAT GetLayOutFormat(const ShaderDataType& type);
 
