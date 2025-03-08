@@ -1,0 +1,763 @@
+# 基于相机的渲染系统 API 伪代码
+
+## 应用层示例 (EditorLayer)
+
+```cpp
+// 编辑器层初始化
+void EditorLayer::OnAttach()
+{
+    // 创建场景
+    m_ActiveScene = CreateRef<Scene>();
+    
+    // 创建编辑器相机
+    m_EditorCamera = CreateRef<EditorCamera>(45.0f, 1.778f, 0.1f, 1000.0f);
+    
+    // 创建场景视图渲染目标
+    FramebufferSpecification fbSpec;
+    fbSpec.Width = 1280;
+    fbSpec.Height = 720;
+    fbSpec.Attachments = { FramebufferTextureFormat::RGBA8, FramebufferTextureFormat::Depth };
+    m_SceneViewFramebuffer = Framebuffer::Create(fbSpec);
+    
+    // 配置编辑器相机渲染器
+    m_EditorCameraRenderer = CreateRef<CameraRenderer>(m_EditorCamera);
+    m_EditorCameraRenderer->SetRenderTarget(m_SceneViewFramebuffer);
+    
+    // 添加标准渲染特性
+    m_EditorCameraRenderer->AddRenderFeature<OpaqueRenderFeature>();
+    m_EditorCameraRenderer->AddRenderFeature<SkyboxRenderFeature>();
+    m_EditorCameraRenderer->AddRenderFeature<TransparentRenderFeature>();
+    
+    // 添加编辑器特定的渲染特性
+    m_EditorCameraRenderer->AddRenderFeature<GridRenderFeature>();
+    m_EditorCameraRenderer->AddRenderFeature<GizmoRenderFeature>();
+    m_EditorCameraRenderer->AddRenderFeature<SelectionOutlineFeature>();
+    
+    // 创建游戏对象
+    auto cube = m_ActiveScene->CreateEntity("Cube");
+    cube.AddComponent<MeshRendererComponent>(PrimitiveType::Cube);
+    cube.AddComponent<MaterialComponent>(Material::Create("assets/materials/standard.mat"));
+    
+    auto directionalLight = m_ActiveScene->CreateEntity("Directional Light");
+    directionalLight.AddComponent<DirectionalLightComponent>();
+    
+    // 注册资源管理器事件
+    AssetManager::Get().OnAssetImport.Connect([this](AssetHandle asset) {
+        if (Asset::GetType(asset) == AssetType::Mesh) {
+            // 自动为导入的网格创建实体
+            auto entity = m_ActiveScene->CreateEntity(Asset::GetName(asset));
+            entity.AddComponent<MeshRendererComponent>(asset);
+            entity.AddComponent<MaterialComponent>(Material::GetDefault());
+        }
+    });
+    
+    // 创建游戏视角相机
+    auto cameraEntity = m_ActiveScene->CreateEntity("Main Camera");
+    cameraEntity.AddComponent<CameraComponent>();
+    cameraEntity.AddComponent<TransformComponent>(glm::vec3(0.0f, 2.0f, 5.0f));
+    
+    // 为游戏相机添加后处理效果
+    auto& cameraComp = cameraEntity.GetComponent<CameraComponent>();
+    cameraComp.PostProcessStack.AddEffect<BloomEffect>();
+    cameraComp.PostProcessStack.AddEffect<TonemappingEffect>();
+}
+
+// 编辑器层更新
+void EditorLayer::OnUpdate(float deltaTime)
+{
+    // 处理编辑器相机输入和更新
+    m_EditorCamera->OnUpdate(deltaTime);
+    
+    // 调整帧缓冲大小（如果窗口调整大小）
+    if (FramebufferSpecification spec = m_SceneViewFramebuffer->GetSpecification();
+        m_ViewportSize.x > 0.0f && m_ViewportSize.y > 0.0f &&
+        (spec.Width != m_ViewportSize.x || spec.Height != m_ViewportSize.y))
+    {
+        m_SceneViewFramebuffer->Resize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
+    }
+    
+    // 更新场景
+    m_ActiveScene->OnUpdate(deltaTime);
+    
+    // 渲染编辑器视图
+    m_EditorCameraRenderer->Render(m_ActiveScene);
+    
+    // 如果在游戏模式下，也渲染游戏视图
+    if (m_GameMode)
+    {
+        // 查找主相机并渲染到游戏视图
+        auto view = m_ActiveScene->GetRegistry().view<CameraComponent, TransformComponent>();
+        if (!view.empty())
+        {
+            auto [camera, transform] = view.get<CameraComponent, TransformComponent>(*view.begin());
+            
+            // 确保游戏视图帧缓冲存在且大小正确
+            if (!m_GameViewFramebuffer || 
+                m_GameViewFramebuffer->GetSpecification().Width != m_GameViewSize.x ||
+                m_GameViewFramebuffer->GetSpecification().Height != m_GameViewSize.y)
+            {
+                FramebufferSpecification fbSpec;
+                fbSpec.Width = (uint32_t)m_GameViewSize.x;
+                fbSpec.Height = (uint32_t)m_GameViewSize.y;
+                fbSpec.Attachments = { FramebufferTextureFormat::RGBA8, FramebufferTextureFormat::Depth };
+                m_GameViewFramebuffer = Framebuffer::Create(fbSpec);
+                
+                // 更新相机的渲染目标
+                camera.Renderer->SetRenderTarget(m_GameViewFramebuffer);
+            }
+            
+            // 渲染游戏视图
+            camera.Renderer->Render(m_ActiveScene);
+        }
+    }
+}
+
+// 编辑器UI渲染
+void EditorLayer::OnImGuiRender()
+{
+    // 场景视图窗口
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{ 0, 0 });
+    ImGui::Begin("Scene");
+    
+    m_ViewportSize = { ImGui::GetContentRegionAvail().x, ImGui::GetContentRegionAvail().y };
+    
+    // 在ImGui中显示渲染的场景视图
+    uint32_t textureID = m_SceneViewFramebuffer->GetColorAttachmentRendererID();
+    ImGui::Image((void*)textureID, m_ViewportSize, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
+    
+    ImGui::End();
+    ImGui::PopStyleVar();
+    
+    // 游戏视图窗口（如果在游戏模式下）
+    if (m_GameMode)
+    {
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{ 0, 0 });
+        ImGui::Begin("Game");
+        
+        m_GameViewSize = { ImGui::GetContentRegionAvail().x, ImGui::GetContentRegionAvail().y };
+        
+        // 显示游戏视图
+        if (m_GameViewFramebuffer)
+        {
+            uint32_t textureID = m_GameViewFramebuffer->GetColorAttachmentRendererID();
+            ImGui::Image((void*)textureID, m_GameViewSize, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
+        }
+        
+        ImGui::End();
+        ImGui::PopStyleVar();
+    }
+    
+    // 场景层级窗口
+    ImGui::Begin("Scene Hierarchy");
+    m_ActiveScene->OnImGuiRender();
+    ImGui::End();
+    
+    // 检查器窗口
+    ImGui::Begin("Inspector");
+    if (m_SelectedEntity)
+    {
+        DrawEntityComponents(m_SelectedEntity);
+    }
+    ImGui::End();
+}
+```
+
+## 相机组件与渲染器
+
+```cpp
+// 相机组件
+struct CameraComponent
+{
+    Camera Camera;                           // 相机数据（FOV, 近远平面等）
+    Ref<CameraRenderer> Renderer;            // 相机渲染器
+    Ref<PostProcessStack> PostProcessStack;  // 后处理堆栈
+    bool Primary = true;                     // 是否为主相机
+    bool FixedAspectRatio = false;           // 是否固定长宽比
+    
+    CameraComponent()
+    {
+        // 创建默认渲染器
+        Renderer = CreateRef<CameraRenderer>();
+        
+        // 添加标准渲染特性
+        Renderer->AddRenderFeature<OpaqueRenderFeature>();
+        Renderer->AddRenderFeature<SkyboxRenderFeature>();
+        Renderer->AddRenderFeature<TransparentRenderFeature>();
+        
+        // 创建后处理堆栈
+        PostProcessStack = CreateRef<PostProcessStack>();
+    }
+    
+    // 其他相机组件方法...
+};
+
+// 相机渲染器类
+class CameraRenderer
+{
+public:
+    CameraRenderer(const Ref<Camera>& camera = nullptr)
+        : m_Camera(camera)
+    {
+        // 默认渲染到屏幕后缓冲（如果没有设置其他渲染目标）
+        m_RenderTarget = nullptr; // nullptr表示渲染到屏幕
+    }
+    
+    void SetRenderTarget(const Ref<Framebuffer>& renderTarget)
+    {
+        m_RenderTarget = renderTarget;
+    }
+    
+    template<typename T, typename... Args>
+    Ref<T> AddRenderFeature(Args&&... args)
+    {
+        static_assert(std::is_base_of<RenderFeature, T>::value, "Class must derive from RenderFeature!");
+        
+        Ref<T> feature = CreateRef<T>(std::forward<Args>(args)...);
+        m_RenderFeatures.push_back(feature);
+        
+        // 按照渲染顺序排序
+        std::sort(m_RenderFeatures.begin(), m_RenderFeatures.end(),
+            [](const Ref<RenderFeature>& a, const Ref<RenderFeature>& b) {
+                return a->GetExecutionOrder() < b->GetExecutionOrder();
+            });
+            
+        return feature;
+    }
+    
+    void RemoveRenderFeature(const Ref<RenderFeature>& feature)
+    {
+        auto it = std::find(m_RenderFeatures.begin(), m_RenderFeatures.end(), feature);
+        if (it != m_RenderFeatures.end())
+            m_RenderFeatures.erase(it);
+    }
+    
+    void Render(const Ref<Scene>& scene)
+    {
+        // 准备渲染上下文
+        RenderContext context;
+        context.Camera = m_Camera;
+        context.Scene = scene;
+        context.RenderTarget = m_RenderTarget;
+        
+        // 收集场景中的可见对象
+        CullVisibleObjects(context);
+        
+        // 绑定渲染目标
+        if (m_RenderTarget)
+            m_RenderTarget->Bind();
+        else
+            RenderBackend::BindDefaultFramebuffer();
+        
+        // 执行所有渲染特性
+        for (auto& feature : m_RenderFeatures)
+        {
+            if (feature->IsEnabled())
+                feature->Execute(context);
+        }
+        
+        // 如果有后处理效果，则应用
+        if (context.PostProcessStack && !context.PostProcessStack->IsEmpty())
+        {
+            context.PostProcessStack->Execute(context);
+        }
+        
+        // 解绑渲染目标
+        if (m_RenderTarget)
+            m_RenderTarget->Unbind();
+    }
+    
+private:
+    void CullVisibleObjects(RenderContext& context)
+    {
+        // 创建相机视锥体
+        Frustum cameraFrustum = m_Camera->GetFrustum();
+        
+        // 从场景中收集可见对象
+        auto view = context.Scene->GetRegistry().view<TransformComponent, MeshRendererComponent>();
+        
+        for (auto entity : view)
+        {
+            auto [transform, meshRenderer] = view.get<TransformComponent, MeshRendererComponent>(entity);
+            
+            // 获取包围盒进行视锥体剔除
+            BoundingBox boundingBox = meshRenderer.Mesh->GetBoundingBox().Transform(transform.GetTransform());
+            
+            if (cameraFrustum.Intersects(boundingBox))
+            {
+                // 获取材质
+                MaterialComponent* materialComp = context.Scene->GetRegistry().try_get<MaterialComponent>(entity);
+                Ref<Material> material = materialComp ? materialComp->Material : Material::GetDefault();
+                
+                // 创建渲染项并添加到上下文
+                RenderItem item;
+                item.Entity = Entity{ entity, context.Scene.get() };
+                item.Mesh = meshRenderer.Mesh;
+                item.Material = material;
+                item.Transform = transform.GetTransform();
+                item.BoundingBox = boundingBox;
+                item.RenderLayer = meshRenderer.RenderLayer;
+                
+                // 根据材质属性确定渲染队列
+                if (material->GetRenderType() == MaterialRenderType::Transparent)
+                    context.TransparentQueue.push_back(item);
+                else
+                    context.OpaqueQueue.push_back(item);
+            }
+        }
+        
+        // 对不透明队列按前到后排序（优化过度绘制）
+        std::sort(context.OpaqueQueue.begin(), context.OpaqueQueue.end(),
+            [&camera = m_Camera](const RenderItem& a, const RenderItem& b) {
+                float distA = glm::length2(camera->GetPosition() - a.BoundingBox.GetCenter());
+                float distB = glm::length2(camera->GetPosition() - b.BoundingBox.GetCenter());
+                return distA < distB;
+            });
+            
+        // 对透明队列按后到前排序
+        std::sort(context.TransparentQueue.begin(), context.TransparentQueue.end(),
+            [&camera = m_Camera](const RenderItem& a, const RenderItem& b) {
+                float distA = glm::length2(camera->GetPosition() - a.BoundingBox.GetCenter());
+                float distB = glm::length2(camera->GetPosition() - b.BoundingBox.GetCenter());
+                return distA > distB;
+            });
+            
+        // 收集光源
+        auto lightView = context.Scene->GetRegistry().view<TransformComponent, LightComponent>();
+        for (auto entity : lightView)
+        {
+            auto [transform, light] = lightView.get<TransformComponent, LightComponent>(entity);
+            
+            LightData lightData;
+            lightData.Entity = Entity{ entity, context.Scene.get() };
+            lightData.Position = glm::vec3(transform.GetTransform()[3]);
+            lightData.Direction = glm::normalize(glm::vec3(transform.GetTransform() * glm::vec4(0.0f, 0.0f, -1.0f, 0.0f)));
+            lightData.Color = light.Color;
+            lightData.Intensity = light.Intensity;
+            lightData.Type = light.Type;
+            lightData.Range = light.Range;
+            lightData.SpotAngle = light.SpotAngle;
+            
+            context.Lights.push_back(lightData);
+        }
+    }
+    
+private:
+    Ref<Camera> m_Camera;
+    Ref<Framebuffer> m_RenderTarget;
+    std::vector<Ref<RenderFeature>> m_RenderFeatures;
+};
+```
+
+## 渲染特性 (RenderFeature)
+
+```cpp
+// 渲染上下文
+struct RenderContext
+{
+    Ref<Camera> Camera;
+    Ref<Scene> Scene;
+    Ref<Framebuffer> RenderTarget;
+    Ref<PostProcessStack> PostProcessStack;
+    
+    // 渲染队列
+    std::vector<RenderItem> OpaqueQueue;
+    std::vector<RenderItem> TransparentQueue;
+    std::vector<LightData> Lights;
+    
+    // 渲染缓冲和状态
+    Ref<Texture2D> DepthTexture;
+    Ref<Texture2D> NormalTexture;
+    std::unordered_map<std::string, Ref<Texture2D>> GBuffers;
+};
+
+// 渲染特性基类
+class RenderFeature
+{
+public:
+    virtual ~RenderFeature() = default;
+    
+    virtual void Execute(RenderContext& context) = 0;
+    
+    virtual int GetExecutionOrder() const { return m_ExecutionOrder; }
+    virtual void SetExecutionOrder(int order) { m_ExecutionOrder = order; }
+    
+    bool IsEnabled() const { return m_Enabled; }
+    void SetEnabled(bool enabled) { m_Enabled = enabled; }
+    
+protected:
+    int m_ExecutionOrder = 0;
+    bool m_Enabled = true;
+};
+
+// 不透明物体渲染特性
+class OpaqueRenderFeature : public RenderFeature
+{
+public:
+    OpaqueRenderFeature()
+    {
+        // 不透明物体先渲染
+        SetExecutionOrder(100);
+    }
+    
+    virtual void Execute(RenderContext& context) override
+    {
+        // 清除渲染目标
+        RenderBackend::Clear({ 0.1f, 0.1f, 0.1f, 1.0f });
+        
+        // 设置相机和全局着色器变量
+        RenderBackend::SetCamera(context.Camera);
+        
+        // 更新灯光数据
+        RenderBackend::SetLights(context.Lights);
+        
+        // 渲染所有不透明物体
+        for (auto& item : context.OpaqueQueue)
+        {
+            RenderBackend::DrawMesh(item.Mesh, item.Material, item.Transform);
+        }
+    }
+};
+
+// 天空盒渲染特性
+class SkyboxRenderFeature : public RenderFeature
+{
+public:
+    SkyboxRenderFeature()
+    {
+        // 天空盒在不透明物体之后，透明物体之前渲染
+        SetExecutionOrder(200);
+    }
+    
+    virtual void Execute(RenderContext& context) override
+    {
+        // 获取场景的天空盒
+        auto skybox = context.Scene->GetSkybox();
+        
+        // 如果有天空盒则渲染
+        if (skybox)
+        {
+            // 禁用深度写入但启用深度测试
+            RenderBackend::SetDepthState(true, false);
+            
+            // 设置视图矩阵（移除平移部分）
+            glm::mat4 viewWithoutTranslation = glm::mat4(glm::mat3(context.Camera->GetViewMatrix()));
+            RenderBackend::SetViewMatrix(viewWithoutTranslation);
+            
+            // 渲染天空盒
+            RenderBackend::DrawSkybox(skybox);
+            
+            // 恢复深度状态和视图矩阵
+            RenderBackend::SetDepthState(true, true);
+            RenderBackend::SetViewMatrix(context.Camera->GetViewMatrix());
+        }
+    }
+};
+
+// 透明物体渲染特性
+class TransparentRenderFeature : public RenderFeature
+{
+public:
+    TransparentRenderFeature()
+    {
+        // 透明物体最后渲染
+        SetExecutionOrder(300);
+    }
+    
+    virtual void Execute(RenderContext& context) override
+    {
+        // 启用混合
+        RenderBackend::SetBlendState(true);
+        
+        // 渲染所有透明物体（已按照从后到前排序）
+        for (auto& item : context.TransparentQueue)
+        {
+            RenderBackend::DrawMesh(item.Mesh, item.Material, item.Transform);
+        }
+        
+        // 禁用混合
+        RenderBackend::SetBlendState(false);
+    }
+};
+
+// 网格渲染特性 (编辑器专用)
+class GridRenderFeature : public RenderFeature
+{
+public:
+    GridRenderFeature()
+    {
+        // 网格在天空盒之后渲染
+        SetExecutionOrder(250);
+        
+        // 加载网格着色器
+        m_GridShader = Shader::Create("assets/shaders/EditorGrid.glsl");
+    }
+    
+    virtual void Execute(RenderContext& context) override
+    {
+        // 设置网格绘制状态
+        RenderBackend::SetDepthState(true, false);
+        RenderBackend::SetBlendState(true);
+        
+        // 设置网格材质并绘制
+        m_GridShader->Bind();
+        m_GridShader->SetMat4("u_ViewProjection", context.Camera->GetViewProjectionMatrix());
+        m_GridShader->SetFloat("u_GridScale", m_GridScale);
+        m_GridShader->SetFloat3("u_CameraPosition", context.Camera->GetPosition());
+        
+        RenderBackend::DrawFullscreenQuad();
+        
+        // 恢复状态
+        RenderBackend::SetDepthState(true, true);
+        RenderBackend::SetBlendState(false);
+    }
+    
+private:
+    Ref<Shader> m_GridShader;
+    float m_GridScale = 1.0f;
+};
+```
+
+## 后处理堆栈
+
+```cpp
+// 后处理效果基类
+class PostProcessEffect
+{
+public:
+    virtual ~PostProcessEffect() = default;
+    
+    virtual void Execute(RenderContext& context, Ref<Framebuffer> source, Ref<Framebuffer> destination) = 0;
+    
+    virtual int GetExecutionOrder() const { return m_ExecutionOrder; }
+    virtual void SetExecutionOrder(int order) { m_ExecutionOrder = order; }
+    
+    bool IsEnabled() const { return m_Enabled; }
+    void SetEnabled(bool enabled) { m_Enabled = enabled; }
+    
+protected:
+    int m_ExecutionOrder = 0;
+    bool m_Enabled = true;
+};
+
+// 后处理堆栈
+class PostProcessStack
+{
+public:
+    PostProcessStack() = default;
+    
+    template<typename T, typename... Args>
+    Ref<T> AddEffect(Args&&... args)
+    {
+        static_assert(std::is_base_of<PostProcessEffect, T>::value, "Class must derive from PostProcessEffect!");
+        
+        Ref<T> effect = CreateRef<T>(std::forward<Args>(args)...);
+        m_Effects.push_back(effect);
+        
+        // 按照执行顺序排序
+        std::sort(m_Effects.begin(), m_Effects.end(),
+            [](const Ref<PostProcessEffect>& a, const Ref<PostProcessEffect>& b) {
+                return a->GetExecutionOrder() < b->GetExecutionOrder();
+            });
+            
+        return effect;
+    }
+    
+    void RemoveEffect(const Ref<PostProcessEffect>& effect)
+    {
+        auto it = std::find(m_Effects.begin(), m_Effects.end(), effect);
+        if (it != m_Effects.end())
+            m_Effects.erase(it);
+    }
+    
+    bool IsEmpty() const { return m_Effects.empty(); }
+    
+    void Execute(RenderContext& context)
+    {
+        // 如果没有效果，直接返回
+        if (m_Effects.empty())
+            return;
+            
+        // 准备两个帧缓冲用于 ping-pong 渲染
+        auto sourceFramebuffer = context.RenderTarget;
+        
+        // 创建临时帧缓冲用于后处理
+        if (!m_TempFramebuffer || 
+            m_TempFramebuffer->GetSpecification().Width != sourceFramebuffer->GetSpecification().Width || 
+            m_TempFramebuffer->GetSpecification().Height != sourceFramebuffer->GetSpecification().Height)
+        {
+            FramebufferSpecification spec = sourceFramebuffer->GetSpecification();
+            m_TempFramebuffer = Framebuffer::Create(spec);
+        }
+        
+        // 执行所有后处理效果
+        Ref<Framebuffer> source = sourceFramebuffer;
+        Ref<Framebuffer> destination = m_TempFramebuffer;
+        
+        for (size_t i = 0; i < m_Effects.size(); i++)
+        {
+            if (!m_Effects[i]->IsEnabled())
+                continue;
+                
+            // 最后一个效果渲染回原始帧缓冲
+            if (i == m_Effects.size() - 1)
+                destination = sourceFramebuffer;
+                
+            // 执行后处理
+            m_Effects[i]->Execute(context, source, destination);
+            
+            // 交换源和目标帧缓冲
+            if (i < m_Effects.size() - 1)
+                std::swap(source, destination);
+        }
+    }
+    
+private:
+    std::vector<Ref<PostProcessEffect>> m_Effects;
+    Ref<Framebuffer> m_TempFramebuffer;
+};
+
+// 示例后处理效果: Bloom
+class BloomEffect : public PostProcessEffect
+{
+public:
+    BloomEffect()
+    {
+        // 加载泛光着色器
+        m_BloomShader = Shader::Create("assets/shaders/Bloom.glsl");
+        
+        // 设置执行顺序
+        SetExecutionOrder(100);
+    }
+    
+    virtual void Execute(RenderContext& context, Ref<Framebuffer> source, Ref<Framebuffer> destination) override
+    {
+        // 绑定目标帧缓冲
+        destination->Bind();
+        
+        // 设置着色器参数
+        m_BloomShader->Bind();
+        m_BloomShader->SetFloat("u_Threshold", m_Threshold);
+        m_BloomShader->SetFloat("u_Intensity", m_Intensity);
+        
+        // 绑定源纹理
+        source->GetColorAttachmentTexture()->Bind(0);
+        m_BloomShader->SetInt("u_Texture", 0);
+        
+        // 渲染全屏四边形
+        RenderBackend::DrawFullscreenQuad();
+        
+        // 解绑目标帧缓冲
+        destination->Unbind();
+    }
+    
+public:
+    float m_Threshold = 1.0f;
+    float m_Intensity = 0.7f;
+    
+private:
+    Ref<Shader> m_BloomShader;
+};
+```
+
+## 组件交互流程图
+
+```
+[应用层/编辑器层]
+    │
+    ▼
+[场景 (Scene)]
+    │
+    ▼
+[实体 (Entity)]
+    │
+    ▼
+[组件 (Components)]
+    │
+    ├──[相机组件 (CameraComponent)]──►[后处理堆栈 (PostProcessStack)]
+    │          │                        │
+    │          ▼                        ▼
+    │    [相机渲染器 (CameraRenderer)]  [后处理效果 (PostProcessEffects)]
+    │          │
+    │          ▼
+    │    [渲染特性 (RenderFeatures)]
+    │          │
+    │          ▼
+    │    [渲染队列]──────────────────┐
+    │                                │
+    ├──[网格渲染器 (MeshRenderer)]   │
+    │          │                     │
+    │          ▼                     │
+    ├──[材质 (Material)]             │
+    │                                │
+    ├──[变换 (Transform)]            │
+    │                                │
+    └──[灯光 (Light)]                │
+                                     │
+                                     ▼
+                            [渲染后端 (RenderBackend)]
+                                     │
+                                     ▼
+                            [渲染上下文 (RenderContext)]
+                                     │
+                                     ▼
+                            [底层渲染API实现]
+```
+
+## 分层设计
+
+```
++----------------------------------+
+|          应用层 (Application)     |
+|   - 编辑器层                      |
+|   - 游戏层                        |
+|   - 场景管理                      |
++----------------------------------+
+                │
+                ▼
++----------------------------------+
+|          引擎核心层                |
+|   - 实体组件系统                   |
+|   - 资源管理                      |
+|   - 事件系统                      |
++----------------------------------+
+                │
+                ▼
++----------------------------------+
+|       相机渲染系统 (CameraRenderer) |
+|   - 相机管理                      |
+|   - 渲染特性系统                   |
+|   - 后处理系统                    |
++----------------------------------+
+                │
+                ▼
++----------------------------------+
+|        渲染队列 (RenderQueue)     |
+|   - 对象剔除                      |
+|   - 对象排序                      |
+|   - 批处理                        |
++----------------------------------+
+                │
+                ▼
++----------------------------------+
+|    渲染后端层 (RenderBackend)     |
+|   - 渲染上下文                    |
+|   - 资源管理                      |
+|   - 状态管理                      |
++----------------------------------+
+                │
+                ▼
++----------------------------------+
+|        渲染API抽象层              |
+|   - 跨平台抽象                    |
+|   - 资源抽象                      |
+|   - 命令抽象                      |
++----------------------------------+
+                │
+                ▼
++----------------------------------+
+|        平台特定实现层             |
+|   - D3D12实现                    |
+|   - OpenGL实现                   |
+|   - Vulkan实现                   |
++----------------------------------+
+``` 
