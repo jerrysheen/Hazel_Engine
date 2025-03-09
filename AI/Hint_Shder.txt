@@ -1,0 +1,828 @@
+# 材质系统实现计划
+
+## 总体设计
+
+材质系统是渲染管线中连接着色器、纹理和渲染参数的关键组件。一个好的材质系统应该灵活、高效，并支持各种渲染技术（PBR、卡通渲染等）。
+
+## 类结构设计
+
+### 1. 材质属性基础类型
+
+```cpp
+// 在 Hazel/src/Hazel/Renderer/Material.h 中定义
+
+namespace Hazel {
+
+    // 材质属性类型
+    enum class MaterialPropertyType {
+        None = 0,
+        Float,
+        Float2,
+        Float3,
+        Float4,
+        Int,
+        Int2,
+        Int3,
+        Int4,
+        Bool,
+        Matrix3,
+        Matrix4,
+        Texture2D,
+        TextureCube,
+        Texture3D
+    };
+
+    // 材质属性值（使用变体模式）
+    class MaterialProperty {
+    public:
+        // 构造函数重载，用于创建不同类型的属性
+        MaterialProperty() = default;
+        MaterialProperty(float value);
+        MaterialProperty(const glm::vec2& value);
+        MaterialProperty(const glm::vec3& value);
+        MaterialProperty(const glm::vec4& value);
+        MaterialProperty(int value);
+        MaterialProperty(const glm::ivec2& value);
+        MaterialProperty(const glm::ivec3& value);
+        MaterialProperty(const glm::ivec4& value);
+        MaterialProperty(bool value);
+        MaterialProperty(const glm::mat3& value);
+        MaterialProperty(const glm::mat4& value);
+        MaterialProperty(const Ref<Texture2D>& value);
+        MaterialProperty(const Ref<TextureCube>& value);
+        MaterialProperty(const Ref<Texture3D>& value);
+
+        // 获取属性类型
+        MaterialPropertyType GetType() const { return m_Type; }
+
+        // 获取属性值（类型安全的访问器）
+        template<typename T>
+        T& GetValue();
+
+        template<typename T>
+        const T& GetValue() const;
+
+    private:
+        MaterialPropertyType m_Type = MaterialPropertyType::None;
+        
+        // 使用std::variant存储多种属性类型
+        std::variant<
+            std::monostate,  // 空类型
+            float, glm::vec2, glm::vec3, glm::vec4,
+            int, glm::ivec2, glm::ivec3, glm::ivec4,
+            bool,
+            glm::mat3, glm::mat4,
+            Ref<Texture2D>, Ref<TextureCube>, Ref<Texture3D>
+        > m_Value;
+    };
+
+} // namespace Hazel
+```
+
+### 2. 材质基类
+
+```cpp
+class Material {
+public:
+    virtual ~Material() = default;
+
+    // 创建一个材质
+    static Ref<Material> Create(const Ref<Shader>& shader);
+    
+    // 绑定材质（上传属性到着色器）
+    virtual void Bind() const;
+    
+    // 复制材质（创建一个新的材质实例）
+    virtual Ref<Material> Clone() const;
+    
+    // 属性设置方法
+    void Set(const std::string& name, float value);
+    void Set(const std::string& name, const glm::vec2& value);
+    void Set(const std::string& name, const glm::vec3& value);
+    void Set(const std::string& name, const glm::vec4& value);
+    void Set(const std::string& name, int value);
+    void Set(const std::string& name, const glm::ivec2& value);
+    void Set(const std::string& name, const glm::ivec3& value);
+    void Set(const std::string& name, const glm::ivec4& value);
+    void Set(const std::string& name, bool value);
+    void Set(const std::string& name, const glm::mat3& value);
+    void Set(const std::string& name, const glm::mat4& value);
+    void Set(const std::string& name, const Ref<Texture2D>& value);
+    void Set(const std::string& name, const Ref<TextureCube>& value);
+    void Set(const std::string& name, const Ref<Texture3D>& value);
+    
+    // 属性获取方法
+    template<typename T>
+    T Get(const std::string& name) const;
+    
+    bool HasProperty(const std::string& name) const;
+    
+    // 获取关联的着色器
+    const Ref<Shader>& GetShader() const { return m_Shader; }
+    
+    // 获取或创建图形管线状态对象
+    Ref<GraphicsPipeline> GetPipeline();
+    
+    // 设置基础渲染状态
+    void SetTransparent(bool transparent);
+    void SetCullMode(CullMode mode);
+    void SetDepthTest(bool enable);
+    void SetDepthWrite(bool enable);
+    
+    // 标记材质为已修改（需要重新上传）
+    void MarkDirty() { m_IsDirty = true; }
+    bool IsDirty() const { return m_IsDirty; }
+
+protected:
+    Material(const Ref<Shader>& shader);
+    
+    Ref<Shader> m_Shader;
+    std::unordered_map<std::string, MaterialProperty> m_Properties;
+    bool m_IsDirty = true;
+    
+    // 关联的管线状态
+    GraphicsPipelineDesc m_PipelineDesc;
+    Ref<GraphicsPipeline> m_Pipeline;
+};
+```
+
+### 3. 特定材质实现
+
+```cpp
+// 基础PBR材质
+class PBRMaterial : public Material {
+public:
+    PBRMaterial();
+    
+    // PBR特定属性访问器
+    void SetAlbedo(const glm::vec3& albedo);
+    glm::vec3 GetAlbedo() const;
+    
+    void SetMetallic(float metallic);
+    float GetMetallic() const;
+    
+    void SetRoughness(float roughness);
+    float GetRoughness() const;
+    
+    void SetAlbedoMap(const Ref<Texture2D>& albedoMap);
+    Ref<Texture2D> GetAlbedoMap() const;
+    
+    void SetNormalMap(const Ref<Texture2D>& normalMap);
+    Ref<Texture2D> GetNormalMap() const;
+    
+    void SetMetallicMap(const Ref<Texture2D>& metallicMap);
+    Ref<Texture2D> GetMetallicMap() const;
+    
+    void SetRoughnessMap(const Ref<Texture2D>& roughnessMap);
+    Ref<Texture2D> GetRoughnessMap() const;
+    
+    void SetAOMap(const Ref<Texture2D>& aoMap);
+    Ref<Texture2D> GetAOMap() const;
+    
+    void SetEmissiveMap(const Ref<Texture2D>& emissiveMap);
+    Ref<Texture2D> GetEmissiveMap() const;
+    
+    void SetEmissiveColor(const glm::vec3& emissive);
+    glm::vec3 GetEmissiveColor() const;
+};
+
+// 简单无光照材质
+class UnlitMaterial : public Material {
+public:
+    UnlitMaterial();
+    
+    void SetColor(const glm::vec4& color);
+    glm::vec4 GetColor() const;
+    
+    void SetTexture(const Ref<Texture2D>& texture);
+    Ref<Texture2D> GetTexture() const;
+};
+```
+
+### 4. 材质库
+
+```cpp
+class MaterialLibrary {
+public:
+    static MaterialLibrary& Get();
+    
+    // 注册材质到库中
+    void Register(const std::string& name, const Ref<Material>& material);
+    
+    // 获取材质
+    Ref<Material> Get(const std::string& name);
+    
+    // 检查材质是否存在
+    bool Exists(const std::string& name) const;
+    
+    // 保存/加载材质
+    bool Save(const std::string& name, const std::string& filepath);
+    Ref<Material> Load(const std::string& filepath);
+    
+private:
+    MaterialLibrary() = default;
+    
+    std::unordered_map<std::string, Ref<Material>> m_Materials;
+};
+```
+
+## 材质序列化格式
+
+使用JSON作为材质序列化格式，例如：
+
+```json
+{
+  "name": "BrickWall",
+  "type": "PBR",
+  "shader": "assets/shaders/PBR.glsl",
+  "properties": {
+    "u_Albedo": { "type": "vec3", "value": [0.8, 0.2, 0.2] },
+    "u_Metallic": { "type": "float", "value": 0.2 },
+    "u_Roughness": { "type": "float", "value": 0.8 },
+    "u_AlbedoMap": { "type": "texture2d", "value": "assets/textures/brick_albedo.png" },
+    "u_NormalMap": { "type": "texture2d", "value": "assets/textures/brick_normal.png" },
+    "u_RoughnessMap": { "type": "texture2d", "value": "assets/textures/brick_roughness.png" }
+  },
+  "renderState": {
+    "transparent": false,
+    "cullMode": "back",
+    "depthTest": true,
+    "depthWrite": true
+  }
+}
+```
+
+## 使用示例
+
+```cpp
+// 创建一个基础PBR材质
+Ref<PBRMaterial> material = CreateRef<PBRMaterial>();
+material->SetAlbedo({ 0.8f, 0.2f, 0.2f });
+material->SetMetallic(0.2f);
+material->SetRoughness(0.8f);
+material->SetAlbedoMap(Texture2D::Create("assets/textures/brick_albedo.png"));
+material->SetNormalMap(Texture2D::Create("assets/textures/brick_normal.png"));
+
+// 通用属性设置
+material->Set("u_TilingFactor", glm::vec2(2.0f, 2.0f));
+
+// 使用材质进行渲染
+renderer->Submit(mesh, material, transform);
+
+// 保存到材质库
+MaterialLibrary::Get().Register("BrickWall", material);
+MaterialLibrary::Get().Save("BrickWall", "assets/materials/brick_wall.mat");
+
+// 从材质库加载
+Ref<Material> loadedMaterial = MaterialLibrary::Get().Load("assets/materials/brick_wall.mat");
+```
+
+## 实现步骤
+
+1. 定义材质属性类型和属性值类
+2. 实现材质基类
+   - 属性设置方法
+   - 绑定逻辑（上传到着色器）
+   - 克隆功能
+3. 实现PBR材质和Unlit材质等特定材质类型
+4. 实现材质库
+   - 注册和获取功能
+   - 序列化和反序列化
+5. 集成到渲染系统
+   - 让Renderer类支持使用材质进行绘制
+   - 设置渲染队列（透明/不透明排序）
+6. 添加编辑器支持（如果有）
+   - 材质检查器
+   - 属性编辑控件
+
+## 注意事项
+
+1. **性能考虑**
+   - 避免每帧重复上传相同的材质属性
+   - 使用材质实例进行高效渲染
+   - 考虑材质批处理优化
+
+2. **内存管理**
+   - 确保纹理资源的正确引用计数和释放
+   - 考虑使用纹理池避免重复加载
+
+3. **可扩展性**
+   - 设计应允许轻松添加新的材质类型
+   - 支持自定义着色器属性
+
+4. **多线程安全**
+   - 确保材质库在多线程环境中安全使用
+   - 考虑读/写锁以优化并发访问
+
+5. **默认值**
+   - 为所有材质属性提供合理的默认值
+   - 在缺少纹理时使用默认纹理（如白色1x1纹理）      用这种方式定义Shader材质，那我就没办法运行时用一个新的shader产生材质，有没有什么更好的方式， 就像Unityshaderlab一样， 我能够运行时动态更新shade人，然后材质的属性也会跟着一起动态添加进来？
+引用 9 篇资料作为参考
+已深度思考（用时18秒）
+好的，我现在需要帮助用户解决他们的材质系统设计问题。用户提到他们当前的材质系统设计无法在运行时动态更新Shader并自动调整材质属性，类似于Unity的ShaderLab功能。他们希望找到一种更好的方式来实现这一点。
+
+首先，我需要回顾用户提供的代码结构。他们的材质系统基于静态的类结构，材质属性在编译时确定，无法动态适应Shader的变化。这可能限制了灵活性和实时调整的能力。
+
+接下来，查看用户提供的搜索结果。有多个相关文档提到了动态材质和Shader的处理方法。例如，Unity中的材质实例化（如网页8和9）允许在运行时修改属性而不影响原始材质。Three.js和Cesium中的ShaderMaterial（网页2、3、4）支持通过uniforms动态传递参数。此外，Shader变体管理（网页6）和动态替换Shader（网页5）也提供了有用的思路。
+
+用户希望动态更新Shader后，材质属性自动适应新的Shader。这需要材质系统能够反射Shader中的属性，并在运行时动态添加或删除属性。参考网页5提到的Unity动态批量替换材质Shader的方法，可能需要一个更灵活的属性管理系统，比如使用字典或哈希表存储属性，而不是固定的成员变量。
+
+另外，网页6提到的Shader变体管理，通过关键字或宏生成不同变体，可能对运行时动态调整Shader参数有帮助。但用户的需求更偏向于动态修改Shader本身，而不仅仅是变体切换。
+
+网页7中的Unity Shader结构，使用Properties块定义材质属性，这些属性在编辑器中暴露并可动态调整。这可能启发用户在材质系统中实现类似的动态属性绑定，通过解析Shader中的属性定义，自动生成对应的材质属性。
+
+综合这些信息，解决方案应包括动态属性管理、Shader反射机制、材质实例化、以及属性自动同步。例如，当Shader更换时，系统解析新的Shader，提取uniform变量，并更新材质实例的属性列表。同时，需要确保旧的属性如果不存在于新Shader中，能够被妥善处理，可能保留或警告用户。
+
+还需要考虑性能问题，避免频繁的Shader解析和属性更新影响运行时效率。采用缓存机制，只在实际Shader改变时进行解析，可能是一个优化点。
+
+最后，对比用户的当前设计，建议将MaterialProperty改为动态存储，使用名称-值的映射，而不是预定义的成员变量。这样，当Shader更新时，可以动态调整存储的属性，而不需要修改类结构。同时，引入材质实例的概念，允许基于同一个Shader创建多个独立配置的实例，每个实例维护自己的属性集。
+
+这样，用户就能在运行时动态更换Shader，并自动同步材质属性，类似于Unity的ShaderLab功能，提升材质系统的灵活性和动态性。
+
+基于您的需求，这里提供一个支持运行时动态更新Shader并自动同步材质属性的改进方案，结合Unity ShaderLab的设计理念和现代图形API的最佳实践：
+
+一、动态Shader反射系统设计（关键改进）
+cpp
+// 新增Shader属性反射结构
+struct ShaderPropertyMeta {
+    std::string name;
+    MaterialPropertyType type;
+    int arraySize; // 0表示非数组
+    ShaderUniformScope scope; // 区分材质参数/全局参数
+    union { 
+        int intValue; 
+        float floatValue; 
+        // ...其他基础类型默认值
+    };
+    Ref<Texture> defaultTexture; // 纹理默认值
+};
+
+class ShaderReflection {
+public:
+    const std::unordered_map<std::string, ShaderPropertyMeta>& GetMaterialProperties() const;
+    bool HasProperty(const std::string& name) const;
+    MaterialPropertyType GetPropertyType(const std::string& name) const;
+    
+    // 解析Shader源码获取属性元数据
+    static void ParseShaderProperties(const Ref<Shader>& shader);
+};
+二、动态材质属性管理（替代原有固定属性）
+cpp
+class Material {
+public:
+    // 动态更新Shader（核心方法）
+    void UpdateShader(const Ref<Shader>& newShader) {
+        if (m_Shader == newShader) return;
+        
+        auto& oldProps = m_Properties;
+        auto& newProps = ShaderReflection::ParseShaderProperties(newShader);
+        
+        // 合并保留兼容属性
+        std::unordered_map<std::string, MaterialProperty> merged;
+        for (auto& [name, meta] : newProps) {
+            if (oldProps.count(name)) {
+                if (CheckTypeCompatible(oldProps[name], meta.type)) {
+                    merged[name] = oldProps[name];
+                } else {
+                    merged[name] = CreateDefault(meta);
+                }
+            } else {
+                merged[name] = CreateDefault(meta);
+            }
+        }
+        
+        m_Properties.swap(merged);
+        m_Shader = newShader;
+        MarkDirty();
+    }
+
+    // 动态属性访问接口
+    template<typename T>
+    void SetDynamic(const std::string& name, T value) {
+        if (m_ShaderReflection->HasProperty(name)) {
+            m_Properties[name] = MaterialProperty(value);
+        } else {
+            HZ_CORE_WARN("Property {} not exist in current shader", name);
+        }
+    }
+    
+private:
+    Ref<ShaderReflection> m_ShaderReflection;
+    std::unordered_map<std::string, MaterialProperty> m_Properties;
+};
+三、材质实例系统（关键改进点）
+cpp
+class MaterialInstance : public Material {
+public:
+    static Ref<MaterialInstance> Create(const Ref<Material>& baseMaterial) {
+        auto instance = CreateRef<MaterialInstance>();
+        instance->m_BaseMaterial = baseMaterial;
+        instance->m_Properties = baseMaterial->CloneProperties();
+        return instance;
+    }
+
+    // 覆盖基材属性
+    template<typename T>
+    void Override(const std::string& name, T value) {
+        if (m_BaseMaterial->HasProperty(name)) {
+            m_Properties[name] = MaterialProperty(value);
+        }
+    }
+    
+    // 动态更新Shader时自动同步
+    void UpdateShader(const Ref<Shader>& newShader) override {
+        Material::UpdateShader(newShader);
+        m_BaseMaterial->UpdateShader(newShader);
+    }
+    
+private:
+    Ref<Material> m_BaseMaterial;
+};
+四、运行时Shader热重载流程
+​文件监控：建立Shader文件监控系统（如使用inotify）
+​编译检测：检测到Shader文件修改时触发异步编译
+​反射更新：编译成功后自动解析新的属性结构
+​材质同步：遍历所有使用该Shader的材质实例，调用UpdateShader
+​属性合并：保留兼容属性的当前值，重置不兼容属性为默认值
+五、序列化格式增强
+json
+{
+  "shader": "path/to/shader.glsl",
+  "overrides": {
+    "u_Albedo": {"type": "vec3", "value": [0.8, 0.2, 0.2]},
+    "u_Metallic": {"type": "float", "value": 0.5}
+  }
+}
+六、性能优化策略
+​属性变更追踪：使用dirty flag标记修改的属性，避免全量上传
+​Uniform Buffer优化：按更新频率划分UBO段（每帧/每材质/每对象）
+​批处理优化：自动合并使用相同Shader状态的绘制调用
+​异步编译：在后台线程进行Shader编译和反射解析
+七、与现有系统的兼容方案
+​适配层设计：保留原有PBRMaterial等类型作为语法糖
+​双模式支持：
+cpp
+// 传统方式
+material->SetMetallic(0.5f); 
+
+// 动态方式
+material->SetDynamic("u_Metallic", 0.5f);
+八、编辑器集成建议
+​自动属性面板：根据Shader反射生成可编辑属性
+​实时预览：Shader修改后自动刷新材质预览
+​版本控制：记录Shader变更历史以支持回滚
+​依赖分析：可视化显示材质与Shader的依赖关系
+该方案的关键优势在于：
+
+完全动态的Shader-材质绑定机制
+支持运行时Shader热更新和属性自动同步
+保留静态类型系统的性能优势
+兼容传统材质开发流程
+实现要点参考了Unity的MaterialPropertyBlock设计和Three.js的ShaderMaterial理念，同时结合现代图形API的最佳实践。在保持类型安全的同时，通过反射机制实现了与ShaderLab相似的动态特性。
+
+ 展开说说代码中的     // 解析Shader源码获取属性元数据
+    static void ParseShaderProperties(const Ref<Shader>& shader);
+已深度思考（用时58秒）
+嗯，用户想让我详细解释一下在代码中提到的ParseShaderProperties这个函数的具体实现。这个函数的作用是解析Shader源码，提取材质属性元数据。我需要从以下几个方面来考虑：
+
+首先，用户之前设计的材质系统是静态的，比如PBRMaterial有固定的属性。现在他们希望支持动态更新Shader，并让材质的属性自动适应新的Shader。这需要解析Shader中的属性，比如uniform变量，然后生成对应的元数据，这样材质系统就能知道需要哪些属性。
+
+然后，我需要确定如何解析Shader源码。通常，Shader中的材质属性是通过uniform变量定义的，比如uniform vec3 u_Albedo;。所以，解析过程需要从Shader的代码中提取这些uniform变量，并记录它们的类型、名称、默认值等信息。
+
+接下来，考虑不同Shader语言的兼容性，比如GLSL、HLSL等。这里可能需要先统一处理为某种中间表示，或者针对不同的着色器语言编写不同的解析器。不过用户提供的示例代码中使用的是GLSL，所以可能暂时只处理GLSL的情况。
+
+然后想到，解析Shader源码的方法有很多种。可以使用正则表达式来匹配uniform声明，但这种方法可能在处理复杂结构时不够可靠。另一种方法是使用着色器解析库，比如SPIR-V Cross，或者glslang这样的解析器，进行语法分析，提取uniform变量。但这样会增加依赖，可能比较复杂。
+
+权衡之下，对于初期实现，可能先用正则表达式来提取uniform变量，尽管不够完美，但实现起来快。对于更复杂的结构，可以逐步完善。
+
+然后，需要考虑如何获取Shader的源码。在现有的引擎架构中，Shader资源可能已经加载到内存中，或者可以从文件中读取。因此，ParseShaderProperties需要能够访问到Shader的原始代码。
+
+接下来，如何将提取的uniform变量转换为ShaderPropertyMeta结构。例如，解析出类型、名称、数组大小（如果有的话），以及可能的默认值。GLSL中uniform变量可以有默认值吗？在GLSL中，uniform变量不能在声明时初始化，所以可能需要从引擎的其他地方获取默认值，比如材质系统的默认值配置。
+
+不过用户提到的示例JSON中有默认值，可能需要在Shader中通过注释或其他元数据来指定默认值。例如，使用特定的注释语法，如// @default(0.8, 0.2, 0.2)，这样解析器可以读取这些注释来获取默认值。
+
+这样，解析过程需要同时分析uniform声明和相关的注释，提取元数据。这增加了复杂性，但提供了更大的灵活性。
+
+另外，需要考虑不同种类的uniform变量，比如采样器类型（texture2D, samplerCube等），以及如何将它们映射到MaterialPropertyType中的对应枚举值。例如，uniform sampler2D u_AlbedoMap;应该被识别为Texture2D类型。
+
+还需要处理结构体类型的uniform变量。例如，如果Shader中有struct MaterialProperties { vec3 albedo; float metallic; }; uniform MaterialProperties u_Material;，这时候可能需要展开结构体的成员，或者将整个结构体视为一个属性。不过这可能比较复杂，初期可能不支持结构体，或者将结构体视为一个整体属性，类型为自定义类型，但需要扩展MaterialPropertyType来支持。
+
+不过用户的示例中并没有提到结构体，可能暂时不考虑这种情况，专注于基本类型和纹理类型。
+
+接下来，考虑如何处理数组。例如，uniform float u_Array[4];，这时需要记录数组的大小。这在ShaderPropertyMeta中有arraySize字段，所以解析器需要识别数组声明，并提取数组长度。
+
+然后，实现步骤大致如下：
+
+获取Shader的源码。
+预处理源码，移除不必要的部分（如非uniform声明）。
+使用正则表达式或语法分析器提取uniform变量。
+解析每个uniform的类型、名称、数组大小。
+查找对应的注释元数据（如默认值、显示名称等）。
+映射到MaterialPropertyType，并填充ShaderPropertyMeta结构。
+存储这些元数据，供材质系统使用。
+对于步骤3，使用正则表达式的话，可能需要编写匹配uniform声明的模式。例如，匹配类似uniform vec3 u_Albedo;的行。正则表达式可能像uniform\s+(\w+)\s+(\w+)\s*($$\d+$$)?;，但需要考虑各种情况，比如可能有多个空格，类型名中的数字（如float3），数组声明中的数字等。
+
+例如，对于uniform sampler2D u_Textures[4];，正则表达式需要捕获类型为sampler2D，名称为u_Textures，数组大小为4。
+
+但GLSL中的类型可能包含数字和维度，比如vec2, vec3, mat4等，所以类型部分的正则表达式需要匹配这些情况。
+
+此外，还需要处理精度限定符，比如uniform highp vec3 u_Albedo;，这时候类型应该是vec3，而highp是精度修饰符，可以忽略。
+
+因此，可能需要调整正则表达式，忽略精度和其他限定符，只提取类型的基本部分。
+
+例如，使用正则表达式：uniform\s+(?:lowp|mediump|highp)?\s*(\w+)\s+(\w+)\s*(?:$$(\d+)$$)?;，这样可以捕获类型、名称和数组大小。
+
+接下来，如何处理类型到MaterialPropertyType的映射。例如：
+
+float → MaterialPropertyType::Float
+vec2 → Float2
+sampler2D → Texture2D
+等等。
+需要建立一个映射表，将GLSL类型字符串转换为对应的枚举值。
+
+对于不支持的类型，可能需要跳过，或者记录错误。
+
+关于默认值的获取，如果用户没有在Shader中通过注释指定，可能需要引擎提供默认值，比如数值类型默认为0，颜色类型默认为黑色，纹理默认为默认纹理等。
+
+或者，在ShaderPropertyMeta中区分是否是引擎默认值，或者用户通过注释指定的默认值。
+
+综上，ParseShaderProperties的实现步骤可以分解为：
+
+获取Shader源码。
+逐行解析，提取uniform声明和相关注释。
+解析每个uniform的类型、名称、数组大小。
+提取注释中的元数据（如默认值）。
+转换为ShaderPropertyMeta结构，并收集起来。
+返回这些元数据供材质系统使用。
+在代码实现中，可能需要注意处理多行注释和行内注释，以及不同着色器阶段的uniform（比如顶点着色器和片段着色器中的uniform是否需要合并处理）。
+
+例如，在GLSL中，uniform的作用域是整个着色器程序，所以顶点和片段着色器中声明的同名uniform会被视为同一个。因此，解析时需要合并不同着色器阶段的uniform，避免重复。
+
+最后，需要将这些元数据存储在Shader对象中，或者在解析后缓存起来，避免重复解析。
+
+可能还需要考虑Shader的热重载，当Shader文件被修改时，重新解析并更新元数据，同时通知相关的材质更新属性。
+
+在代码结构上，ShaderReflection类可能作为Shader的一部分，或者在材质系统中独立存在，负责管理和缓存不同Shader的元数据。
+
+总结，ParseShaderProperties的实现需要综合使用源码解析、正则表达式或语法分析、元数据提取和类型映射，来动态获取Shader中的材质属性信息，从而实现材质属性的动态更新。
+
+解析Shader源码获取属性元数据的实现细节
+核心逻辑流程图
+mermaid
+graph TD
+    A[开始解析Shader] --> B{获取源码}
+    B -->|成功| C[预处理源码]
+    C --> D[逐行分析]
+    D --> E{是否uniform声明?}
+    E -->|是| F[提取类型/名称/数组]
+    E -->|否| D
+    F --> G[解析关联注释]
+    G --> H[创建属性元数据]
+    H --> I[类型映射]
+    I --> J[存入属性表]
+    J --> D
+    B -->|失败| K[记录错误]
+    D --> L{是否文件结尾?}
+    L -->|是| M[生成反射数据]
+代码实现步骤详解（以GLSL为例）
+1. 源码预处理模块
+cpp
+class ShaderPreprocessor {
+public:
+    static std::string PrepareSource(const std::string& source) {
+        std::stringstream output;
+        std::stringstream ss(source);
+        std::string line;
+        
+        while (std::getline(ss, line)) {
+            // 移除单行注释
+            size_t commentPos = line.find("//");
+            if (commentPos != std::string::npos) {
+                line = line.substr(0, commentPos);
+            }
+            
+            // 保留预处理指令和uniform声明
+            if (line.find("#") != std::string::npos || 
+                line.find("uniform") != std::string::npos) {
+                output << line << "\n";
+            }
+        }
+        return output.str();
+    }
+};
+2. Uniform声明解析器
+cpp
+struct UniformDeclaration {
+    std::string type;
+    std::string name;
+    int arraySize = 0;
+    std::map<std::string, std::string> metadata;
+};
+
+class UniformParser {
+public:
+    static std::vector<UniformDeclaration> Parse(const std::string& source) {
+        std::vector<UniformDeclaration> results;
+        
+        // 正则表达式匹配带注释的uniform声明
+        const std::regex pattern(
+            R"(//\s*@(\w+)\s*$([^)]*)$[\s\S]*?uniform\s+([\w\d]+)\s+([\w\d_]+)\s*($$\d+$$)?\s*;)",
+            std::regex::ECMAScript | std::regex::icase
+        );
+
+        std::sregex_iterator it(source.begin(), source.end(), pattern);
+        std::sregex_iterator end;
+
+        while (it != end) {
+            UniformDeclaration decl;
+            std::smatch match = *it;
+            
+            // 解析元数据注释
+            std::string metaKey = match[1];
+            std::string metaValue = match[2];
+            decl.metadata[metaKey] = metaValue;
+            
+            // 解析uniform声明
+            decl.type = match[3];
+            decl.name = match[4];
+            
+            // 处理数组声明
+            std::string arrayPart = match[5];
+            if (!arrayPart.empty()) {
+                decl.arraySize = std::stoi(arrayPart.substr(1, arrayPart.size()-2));
+            }
+            
+            results.push_back(decl);
+            ++it;
+        }
+        return results;
+    }
+};
+3. 类型映射系统
+cpp
+class TypeMapper {
+public:
+    static MaterialPropertyType GLSLToMaterialType(const std::string& glslType) {
+        static const std::unordered_map<std::string, MaterialPropertyType> typeMap = {
+            {"float",    MaterialPropertyType::Float},
+            {"vec2",     MaterialPropertyType::Float2},
+            {"vec3",     MaterialPropertyType::Float3},
+            {"vec4",     MaterialPropertyType::Float4},
+            {"int",      MaterialPropertyType::Int},
+            {"ivec2",    MaterialPropertyType::Int2},
+            {"ivec3",    MaterialPropertyType::Int3},
+            {"ivec4",    MaterialPropertyType::Int4},
+            {"bool",     MaterialPropertyType::Bool},
+            {"mat3",     MaterialPropertyType::Matrix3},
+            {"mat4",     MaterialPropertyType::Matrix4},
+            {"sampler2D",MaterialPropertyType::Texture2D},
+            {"samplerCube",MaterialPropertyType::TextureCube}
+        };
+        
+        auto it = typeMap.find(glslType);
+        return it != typeMap.end() ? it->second : MaterialPropertyType::None;
+    }
+};
+4. 元数据解析实现
+cpp
+void ShaderReflection::ParseShaderProperties(const Ref<Shader>& shader) {
+    // 获取预处理后的源码
+    const std::string& source = ShaderPreprocessor::PrepareSource(shader->GetSource());
+    
+    // 解析uniform声明
+    auto uniforms = UniformParser::Parse(source);
+    
+    // 清空已有属性
+    shader->m_Properties.clear();
+    
+    // 转换到材质属性元数据
+    for (const auto& uniform : uniforms) {
+        ShaderPropertyMeta meta;
+        meta.name = uniform.name;
+        meta.type = TypeMapper::GLSLToMaterialType(uniform.type);
+        meta.arraySize = uniform.arraySize;
+        
+        // 解析注释元数据
+        if (uniform.metadata.count("default")) {
+            ParseDefaultValue(meta, uniform.metadata["default"]);
+        }
+        if (uniform.metadata.count("range")) {
+            ParseValueRange(meta, uniform.metadata["range"]);
+        }
+        
+        // 存入Shader对象
+        shader->m_Properties[meta.name] = meta;
+    }
+}
+5. 默认值解析示例
+cpp
+void ParseDefaultValue(ShaderPropertyMeta& meta, const std::string& valueStr) {
+    switch (meta.type) {
+        case MaterialPropertyType::Float:
+            meta.floatValue = std::stof(valueStr);
+            break;
+        case MaterialPropertyType::Float3: {
+            std::vector<std::string> parts = SplitString(valueStr, ",");
+            if (parts.size() == 3) {
+                meta.defaultValue = glm::vec3(
+                    std::stof(parts[0]),
+                    std::stof(parts[1]),
+                    std::stof(parts[2])
+                );
+            }
+            break;
+        }
+        case MaterialPropertyType::Texture2D:
+            meta.defaultTexture = Texture2D::Create(valueStr);
+            break;
+        // 其他类型处理...
+    }
+}
+支持的Shader注释语法示例
+glsl
+// @default(0.8, 0.2, 0.2)
+// @range(0.0, 1.0)
+// @displayname("Albedo Color")
+uniform vec3 u_Albedo;
+
+// @default(0.5)
+// @tooltip("表面金属感强度")
+uniform float u_Metallic;
+
+// @default(Textures/DefaultNormal.png)
+uniform sampler2D u_NormalMap;
+运行时动态更新流程
+​文件监控：使用平台相关API监控Shader文件变动
+
+​异步编译：检测到修改后启动后台编译线程
+
+​反射更新：
+
+cpp
+void OnShaderFileChanged(const std::string& path) {
+    auto shader = ShaderLibrary::Get().Get(path);
+    
+    // 异步重新编译
+    AsyncCompile(path, [shader](bool success) {
+        if (success) {
+            // 重新解析属性
+            ShaderReflection::ParseShaderProperties(shader);
+            
+            // 通知关联材质
+            for (auto& material : MaterialLibrary::GetMaterialsUsing(shader)) {
+                material->OnShaderRefreshed();
+            }
+        }
+    });
+}
+​材质同步：
+
+cpp
+void Material::OnShaderRefreshed() {
+    // 保留现有兼容属性
+    std::unordered_map<std::string, MaterialProperty> newProps;
+    
+    for (const auto& [name, meta] : m_Shader->GetProperties()) {
+        if (m_Properties.count(name)) {
+            if (CheckTypeMatch(m_Properties[name], meta.type)) {
+                newProps[name] = m_Properties[name];
+            } else {
+                newProps[name] = CreateDefault(meta);
+            }
+        } else {
+            newProps[name] = CreateDefault(meta);
+        }
+    }
+    
+    m_Properties.swap(newProps);
+    MarkDirty();
+}
+性能优化策略
+​二进制缓存：将解析结果序列化为二进制格式缓存
+​增量更新：通过哈希校验仅处理修改过的Shader
+​多级缓存：
+cpp
+struct ShaderReflectionCache {
+    std::unordered_map<ShaderID, ShaderProperties> m_ShaderProperties;
+    std::unordered_map<size_t, CachedReflection> m_FileHashCache;
+};
+​并行解析：利用多线程处理多个Shader的解析
+该实现方案的特点：
+
+​精准的语法分析：结合正则表达式和语义分析，准确提取Shader属性
+​灵活的元数据扩展：通过注释系统支持各种材质参数配置
+​高效的重载机制：通过差异比较实现最小化属性更新
+​跨平台支持：预处理系统处理不同平台的语法差异
+完整实现需要考虑的边界情况：
+
+嵌套注释的解析（如/* ... // ... */）
+带命名空间的类型（如custom::MaterialProps）
+Uniform缓冲区块的属性解析
+不同着色阶段（vertex/fragment）的uniform合并
+数组类型的多维支持（如float arr[2][3]）
+通过这种动态反射机制，最终实现了：
+
+材质属性与Shader的自动同步
+运行时Shader热重载
+跨项目的Shader参数可移植性
+可视化的材质参数配置
