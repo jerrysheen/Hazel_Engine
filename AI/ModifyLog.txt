@@ -1,3 +1,19 @@
+日期: 2025年03月18日
+Commit Hash: 待生成
+
+# 提交信息
+
+feat(Renderer): 实现GraphicsPipeline组件
+
+添加GraphicsPipeline组件实现，作为RHI架构的核心部分，提供跨平台的渲染管线状态管理。
+这是从架构设计阶段到实际代码实现的第一步，完成了管线状态对象的抽象定义。
+
+- 定义GraphicsPipeline基类及工厂方法，支持多种渲染API
+- 实现各种渲染状态配置（混合、深度测试、光栅化等）
+- 添加丰富的枚举类型定义渲染管线配置选项
+- 为OpenGL和DirectX12后端提供基础实现框架
+- 与现有的Shader和Buffer系统集成
+
 日期: 2025年03月12日
 Commit Hash: 待生成
 
