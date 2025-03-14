@@ -35,15 +35,21 @@ namespace Hazel
         Ref<VertexArray> meshData;
 
     private:
-        bool hasPosition = false;
-        bool hasNormal = false;
-        bool hastexCoord0 = false;
-        bool hasTangent = false;
-        bool hastexCoord1 = false;
-        bool hasVertexColor = false;
-        std::vector<float> vertexData;
-		uint32_t bufferStride = 0;
+        bool needPosition = false;
+        bool needNormal = false;
+        bool needTangent = false;
+        bool needTexCoord0 = false;
+        bool needTexCoord1 = false;
+        bool needVertexColor = false;
+        std::vector<float> positionData;
+        std::vector<float> normalData;
+        std::vector<float> texCoord0Data;
+        std::vector<float> texCoord1Data;
+        std::vector<float> tangentData;
+        std::vector<float> vertexColorData;
 
+		uint32_t bufferStride = 0;
+        void FillVertexArray(const std::string& metaFilePath);
         std::vector<uint16_t> indexData;
         //void LoadModel(const std::string& path);
         void processNode(aiNode* node, const aiScene* scene);

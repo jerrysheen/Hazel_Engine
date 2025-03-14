@@ -7,6 +7,7 @@
 
 namespace Hazel {
 
+
 	Ref<VertexArray> VertexArray::Create()
 	{
 		switch (RenderAPI::GetAPI())
@@ -17,6 +18,12 @@ namespace Hazel {
 		}
 		HZ_CORE_ASSERT(false, "Unknowed API...");
 		return nullptr;
+	}
+
+
+	void VertexArray::AddVertexBuffer(const VertexProperty& vertexProperty, const Ref<VertexBuffer>& vertexBuffer)
+	{
+		m_VertexBuffers[vertexProperty] = vertexBuffer;
 	}
 
 

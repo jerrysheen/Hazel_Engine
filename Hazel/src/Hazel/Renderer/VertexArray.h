@@ -2,8 +2,20 @@
 
 #include <memory>
 #include "Hazel/Renderer/Buffer.h"
+#include <map>
 
 namespace Hazel {
+
+	// define vertexProperty class
+	enum class VertexProperty
+	{
+		Position,
+		Normal,
+		Tangent,
+		TexCoord0,
+		TexCoord1,
+		VertexColor,
+	};
 
 	class VertexArray 
 	{
@@ -16,6 +28,8 @@ namespace Hazel {
 		virtual void AddVertexBuffer(const Ref<VertexBuffer>& vertexBuffer) = 0;
 		virtual void SetIndexBuffer(const Ref<IndexBuffer>& indexBuffer) = 0;
 
+		void AddVertexBuffer(const VertexProperty& vertexProperty, const Ref<VertexBuffer>& vertexBuffer);
+
 		virtual const std::vector<Ref<VertexBuffer>>& GetVertexBuffers() const = 0;
 		virtual const Ref<IndexBuffer>& GetIndexBuffer() const = 0;
 
@@ -24,6 +38,6 @@ namespace Hazel {
 		inline virtual void SetLayout(const BufferLayout& layout) = 0;
 	protected:
 		BufferLayout m_Layout;
-
+		std::map<VertexProperty, Ref<VertexBuffer>> m_VertexBuffers;
 	};
 }
