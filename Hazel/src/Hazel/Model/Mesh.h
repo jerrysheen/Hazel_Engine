@@ -35,12 +35,12 @@ namespace Hazel
         Ref<VertexArray> meshData;
 
     private:
-        bool needPosition = false;
-        bool needNormal = false;
-        bool needTangent = false;
-        bool needTexCoord0 = false;
-        bool needTexCoord1 = false;
-        bool needVertexColor = false;
+        bool needPosition = true;
+        bool needNormal = true;
+        bool needTangent = true;
+        bool needTexCoord0 = true;
+        bool needTexCoord1 = true;
+        bool needVertexColor = true;
         std::vector<float> positionData;
         std::vector<float> normalData;
         std::vector<float> texCoord0Data;

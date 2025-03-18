@@ -8,6 +8,7 @@
 #include "Hazel/Gfx/GfxDesc.h"
 #include "Platform/D3D12/D3D12Buffer.h"
 #include "Platform/D3D12/D3D12VertexArray.h"
+#include "Hazel/Renderer/VertexArray.h"
 
 
 
@@ -24,7 +25,7 @@ namespace Hazel
     void SceneViewLayer::OnAttach()
     {
 
-        //ºóÐø»áÓÅ»¯¡£
+        //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Å»ï¿½ï¿½ï¿½
         D3D12RenderAPIManager* renderAPIManager = dynamic_cast<D3D12RenderAPIManager*>(RenderAPIManager::getInstance()->GetManager().get());
         Microsoft::WRL::ComPtr<ID3D12Device> device = renderAPIManager->GetD3DDevice();
 
@@ -54,7 +55,7 @@ namespace Hazel
 
         Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> m_CommandList = cmdList->getCommandList<Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList>>();
         ID3D12CommandList* rawCommandList = m_CommandList.Get();
-        //ÏÈÓ²Ð´Ð´ËÀ£¬ ¹À¼ÆºóÃæ»¹ÒªÔÙ¿¼ÂÇ¶àÆ½Ì¨µÄÎÊÌâ£¬Ò²¿ÉÄÜÓÃÒ»¸ö±àÒëÆ÷Ö±½Ó×ª¹ýÈ¥¡£
+        //ï¿½ï¿½Ó²Ð´Ð´ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Æºï¿½ï¿½æ»¹Òªï¿½Ù¿ï¿½ï¿½Ç¶ï¿½Æ½Ì¨ï¿½ï¿½ï¿½ï¿½ï¿½â£¬Ò²ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö±ï¿½ï¿½×ªï¿½ï¿½È¥ï¿½ï¿½
         m_PbrShader = Shader::Create("assets/shaders/color.hlsl");
         mvsByteCode = d3dUtil::CompileShader(L"assets/shaders/color.hlsl", nullptr, "VS", "vs_5_0");
         mpsByteCode = d3dUtil::CompileShader(L"assets/shaders/color.hlsl", nullptr, "PS", "ps_5_0");
@@ -117,11 +118,11 @@ namespace Hazel
 		mInputLayout=
         {
             { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
-            { "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
-            { "TANGENT", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 24, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
-            { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 36, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
-            { "TEXCOORD", 1, DXGI_FORMAT_R32G32_FLOAT, 0, 44, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
-            { "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 52, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }
+            { "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 1, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+            { "TANGENT", 0, DXGI_FORMAT_R32G32B32_FLOAT, 2, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+            { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 3, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+            { "TEXCOORD", 1, DXGI_FORMAT_R32G32_FLOAT, 4, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+            { "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 5, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }
         };
         psoDesc.InputLayout = { mInputLayout.data(), (UINT)mInputLayout.size()};
         psoDesc.pRootSignature = mRootSignature.Get();
@@ -195,7 +196,7 @@ namespace Hazel
         objectCB->SetData(&mWorld, size);
         GfxViewManager::getInstance()->GetCbvHandle(objectCB);
 
-        // mesh¼ÓÔØ, meshÀïÃæÓ¦¸Ã¼ÓÔØÍ¨ÓÃÄÚÈÝ£¿uploadµÄÊ±ºò½øÐÐÒ»¸ö×ªÒë¾ÍºÃÁË£¿
+        // meshï¿½ï¿½ï¿½ï¿½, meshï¿½ï¿½ï¿½ï¿½Ó¦ï¿½Ã¼ï¿½ï¿½ï¿½Í¨ï¿½ï¿½ï¿½ï¿½ï¿½Ý£ï¿½uploadï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½×ªï¿½ï¿½Íºï¿½ï¿½Ë£ï¿½
 
 
 
@@ -212,10 +213,10 @@ namespace Hazel
         
         ////boost::uuids::random_generator generator;
 
-        ////// Éú³ÉUUID
+        ////// ï¿½ï¿½ï¿½ï¿½UUID
         ////boost::uuids::uuid id = generator();
 
-        ////// Êä³öUUID
+        ////// ï¿½ï¿½ï¿½UUID
         ////HZ_CORE_INFO("UUID: {0}", id);
         ////cout << id << endl;
         //// 
@@ -231,26 +232,26 @@ namespace Hazel
         ////RenderingData* renderingData = new RenderingData();
         ////sceneCamera->Render(node, renderingData);
         //// 
-        //// ×îºó½«Õâ¸öcolorattachment×÷ÎªbackbufferÊä³ö¡£
+        //// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½colorattachmentï¿½ï¿½Îªbackbufferï¿½ï¿½ï¿½ï¿½ï¿½
  
         //// 
         //// 
         //// m_textureID = Camera.GetColorAttachment();
         //// 
-        //// ²Î¿¼unityµÄÏÈÐ´Ò»°æ°É¡£
-        //// Ã¿¸öcamera³ÖÓÐÒ»¸örenderer£¬rendererÀïÃæÓÐrenderfeature£¬Ò»¸örenderfeatureÖ´ÐÐÒ»´Î»æÖÆ¡£
-        //// Ã¿¸örenderpass»áÉùÃ÷×Ô¼º¶ÔÓ¦µÄrendertarget£¬ÒÔ¼°¸÷×ÔµÄäÖÈ¾×´Ì¬¡£
-        //// ×îºóÎÒµÄÏà»úµÄÊä³ö¾ÍÊÇÒ»¸öcameraColorAttachment£¬ µ«ÊÇÔÚÕâ¸öµØ·½ÎÒ»¹ÒªÈ¥¿¼ÂÇÕâÐ©rtµÄ¹ÜÀí¡£
-        //// ÎÒ¿ÉÄÜÐèÒªÖØ¹¹Ò»ÏÂ×îµ×²ãÄÇ¸ö´úÂë¡£¡£¾ÍÊÇimgui²ã¡£ °Ñrenderapi managerÍùÉÏÅª£¬ µ×²ã²»ÐèÒªÕâ¸ö¶«Î÷¡£¡£
-        //// ÕâÒ»²ãlayer³ÖÓÐÒ»¸ört£¿ ËùÓÐµÄÄÚÈÝÆäÊµ¾ÍÊÇµþ¼ÓÔÚÕâ¸öÉÏÃæ½øÐÐ»æÖÆµÄ¡£
+        //// ï¿½Î¿ï¿½unityï¿½ï¿½ï¿½ï¿½Ð´Ò»ï¿½ï¿½É¡ï¿½
+        //// Ã¿ï¿½ï¿½cameraï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½rendererï¿½ï¿½rendererï¿½ï¿½ï¿½ï¿½ï¿½ï¿½renderfeatureï¿½ï¿½Ò»ï¿½ï¿½renderfeatureÖ´ï¿½ï¿½Ò»ï¿½Î»ï¿½ï¿½Æ¡ï¿½
+        //// Ã¿ï¿½ï¿½renderpassï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô¼ï¿½ï¿½ï¿½Ó¦ï¿½ï¿½rendertargetï¿½ï¿½ï¿½Ô¼ï¿½ï¿½ï¿½ï¿½Ôµï¿½ï¿½ï¿½È¾×´Ì¬ï¿½ï¿½
+        //// ï¿½ï¿½ï¿½ï¿½Òµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½cameraColorAttachmentï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ø·ï¿½ï¿½Ò»ï¿½ÒªÈ¥ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð©rtï¿½Ä¹ï¿½ï¿½ï¿½ï¿½ï¿½
+        //// ï¿½Ò¿ï¿½ï¿½ï¿½ï¿½ï¿½Òªï¿½Ø¹ï¿½Ò»ï¿½ï¿½ï¿½ï¿½×²ï¿½ï¿½Ç¸ï¿½ï¿½ï¿½ï¿½ë¡£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½imguiï¿½ã¡£ ï¿½ï¿½renderapi managerï¿½ï¿½ï¿½ï¿½Åªï¿½ï¿½ ï¿½×²ã²»ï¿½ï¿½Òªï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+        //// ï¿½ï¿½Ò»ï¿½ï¿½layerï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½rtï¿½ï¿½ ï¿½ï¿½ï¿½Ðµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Êµï¿½ï¿½ï¿½Çµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð»ï¿½ï¿½ÆµÄ¡ï¿½
 
-        //// ËùÎ½µÄsceneviewµ½µ×Ó¦¸Ã¸ÉÊ²Ã´£¿Õâ¸ö´°¿Ú²»Ó¦¸Ã³Ðµ£ÈÎºÎäÖÈ¾µÄÂß¼­£¬Èç¹ûËµsceneviewµ×ÏÂÓÐÒ»¸öscene£¬È»ºóÀïÃæÓÐÒ»Ð©gameobject
-        //// ÄÇÃ´ÎÒÓ¦¸Ã¾ÍÊÇÍùÕâ¸ösceneÀïÃæÌí¼Ógameobject£¬ÎÒµÄ»æÖÆÓ¦¸ÃÔÚÕâ¸öµØ·½À­ÆðÀ´Âð£¿ ÆäÊµ¸Ð¾õÒ²²»Ó¦¸Ã¡£¡£ ²»¹ýÏÈÕâÃ´Ð´°É¡£
-        //// ºóÐøµÄäÖÈ¾Âß¼­¿Ï¶¨Òª¸ü¼ÓÏ¸·Ö£¬ÄÜÏëÏóµ½µÄ¾ÍÊÇÕâ¸öµØ·½£¬mtextureIDµÄ¸³ÖµÓ¦¸ÃÊÇÔÚpostRenderµÄµØ·½£¬Õâ¸öµØ·½Ò»ÇÐäÖÈ¾µÄÄÚÈÝ¶¼ÒÑ¾­»æÖÆÍêÁË¡£
-        //// Õâ¸öµØ·½µÄ¶àÏß³Ì£¬ ÏëÒ»ÏÂprofilerÀïÃæ£¬Ïàµ±ÓÚÊÇÎÒÖ÷Ïß³ÌÌá½»Ò»¸öpass£¬¶àÏß³ÌÀïÃæ¾ÍÁ¢¼´Ö´ÐÐÕâ¸öÄÚÈÝ£¬Õâ¸ö¹ý³ÌÖÐÎÒÃÇÈç¹ûÏÈ²»¿¼ÂÇfeedbackµÄ¶«Î÷£¬
-        //// ÄÇÃ´GPUÖ»ÐèÒª°´ÕÕcommandÒÀ´ÎÖ´ÐÐ¾ÍºÃÁË£¬ËùÒÔÎÒÃÇ»á¿´µ½Ö÷Ïß³Ì -> äÖÈ¾Ïß³Ì -> GPU ÕâÑù×ÓµÄÒ»¸öÁ÷³Ì¡£
+        //// ï¿½ï¿½Î½ï¿½ï¿½sceneviewï¿½ï¿½ï¿½ï¿½Ó¦ï¿½Ã¸ï¿½Ê²Ã´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ú²ï¿½Ó¦ï¿½Ã³Ðµï¿½ï¿½Îºï¿½ï¿½ï¿½È¾ï¿½ï¿½ï¿½ß¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ëµsceneviewï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½sceneï¿½ï¿½È»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»Ð©gameobject
+        //// ï¿½ï¿½Ã´ï¿½ï¿½Ó¦ï¿½Ã¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½sceneï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½gameobjectï¿½ï¿½ï¿½ÒµÄ»ï¿½ï¿½ï¿½Ó¦ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ø·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Êµï¿½Ð¾ï¿½Ò²ï¿½ï¿½Ó¦ï¿½Ã¡ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ã´Ð´ï¿½É¡ï¿½
+        //// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È¾ï¿½ß¼ï¿½ï¿½Ï¶ï¿½Òªï¿½ï¿½ï¿½ï¿½Ï¸ï¿½Ö£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½óµ½µÄ¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ø·ï¿½ï¿½ï¿½mtextureIDï¿½Ä¸ï¿½ÖµÓ¦ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½postRenderï¿½ÄµØ·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ø·ï¿½Ò»ï¿½ï¿½ï¿½ï¿½È¾ï¿½ï¿½ï¿½ï¿½ï¿½Ý¶ï¿½ï¿½Ñ¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ë¡ï¿½
+        //// ï¿½ï¿½ï¿½ï¿½Ø·ï¿½ï¿½Ä¶ï¿½ï¿½ß³Ì£ï¿½ ï¿½ï¿½Ò»ï¿½ï¿½profilerï¿½ï¿½ï¿½æ£¬ï¿½àµ±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ß³ï¿½ï¿½á½»Ò»ï¿½ï¿½passï¿½ï¿½ï¿½ï¿½ï¿½ß³ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ý£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È²ï¿½ï¿½ï¿½ï¿½ï¿½feedbackï¿½Ä¶ï¿½ï¿½ï¿½ï¿½ï¿½
+        //// ï¿½ï¿½Ã´GPUÖ»ï¿½ï¿½Òªï¿½ï¿½ï¿½ï¿½commandï¿½ï¿½ï¿½ï¿½Ö´ï¿½Ð¾Íºï¿½ï¿½Ë£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ç»á¿´ï¿½ï¿½ï¿½ï¿½ï¿½ß³ï¿½ -> ï¿½ï¿½È¾ï¿½ß³ï¿½ -> GPU ï¿½ï¿½ï¿½ï¿½ï¿½Óµï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½Ì¡ï¿½
 
-        //// ÔÚÕâ¸öµØ·½³¢ÊÔÆðÒ»¸öäÖÈ¾ÃüÁî
+        //// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ø·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½È¾ï¿½ï¿½ï¿½ï¿½
 
         D3D12RenderAPIManager* renderAPIManager = dynamic_cast<D3D12RenderAPIManager*>(RenderAPIManager::getInstance()->GetManager().get());
         Microsoft::WRL::ComPtr<ID3D12Device> device = renderAPIManager->GetD3DDevice();
@@ -272,7 +273,7 @@ namespace Hazel
 
         m_CommandList->RSSetViewports(1, &mScreenViewport);
         m_CommandList->RSSetScissorRects(1, &mScissorRect);
-        // ½øÐÐ×ÊÔ´ÀàÐÍÇÐ»»£º
+        // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô´ï¿½ï¿½ï¿½ï¿½ï¿½Ð»ï¿½ï¿½ï¿½
         if (m_BackBuffer->GetTextureRenderUsage() == TextureRenderUsage::RENDER_TEXTURE) 
         {
             cmdList->ChangeResourceState(m_BackBuffer, TextureRenderUsage::RENDER_TEXTURE, TextureRenderUsage::RENDER_TARGET);
@@ -291,7 +292,7 @@ namespace Hazel
         m_CommandList->OMSetRenderTargets(1, &rtDescHandle, true, &depthHandle);
         
         
-        //Õâ¸öµØ·½ÊÇ¼¤»îÊ¹ÓÃµ½µÄheap£¬±ÈÈçÊ¹ÓÃµ½ÁËCBV£¬¾Í¼¤»îÕâ¸öheap¡£
+        //ï¿½ï¿½ï¿½ï¿½Ø·ï¿½ï¿½Ç¼ï¿½ï¿½ï¿½Ê¹ï¿½Ãµï¿½ï¿½ï¿½heapï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê¹ï¿½Ãµï¿½ï¿½ï¿½CBVï¿½ï¿½ï¿½Í¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½heapï¿½ï¿½
         auto gfxViewManager = GfxViewManager::getInstance();
         auto d3dCbvHeap = gfxViewManager->GetCbvHeap()->getHeap<Microsoft::WRL::ComPtr<ID3D12DescriptorHeap>>();
         ID3D12DescriptorHeap* descriptorHeaps[] = { d3dCbvHeap.Get() };
@@ -299,20 +300,120 @@ namespace Hazel
 
         m_CommandList->SetGraphicsRootSignature(mRootSignature.Get());
 
-        D3D12VertexBuffer* vertexBuffer = dynamic_cast<D3D12VertexBuffer*>
-            (mesh->meshData->GetVertexBuffers()[0].get());
-        D3D12IndexBuffer* indexBuffer = dynamic_cast<D3D12IndexBuffer*>
-            (mesh->meshData->GetIndexBuffer().get());
-        D3D12_VERTEX_BUFFER_VIEW vbv;
-        vbv.BufferLocation = vertexBuffer->VertexBufferGPU->GetGPUVirtualAddress();
-        vbv.StrideInBytes = (mesh->meshData->GetVertexBuffers()[0].get())->GetStride();
-        vbv.SizeInBytes = (mesh->meshData->GetVertexBuffers()[0].get())->GetCount();
+        D3D12VertexBuffer* positionBuffer = nullptr;
+        auto vertexBufferIter = mesh->meshData->GetVertexBuffers().find(VertexProperty::Position);
+        if (vertexBufferIter != mesh->meshData->GetVertexBuffers().end()) {
+            positionBuffer = dynamic_cast<D3D12VertexBuffer*>(vertexBufferIter->second.get());
+        }
+
+        D3D12VertexBuffer* normalBuffer = nullptr;
+        auto normalBufferIter = mesh->meshData->GetVertexBuffers().find(VertexProperty::Normal);
+        if (normalBufferIter != mesh->meshData->GetVertexBuffers().end()) {
+            normalBuffer = dynamic_cast<D3D12VertexBuffer*>(normalBufferIter->second.get());
+        }
+
+        D3D12VertexBuffer* tangentBuffer = nullptr;
+        auto tangentBufferIter = mesh->meshData->GetVertexBuffers().find(VertexProperty::Tangent);
+        if (tangentBufferIter != mesh->meshData->GetVertexBuffers().end()) {
+            tangentBuffer = dynamic_cast<D3D12VertexBuffer*>(tangentBufferIter->second.get());
+        }
+        
+        D3D12VertexBuffer* texcoordBuffer = nullptr;
+        auto texcoordBufferIter = mesh->meshData->GetVertexBuffers().find(VertexProperty::TexCoord0);
+        if (texcoordBufferIter != mesh->meshData->GetVertexBuffers().end()) {
+            texcoordBuffer = dynamic_cast<D3D12VertexBuffer*>(texcoordBufferIter->second.get());
+        }
+
+        D3D12VertexBuffer* texcoord1Buffer = nullptr;
+        auto texcoord1BufferIter = mesh->meshData->GetVertexBuffers().find(VertexProperty::TexCoord1);
+        if (texcoord1BufferIter != mesh->meshData->GetVertexBuffers().end()) {
+            texcoord1Buffer = dynamic_cast<D3D12VertexBuffer*>(texcoord1BufferIter->second.get());
+        }
+        
+        D3D12VertexBuffer* colorBuffer = nullptr;
+        auto colorBufferIter = mesh->meshData->GetVertexBuffers().find(VertexProperty::VertexColor);
+        if (colorBufferIter != mesh->meshData->GetVertexBuffers().end()) {
+            colorBuffer = dynamic_cast<D3D12VertexBuffer*>(colorBufferIter->second.get());
+        }
+        
+        
+
+        
+        
+        D3D12IndexBuffer* indexBuffer = dynamic_cast<D3D12IndexBuffer*>(mesh->meshData->GetIndexBuffer().get());
+        // Create vertex buffer views for each vertex property
+        D3D12_VERTEX_BUFFER_VIEW positionVBV;
+        if (positionBuffer) {
+            positionVBV.BufferLocation = positionBuffer->VertexBufferGPU->GetGPUVirtualAddress();
+            positionVBV.StrideInBytes = positionBuffer->GetStride();
+            positionVBV.SizeInBytes = positionBuffer->GetCount();
+        }
+
+        D3D12_VERTEX_BUFFER_VIEW normalVBV;
+        if (normalBuffer) {
+            normalVBV.BufferLocation = normalBuffer->VertexBufferGPU->GetGPUVirtualAddress();
+            normalVBV.StrideInBytes = normalBuffer->GetStride();
+            normalVBV.SizeInBytes = normalBuffer->GetCount();
+        }
+
+        D3D12_VERTEX_BUFFER_VIEW tangentVBV;
+        if (tangentBuffer) {
+            tangentVBV.BufferLocation = tangentBuffer->VertexBufferGPU->GetGPUVirtualAddress();
+            tangentVBV.StrideInBytes = tangentBuffer->GetStride();
+            tangentVBV.SizeInBytes = tangentBuffer->GetCount();
+        }
+
+        D3D12_VERTEX_BUFFER_VIEW texcoordVBV;
+        if (texcoordBuffer) {
+            texcoordVBV.BufferLocation = texcoordBuffer->VertexBufferGPU->GetGPUVirtualAddress();
+            texcoordVBV.StrideInBytes = texcoordBuffer->GetStride();
+            texcoordVBV.SizeInBytes = texcoordBuffer->GetCount();
+        }
+
+        D3D12_VERTEX_BUFFER_VIEW texcoord1VBV;
+        if (texcoord1Buffer) {
+            texcoord1VBV.BufferLocation = texcoord1Buffer->VertexBufferGPU->GetGPUVirtualAddress();
+            texcoord1VBV.StrideInBytes = texcoord1Buffer->GetStride();
+            texcoord1VBV.SizeInBytes = texcoord1Buffer->GetCount();
+        }
+
+        D3D12_VERTEX_BUFFER_VIEW colorVBV;
+        if (colorBuffer) {
+            colorVBV.BufferLocation = colorBuffer->VertexBufferGPU->GetGPUVirtualAddress();
+            colorVBV.StrideInBytes = colorBuffer->GetStride();
+            colorVBV.SizeInBytes = colorBuffer->GetCount();
+        }
+
 
         D3D12_INDEX_BUFFER_VIEW ibv;
         ibv.BufferLocation = indexBuffer->IndexBufferGPU->GetGPUVirtualAddress();
         ibv.Format = indexBuffer->GetIndexFormat();
         ibv.SizeInBytes = indexBuffer->GetIndexBufferSize();
-        m_CommandList->IASetVertexBuffers(0, 1, &vbv);
+        // Create an array of vertex buffer views
+        D3D12_VERTEX_BUFFER_VIEW vertexBufferViews[6];
+        UINT numViews = 0;
+
+        if (positionBuffer) {
+            vertexBufferViews[numViews++] = positionVBV;
+        }
+        if (normalBuffer) {
+            vertexBufferViews[numViews++] = normalVBV;
+        }
+        if (tangentBuffer) {
+            vertexBufferViews[numViews++] = tangentVBV;
+        }
+        if (texcoordBuffer) {
+            vertexBufferViews[numViews++] = texcoordVBV;
+        }
+        if (texcoord1Buffer) {
+            vertexBufferViews[numViews++] = texcoord1VBV;
+        }
+        if (colorBuffer) {
+            vertexBufferViews[numViews++] = colorVBV;
+        }
+
+        // Set all vertex buffer views at once
+        m_CommandList->IASetVertexBuffers(0, numViews, vertexBufferViews);
         m_CommandList->IASetIndexBuffer(&ibv);
         m_CommandList->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
@@ -428,7 +529,7 @@ namespace Hazel
         ImGuiStyle& style = ImGui::GetStyle();
         style.Colors[ImGuiCol_WindowBg] = ImVec4(0.3f, 0.3f, 0.3f, 1.0f);
         style.WindowRounding = 0.25;
-        // Õâ¸öµØ·½Ó¦¸Ã²»ÄÜÃ¿Ò»Ö¡resize£¬ resizeÖ®ºóÏàµ±ÓÚÇå¿ÕÁËÆÁÄ»¡£
+        // ï¿½ï¿½ï¿½ï¿½Ø·ï¿½Ó¦ï¿½Ã²ï¿½ï¿½ï¿½Ã¿Ò»Ö¡resizeï¿½ï¿½ resizeÖ®ï¿½ï¿½ï¿½àµ±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä»ï¿½ï¿½
         //ImVec2 viewPortSize = ImGui::GetContentRegionAvail();
         ////HZ_CORE_INFO("Viewport size X: {0};  : {1}", viewPortSize.x, viewPortSize.y);
         //if (m_viewPortPanelSize != *((glm::vec2*)&viewPortSize)) 
@@ -440,7 +541,7 @@ namespace Hazel
         //}
         uint32_t textureID = 0;
 
-        // Õâ¸öµØ·½Ó¦¸Ã¿´Ò»ÏÂImguiÖÐµÄtexture ÊÇÔõÃ´°ó¶¨µÄ¡£
+        // ï¿½ï¿½ï¿½ï¿½Ø·ï¿½Ó¦ï¿½Ã¿ï¿½Ò»ï¿½ï¿½Imguiï¿½Ðµï¿½texture ï¿½ï¿½ï¿½ï¿½Ã´ï¿½ó¶¨µÄ¡ï¿½
         //uint32_t textureID = 0;
         //switch (m_renderTargetEnum)
         //{

@@ -31,6 +31,7 @@ namespace Hazel {
 		void AddVertexBuffer(const VertexProperty& vertexProperty, const Ref<VertexBuffer>& vertexBuffer);
 
 		virtual const std::vector<Ref<VertexBuffer>>& GetVertexBuffers() const = 0;
+		inline const std::map<VertexProperty, Ref<VertexBuffer>>& GetVertexBuffers() { return m_VertexBuffers;}
 		virtual const Ref<IndexBuffer>& GetIndexBuffer() const = 0;
 
 		static Ref<VertexArray> Create();
