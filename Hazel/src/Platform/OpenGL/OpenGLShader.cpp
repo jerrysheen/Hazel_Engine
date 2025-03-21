@@ -7,6 +7,33 @@
 #include <glm/gtc/type_ptr.hpp>
 
 namespace Hazel {
+
+	//-------- OpenGLShaderReflection 实现 --------
+	OpenGLShaderReflection::OpenGLShaderReflection(uint32_t program)
+		: m_RendererID(program)
+	{
+		// TODO: 初始化反射数据
+	}
+
+	BufferLayout OpenGLShaderReflection::ReflectVertexInputLayout()
+	{
+		// TODO: 解析顶点输入布局
+		return m_InputLayout;
+	}
+
+	std::vector<ShaderParameter> OpenGLShaderReflection::ReflectParameters()
+	{
+		// TODO: 解析着色器参数
+		return m_Parameters;
+	}
+
+	std::vector<ResourceBinding> OpenGLShaderReflection::ReflectResourceBindings()
+	{
+		// TODO: 解析资源绑定
+		return m_ResourceBindings;
+	}
+
+	//-------- OpenGLShader 实现 --------
 	static GLenum ShaderTypeFromString(const std::string& type) 
 	{
 		//HZ_CORE_INFO(type);
@@ -32,6 +59,9 @@ namespace Hazel {
 		auto lastDot = filepath.rfind('.');
 		auto count = lastDot == std::string::npos ? filepath.size() - lastSlash : lastDot - lastSlash;
 		m_Name = filepath.substr(lastSlash, count);
+		
+		// 创建反射
+		CreateReflection();
 	}
 	OpenGLShader::OpenGLShader(const std::string& name, const std::string& vertexSrc, const std::string& fragmentSrc)
 		:m_Name(name)
@@ -40,11 +70,23 @@ namespace Hazel {
 		sources[GL_VERTEX_SHADER] = vertexSrc;
 		sources[GL_FRAGMENT_SHADER] = fragmentSrc;
 		Compile(sources);
+		
+		// 创建反射
+		CreateReflection();
 	}
 
 	OpenGLShader::~OpenGLShader()
 	{
 		glDeleteProgram(m_RendererID);
+	}
+
+	void OpenGLShader::CreateReflection()
+	{
+		// TODO: 创建shader反射对象
+		m_Reflection = CreateRef<OpenGLShaderReflection>(m_RendererID);
+		
+		// TODO: 设置输入布局
+		m_InputLayout = m_Reflection->ReflectVertexInputLayout();
 	}
 
 	std::string OpenGLShader::ReadFile(const std::string& filepath) 
@@ -123,6 +165,10 @@ namespace Hazel {
 				HZ_CORE_ASSERT(false, "Shader compilation failure!");
 				break;
 			}
+			
+			// TODO: 收集着色器字节码
+			// m_ByteCode = ...
+			
 			glAttachShader(program, shader);
 			glShaderIDs.push_back(shader);
 		}

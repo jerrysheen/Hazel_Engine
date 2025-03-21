@@ -17,8 +17,8 @@ namespace Hazel {
 		virtual void AddVertexBuffer(const Ref<VertexBuffer>& vertexBuffer) override;
 		virtual void SetIndexBuffer(const Ref<IndexBuffer>& indexBuffer) override;
 
-		virtual void SetLayout(const BufferLayout& layout) override {};
-		virtual const std::vector<Ref<VertexBuffer>>& GetVertexBuffers() const override {return m_VertexBuffers;}
+		//virtual void SetLayout(const BufferLayout& layout) override {};
+		/*virtual const std::vector<Ref<VertexBuffer>>& GetVertexBuffers() const override {return m_VertexBuffers;}*/
 		virtual const Ref<IndexBuffer>& GetIndexBuffer() const override { return m_IndexBuffer; };
 	private:
 

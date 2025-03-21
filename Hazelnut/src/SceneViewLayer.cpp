@@ -7,6 +7,7 @@
 #include "Hazel/Gfx/GfxDesc.h"
 #include "Hazel/Gfx/GfxDesc.h"
 #include "Platform/D3D12/D3D12Buffer.h"
+#include "Platform/D3D12/D3D12Shader.h"
 #include "Platform/D3D12/D3D12VertexArray.h"
 #include "Hazel/Renderer/VertexArray.h"
 
@@ -56,9 +57,9 @@ namespace Hazel
         Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> m_CommandList = cmdList->getCommandList<Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList>>();
         ID3D12CommandList* rawCommandList = m_CommandList.Get();
         //��Ӳдд���� ���ƺ��滹Ҫ�ٿ��Ƕ�ƽ̨�����⣬Ҳ������һ��������ֱ��ת��ȥ��
-        m_PbrShader = Shader::Create("assets/shaders/color.hlsl");
-        mvsByteCode = d3dUtil::CompileShader(L"assets/shaders/color.hlsl", nullptr, "VS", "vs_5_0");
-        mpsByteCode = d3dUtil::CompileShader(L"assets/shaders/color.hlsl", nullptr, "PS", "ps_5_0");
+        m_ColorShader = Shader::Create("assets/shaders/color.hlsl");
+        // mvsByteCode = d3dUtil::CompileShader(L"assets/shaders/color.hlsl", nullptr, "VS", "vs_5_0");
+        // mpsByteCode = d3dUtil::CompileShader(L"assets/shaders/color.hlsl", nullptr, "PS", "ps_5_0");
 
 
 
@@ -124,6 +125,9 @@ namespace Hazel
             { "TEXCOORD", 1, DXGI_FORMAT_R32G32_FLOAT, 4, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
             { "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 5, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }
         };
+        D3D12Shader* d3d12Shader = dynamic_cast<D3D12Shader*>(m_ColorShader.get());
+        mvsByteCode = d3d12Shader->GetVSByteCode();
+        mpsByteCode = d3d12Shader->GetPSByteCode();
         psoDesc.InputLayout = { mInputLayout.data(), (UINT)mInputLayout.size()};
         psoDesc.pRootSignature = mRootSignature.Get();
         psoDesc.VS =

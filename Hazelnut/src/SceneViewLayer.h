@@ -33,7 +33,7 @@ namespace Hazel
 	private:
 
 		Window& m_window;
-		Ref<Shader> m_PbrShader;
+		Ref<Shader> m_ColorShader;
 		Ref<TextureBuffer> m_BackBuffer;
 		Ref<TextureBuffer> m_DepthBuffer;
 		Microsoft::WRL::ComPtr<ID3D12Resource> colorBuffer;

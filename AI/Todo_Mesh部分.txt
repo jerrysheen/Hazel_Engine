@@ -1,17 +1,8 @@
 []  修改mesh类， 抽出来inputlayout
 []  修改Shader， 增加反射，关联inputlayout
 []  完成PSO修改，绑定Shader+材质跑通
-[]  修改mesh类， 运行时怎么样根据inputlayout的需求动态组织数据然后传递上去？如果没有的话就传这个数据？
+[x]  修改mesh类， 运行时怎么样根据inputlayout的需求动态组织数据然后传递上去？如果没有的话就传这个数据？
   还是预先加载？这个没想好
-
-[优化建议 - Mesh加载和VertexBuffer策略]
-[]  在Mesh加载时预加载常用顶点数据（position、normal、uv0等）到GPU
-[]  按逻辑组合拆分VertexBuffer，不是每个属性一个Buffer：
-    - 基础缓冲区(positions)
-    - 标准材质缓冲区(normals, uv0)
-    - 高级材质缓冲区(tangents, uv1, colors等)
-[]  为不同Shader InputLayout组合实现VertexArray缓存机制
-[]  对不常用的顶点属性，采用延迟加载策略，首次需要时上传并缓存
 
 [更优方案 - 使用Meta文件]
 []  为每个模型/网格创建meta配置文件，定义需要预加载的顶点属性
@@ -19,15 +10,10 @@
 []  加载模型时根据meta配置将指定属性一次性上传到显存
 []  运行时只需要按shader要求组装已上传的VertexBuffer，无需额外数据传输
 []  针对特殊shader需求，可在meta中预设不同的VertexBuffer组合方案
-[]  这种方式既优化了运行时性能，又避免了过度消耗显存
 
 []  Material部分， ResourceBinding部分，RootSignature部分
 []
 []  渲染上下文的提取？ 看起来我目前是把RenderAPIManager类滥用了,
     Graphics Context里面到底有什么，目前看起来有的是Renderqueue，以及Graphics pipeline。
     我觉得应该是渲染所需要的所有信息都在里面，但是不同的内容可能在Context持有的不同类里面
-[]
-[]
-[]
-[]
 []

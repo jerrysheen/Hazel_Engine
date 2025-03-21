@@ -17,12 +17,12 @@ namespace Hazel {
 		virtual void AddVertexBuffer(const Ref<VertexBuffer>& vertexBuffer) override;
 		virtual void SetIndexBuffer(const Ref<IndexBuffer>& indexBuffer) override;
 
-		virtual void SetLayout(const BufferLayout& layout) override;
+		//virtual void SetLayout(const BufferLayout& layout) override;
 
-		virtual const std::vector<Ref<VertexBuffer>>& GetVertexBuffers() const override { return m_VertexBuffers; }
+		//virtual const std::vector<Ref<VertexBuffer>>& GetVertexBuffers() const override { return m_VertexBuffers; }
 		virtual const Ref<IndexBuffer>& GetIndexBuffer() const override { return m_IndexBuffer; };
 
-		virtual const std::vector<D3D12_INPUT_ELEMENT_DESC>& GetInputLayout() const { return m_D3DInputLayout; }
+		//virtual const std::vector<D3D12_INPUT_ELEMENT_DESC>& GetInputLayout() const { return m_D3DInputLayout; }
 	private:
 		DXGI_FORMAT GetLayOutFormat(const ShaderDataType& type);
 
@@ -31,8 +31,8 @@ namespace Hazel {
 		std::vector<Ref<VertexBuffer>> m_VertexBuffers;
 		Ref<IndexBuffer> m_IndexBuffer;
 
-		// Inputlay 声明在 VertexArray里面。
-		std::vector<D3D12_INPUT_ELEMENT_DESC> m_D3DInputLayout;
+		//// Inputlay 声明在 VertexArray里面。
+		//std::vector<D3D12_INPUT_ELEMENT_DESC> m_D3DInputLayout;
 		UINT VertexByteStride = 0;
 
 	};

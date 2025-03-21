@@ -30,15 +30,15 @@ namespace Hazel {
 
 		void AddVertexBuffer(const VertexProperty& vertexProperty, const Ref<VertexBuffer>& vertexBuffer);
 
-		virtual const std::vector<Ref<VertexBuffer>>& GetVertexBuffers() const = 0;
+		//virtual const std::vector<Ref<VertexBuffer>>& GetVertexBuffers() const = 0;
 		inline const std::map<VertexProperty, Ref<VertexBuffer>>& GetVertexBuffers() { return m_VertexBuffers;}
 		virtual const Ref<IndexBuffer>& GetIndexBuffer() const = 0;
 
 		static Ref<VertexArray> Create();
 
-		inline virtual void SetLayout(const BufferLayout& layout) = 0;
+		//inline virtual void SetLayout(const BufferLayout& layout) = 0;
 	protected:
-		BufferLayout m_Layout;
+		//BufferLayout m_Layout;
 		std::map<VertexProperty, Ref<VertexBuffer>> m_VertexBuffers;
 	};
 }
