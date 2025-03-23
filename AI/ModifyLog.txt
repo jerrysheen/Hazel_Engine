@@ -3,6 +3,26 @@ Commit Hash: 待生成
 
 # 提交信息
 
+refactor(渲染系统): 移除Model类并实现新的材质系统
+
+移除了Model.h和Model.cpp文件，废弃了旧的模型加载系统，代之以新的材质系统。
+实现了MaterialProperty和Material类，支持不同类型的材质属性、序列化和材质实例管理。
+更新了Shader类以支持更多的材质属性类型，并完善了与材质系统的集成。
+
+- 添加MaterialPropertyType枚举和MaterialProperty类用于定义材质属性和值
+- 实现Material类的核心功能，包括属性设置/获取、序列化和克隆
+- 添加MaterialLibrary类用于管理材质实例
+- 为Shader类添加SetFloat2方法及其在各渲染API后端的实现
+- 更新Texture2D类，添加GetPath方法
+- 调整EditorLayer和SceneViewLayer以适应新的材质系统
+
+该提交完成了Todo列表中的"材质系统"阶段一的大部分任务。
+
+日期: 2025年03月23日
+Commit Hash: 待生成
+
+# 提交信息
+
 feat(D3D12): 完善着色器反射系统与顶点输入布局处理
 
 实现D3D12着色器反射系统与顶点输入布局的完整集成，自动解析HLSL着色器的顶点属性需求。

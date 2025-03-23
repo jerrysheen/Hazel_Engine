@@ -1,0 +1,164 @@
+// 基础资源类
+class TextureResource {
+public:
+    virtual ~TextureResource() = default;
+    
+    uint32_t GetWidth() const { return m_Width; }
+    uint32_t GetHeight() const { return m_Height; }
+    TextureFormat GetFormat() const { return m_Format; }
+    
+    // 返回原生资源句柄（如ID3D12Resource）
+    virtual void* GetNativeResource() const = 0;
+    
+protected:
+    uint32_t m_Width = 0;
+    uint32_t m_Height = 0;
+    TextureFormat m_Format = TextureFormat::RGBA32;
+};
+
+/*
+ * 为什么需要具体的纹理资源类(Texture2DResource等)而不仅是通用的TextureResource?
+ * 
+ * 1. 维度特定的属性和操作
+ *    - 2D纹理和3D纹理在底层实现上有明显区别
+ *    - 2D纹理只有宽高，3D纹理还有深度
+ *    - 立方体贴图是特殊的2D纹理数组，有六个面
+ * 
+ * 2. 资源创建和管理的差异
+ *    - 不同维度的纹理在创建时参数不同
+ *    - D3D12中，创建2D纹理使用D3D12_RESOURCE_DIMENSION_TEXTURE2D
+ *    - 3D纹理使用D3D12_RESOURCE_DIMENSION_TEXTURE3D
+ *    - 从文件加载纹理时，2D纹理和3D纹理/立方体贴图的加载方式完全不同
+ * 
+ * 3. API接口明确性
+ *    - 静态工厂方法Create能根据资源类型提供对应的参数
+ *    - 避免通用接口中使用太多可选参数或无关参数
+ * 
+ * 4. 类型安全
+ *    - 编译时类型检查确保正确使用资源
+ *    - 防止尝试用2D纹理数据创建3D纹理等错误
+ * 
+ * 虽然视图(TextureView)决定资源如何被使用，但资源本身的维度特性是固有的。
+ * 在材质系统中，需要明确区分texture2d和texturecube等不同类型。
+ */
+
+// 2D纹理资源
+class Texture2DResource : public TextureResource {
+public:
+    static Ref<Texture2DResource> Create(uint32_t width, uint32_t height, 
+                                         TextureFormat format, 
+                                         TextureUsageFlags usageFlags);
+    static Ref<Texture2DResource> Create(const std::string& path);
+    
+    // 实现基类方法
+    virtual void* GetNativeResource() const override;
+};
+
+// 视图基类
+class TextureView {
+public:
+    virtual ~TextureView() = default;
+    
+    // 绑定视图到特定槽位
+    virtual void Bind(uint32_t slot) const = 0;
+    
+    // 获取关联的资源
+    Ref<TextureResource> GetResource() const { return m_Resource; }
+    
+protected:
+    Ref<TextureResource> m_Resource;
+};
+
+// 着色器资源视图
+class ShaderResourceView : public TextureView {
+public:
+    static Ref<ShaderResourceView> Create(Ref<TextureResource> resource);
+    
+    virtual void Bind(uint32_t slot) const override;
+};
+
+// 渲染目标视图
+class RenderTargetView : public TextureView {
+public:
+    static Ref<RenderTargetView> Create(Ref<TextureResource> resource);
+    
+    virtual void Bind(uint32_t slot) const override;
+    void Clear(const glm::vec4& clearColor);
+};
+
+// 高级渲染目标类
+class RenderTarget {
+public:
+    RenderTarget(const std::vector<Ref<RenderTargetView>>& colorAttachments,
+                 Ref<DepthStencilView> depthStencil = nullptr);
+    
+    void Bind();
+    void Unbind();
+    void Clear(const glm::vec4& clearColor);
+    
+    // 获取特定颜色附件的着色器资源视图（用于采样）
+    Ref<ShaderResourceView> GetColorAttachmentSRV(uint32_t index = 0);
+    
+private:
+    std::vector<Ref<RenderTargetView>> m_ColorAttachments;
+    Ref<DepthStencilView> m_DepthStencil;
+};
+
+/*
+ * 资源+视图架构设计总结
+ * ----------------------
+ * 
+ * 这种设计将纹理系统分为两个核心概念：资源和视图
+ * 
+ * 1. 资源(TextureResource)：
+ *    - 表示GPU上的实际内存块
+ *    - 包含固有属性如维度、格式、大小等
+ *    - 按维度特性分为具体子类(Texture2DResource, Texture3DResource等)
+ * 
+ * 2. 视图(TextureView)：
+ *    - 定义如何解释和使用资源
+ *    - 包括着色器资源视图(SRV)、渲染目标视图(RTV)、深度模板视图(DSV)等
+ *    - 同一资源可以创建多个不同类型的视图
+ * 
+ * 优势：
+ * 1. 符合现代GPU架构和API设计(D3D12, Vulkan等)
+ * 2. 资源复用 - 同一纹理可以作为渲染目标和着色器输入
+ * 3. 清晰的职责分离 - 资源负责存储，视图负责解释
+ * 4. 类型安全 - 设计防止错误使用
+ * 5. 优化内存 - 避免重复创建相同资源的不同视图
+ * 
+ * 在实际应用中，高级抽象如RenderTarget可以隐藏底层细节，
+ * 提供更简洁的接口，同时保持底层架构的灵活性。
+ */
+
+/*
+ * TextureView与GfxViewManager的关系
+ * ---------------------------------
+ * 
+ * TextureView作为抽象概念，需要通过GfxViewManager创建和管理实际的GPU描述符：
+ * 
+ * 1. 视图创建流程：
+ *    - 创建TextureView时，自动向GfxViewManager注册并获取对应描述符
+ *    - 每种视图类型对应GfxViewManager中的不同描述符堆：
+ *      * ShaderResourceView → m_SrvHeap
+ *      * RenderTargetView → m_RtvHeap
+ *      * DepthStencilView → m_DsvHeap
+ *      * UnorderedAccessView(可选) → 需添加UAV堆
+ * 
+ * 2. 描述符管理：
+ *    - 使用资源UUID作为键值缓存描述符
+ *    - 支持同一资源创建多种不同类型的视图
+ *    - 管理描述符的生命周期与资源视图同步
+ * 
+ * 3. 视图绑定：
+ *    - TextureView::Bind()实现中使用从GfxViewManager获取的描述符句柄
+ * 
+ * TODO:
+ * [ ] 修改TextureView实现，在构造函数或Create方法中与GfxViewManager交互
+ * [ ] 为每种视图类型添加成员变量存储描述符句柄或索引
+ * [ ] 扩展GfxViewManager接口，支持基于TextureResource创建视图描述符
+ * [ ] 实现描述符缓存系统，避免重复创建
+ * [ ] 设计资源/视图生命周期管理策略
+ * [ ] 添加对UAV(无序访问视图)的支持
+ * [ ] 完善与渲染管线的集成
+ */
