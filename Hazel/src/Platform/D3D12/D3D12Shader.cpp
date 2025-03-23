@@ -80,7 +80,7 @@ namespace Hazel
 			}
 		}
 
-		//m_InputLayout = BufferLayout(elements);
+		m_InputLayout = BufferLayout(elements);
 		m_HasReflectedInputLayout = true;
 		return m_InputLayout;
 	}
@@ -259,8 +259,9 @@ namespace Hazel
 			m_InputLayout = m_Reflection->ReflectVertexInputLayout();
 			
 			// 创建D3D12输入布局描述
-			mInputLayout.clear();
+			m_D3D12InputLayout.clear();
 			
+			int count = 0;
 			// 将BufferLayout转换为D3D12_INPUT_ELEMENT_DESC
 			for (const auto& element : m_InputLayout)
 			{
@@ -268,12 +269,13 @@ namespace Hazel
 				inputElement.SemanticName = element.Name.c_str();
 				inputElement.SemanticIndex = element.CoordIndex;
 				inputElement.Format = GetDXGIFormat(element.Type);
-				inputElement.InputSlot = 0;
-				inputElement.AlignedByteOffset = element.Offset;
+				inputElement.InputSlot = count;
+				inputElement.AlignedByteOffset = 0;
 				inputElement.InputSlotClass = D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA;
 				inputElement.InstanceDataStepRate = 0;
 				
-				mInputLayout.push_back(inputElement);
+				m_D3D12InputLayout.push_back(inputElement);
+				count++;
 			}
 		}
 	}

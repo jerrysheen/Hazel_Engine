@@ -1,5 +1,5 @@
-[]  修改mesh类， 抽出来inputlayout
-[]  修改Shader， 增加反射，关联inputlayout
+[x]  修改mesh类， 抽出来inputlayout
+[x]  修改Shader， 增加反射，关联inputlayout
 []  完成PSO修改，绑定Shader+材质跑通
 [x]  修改mesh类， 运行时怎么样根据inputlayout的需求动态组织数据然后传递上去？如果没有的话就传这个数据？
   还是预先加载？这个没想好

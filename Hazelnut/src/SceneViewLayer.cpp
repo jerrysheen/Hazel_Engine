@@ -66,7 +66,6 @@ namespace Hazel
         std::string abpath = std::filesystem::current_path().u8string();
         std::string cubeModelPath = abpath + std::string("/assets/Resources/Models/Cube/Cube.obj");
         mesh = Mesh::Create();
-        //mesh->Create();
         mesh->LoadMesh(cubeModelPath);
 
         // build root signature
@@ -115,17 +114,9 @@ namespace Hazel
         
         D3D12VertexArray* vertexArray = dynamic_cast<D3D12VertexArray*>
             (mesh->meshData.get());
-		//mInputLayout = vertexArray->GetInputLayout();
-		mInputLayout=
-        {
-            { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
-            { "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 1, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
-            { "TANGENT", 0, DXGI_FORMAT_R32G32B32_FLOAT, 2, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
-            { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 3, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
-            { "TEXCOORD", 1, DXGI_FORMAT_R32G32_FLOAT, 4, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
-            { "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 5, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }
-        };
+
         D3D12Shader* d3d12Shader = dynamic_cast<D3D12Shader*>(m_ColorShader.get());
+		mInputLayout = d3d12Shader->GetD3D12InputLayout();
         mvsByteCode = d3d12Shader->GetVSByteCode();
         mpsByteCode = d3d12Shader->GetPSByteCode();
         psoDesc.InputLayout = { mInputLayout.data(), (UINT)mInputLayout.size()};

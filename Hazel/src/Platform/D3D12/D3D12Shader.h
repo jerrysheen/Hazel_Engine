@@ -58,6 +58,7 @@ namespace Hazel
 
 		inline ComPtr<ID3DBlob> GetVSByteCode() const { return m_VsByteCode; }
 		inline ComPtr<ID3DBlob> GetPSByteCode() const { return m_PsByteCode; }
+		inline const std::vector<D3D12_INPUT_ELEMENT_DESC>& GetD3D12InputLayout() const { return m_D3D12InputLayout; }
 
 		private:
 		void Compile(const std::string& source, const std::string& entryPoint, const std::string& target, ComPtr<ID3DBlob>& outByteCode);
@@ -70,7 +71,7 @@ namespace Hazel
 		ComPtr<ID3DBlob> m_VsByteCode = nullptr;
 		ComPtr<ID3DBlob> m_PsByteCode = nullptr;
 
-		std::vector<D3D12_INPUT_ELEMENT_DESC> mInputLayout;
+		std::vector<D3D12_INPUT_ELEMENT_DESC> m_D3D12InputLayout;
 		BufferLayout m_InputLayout; // 与D3D12_INPUT_ELEMENT_DESC对应的BufferLayout
 		
 		Ref<ShaderReflection> m_Reflection;

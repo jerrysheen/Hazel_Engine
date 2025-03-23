@@ -38,7 +38,6 @@ namespace Hazel {
 
 		//inline virtual void SetLayout(const BufferLayout& layout) = 0;
 	protected:
-		//BufferLayout m_Layout;
 		std::map<VertexProperty, Ref<VertexBuffer>> m_VertexBuffers;
 	};
 }

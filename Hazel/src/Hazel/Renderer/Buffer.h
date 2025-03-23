@@ -91,6 +91,12 @@ namespace Hazel {
 		{
 			CalculateOffsetsAndStride();
 		}
+
+		BufferLayout(const std::vector<BufferElement>& elements)
+			: m_Elements(elements)
+		{
+			CalculateOffsetsAndStride();
+		}
 		inline const std::vector<BufferElement>& GetElements() const { return m_Elements; };
 		inline const uint32_t GetStride() const { return m_Stride; };
 
@@ -170,7 +176,7 @@ namespace Hazel {
 		//virtual void Unbind() const = 0;
 		//
 		//virtual uint32_t GetCount() const = 0;
-		// ¸ù¾ÝbufferµÄelement¸öÊý´´½¨Ò»¸ö´óµÄbuffer
+		// ï¿½ï¿½ï¿½ï¿½bufferï¿½ï¿½elementï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½buffer
 		ConstantBuffer& operator=(const ConstantBuffer& rhs) = delete;
 		static Ref<ConstantBuffer> Create(uint32_t bufferSize);
 		inline boost::uuids::uuid GetUUID() const { return m_UUID; }
@@ -179,7 +185,7 @@ namespace Hazel {
 		template<typename T>
 		T getCpuHandle() const {
 			if constexpr (std::is_same_v<T, uint32_t> || std::is_same_v<T, CD3DX12_CPU_DESCRIPTOR_HANDLE>) {
-				return std::get<T>(m_CpuHandle);  // ³¢ÊÔ»ñÈ¡ T ÀàÐÍµÄÖµ
+				return std::get<T>(m_CpuHandle);  // ï¿½ï¿½ï¿½Ô»ï¿½È¡ T ï¿½ï¿½ï¿½Íµï¿½Öµ
 			}
 			else {
 				static_assert(false, "T must be either uint32_t or CD3DX12_CPU_DESCRIPTOR_HANDLE");
@@ -189,7 +195,7 @@ namespace Hazel {
 		template<typename T>
 		T getResource() const {
 			if constexpr (std::is_same_v<T, uint32_t> || std::is_same_v<T, Microsoft::WRL::ComPtr<ID3D12Resource>>) {
-				return std::get<T>(m_BufferResource);  // ³¢ÊÔ»ñÈ¡ T ÀàÐÍµÄÖµ
+				return std::get<T>(m_BufferResource);  // ï¿½ï¿½ï¿½Ô»ï¿½È¡ T ï¿½ï¿½ï¿½Íµï¿½Öµ
 			}
 			else {
 				static_assert(false, "T must be either uint32_t or ID3D12Resource");
