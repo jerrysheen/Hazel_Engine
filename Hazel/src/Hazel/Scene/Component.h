@@ -5,7 +5,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include "Hazel/Model/Mesh.h"
 #include <Hazel/Model/Material.h>
-#include <Hazel/Model/Model.h>
+//#include <Hazel/Model/Model.h>
 #include <Hazel/Renderer/Camera.h>
 
 
@@ -62,10 +62,10 @@ namespace Hazel {
 	{
 		Ref<Material> material;
 
-		MeshRendererComponent()
-		{
-			material = Material::Create();
-		}
+		//MeshRendererComponent()
+		//{
+		//	material = Material::Create();
+		//}
 	};
 
 

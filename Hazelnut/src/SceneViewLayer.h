@@ -8,7 +8,7 @@
 #include "Platform/D3D12/d3dx12.h"
 #include "Platform/D3D12/d3dUtil.h"
 #include "Platform/D3D12/D3D12RenderAPIManager.h"
-
+#include "Hazel/Model/Material.h"
 // temp:
 #include "platform/D3D12/d3dUtil.h"
 namespace Hazel
@@ -33,6 +33,7 @@ namespace Hazel
 	private:
 
 		Window& m_window;
+		Ref<Material> material;
 		Ref<Shader> m_ColorShader;
 		Ref<TextureBuffer> m_BackBuffer;
 		Ref<TextureBuffer> m_DepthBuffer;

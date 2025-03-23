@@ -11,29 +11,18 @@
 
 namespace Hazel 
 {
-    struct Vertex
-    {
-        glm::vec3 Position;
-        glm::vec3 Normal;
-        glm::vec2 TexCoords;
 
-    };
     class Mesh
     {
     public:
-        
-        //std::vector<Texture> textures;
         Mesh() 
         {
             meshData = VertexArray::Create();;
         };
-        void Draw(Shader shader);
 
         static Ref<Mesh> Create();
-
         bool LoadMesh(const std::string& path);
         Ref<VertexArray> meshData;
-
     private:
         bool needPosition = true;
         bool needNormal = true;
@@ -51,9 +40,7 @@ namespace Hazel
 		uint32_t bufferStride = 0;
         void FillVertexArray(const std::string& metaFilePath);
         std::vector<uint16_t> indexData;
-        //void LoadModel(const std::string& path);
         void processNode(aiNode* node, const aiScene* scene);
-
         void processMesh(aiMesh* mesh, const aiScene* scene);
 
     };

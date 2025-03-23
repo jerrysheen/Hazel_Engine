@@ -3,40 +3,144 @@
 #include "hzpch.h"
 #include "../Renderer/Shader.h"
 #include "Hazel/Renderer/Texture.h"
+#include <variant>
+#include <glm/glm.hpp>
 
 //#include "../Renderer/Renderer3D.h"
 
 namespace Hazel 
 {
-	class Material 
-	{
-	public : 
-		class Material() = default;
-		static Ref<Material> Create();
-	
-	public :
-		// ×îºó»òĞí»á±ä³ÉÒ»¸ökeymapµÄ¸ñÊ½£¬ ÎÒ´ÓÒ»¸ö½Å±¾ÓïÑÔÀïÃæ¶¨ÒåÕâ¸öµØ·½ÓĞÄÄĞ©²ÎÊı£¬È»ºóÕâ¸öµØ·½×Ô¶¯ÉÏ´«ÉÏÈ¥¡£
-		Ref<Shader> shader;
-		//Ref<Texture2D> baseMap;
-		//Ref<Texture2D> bumpMap;
-		//Ref<Texture2D> glossnessMap;
-		//Ref<Texture2D> specularMap;
-		//Ref<Texture2D> aoMap;
-		Ref<Texture2D> tex00;
-		Ref<Texture2D> tex01;
-		Ref<Texture2D> tex02;
-		Ref<Texture2D> tex03;
-		Ref<Texture2D> tex04;
-		Ref<Texture2D> tex05;
-
-		Ref<Texture3D> tex3D;
-
-		Ref<glm::vec4> color;
-		//Renderer3D::DRAW_TYPE drawType;
-
-		Ref<glm::mat4> modelMatrix;
-		Ref<glm::mat4> translate;
-		Ref<glm::mat4> rotate;
-		Ref<glm::mat4> scale;
+	// æè´¨å±æ€§ç±»å‹
+	enum class MaterialPropertyType {
+		None = 0,
+		Float, Float2, Float3, Float4,
+		Int, Int2, Int3, Int4,
+		Bool,
+		Matrix3, Matrix4,
+		Texture2D, TextureCube, Texture3D
 	};
+
+	// æè´¨å±æ€§å€¼
+	class MaterialProperty {
+	public:
+		// æ„é€ å‡½æ•°å’Œè®¿é—®å™¨
+		MaterialProperty();
+		MaterialProperty(float value);
+		MaterialProperty(const glm::vec2& value);
+		MaterialProperty(const glm::vec3& value);
+		MaterialProperty(const glm::vec4& value);
+		MaterialProperty(int value);
+		MaterialProperty(bool value);
+		MaterialProperty(const Ref<Texture2D>& value);
+        
+		// è·å–å±æ€§ç±»å‹
+		MaterialPropertyType GetType() const { return m_Type; }
+
+		// è·å–å±æ€§å€¼ï¼ˆç±»å‹å®‰å…¨çš„è®¿é—®å™¨ï¼‰
+		template<typename T>
+		T& GetValue();
+
+		template<typename T>
+		const T& GetValue() const;
+        
+	private:
+		MaterialPropertyType m_Type;
+		std::variant<
+			std::monostate,
+			float, glm::vec2, glm::vec3, glm::vec4,
+			int, bool,
+			Ref<Texture2D>, Ref<Texture3D>
+		> m_Value;
+	};
+
+	// æè´¨åŸºç±»
+	class Material {
+	public:
+		static Ref<Material> Create(const Ref<Shader>& shader);
+		static Ref<Material> CreateFromMeta(const std::string& path);
+		virtual void Bind() const;
+		virtual Ref<Material> Clone() const;
+		
+		// å±æ€§è®¾ç½®å’Œè·å–æ–¹æ³•
+		template<typename T>
+		void Set(const std::string& name, const T& value);
+		
+		template<typename T>
+		T Get(const std::string& name) const;
+		
+		bool HasProperty(const std::string& name) const;
+		const Ref<Shader>& GetShader() const;
+		
+		// åºåˆ—åŒ–å’Œååºåˆ—åŒ–
+		void SerializeToJSON(const std::string& filepath);
+		static Ref<Material> DeserializeFromJSON(const std::string& filepath);
+		
+		Material(const Ref<Shader>& shader);
+
+	protected:
+        
+		Ref<Shader> m_Shader;
+		std::unordered_map<std::string, MaterialProperty> m_Properties;
+		//GraphicsPipelineDesc m_PipelineDesc;
+		//Ref<GraphicsPipeline> m_Pipeline;
+	};
+
+	// æè´¨åº“
+	class MaterialLibrary {
+	public:
+		static MaterialLibrary& Get();
+		
+		void Register(const std::string& name, const Ref<Material>& material);
+		Ref<Material> Get(const std::string& name);
+		bool Exists(const std::string& name) const;
+		
+		bool Save(const std::string& name, const std::string& filepath);
+		Ref<Material> Load(const std::string& filepath);
+		
+	private:
+		std::unordered_map<std::string, Ref<Material>> m_Materials;
+	};
+
+// // ç‰¹å®šæè´¨ç±»å‹
+// class PBRMaterial : public Material {
+//     // PBRç‰¹å®šå±æ€§å’Œæ–¹æ³•...
+// };
+
+// class UnlitMaterial : public Material {
+//     // Unlitç‰¹å®šå±æ€§å’Œæ–¹æ³•...
+// };
+
+// MaterialPropertyæ¨¡æ¿ç‰¹åŒ–å£°æ˜
+template<> float& MaterialProperty::GetValue<float>();
+template<> const float& MaterialProperty::GetValue<float>() const;
+template<> glm::vec2& MaterialProperty::GetValue<glm::vec2>();
+template<> const glm::vec2& MaterialProperty::GetValue<glm::vec2>() const;
+template<> glm::vec3& MaterialProperty::GetValue<glm::vec3>();
+template<> const glm::vec3& MaterialProperty::GetValue<glm::vec3>() const;
+template<> glm::vec4& MaterialProperty::GetValue<glm::vec4>();
+template<> const glm::vec4& MaterialProperty::GetValue<glm::vec4>() const;
+template<> int& MaterialProperty::GetValue<int>();
+template<> const int& MaterialProperty::GetValue<int>() const;
+template<> bool& MaterialProperty::GetValue<bool>();
+template<> const bool& MaterialProperty::GetValue<bool>() const;
+template<> Ref<Texture2D>& MaterialProperty::GetValue<Ref<Texture2D>>();
+template<> const Ref<Texture2D>& MaterialProperty::GetValue<Ref<Texture2D>>() const;
+
+// Materialæ¨¡æ¿ç‰¹åŒ–å£°æ˜
+template<> void Material::Set<float>(const std::string& name, const float& value);
+template<> void Material::Set<glm::vec2>(const std::string& name, const glm::vec2& value);
+template<> void Material::Set<glm::vec3>(const std::string& name, const glm::vec3& value);
+template<> void Material::Set<glm::vec4>(const std::string& name, const glm::vec4& value);
+template<> void Material::Set<int>(const std::string& name, const int& value);
+template<> void Material::Set<bool>(const std::string& name, const bool& value);
+template<> void Material::Set<Ref<Texture2D>>(const std::string& name, const Ref<Texture2D>& value);
+
+template<> float Material::Get<float>(const std::string& name) const;
+template<> glm::vec2 Material::Get<glm::vec2>(const std::string& name) const;
+template<> glm::vec3 Material::Get<glm::vec3>(const std::string& name) const;
+template<> glm::vec4 Material::Get<glm::vec4>(const std::string& name) const;
+template<> int Material::Get<int>(const std::string& name) const;
+template<> bool Material::Get<bool>(const std::string& name) const;
+template<> Ref<Texture2D> Material::Get<Ref<Texture2D>>(const std::string& name) const;
+
 }

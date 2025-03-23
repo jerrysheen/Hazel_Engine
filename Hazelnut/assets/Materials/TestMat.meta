@@ -1,0 +1,21 @@
+{
+  "name": "Color",
+  "type": "PBR",
+  "shader": "assets/shaders/color.hlsl",
+  "properties": {
+    "u_Albedo": { "type": "vec3", "value": [0.8, 0.2, 0.2] },
+    "u_Metallic": { "type": "float", "value": 0.2 },
+    "u_Roughness": { "type": "float", "value": 0.8 },
+  },
+  "renderState": {
+    "transparent": false,
+    "cullMode": "back",
+    "depthTest": true,
+    "depthWrite": true,
+    "blend": {
+      "enabled": false,
+      "srcFactor": "srcAlpha",
+      "dstFactor": "oneMinusSrcAlpha"
+    }
+  }
+}

@@ -5,11 +5,11 @@
 #include "Hazel/Gfx/CommandPool.h"
 #include "Hazel/Gfx/GfxViewManager.h"
 #include "Hazel/Gfx/GfxDesc.h"
-#include "Hazel/Gfx/GfxDesc.h"
 #include "Platform/D3D12/D3D12Buffer.h"
 #include "Platform/D3D12/D3D12Shader.h"
 #include "Platform/D3D12/D3D12VertexArray.h"
 #include "Hazel/Renderer/VertexArray.h"
+
 
 
 
@@ -58,10 +58,10 @@ namespace Hazel
         ID3D12CommandList* rawCommandList = m_CommandList.Get();
         //��Ӳдд���� ���ƺ��滹Ҫ�ٿ��Ƕ�ƽ̨�����⣬Ҳ������һ��������ֱ��ת��ȥ��
         m_ColorShader = Shader::Create("assets/shaders/color.hlsl");
-        // mvsByteCode = d3dUtil::CompileShader(L"assets/shaders/color.hlsl", nullptr, "VS", "vs_5_0");
-        // mpsByteCode = d3dUtil::CompileShader(L"assets/shaders/color.hlsl", nullptr, "PS", "ps_5_0");
 
+		material = Material::CreateFromMeta("assets/Materials/TestMat.meta");
 
+        
 
         std::string abpath = std::filesystem::current_path().u8string();
         std::string cubeModelPath = abpath + std::string("/assets/Resources/Models/Cube/Cube.obj");

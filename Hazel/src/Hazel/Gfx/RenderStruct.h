@@ -1,13 +1,13 @@
 #pragma once
 #include "Hazel/Model/Material.h"
-#include "Hazel/Model/Model.h"
+//#include "Hazel/Model/Model.h"
 
 namespace Hazel 
 {
 	struct RenderNode 
 	{
 		Material* m_mat;
-		Model* m_model;
+		//Model* m_model;
 	};
 
 	struct RenderingData 

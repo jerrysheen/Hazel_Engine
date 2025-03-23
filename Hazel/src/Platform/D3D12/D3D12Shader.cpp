@@ -198,6 +198,10 @@ namespace Hazel
 	{
 	}
 
+	void D3D12Shader::SetFloat2(const std::string& name, const glm::vec2& value)
+	{
+	}
+
 	void D3D12Shader::SetFloat3(const std::string& name, const glm::vec3& value)
 	{
 	}

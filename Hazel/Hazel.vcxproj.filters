@@ -183,9 +183,6 @@
     <ClInclude Include="src\Hazel\Model\Mesh.h">
       <Filter>src\Hazel\Model</Filter>
     </ClInclude>
-    <ClInclude Include="src\Hazel\Model\Model.h">
-      <Filter>src\Hazel\Model</Filter>
-    </ClInclude>
     <ClInclude Include="src\Hazel\Renderer\Buffer.h">
       <Filter>src\Hazel\Renderer</Filter>
     </ClInclude>
@@ -1627,9 +1624,6 @@
       <Filter>src\Hazel\Model</Filter>
     </ClCompile>
     <ClCompile Include="src\Hazel\Model\Mesh.cpp">
-      <Filter>src\Hazel\Model</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Hazel\Model\Model.cpp">
       <Filter>src\Hazel\Model</Filter>
     </ClCompile>
     <ClCompile Include="src\Hazel\Renderer\Buffer.cpp">
