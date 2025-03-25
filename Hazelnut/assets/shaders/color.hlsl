@@ -7,6 +7,13 @@
 cbuffer cbPerObject : register(b0)
 {
 	float4x4 gWorldViewProj; 
+	float4 testColor;
+};
+
+cbuffer cbPerDraw : register(b1)
+{
+	float4 lightDir; 
+	float4 lightColor;
 };
 
 struct VertexIn
@@ -36,7 +43,8 @@ VertexOut VS(VertexIn vin)
 
 float4 PS(VertexOut pin) : SV_Target
 {
-    return pin.Color;
+	float4 color = lightDir + pin.Color;
+    return color;
 }
 
 

@@ -3,6 +3,17 @@ Commit Hash: 待生成
 
 # 提交信息
 
+feat(D3D12): 实现着色器反射系统合并VS和PS数据
+
+增强D3D12ShaderReflection类，添加合并顶点着色器和像素着色器反射数据的功能。
+实现MergeReflection方法用于整合两个着色器阶段的寄存器块和资源绑定信息，
+确保反射系统能够完整表示整个着色器管线的资源需求。
+
+- 添加MergeReflection方法用于合并另一个反射器的数据
+- 修改CreateReflection方法实现VS和PS反射数据的正确合并
+- 实现寄存器块、参数和资源绑定的智能合并逻辑
+- 优化合并流程，避免重复数据并保持索引映射关系
+
 refactor(渲染系统): 移除Model类并实现新的材质系统
 
 移除了Model.h和Model.cpp文件，废弃了旧的模型加载系统，代之以新的材质系统。

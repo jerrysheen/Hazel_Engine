@@ -85,46 +85,89 @@ namespace Hazel
 		return m_InputLayout;
 	}
 
-	std::vector<ShaderParameter> D3D12ShaderReflection::ReflectParameters()
+	std::vector<ShaderRegisterBlock> D3D12ShaderReflection::ReflectRegisterBlocks()
 	{
 		// 如果已经反射过，则直接返回缓存的结果
-		if (m_HasReflectedParameters)
-			return m_Parameters;
+		if (m_HasReflectedRegisterBlocks)
+			return m_RegisterBlocks;
 
 		// 获取着色器描述
 		D3D12_SHADER_DESC shaderDesc;
 		m_Reflection->GetDesc(&shaderDesc);
 
-		// 清空参数列表
-		m_Parameters.clear();
+		// 清空寄存器块列表和映射
+		m_RegisterBlocks.clear();
+		m_RegisterBlockNameToIndex.clear();
+		m_RegisterBlockBindPointToIndex.clear();
 
-		// 遍历常量缓冲区
-		for (UINT i = 0; i < shaderDesc.ConstantBuffers; i++)
+		// 用于存储资源绑定描述
+		std::vector<D3D12_SHADER_INPUT_BIND_DESC> cbvBindDescs;
+
+		// 第一步: 收集所有CBV资源绑定(这些是register(bX)绑定)
+		for (UINT i = 0; i < shaderDesc.BoundResources; i++)
 		{
-			ID3D12ShaderReflectionConstantBuffer* cbReflection = m_Reflection->GetConstantBufferByIndex(i);
+			D3D12_SHADER_INPUT_BIND_DESC bindDesc;
+			m_Reflection->GetResourceBindingDesc(i, &bindDesc);
+
+			// 只处理常量缓冲区视图(cbuffer)
+			if (bindDesc.Type == D3D_SIT_CBUFFER)
+			{
+				cbvBindDescs.push_back(bindDesc);
+			}
+		}
+
+		// 第二步: 遍历所有已发现的常量缓冲区，创建寄存器块
+		for (const auto& bindDesc : cbvBindDescs)
+		{
+			// 1. 获取常量缓冲区反射
+			ID3D12ShaderReflectionConstantBuffer* cbReflection = 
+				m_Reflection->GetConstantBufferByName(bindDesc.Name);
+			
+			// 2. 获取常量缓冲区描述
 			D3D12_SHADER_BUFFER_DESC cbDesc;
 			cbReflection->GetDesc(&cbDesc);
 
-			// 遍历常量缓冲区中的变量
+			// 3. 创建寄存器块
+			ShaderRegisterBlock block;
+			block.Name = bindDesc.Name;
+			block.BindPoint = bindDesc.BindPoint;
+			block.BindSpace = bindDesc.Space;
+			block.Size = cbDesc.Size;
+
+			// 4. 遍历常量缓冲区中的变量，提取参数
 			for (UINT j = 0; j < cbDesc.Variables; j++)
 			{
 				ID3D12ShaderReflectionVariable* varReflection = cbReflection->GetVariableByIndex(j);
 				D3D12_SHADER_VARIABLE_DESC varDesc;
 				varReflection->GetDesc(&varDesc);
 
+				// 5. 创建参数
 				ShaderParameter param;
 				param.Name = varDesc.Name;
 				param.Size = varDesc.Size;
 				param.Offset = varDesc.StartOffset;
-				// 注意：这里的BindPoint可能需要根据绑定点类型进行转换
-				param.BindPoint = 0; // 需要根据实际情况设置
 
-				m_Parameters.push_back(param);
+				// 6. 添加参数到寄存器块
+				block.Parameters.push_back(param);
+
+				// 7. 缓存参数到映射表中
+				m_ParameterCache[block.Name + "." + param.Name] = param;
 			}
+
+			// 8. 添加寄存器块到列表
+			size_t index = m_RegisterBlocks.size();
+			m_RegisterBlocks.push_back(block);
+
+			// 9. 更新映射关系
+			m_RegisterBlockNameToIndex[block.Name] = index;
+			
+			// 创建一个64位键，包含绑定点和空间
+			uint64_t bindKey = ((uint64_t)block.BindSpace << 32) | block.BindPoint;
+			m_RegisterBlockBindPointToIndex[bindKey] = index;
 		}
 
-		m_HasReflectedParameters = true;
-		return m_Parameters;
+		m_HasReflectedRegisterBlocks = true;
+		return m_RegisterBlocks;
 	}
 
 	std::vector<ResourceBinding> D3D12ShaderReflection::ReflectResourceBindings()
@@ -140,6 +183,9 @@ namespace Hazel
 		// 清空资源绑定列表
 		m_ResourceBindings.clear();
 
+		// 确保寄存器块已反射
+		auto registerBlocks = ReflectRegisterBlocks();
+
 		// 遍历绑定资源
 		for (UINT i = 0; i < shaderDesc.BoundResources; i++)
 		{
@@ -151,6 +197,38 @@ namespace Hazel
 			binding.BindPoint = bindDesc.BindPoint;
 			binding.BindSpace = bindDesc.Space;
 
+			// 设置资源类型
+			switch (bindDesc.Type)
+			{
+			case D3D_SIT_CBUFFER:
+				binding.Type = ResourceType::ConstantBuffer;
+				// 查找对应的寄存器块
+				if (m_RegisterBlockNameToIndex.find(bindDesc.Name) != m_RegisterBlockNameToIndex.end())
+				{
+					binding.RegisterBlockIndex = (int)m_RegisterBlockNameToIndex[bindDesc.Name];
+				}
+				break;
+			case D3D_SIT_TEXTURE:
+			case D3D_SIT_STRUCTURED:
+			case D3D_SIT_BYTEADDRESS:
+				binding.Type = ResourceType::ShaderResource;
+				break;
+			case D3D_SIT_UAV_RWTYPED:
+			case D3D_SIT_UAV_RWSTRUCTURED:
+			case D3D_SIT_UAV_RWBYTEADDRESS:
+			case D3D_SIT_UAV_APPEND_STRUCTURED:
+			case D3D_SIT_UAV_CONSUME_STRUCTURED:
+			case D3D_SIT_UAV_RWSTRUCTURED_WITH_COUNTER:
+				binding.Type = ResourceType::UnorderedAccess;
+				break;
+			case D3D_SIT_SAMPLER:
+				binding.Type = ResourceType::Sampler;
+				break;
+			default:
+				// 未处理的类型
+				break;
+			}
+
 			m_ResourceBindings.push_back(binding);
 		}
 
@@ -158,10 +236,168 @@ namespace Hazel
 		return m_ResourceBindings;
 	}
 
+	void D3D12ShaderReflection::MergeReflection(const Ref<D3D12ShaderReflection>& other)
+	{
+		// 获取其他反射的寄存器块和资源绑定
+		auto otherRegisterBlocks = other->ReflectRegisterBlocks();
+		auto otherResourceBindings = other->ReflectResourceBindings();
+
+		// 确保当前反射的数据已加载
+		auto currentRegisterBlocks = ReflectRegisterBlocks();
+		auto currentResourceBindings = ReflectResourceBindings();
+
+		// 合并寄存器块
+		for (const auto& otherBlock : otherRegisterBlocks)
+		{
+			// 检查是否已存在同名的寄存器块
+			auto it = m_RegisterBlockNameToIndex.find(otherBlock.Name);
+			if (it == m_RegisterBlockNameToIndex.end())
+			{
+				// 不存在，添加这个寄存器块
+				size_t index = m_RegisterBlocks.size();
+				m_RegisterBlocks.push_back(otherBlock);
+				m_RegisterBlockNameToIndex[otherBlock.Name] = index;
+				
+				// 更新绑定点索引
+				uint64_t bindKey = ((uint64_t)otherBlock.BindSpace << 32) | otherBlock.BindPoint;
+				m_RegisterBlockBindPointToIndex[bindKey] = index;
+
+				// 添加参数到映射表
+				for (const auto& param : otherBlock.Parameters)
+				{
+					m_ParameterCache[otherBlock.Name + "." + param.Name] = param;
+				}
+			}
+			else
+			{
+				// 已存在同名寄存器块，合并参数（如果有新的）
+				size_t index = it->second;
+				auto& existingBlock = m_RegisterBlocks[index];
+				
+				// 遍历其他块的参数
+				for (const auto& otherParam : otherBlock.Parameters)
+				{
+					// 检查参数是否已存在
+					bool exists = false;
+					for (const auto& existingParam : existingBlock.Parameters)
+					{
+						if (existingParam.Name == otherParam.Name)
+						{
+							exists = true;
+							break;
+						}
+					}
+					
+					// 如果不存在，添加参数
+					if (!exists)
+					{
+						existingBlock.Parameters.push_back(otherParam);
+						m_ParameterCache[otherBlock.Name + "." + otherParam.Name] = otherParam;
+					}
+				}
+			}
+		}
+
+		// 合并资源绑定
+		for (const auto& otherBinding : otherResourceBindings)
+		{
+			// 检查是否已存在相同的资源绑定
+			bool exists = false;
+			for (const auto& existingBinding : m_ResourceBindings)
+			{
+				if (existingBinding.Name == otherBinding.Name && 
+					existingBinding.BindPoint == otherBinding.BindPoint &&
+					existingBinding.BindSpace == otherBinding.BindSpace)
+				{
+					exists = true;
+					break;
+				}
+			}
+			
+			// 如果不存在，添加资源绑定
+			if (!exists)
+			{
+				ResourceBinding binding = otherBinding;
+				
+				// 如果是常量缓冲区类型，更新RegisterBlockIndex
+				if (binding.Type == ResourceType::ConstantBuffer)
+				{
+					auto it = m_RegisterBlockNameToIndex.find(binding.Name);
+					if (it != m_RegisterBlockNameToIndex.end())
+					{
+						binding.RegisterBlockIndex = (int)it->second;
+					}
+				}
+				
+				m_ResourceBindings.push_back(binding);
+			}
+		}
+	}
+
+	Ref<ShaderRegisterBlock> D3D12ShaderReflection::GetRegisterBlockByName(const std::string& name)
+	{
+		// 确保寄存器块已反射
+		if (!m_HasReflectedRegisterBlocks)
+			ReflectRegisterBlocks();
+
+		// 查找名称
+		auto it = m_RegisterBlockNameToIndex.find(name);
+		if (it != m_RegisterBlockNameToIndex.end())
+		{
+			// 创建一个新的ShaderRegisterBlock并复制内容
+			Ref<ShaderRegisterBlock> block = CreateRef<ShaderRegisterBlock>();
+			*block = m_RegisterBlocks[it->second]; // 复制内容
+			return block;
+		}
+		
+		return nullptr;
+	}
+
+	Ref<ShaderRegisterBlock> D3D12ShaderReflection::GetRegisterBlockByBindPoint(uint32_t bindPoint, uint32_t space)
+	{
+		// 确保寄存器块已反射
+		if (!m_HasReflectedRegisterBlocks)
+			ReflectRegisterBlocks();
+
+		// 创建绑定键
+		uint64_t bindKey = ((uint64_t)space << 32) | bindPoint;
+		
+		// 查找绑定点
+		auto it = m_RegisterBlockBindPointToIndex.find(bindKey);
+		if (it != m_RegisterBlockBindPointToIndex.end())
+		{
+			// 创建一个新的ShaderRegisterBlock并复制内容
+			Ref<ShaderRegisterBlock> block = CreateRef<ShaderRegisterBlock>();
+			*block = m_RegisterBlocks[it->second]; // 复制内容
+			return block;
+		}
+		
+		return nullptr;
+	}
+
+	Ref<ShaderParameter> D3D12ShaderReflection::GetParameterByName(const std::string& name)
+	{
+		// 确保寄存器块已反射
+		if (!m_HasReflectedRegisterBlocks)
+			ReflectRegisterBlocks();
+
+		// 查找参数名称
+		auto it = m_ParameterCache.find(name);
+		if (it != m_ParameterCache.end())
+		{
+			// 创建一个新的ShaderParameter并复制内容
+			Ref<ShaderParameter> param = CreateRef<ShaderParameter>();
+			*param = it->second; // 复制内容
+			return param;
+		}
+		
+		return nullptr;
+	}
+
 	// D3D12Shader实现
 	D3D12Shader::D3D12Shader(const std::string& filepath)
 	{
-		std::wstring wstr(filepath.begin(), filepath.end());  // ֱ��ʹ�ù��캯��
+		std::wstring wstr(filepath.begin(), filepath.end());
 		m_VsByteCode = d3dUtil::CompileShader(wstr, nullptr, "VS", "vs_5_0");
 		m_PsByteCode = d3dUtil::CompileShader(wstr, nullptr, "PS", "ps_5_0");
 
@@ -256,8 +492,9 @@ namespace Hazel
 		// 确保顶点着色器字节码存在
 		if (m_VsByteCode)
 		{
-			// 创建着色器反射
-			m_Reflection = CreateRef<D3D12ShaderReflection>(m_VsByteCode.Get());
+			// 创建顶点着色器反射
+			auto vsReflection = CreateRef<D3D12ShaderReflection>(m_VsByteCode.Get());
+			m_Reflection = vsReflection;
 			
 			// 获取输入布局
 			m_InputLayout = m_Reflection->ReflectVertexInputLayout();
@@ -281,11 +518,28 @@ namespace Hazel
 				m_D3D12InputLayout.push_back(inputElement);
 				count++;
 			}
-
-			// 创建反射
-			m_ResourceBindings = m_Reflection->ReflectResourceBindings();
-			m_Parameters = m_Reflection->ReflectParameters();
-
+		}
+		
+		// 如果像素着色器字节码存在且与顶点着色器不同，需要合并反射结果
+		if (m_PsByteCode && (m_VsByteCode != m_PsByteCode))
+		{
+			// 创建像素着色器反射
+			auto psReflection = CreateRef<D3D12ShaderReflection>(m_PsByteCode.Get());
+			
+			// 如果没有顶点着色器反射，直接使用像素着色器反射
+			if (!m_Reflection)
+			{
+				m_Reflection = psReflection;
+				return;
+			}
+			
+			// 合并VS和PS的反射信息
+			auto vsReflection = std::dynamic_pointer_cast<D3D12ShaderReflection>(m_Reflection);
+			if (vsReflection)
+			{
+				// 将PS反射合并到VS反射中
+				vsReflection->MergeReflection(psReflection);
+			}
 		}
 	}
 

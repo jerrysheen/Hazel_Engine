@@ -61,6 +61,8 @@ namespace Hazel
 
 		material = Material::CreateFromMeta("assets/Materials/TestMat.meta");
 
+		auto resourceBinding = material->GetShader()->GetReflection()->ReflectResourceBindings();
+		auto parameters = material->GetShader()->GetReflection()->ReflectRegisterBlocks();
         
 
         std::string abpath = std::filesystem::current_path().u8string();

@@ -12,22 +12,39 @@ namespace Hazel
 	{
 	public:
 		D3D12ShaderReflection(ID3DBlob* shaderBytecode);
-		virtual ~D3D12ShaderReflection();
+		virtual ~D3D12ShaderReflection() override;
 
 		// 实现ShaderReflection接口
 		virtual BufferLayout ReflectVertexInputLayout() override;
-		virtual std::vector<ShaderParameter> ReflectParameters() override;
+		virtual std::vector<ShaderRegisterBlock> ReflectRegisterBlocks() override;
 		virtual std::vector<ResourceBinding> ReflectResourceBindings() override;
+
+		// 通过名称获取寄存器块
+		virtual Ref<ShaderRegisterBlock> GetRegisterBlockByName(const std::string& name) override;
+		
+		// 通过绑定点获取寄存器块
+		virtual Ref<ShaderRegisterBlock> GetRegisterBlockByBindPoint(uint32_t bindPoint, uint32_t space = 0) override;
+		
+		// 通过名称获取参数
+		virtual Ref<ShaderParameter> GetParameterByName(const std::string& name) override;
+
+		// 合并另一个反射的数据（用于合并VS和PS的反射）
+		void MergeReflection(const Ref<D3D12ShaderReflection>& other);
 
 	private:
 		ComPtr<ID3D12ShaderReflection> m_Reflection;
 		BufferLayout m_InputLayout; // 缓存反射结果
-		std::vector<ShaderParameter> m_Parameters; // 缓存反射结果
-		std::vector<ResourceBinding> m_ResourceBindings; // 缓存反射结果
+		std::vector<ShaderRegisterBlock> m_RegisterBlocks; // 缓存寄存器块
+		std::vector<ResourceBinding> m_ResourceBindings; // 缓存资源绑定
+
+		// 缓存的映射
+		std::unordered_map<std::string, size_t> m_RegisterBlockNameToIndex; // 寄存器块名称到索引的映射
+		std::unordered_map<uint64_t, size_t> m_RegisterBlockBindPointToIndex; // 寄存器块绑定点到索引的映射
+		std::unordered_map<std::string, ShaderParameter> m_ParameterCache; // 参数名称到参数的映射
 
 		// 是否已反射
 		bool m_HasReflectedInputLayout = false;
-		bool m_HasReflectedParameters = false;
+		bool m_HasReflectedRegisterBlocks = false;
 		bool m_HasReflectedResourceBindings = false;
 	};
 
@@ -76,9 +93,6 @@ namespace Hazel
 		BufferLayout m_InputLayout; // 与D3D12_INPUT_ELEMENT_DESC对应的BufferLayout
 		
 		Ref<ShaderReflection> m_Reflection;
-		std::vector<ResourceBinding> m_ResourceBindings;
-		std::vector<ShaderParameter> m_Parameters;
-
 	};
 
 }

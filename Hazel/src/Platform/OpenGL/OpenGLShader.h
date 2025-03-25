@@ -16,14 +16,33 @@ public:
 	
 	// 实现ShaderReflection的方法
 	virtual BufferLayout ReflectVertexInputLayout() override;
-	virtual std::vector<ShaderParameter> ReflectParameters() override;
+	virtual std::vector<ShaderRegisterBlock> ReflectRegisterBlocks() override;
 	virtual std::vector<ResourceBinding> ReflectResourceBindings() override;
+
+	// 通过名称获取寄存器块
+	virtual Ref<ShaderRegisterBlock> GetRegisterBlockByName(const std::string& name) override;
+	
+	// 通过绑定点获取寄存器块
+	virtual Ref<ShaderRegisterBlock> GetRegisterBlockByBindPoint(uint32_t bindPoint, uint32_t space = 0) override;
+	
+	// 通过名称获取参数
+	virtual Ref<ShaderParameter> GetParameterByName(const std::string& name) override;
 
 private:
 	uint32_t m_RendererID;
 	BufferLayout m_InputLayout;
-	std::vector<ShaderParameter> m_Parameters;
+	std::vector<ShaderRegisterBlock> m_RegisterBlocks;
 	std::vector<ResourceBinding> m_ResourceBindings;
+
+	// 缓存映射
+	std::unordered_map<std::string, size_t> m_RegisterBlockNameToIndex;
+	std::unordered_map<uint64_t, size_t> m_RegisterBlockBindPointToIndex;
+	std::unordered_map<std::string, ShaderParameter> m_ParameterCache;
+
+	// 是否已反射
+	bool m_HasReflectedInputLayout = false;
+	bool m_HasReflectedRegisterBlocks = false;
+	bool m_HasReflectedResourceBindings = false;
 };
 
 class OpenGLShader : public Shader

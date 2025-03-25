@@ -21,17 +21,33 @@ namespace Hazel {
 		return m_InputLayout;
 	}
 
-	std::vector<ShaderParameter> OpenGLShaderReflection::ReflectParameters()
+	std::vector<ShaderRegisterBlock> OpenGLShaderReflection::ReflectRegisterBlocks()
 	{
-		// TODO: 解析着色器参数
-		return m_Parameters;
+		return std::vector<ShaderRegisterBlock>();
 	}
+
 
 	std::vector<ResourceBinding> OpenGLShaderReflection::ReflectResourceBindings()
 	{
 		// TODO: 解析资源绑定
 		return m_ResourceBindings;
 	}
+
+	Ref<ShaderRegisterBlock> OpenGLShaderReflection::GetRegisterBlockByName(const std::string& name)
+	{
+		return Ref<ShaderRegisterBlock>();
+	}
+
+	Ref<ShaderRegisterBlock> OpenGLShaderReflection::GetRegisterBlockByBindPoint(uint32_t bindPoint, uint32_t space)
+	{
+		return Ref<ShaderRegisterBlock>();
+	}
+
+	Ref<ShaderParameter> OpenGLShaderReflection::GetParameterByName(const std::string& name)
+	{
+		return Ref<ShaderParameter>();
+	}
+
 
 	//-------- OpenGLShader 实现 --------
 	static GLenum ShaderTypeFromString(const std::string& type) 
