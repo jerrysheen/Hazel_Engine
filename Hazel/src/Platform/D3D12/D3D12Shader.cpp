@@ -281,6 +281,11 @@ namespace Hazel
 				m_D3D12InputLayout.push_back(inputElement);
 				count++;
 			}
+
+			// 创建反射
+			m_ResourceBindings = m_Reflection->ReflectResourceBindings();
+			m_Parameters = m_Reflection->ReflectParameters();
+
 		}
 	}
 

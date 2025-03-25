@@ -76,6 +76,9 @@ namespace Hazel
 		BufferLayout m_InputLayout; // 与D3D12_INPUT_ELEMENT_DESC对应的BufferLayout
 		
 		Ref<ShaderReflection> m_Reflection;
+		std::vector<ResourceBinding> m_ResourceBindings;
+		std::vector<ShaderParameter> m_Parameters;
+
 	};
 
 }
