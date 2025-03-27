@@ -60,7 +60,6 @@ namespace Hazel
         m_ColorShader = Shader::Create("assets/shaders/color.hlsl");
 
 		material = Material::CreateFromMeta("assets/Materials/TestMat.meta");
-
 		auto resourceBinding = material->GetShader()->GetReflection()->ReflectResourceBindings();
 		auto parameters = material->GetShader()->GetReflection()->ReflectRegisterBlocks();
         
@@ -83,7 +82,7 @@ namespace Hazel
 
         // Create a single descriptor table of CBVs.
         CD3DX12_DESCRIPTOR_RANGE cbvTable;
-        cbvTable.Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 0);
+        cbvTable.Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 2, 0);
         slotRootParameter[0].InitAsDescriptorTable(1, &cbvTable);
 
         // A root signature is an array of root parameters.

@@ -1,0 +1,110 @@
+# 材质批量绘制策略
+
+## 1. 整体架构设计
+
+### 基本原则
+- 预分配大型ConstantBuffer，而非每帧动态创建
+- 同材质的对象进行批处理，共享shader状态
+- 维护材质数据在大缓冲区中的偏移量
+- 使用描述符表+根常量方式进行高效绘制
+
+### 批处理流程
+1. 收集同材质对象
+2. 按材质进行排序分组
+3. 更新材质数据到预分配的大ConstantBuffer
+4. 记录每个材质对应的CBV偏移
+5. 批量提交绘制命令
+
+## 2. 大型ConstantBuffer设计
+
+### 预分配策略
+- 初始化时预分配足够大的上传缓冲区
+- 采用环形缓冲或多缓冲设计(通常2-3帧)
+- 材质数据需要256字节对齐(DirectX12要求)
+
+```cpp
+// 伪代码：预分配环形缓冲区
+struct FrameResources {
+    ComPtr<ID3D12Resource> uploadBuffer;
+    void* mappedData;
+    uint32_t currentOffset;
+};
+
+// 3帧环形缓冲
+std::array<FrameResources, 3> frameResources;
+```
+
+### 内存管理
+- 计算对齐后的材质数据大小: `(sizeof(MaterialData) + 255) & ~255`
+- 在大缓冲区内为每个材质分配连续空间
+- 记录每个材质的偏移量
+- 在帧结束时重置偏移计数器
+
+## 3. CBV描述符管理
+
+### 创建CBV描述符
+```cpp
+// 为材质在上传缓冲区中的子区域创建CBV
+D3D12_CONSTANT_BUFFER_VIEW_DESC cbvDesc = {};
+cbvDesc.BufferLocation = uploadBuffer->GetGPUVirtualAddress() + materialOffset;
+cbvDesc.SizeInBytes = alignedMaterialDataSize;
+device->CreateConstantBufferView(&cbvDesc, descriptorHeapHandle + descriptorIndex);
+```
+
+### 描述符表设计
+- 创建足够大的CBV/SRV/UAV描述符堆
+- 为每个材质在描述符堆中分配位置
+- 将CBV描述符写入对应位置
+- 记录每个材质的描述符索引
+
+## 4. 批量绘制实现方案
+
+### 方案1: 描述符表索引
+最优方案，设置一次根签名，每次绘制只更新描述符表偏移：
+
+```cpp
+// 设置一次根签名
+commandList->SetGraphicsRootSignature(rootSignature);
+
+// 设置共享状态(顶点缓冲区等)
+commandList->IASetVertexBuffers(0, 1, &vertexBufferView);
+commandList->IASetIndexBuffer(&indexBufferView);
+commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+// 按批次绘制
+for (auto& batch : materialBatches) {
+    // 只更新描述符表句柄偏移，不需要重新绑定根签名
+    commandList->SetGraphicsRootDescriptorTable(
+        0, // 根参数索引 
+        CD3DX12_GPU_DESCRIPTOR_HANDLE(
+            descriptorHeap->GetGPUDescriptorHandleForHeapStart(),
+            batch.descriptorIndex,
+            descriptorHandleIncrementSize
+        )
+    );
+    
+    // 绘制该批次的所有对象
+    commandList->DrawIndexedInstanced(
+        batch.indexCount, 
+        batch.instanceCount, 
+        batch.startIndexLocation, 
+        batch.baseVertexLocation, 
+        batch.startInstanceLocation
+    );
+}
+```
+
+### 方案2: 索引绑定(空间寻址)
+适用于支持空间索引的Shader:
+
+```hlsl
+// HLSL中定义材质数组
+ConstantBuffer<MaterialData> g_Materials[] : register(b0, space1);
+
+// 在shader中使用索引访问
+float4 color = g_Materials[materialIndex].diffuseColor;
+```
+
+```cpp
+// 设置材质索引作为根常量
+commandList->SetGraphicsRoot32BitConstant(1, batch.materialIndex, 0);

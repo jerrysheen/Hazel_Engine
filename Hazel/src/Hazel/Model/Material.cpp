@@ -63,7 +63,9 @@ namespace Hazel
 
 	Ref<Material> Material::CreateFromMeta(const std::string& path)
 	{
-		return Material::DeserializeFromJSON(path);
+		auto mat = Material::DeserializeFromJSON(path);
+		
+		return mat;
 	}
 
 	void Material::Bind() const
