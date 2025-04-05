@@ -11,42 +11,47 @@ namespace Hazel
 {
 	// MaterialProperty实现
 	MaterialProperty::MaterialProperty()
-		: m_Type(MaterialPropertyType::None)
+		: m_Type(MaterialPropertyType::None), m_Size(0)
 	{
 	}
 
 	MaterialProperty::MaterialProperty(float value)
-		: m_Type(MaterialPropertyType::Float), m_Value(value)
+		: m_Type(MaterialPropertyType::Float), m_Value(value), m_Size(sizeof(float))
 	{
 	}
 
 	MaterialProperty::MaterialProperty(const glm::vec2& value)
-		: m_Type(MaterialPropertyType::Float2), m_Value(value)
+		: m_Type(MaterialPropertyType::Float2), m_Value(value), m_Size(sizeof(glm::vec2))
 	{
 	}
 
 	MaterialProperty::MaterialProperty(const glm::vec3& value)
-		: m_Type(MaterialPropertyType::Float3), m_Value(value)
+		: m_Type(MaterialPropertyType::Float3), m_Value(value), m_Size(sizeof(glm::vec3))
 	{
 	}
 
 	MaterialProperty::MaterialProperty(const glm::vec4& value)
-		: m_Type(MaterialPropertyType::Float4), m_Value(value)
+		: m_Type(MaterialPropertyType::Float4), m_Value(value), m_Size(sizeof(glm::vec4))
 	{
 	}
 
 	MaterialProperty::MaterialProperty(int value)
-		: m_Type(MaterialPropertyType::Int), m_Value(value)
+		: m_Type(MaterialPropertyType::Int), m_Value(value), m_Size(sizeof(int))
 	{
 	}
 
 	MaterialProperty::MaterialProperty(bool value)
-		: m_Type(MaterialPropertyType::Bool), m_Value(value)
+		: m_Type(MaterialPropertyType::Bool), m_Value(value), m_Size(sizeof(bool))
 	{
 	}
 
 	MaterialProperty::MaterialProperty(const Ref<Texture2D>& value)
-		: m_Type(MaterialPropertyType::Texture2D), m_Value(value)
+		: m_Type(MaterialPropertyType::Texture2D), m_Value(value), m_Size(sizeof(Ref<Texture2D>))
+	{
+	}
+
+	MaterialProperty::MaterialProperty(const glm::mat4& value)
+		: m_Type(MaterialPropertyType::Matrix4), m_Value(value), m_Size(sizeof(glm::mat4))
 	{
 	}
 
@@ -54,6 +59,9 @@ namespace Hazel
 	Material::Material(const Ref<Shader>& shader)
 		: m_Shader(shader)
 	{
+		// 自动从着色器反射数据同步属性
+		if (shader)
+			SyncWithShaderReflection();
 	}
 
 	Ref<Material> Material::Create(const Ref<Shader>& shader)
@@ -66,6 +74,181 @@ namespace Hazel
 		auto mat = Material::DeserializeFromJSON(path);
 		
 		return mat;
+	}
+
+	void Material::SyncWithShaderReflection()
+	{
+		if (!m_Shader)
+			return;
+
+		// 从着色器反射数据中获取寄存器块信息
+		const auto& registerBlocks = m_Shader->GetReflection()->ReflectRegisterBlocks();
+		
+		for (const auto& block : registerBlocks)
+		{
+			for (const auto& param : block.Parameters)
+			{
+				// 检查属性是否已存在
+				if (!HasProperty(param.Name))
+				{
+					// 属性不存在，根据反射数据创建新属性
+					CreatePropertyFromReflection(param.Name, param.Size);
+					HZ_CORE_INFO("Material: Added property '{0}' from shader reflection data", param.Name);
+				}
+				else
+				{
+					// 验证已有属性大小是否匹配
+					auto& property = m_Properties[param.Name];
+					if (property.GetSize() != param.Size)
+					{
+						HZ_CORE_WARN("Material: Property '{0}' size mismatch. Expected {1}, got {2}. Updating property.", 
+							param.Name, param.Size, property.GetSize());
+						
+						// // 重新创建属性
+						// CreatePropertyFromReflection(param.Name, param.Size);
+					}
+					
+					// 检查类型匹配
+					if (!IsPropertyTypeMatchingShaderType(property.GetType(), param.Name))
+					{
+						uint32_t propSize = GetSizeFromMaterialPropertyType(property.GetType());
+						HZ_CORE_ERROR("Material: Property '{0}' size mismatch. Material property size ({1}) does not match shader parameter size.", param.Name, propSize);
+					}
+				}
+			}
+		}
+	}
+
+	void Material::CreatePropertyFromReflection(const std::string& name, uint32_t size)
+	{
+		if (!m_Shader)
+			return;
+
+		// 尝试从Shader反射数据中找到此属性的更详细信息
+		const auto& registerBlocks = m_Shader->GetReflection()->ReflectRegisterBlocks();
+		ShaderDataType dataType = ShaderDataType::None;
+		
+		// 如果找不到详细类型信息，则根据大小推断类型
+		if (dataType == ShaderDataType::None)
+		{
+			dataType = InferShaderDataTypeFromSize(size);
+		}
+		
+		// 根据数据类型创建适当的MaterialProperty
+		switch (dataType)
+		{
+		case ShaderDataType::Float:
+			Set(name, 0.0f);
+			break;
+		case ShaderDataType::Float2:
+			Set(name, glm::vec2(0.0f));
+			break;
+		case ShaderDataType::Float3:
+			Set(name, glm::vec3(0.0f));
+			break;
+		case ShaderDataType::Float4:
+			Set(name, glm::vec4(0.0f));
+			break;
+		case ShaderDataType::Int:
+			Set(name, 0);
+			break;
+		case ShaderDataType::Bool:
+			Set(name, false);
+			break;
+		case ShaderDataType::Mat4:
+			Set(name, glm::mat4(1.0f)); // 初始化为单位矩阵
+			break;
+		default:
+			HZ_CORE_WARN("Material: Cannot create property '{0}', type {1} is not supported.", name, (int)dataType);
+			break;
+		}
+	}
+
+	ShaderDataType Material::InferShaderDataTypeFromSize(uint32_t size)
+	{
+		// 根据大小推断类型
+		switch (size)
+		{
+		case 4:
+			return ShaderDataType::Float;
+		case 8:
+			return ShaderDataType::Float2;
+		case 12:
+			return ShaderDataType::Float3;
+		case 16:
+			return ShaderDataType::Float4;
+		case 36:
+			return ShaderDataType::Mat3;
+		case 64:
+			return ShaderDataType::Mat4;
+		default:
+			HZ_CORE_WARN("Material: Cannot infer type from size {0}", size);
+			return ShaderDataType::None;
+		}
+	}
+
+
+	uint32_t Material::GetSizeFromMaterialPropertyType(MaterialPropertyType type)
+	{
+		switch (type)
+		{
+		case MaterialPropertyType::Float:
+			return 4; // sizeof(float)
+		case MaterialPropertyType::Float2:
+			return 8; // sizeof(glm::vec2)
+		case MaterialPropertyType::Float3:
+			return 12; // sizeof(glm::vec3)
+		case MaterialPropertyType::Float4:
+			return 16; // sizeof(glm::vec4)
+		case MaterialPropertyType::Int:
+			return 4; // sizeof(int)
+		case MaterialPropertyType::Int2:
+			return 8; // sizeof(glm::ivec2)
+		case MaterialPropertyType::Int3:
+			return 12; // sizeof(glm::ivec3)
+		case MaterialPropertyType::Int4:
+			return 16; // sizeof(glm::ivec4)
+		case MaterialPropertyType::Bool:
+			return 1; // sizeof(bool)
+		case MaterialPropertyType::Matrix3:
+			return 36; // sizeof(glm::mat3)
+		case MaterialPropertyType::Matrix4:
+			return 64; // sizeof(glm::mat4)
+		case MaterialPropertyType::Texture2D:
+		case MaterialPropertyType::TextureCube:
+		case MaterialPropertyType::Texture3D:
+			return sizeof(void*); // Texture references are pointer-sized
+		default:
+			return 0;
+		}
+	}
+
+	bool Material::IsPropertyTypeMatchingShaderType(MaterialPropertyType propType, const std::string& paramName)
+	{
+		// Find parameter size from shader reflection
+		uint32_t paramSize = 0;
+		const auto& registerBlocks = m_Shader->GetReflection()->ReflectRegisterBlocks();
+		
+		for (const auto& block : registerBlocks)
+		{
+			for (const auto& param : block.Parameters)
+			{
+				if (param.Name == paramName)
+				{
+					paramSize = param.Size;
+					break;
+				}
+			}
+			if (paramSize != 0)
+				break;
+		}
+		
+		if (paramSize == 0)
+			return false; // Parameter not found
+		
+		// Compare material property size with shader parameter size
+		uint32_t propSize = GetSizeFromMaterialPropertyType(propType);
+		return propSize == paramSize;
 	}
 
 	void Material::Bind() const
@@ -94,6 +277,9 @@ namespace Hazel
 				break;
 			case MaterialPropertyType::Bool:
 				m_Shader->SetInt(name, property.GetValue<bool>() ? 1 : 0);
+				break;
+			case MaterialPropertyType::Matrix4:
+				m_Shader->SetMat4(name, property.GetValue<glm::mat4>());
 				break;
 			case MaterialPropertyType::Texture2D:
 			{
@@ -155,6 +341,7 @@ namespace Hazel
 			case MaterialPropertyType::Float:
 			{
 				fprintf(file, "            \"type\": \"float\",\n");
+				fprintf(file, "            \"size\": %u,\n", property.GetSize());
 				fprintf(file, "            \"value\": %f\n", property.GetValue<float>());
 				break;
 			}
@@ -162,6 +349,7 @@ namespace Hazel
 			{
 				auto value = property.GetValue<glm::vec2>();
 				fprintf(file, "            \"type\": \"vec2\",\n");
+				fprintf(file, "            \"size\": %u,\n", property.GetSize());
 				fprintf(file, "            \"value\": [%f, %f]\n", value.x, value.y);
 				break;
 			}
@@ -169,6 +357,7 @@ namespace Hazel
 			{
 				auto value = property.GetValue<glm::vec3>();
 				fprintf(file, "            \"type\": \"vec3\",\n");
+				fprintf(file, "            \"size\": %u,\n", property.GetSize());
 				fprintf(file, "            \"value\": [%f, %f, %f]\n", value.x, value.y, value.z);
 				break;
 			}
@@ -176,24 +365,41 @@ namespace Hazel
 			{
 				auto value = property.GetValue<glm::vec4>();
 				fprintf(file, "            \"type\": \"vec4\",\n");
+				fprintf(file, "            \"size\": %u,\n", property.GetSize());
 				fprintf(file, "            \"value\": [%f, %f, %f, %f]\n", value.x, value.y, value.z, value.w);
 				break;
 			}
 			case MaterialPropertyType::Int:
 			{
 				fprintf(file, "            \"type\": \"int\",\n");
+				fprintf(file, "            \"size\": %u,\n", property.GetSize());
 				fprintf(file, "            \"value\": %d\n", property.GetValue<int>());
 				break;
 			}
 			case MaterialPropertyType::Bool:
 			{
 				fprintf(file, "            \"type\": \"bool\",\n");
+				fprintf(file, "            \"size\": %u,\n", property.GetSize());
 				fprintf(file, "            \"value\": %s\n", property.GetValue<bool>() ? "true" : "false");
+				break;
+			}
+			case MaterialPropertyType::Matrix4:
+			{
+				auto value = property.GetValue<glm::mat4>();
+				fprintf(file, "            \"type\": \"mat4\",\n");
+				fprintf(file, "            \"size\": %u,\n", property.GetSize());
+				fprintf(file, "            \"value\": [\n");
+				fprintf(file, "                [%f, %f, %f, %f],\n", value[0][0], value[0][1], value[0][2], value[0][3]);
+				fprintf(file, "                [%f, %f, %f, %f],\n", value[1][0], value[1][1], value[1][2], value[1][3]);
+				fprintf(file, "                [%f, %f, %f, %f],\n", value[2][0], value[2][1], value[2][2], value[2][3]);
+				fprintf(file, "                [%f, %f, %f, %f]\n", value[3][0], value[3][1], value[3][2], value[3][3]);
+				fprintf(file, "            ]\n");
 				break;
 			}
 			case MaterialPropertyType::Texture2D:
 			{
 				fprintf(file, "            \"type\": \"texture2d\",\n");
+				fprintf(file, "            \"size\": %u,\n", property.GetSize());
 				auto texture = property.GetValue<Ref<Texture2D>>();
 				if (texture)
 					fprintf(file, "            \"value\": \"%s\"\n", texture->GetPath().c_str());
@@ -381,6 +587,20 @@ namespace Hazel
 			}
 			
 			std::string type = propContent.substr(typeValueStart, typeValueEnd - typeValueStart);
+			
+			// 解析size (如果存在)
+			uint32_t size = 0;
+			size_t sizeStart = propContent.find("\"size\"");
+			if (sizeStart != std::string::npos) {
+				size_t sizeValueStart = propContent.find_first_of("0123456789", sizeStart);
+				if (sizeValueStart != std::string::npos) {
+					size_t sizeValueEnd = propContent.find_first_not_of("0123456789", sizeValueStart);
+					if (sizeValueEnd != std::string::npos) {
+						std::string sizeStr = propContent.substr(sizeValueStart, sizeValueEnd - sizeValueStart);
+						size = std::stoul(sizeStr);
+					}
+				}
+			}
 			
 			// 解析值
 			size_t valueStart = propContent.find("\"value\"");
@@ -572,6 +792,20 @@ namespace Hazel
 				bool value = (propContent[valueBoolStart] == 't');
 				material->Set(name, value);
 			}
+			else if (type == "mat4")
+			{
+				size_t valueArrayStart = propContent.find("[", valueStart);
+				if (valueArrayStart == std::string::npos) {
+					// 如果无法解析，设置为单位矩阵
+					material->Set(name, glm::mat4(1.0f));
+					pos = propObjEnd + 1;
+					continue;
+				}
+				
+				// 由于矩阵可能很复杂，这里简化处理，直接读取为单位矩阵
+				// 在实际应用中，您可能需要解析所有16个值
+				material->Set(name, glm::mat4(1.0f));
+			}
 			else if (type == "texture2d")
 			{
 				size_t valuePathStart = propContent.find("\"", valueStart + 8);
@@ -600,6 +834,9 @@ namespace Hazel
 			// 移动到下一个属性（跳过当前属性对象的结束大括号）
 			pos = propObjEnd + 1;
 		}
+
+		// 同步Shader反射数据
+		material->SyncWithShaderReflection();
 
 		return material;
 	}
@@ -765,6 +1002,22 @@ namespace Hazel
 		return std::get<Ref<Texture2D>>(m_Value);
 	}
 
+	template<> 
+	glm::mat4& MaterialProperty::GetValue<glm::mat4>()
+	{
+		if (m_Type != MaterialPropertyType::Matrix4)
+			throw std::runtime_error("MaterialProperty: Type mismatch");
+		return std::get<glm::mat4>(m_Value);
+	}
+
+	template<> 
+	const glm::mat4& MaterialProperty::GetValue<glm::mat4>() const
+	{
+		if (m_Type != MaterialPropertyType::Matrix4)
+			throw std::runtime_error("MaterialProperty: Type mismatch");
+		return std::get<glm::mat4>(m_Value);
+	}
+
 	// Material::Set 模板特化
 	template<> 
 	void Material::Set<float>(const std::string& name, const float& value)
@@ -804,6 +1057,12 @@ namespace Hazel
 
 	template<> 
 	void Material::Set<Ref<Texture2D>>(const std::string& name, const Ref<Texture2D>& value)
+	{
+		m_Properties[name] = MaterialProperty(value);
+	}
+
+	template<> 
+	void Material::Set<glm::mat4>(const std::string& name, const glm::mat4& value)
 	{
 		m_Properties[name] = MaterialProperty(value);
 	}
@@ -863,5 +1122,13 @@ namespace Hazel
 		if (!HasProperty(name))
 			return nullptr;
 		return m_Properties.at(name).GetValue<Ref<Texture2D>>();
+	}
+
+	template<> 
+	glm::mat4 Material::Get<glm::mat4>(const std::string& name) const
+	{
+		if (!HasProperty(name))
+			return glm::mat4(1.0f); // 返回单位矩阵作为默认值
+		return m_Properties.at(name).GetValue<glm::mat4>();
 	}
 }

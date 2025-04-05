@@ -7,7 +7,7 @@
 cbuffer cbPerObject : register(b0)
 {
 	float4x4 gWorldViewProj; 
-	float4 testColor;
+	float4 baseColor;
 };
 
 cbuffer cbPerDraw : register(b1)

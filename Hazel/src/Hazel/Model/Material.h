@@ -32,9 +32,13 @@ namespace Hazel
 		MaterialProperty(int value);
 		MaterialProperty(bool value);
 		MaterialProperty(const Ref<Texture2D>& value);
+		MaterialProperty(const glm::mat4& value);
         
 		// 获取属性类型
 		MaterialPropertyType GetType() const { return m_Type; }
+        
+		// 获取属性大小
+		uint32_t GetSize() const { return m_Size; }
 
 		// 获取属性值（类型安全的访问器）
 		template<typename T>
@@ -45,11 +49,13 @@ namespace Hazel
         
 	private:
 		MaterialPropertyType m_Type;
+		uint32_t m_Size = 0;
 		std::variant<
 			std::monostate,
 			float, glm::vec2, glm::vec3, glm::vec4,
 			int, bool,
-			Ref<Texture2D>, Ref<Texture3D>
+			Ref<Texture2D>, Ref<Texture3D>,
+			glm::mat4
 		> m_Value;
 	};
 
@@ -83,6 +89,22 @@ namespace Hazel
 		std::unordered_map<std::string, MaterialProperty> m_Properties;
 		//GraphicsPipelineDesc m_PipelineDesc;
 		//Ref<GraphicsPipeline> m_Pipeline;
+		
+	private:
+		// 从着色器反射中同步属性
+		void SyncWithShaderReflection();
+		
+		// 根据反射数据创建属性
+		void CreatePropertyFromReflection(const std::string& name, uint32_t size);
+		
+		// 从属性大小推断着色器数据类型
+		ShaderDataType InferShaderDataTypeFromSize(uint32_t size);
+		
+		// 获取材质属性类型对应的大小
+		uint32_t GetSizeFromMaterialPropertyType(MaterialPropertyType type);
+		
+		// 检查属性类型是否与着色器类型匹配
+		bool IsPropertyTypeMatchingShaderType(MaterialPropertyType propType, const std::string& paramName);
 	};
 
 	// 材质库
@@ -125,6 +147,8 @@ template<> bool& MaterialProperty::GetValue<bool>();
 template<> const bool& MaterialProperty::GetValue<bool>() const;
 template<> Ref<Texture2D>& MaterialProperty::GetValue<Ref<Texture2D>>();
 template<> const Ref<Texture2D>& MaterialProperty::GetValue<Ref<Texture2D>>() const;
+template<> glm::mat4& MaterialProperty::GetValue<glm::mat4>();
+template<> const glm::mat4& MaterialProperty::GetValue<glm::mat4>() const;
 
 // Material模板特化声明
 template<> void Material::Set<float>(const std::string& name, const float& value);
@@ -134,6 +158,7 @@ template<> void Material::Set<glm::vec4>(const std::string& name, const glm::vec
 template<> void Material::Set<int>(const std::string& name, const int& value);
 template<> void Material::Set<bool>(const std::string& name, const bool& value);
 template<> void Material::Set<Ref<Texture2D>>(const std::string& name, const Ref<Texture2D>& value);
+template<> void Material::Set<glm::mat4>(const std::string& name, const glm::mat4& value);
 
 template<> float Material::Get<float>(const std::string& name) const;
 template<> glm::vec2 Material::Get<glm::vec2>(const std::string& name) const;
@@ -142,5 +167,6 @@ template<> glm::vec4 Material::Get<glm::vec4>(const std::string& name) const;
 template<> int Material::Get<int>(const std::string& name) const;
 template<> bool Material::Get<bool>(const std::string& name) const;
 template<> Ref<Texture2D> Material::Get<Ref<Texture2D>>(const std::string& name) const;
+template<> glm::mat4 Material::Get<glm::mat4>(const std::string& name) const;
 
 }

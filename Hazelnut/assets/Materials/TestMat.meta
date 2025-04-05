@@ -3,9 +3,9 @@
   "type": "PBR",
   "shader": "assets/shaders/color.hlsl",
   "properties": {
-    "u_Albedo": { "type": "vec3", "value": [0.8, 0.2, 0.2] },
-    "u_Metallic": { "type": "float", "value": 0.2 },
-    "u_Roughness": { "type": "float", "value": 0.8 },
+    "baseColor": { "type": "vec4", "value": [0.8, 0.2, 0.2,0.1] },
+    "lightDir": { "type": "vec4", "value": [0.8, 0.2, 0.2,0.1] },
+    "lightColor": { "type": "vec4", "value": [0.8, 0.2, 0.2,0.1] },
   },
   "renderState": {
     "transparent": false,
