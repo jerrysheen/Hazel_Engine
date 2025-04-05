@@ -11,7 +11,7 @@ namespace Hazel
 {
 	// MaterialProperty实现
 	MaterialProperty::MaterialProperty()
-		: m_Type(MaterialPropertyType::None), m_Size(0)
+		: m_Type(MaterialPropertyType::None), m_Size(0), m_Value(std::monostate{})
 	{
 	}
 
@@ -55,6 +55,24 @@ namespace Hazel
 	{
 	}
 
+	// 复制构造函数
+	MaterialProperty::MaterialProperty(const MaterialProperty& other)
+		: m_Type(other.m_Type), m_Size(other.m_Size), m_Value(other.m_Value)
+	{
+	}
+
+	// 赋值运算符
+	MaterialProperty& MaterialProperty::operator=(const MaterialProperty& other)
+	{
+		if (this != &other)
+		{
+			m_Type = other.m_Type;
+			m_Size = other.m_Size;
+			m_Value = other.m_Value;
+		}
+		return *this;
+	}
+
 	// Material实现
 	Material::Material(const Ref<Shader>& shader)
 		: m_Shader(shader)
@@ -81,42 +99,25 @@ namespace Hazel
 		if (!m_Shader)
 			return;
 
+		// 清除所有现有属性，以确保只包含着色器中定义的属性
+		m_Properties.clear();
+
 		// 从着色器反射数据中获取寄存器块信息
 		const auto& registerBlocks = m_Shader->GetReflection()->ReflectRegisterBlocks();
 		
+		// 创建材质需要的所有属性
 		for (const auto& block : registerBlocks)
 		{
 			for (const auto& param : block.Parameters)
 			{
-				// 检查属性是否已存在
-				if (!HasProperty(param.Name))
-				{
-					// 属性不存在，根据反射数据创建新属性
-					CreatePropertyFromReflection(param.Name, param.Size);
-					HZ_CORE_INFO("Material: Added property '{0}' from shader reflection data", param.Name);
-				}
-				else
-				{
-					// 验证已有属性大小是否匹配
-					auto& property = m_Properties[param.Name];
-					if (property.GetSize() != param.Size)
-					{
-						HZ_CORE_WARN("Material: Property '{0}' size mismatch. Expected {1}, got {2}. Updating property.", 
-							param.Name, param.Size, property.GetSize());
-						
-						// // 重新创建属性
-						// CreatePropertyFromReflection(param.Name, param.Size);
-					}
-					
-					// 检查类型匹配
-					if (!IsPropertyTypeMatchingShaderType(property.GetType(), param.Name))
-					{
-						uint32_t propSize = GetSizeFromMaterialPropertyType(property.GetType());
-						HZ_CORE_ERROR("Material: Property '{0}' size mismatch. Material property size ({1}) does not match shader parameter size.", param.Name, propSize);
-					}
-				}
+				// 根据反射数据创建属性
+				CreatePropertyFromReflection(param.Name, param.Size);
+				HZ_CORE_TRACE("Material: Created property '{0}' from shader reflection", param.Name);
 			}
 		}
+
+		// 创建属性块 - 根据着色器布局优化内存
+		CreatePropertyBlocks();
 	}
 
 	void Material::CreatePropertyFromReflection(const std::string& name, uint32_t size)
@@ -434,7 +435,7 @@ namespace Hazel
 		fopen_s(&file, filepath.c_str(), "rb");
 		if (!file)
 		{
-			// 错误处理：无法打开文件
+			HZ_CORE_ERROR("Material: Cannot open file {0}", filepath);
 			return nullptr;
 		}
 
@@ -451,57 +452,58 @@ namespace Hazel
 
 		if (bytesRead != static_cast<size_t>(fileSize))
 		{
-			// 错误处理：读取文件失败
+			HZ_CORE_ERROR("Material: Failed to read file {0}", filepath);
 			return nullptr;
 		}
 
 		// 解析着色器路径
 		size_t shaderStart = content.find("\"shader\"");
 		if (shaderStart == std::string::npos) {
-			HZ_ASSERT(false, "Failed to find shader path in material file");
+			HZ_CORE_ERROR("Material: Failed to find shader path in material file {0}", filepath);
 			return nullptr;
 		}
 
 		size_t shaderValueStart = content.find("\"", shaderStart + 9);
 		if (shaderValueStart == std::string::npos) {
-			HZ_ASSERT(false, "Invalid JSON format: missing shader path");
+			HZ_CORE_ERROR("Material: Invalid JSON format in {0}: missing shader path", filepath);
 			return nullptr;
 		}
 		shaderValueStart++; // 跳过引号
 
 		size_t shaderValueEnd = content.find("\"", shaderValueStart);
 		if (shaderValueEnd == std::string::npos) {
-			HZ_ASSERT(false, "Invalid JSON format: unclosed shader path");
+			HZ_CORE_ERROR("Material: Invalid JSON format in {0}: unclosed shader path", filepath);
 			return nullptr;
 		}
 
 		std::string shaderPath = content.substr(shaderValueStart, shaderValueEnd - shaderValueStart);
+		HZ_CORE_TRACE("Material: Loading shader {0} for material", shaderPath);
 
 		// 加载着色器
 		Ref<Shader> shader = Shader::Create(shaderPath);
 		if (!shader)
 		{
-			// 错误处理：无法加载着色器
-			HZ_ASSERT(false, "Failed to load shader {0}", shaderPath);
+			HZ_CORE_ERROR("Material: Failed to load shader {0}", shaderPath);
 			return nullptr;
 		}
 
-		// 创建材质
+		// 创建材质 - 这会自动调用SyncWithShaderReflection创建所有必要的属性和PropertyBlock
 		Ref<Material> material = CreateRef<Material>(shader);
-
-		// 找到属性部分
+		
+		// 找到属性部分并解析
 		size_t propertiesStart = content.find("\"properties\"");
 		if (propertiesStart == std::string::npos) {
+			HZ_CORE_WARN("Material: No properties found in {0}", filepath);
 			return material; // 没有属性部分，返回仅带着色器的材质
 		}
 
 		size_t propertiesObj = content.find("{", propertiesStart);
 		if (propertiesObj == std::string::npos) {
+			HZ_CORE_WARN("Material: Invalid properties format in {0}", filepath);
 			return material; // 格式错误，但仍返回材质
 		}
 
-		// 找到属性部分结束的大括号
-		// 需要考虑嵌套的大括号情况
+		// 找到属性部分结束的大括号（考虑嵌套）
 		size_t depth = 1;
 		size_t propertiesEnd = propertiesObj + 1;
 		
@@ -515,12 +517,11 @@ namespace Hazel
 		}
 		
 		if (depth > 0) {
-			HZ_ASSERT(false, "Invalid JSON format: unclosed properties object");
+			HZ_CORE_WARN("Material: Unclosed properties object in {0}", filepath);
 			return material; // 格式错误，但仍返回材质
 		}
 		
 		propertiesEnd--; // 调整到最后一个大括号位置
-		
 		std::string propertiesContent = content.substr(propertiesObj + 1, propertiesEnd - propertiesObj - 1);
 
 		// 解析每个属性
@@ -537,6 +538,18 @@ namespace Hazel
 			if (nameEnd == std::string::npos) break;
 			
 			std::string name = propertiesContent.substr(nameStart, nameEnd - nameStart);
+			
+			// 检查材质中是否有此属性 - 只设置Shader中存在的属性
+			if (!material->HasProperty(name)) {
+				HZ_CORE_TRACE("Material: Property '{0}' in file not found in shader, skipping", name);
+				
+				// 跳过此属性的剩余部分，找到下一个属性开始
+				size_t nextPropStart = propertiesContent.find("\"", nameEnd + 1);
+				if (nextPropStart == std::string::npos) break;
+				
+				pos = nextPropStart;
+				continue;
+			}
 			
 			// 跳过冒号
 			size_t colonPos = propertiesContent.find(":", nameEnd);
@@ -588,20 +601,6 @@ namespace Hazel
 			
 			std::string type = propContent.substr(typeValueStart, typeValueEnd - typeValueStart);
 			
-			// 解析size (如果存在)
-			uint32_t size = 0;
-			size_t sizeStart = propContent.find("\"size\"");
-			if (sizeStart != std::string::npos) {
-				size_t sizeValueStart = propContent.find_first_of("0123456789", sizeStart);
-				if (sizeValueStart != std::string::npos) {
-					size_t sizeValueEnd = propContent.find_first_not_of("0123456789", sizeValueStart);
-					if (sizeValueEnd != std::string::npos) {
-						std::string sizeStr = propContent.substr(sizeValueStart, sizeValueEnd - sizeValueStart);
-						size = std::stoul(sizeStr);
-					}
-				}
-			}
-			
 			// 解析值
 			size_t valueStart = propContent.find("\"value\"");
 			if (valueStart == std::string::npos) {
@@ -625,6 +624,7 @@ namespace Hazel
 				std::string valueStr = propContent.substr(valueNumStart, valueNumEnd - valueNumStart);
 				float value = std::stof(valueStr);
 				material->Set(name, value);
+				HZ_CORE_TRACE("Material: Set property '{0}' to float value {1}", name, value);
 			}
 			else if (type == "vec2")
 			{
@@ -661,6 +661,7 @@ namespace Hazel
 				float y = std::stof(yStr);
 				
 				material->Set(name, glm::vec2(x, y));
+				HZ_CORE_TRACE("Material: Set property '{0}' to vec2 value ({1}, {2})", name, x, y);
 			}
 			else if (type == "vec3")
 			{
@@ -707,6 +708,7 @@ namespace Hazel
 				float z = std::stof(zStr);
 				
 				material->Set(name, glm::vec3(x, y, z));
+				HZ_CORE_TRACE("Material: Set property '{0}' to vec3 value ({1}, {2}, {3})", name, x, y, z);
 			}
 			else if (type == "vec4")
 			{
@@ -763,6 +765,7 @@ namespace Hazel
 				float w = std::stof(wStr);
 				
 				material->Set(name, glm::vec4(x, y, z, w));
+				HZ_CORE_TRACE("Material: Set property '{0}' to vec4 value ({1}, {2}, {3}, {4})", name, x, y, z, w);
 			}
 			else if (type == "int")
 			{
@@ -780,6 +783,7 @@ namespace Hazel
 				std::string valueStr = propContent.substr(valueNumStart, valueNumEnd - valueNumStart);
 				int value = std::stoi(valueStr);
 				material->Set(name, value);
+				HZ_CORE_TRACE("Material: Set property '{0}' to int value {1}", name, value);
 			}
 			else if (type == "bool")
 			{
@@ -791,6 +795,7 @@ namespace Hazel
 				
 				bool value = (propContent[valueBoolStart] == 't');
 				material->Set(name, value);
+				HZ_CORE_TRACE("Material: Set property '{0}' to bool value {1}", name, value ? "true" : "false");
 			}
 			else if (type == "mat4")
 			{
@@ -798,13 +803,15 @@ namespace Hazel
 				if (valueArrayStart == std::string::npos) {
 					// 如果无法解析，设置为单位矩阵
 					material->Set(name, glm::mat4(1.0f));
+					HZ_CORE_TRACE("Material: Set property '{0}' to identity matrix (fallback)", name);
 					pos = propObjEnd + 1;
 					continue;
 				}
 				
-				// 由于矩阵可能很复杂，这里简化处理，直接读取为单位矩阵
-				// 在实际应用中，您可能需要解析所有16个值
+				// 由于矩阵解析复杂，这里简化处理
+				// TODO: 实现完整的4x4矩阵解析
 				material->Set(name, glm::mat4(1.0f));
+				HZ_CORE_TRACE("Material: Set property '{0}' to identity matrix", name);
 			}
 			else if (type == "texture2d")
 			{
@@ -828,15 +835,16 @@ namespace Hazel
 				{
 					Ref<Texture2D> texture = Texture2D::Create(path);
 					material->Set(name, texture);
+					HZ_CORE_TRACE("Material: Set property '{0}' to texture '{1}'", name, path);
 				}
 			}
 
-			// 移动到下一个属性（跳过当前属性对象的结束大括号）
+			// 移动到下一个属性
 			pos = propObjEnd + 1;
 		}
 
-		// 同步Shader反射数据
-		material->SyncWithShaderReflection();
+		// 同步数据到优化的内存布局
+		material->SyncToRawData();
 
 		return material;
 	}
@@ -889,7 +897,7 @@ namespace Hazel
 		return material;
 	}
 
-	// MaterialProperty模板特化
+	// MaterialProperty::GetValue<float> 实现
 	template<> 
 	float& MaterialProperty::GetValue<float>()
 	{
@@ -1023,48 +1031,56 @@ namespace Hazel
 	void Material::Set<float>(const std::string& name, const float& value)
 	{
 		m_Properties[name] = MaterialProperty(value);
+		MarkPropertyDirty(name);
 	}
 
 	template<> 
 	void Material::Set<glm::vec2>(const std::string& name, const glm::vec2& value)
 	{
 		m_Properties[name] = MaterialProperty(value);
+		MarkPropertyDirty(name);
 	}
 
 	template<> 
 	void Material::Set<glm::vec3>(const std::string& name, const glm::vec3& value)
 	{
 		m_Properties[name] = MaterialProperty(value);
+		MarkPropertyDirty(name);
 	}
 
 	template<> 
 	void Material::Set<glm::vec4>(const std::string& name, const glm::vec4& value)
 	{
 		m_Properties[name] = MaterialProperty(value);
+		MarkPropertyDirty(name);
 	}
 
 	template<> 
 	void Material::Set<int>(const std::string& name, const int& value)
 	{
 		m_Properties[name] = MaterialProperty(value);
+		MarkPropertyDirty(name);
 	}
 
 	template<> 
 	void Material::Set<bool>(const std::string& name, const bool& value)
 	{
 		m_Properties[name] = MaterialProperty(value);
+		MarkPropertyDirty(name);
 	}
 
 	template<> 
 	void Material::Set<Ref<Texture2D>>(const std::string& name, const Ref<Texture2D>& value)
 	{
 		m_Properties[name] = MaterialProperty(value);
+		MarkPropertyDirty(name);
 	}
 
 	template<> 
 	void Material::Set<glm::mat4>(const std::string& name, const glm::mat4& value)
 	{
 		m_Properties[name] = MaterialProperty(value);
+		MarkPropertyDirty(name);
 	}
 
 	// Material::Get 模板特化
@@ -1130,5 +1146,180 @@ namespace Hazel
 		if (!HasProperty(name))
 			return glm::mat4(1.0f); // 返回单位矩阵作为默认值
 		return m_Properties.at(name).GetValue<glm::mat4>();
+	}
+
+	// 创建属性块
+	void Material::CreatePropertyBlocks()
+	{
+		if (!m_Shader)
+			return;
+
+		// 清除现有属性块
+		m_PropertyBlocks.clear();
+
+		// 获取寄存器块信息
+		const auto& registerBlocks = m_Shader->GetReflection()->ReflectRegisterBlocks();
+		
+		for (const auto& block : registerBlocks)
+		{
+			// 计算块键值
+			uint64_t blockKey = CalculateBlockKey(block.BindPoint, block.BindSpace);
+			
+			// 创建新的属性块
+			MaterialPropertyBlock propertyBlock;
+			propertyBlock.BindPoint = block.BindPoint;
+			propertyBlock.BindSpace = block.BindSpace;
+			propertyBlock.Size = block.Size;
+			propertyBlock.Dirty = true;
+			propertyBlock.RawData.resize(block.Size, 0); // 初始化为0
+
+			// 记录每个参数在块中的偏移
+			for (const auto& param : block.Parameters)
+			{
+				propertyBlock.PropertyOffsets[param.Name] = param.Offset;
+			}
+
+			// 存储属性块
+			m_PropertyBlocks[blockKey] = propertyBlock;
+			
+			HZ_CORE_INFO("Material: Created property block for register b{0}, space {1}, size {2} bytes", 
+				block.BindPoint, block.BindSpace, block.Size);
+		}
+	}
+
+	// 同步属性到优化的内存布局
+	void Material::SyncToRawData()
+	{
+		if (!m_Shader)
+			return;
+
+		// 获取寄存器块信息
+		const auto& registerBlocks = m_Shader->GetReflection()->ReflectRegisterBlocks();
+		
+		for (const auto& block : registerBlocks)
+		{
+			// 计算块键值
+			uint64_t blockKey = CalculateBlockKey(block.BindPoint, block.BindSpace);
+			
+			// 检查块是否存在
+			if (m_PropertyBlocks.find(blockKey) == m_PropertyBlocks.end())
+				continue;
+			
+			auto& propertyBlock = m_PropertyBlocks[blockKey];
+			
+			// 遍历块中的所有参数
+			for (const auto& param : block.Parameters)
+			{
+				// 检查属性是否存在
+				if (!HasProperty(param.Name))
+					continue;
+				
+				// 获取偏移量
+				uint32_t offset = param.Offset;
+				
+				// 根据属性类型复制数据
+				const auto& property = m_Properties[param.Name];
+				
+				switch (property.GetType())
+				{
+				case MaterialPropertyType::Float:
+				{
+					float value = property.GetValue<float>();
+					memcpy(propertyBlock.RawData.data() + offset, &value, sizeof(float));
+					break;
+				}
+				case MaterialPropertyType::Float2:
+				{
+					const glm::vec2& value = property.GetValue<glm::vec2>();
+					memcpy(propertyBlock.RawData.data() + offset, &value, sizeof(glm::vec2));
+					break;
+				}
+				case MaterialPropertyType::Float3:
+				{
+					const glm::vec3& value = property.GetValue<glm::vec3>();
+					memcpy(propertyBlock.RawData.data() + offset, &value, sizeof(glm::vec3));
+					break;
+				}
+				case MaterialPropertyType::Float4:
+				{
+					const glm::vec4& value = property.GetValue<glm::vec4>();
+					memcpy(propertyBlock.RawData.data() + offset, &value, sizeof(glm::vec4));
+					break;
+				}
+				case MaterialPropertyType::Int:
+				{
+					int value = property.GetValue<int>();
+					memcpy(propertyBlock.RawData.data() + offset, &value, sizeof(int));
+					break;
+				}
+				case MaterialPropertyType::Bool:
+				{
+					bool value = property.GetValue<bool>();
+					memcpy(propertyBlock.RawData.data() + offset, &value, sizeof(bool));
+					break;
+				}
+				case MaterialPropertyType::Matrix4:
+				{
+					const glm::mat4& value = property.GetValue<glm::mat4>();
+					memcpy(propertyBlock.RawData.data() + offset, &value, sizeof(glm::mat4));
+					break;
+				}
+				case MaterialPropertyType::Texture2D:
+				{
+					// 纹理引用不需要复制到常量缓冲区，它们会单独绑定
+					// 这里可以存储一个纹理索引或标识符
+					break;
+				}
+				default:
+					HZ_CORE_WARN("Material: Property type {0} not supported for raw data sync", (int)property.GetType());
+					break;
+				}
+			}
+			
+			// 设置为已更新
+			propertyBlock.Dirty = false;
+		}
+	}
+
+	// 计算属性块键值
+	uint64_t Material::CalculateBlockKey(uint32_t bindPoint, uint32_t bindSpace) const
+	{
+		// 使用bindPoint和bindSpace组合成一个唯一的键值
+		return (static_cast<uint64_t>(bindSpace) << 32) | bindPoint;
+	}
+
+	// 获取属性块
+	const MaterialPropertyBlock* Material::GetPropertyBlock(uint32_t bindPoint, uint32_t bindSpace) const
+	{
+		uint64_t blockKey = CalculateBlockKey(bindPoint, bindSpace);
+		
+		auto it = m_PropertyBlocks.find(blockKey);
+		if (it != m_PropertyBlocks.end())
+			return &(it->second);
+		
+		return nullptr;
+	}
+
+	// 检查属性块是否存在
+	bool Material::HasPropertyBlock(uint32_t bindPoint, uint32_t bindSpace) const
+	{
+		uint64_t blockKey = CalculateBlockKey(bindPoint, bindSpace);
+		return m_PropertyBlocks.find(blockKey) != m_PropertyBlocks.end();
+	}
+
+	// 标记属性为脏，需要更新
+	void Material::MarkPropertyDirty(const std::string& name)
+	{
+		if (!m_Shader)
+			return;
+		
+		// 查找所有包含此属性的属性块
+		for (auto& [key, block] : m_PropertyBlocks)
+		{
+			if (block.PropertyOffsets.find(name) != block.PropertyOffsets.end())
+			{
+				block.Dirty = true;
+			}
+		}
 	}
 }

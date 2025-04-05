@@ -34,6 +34,10 @@ namespace Hazel
 		MaterialProperty(const Ref<Texture2D>& value);
 		MaterialProperty(const glm::mat4& value);
         
+		// 添加复制构造函数和赋值运算符
+		MaterialProperty(const MaterialProperty& other);
+		MaterialProperty& operator=(const MaterialProperty& other);
+        
 		// 获取属性类型
 		MaterialPropertyType GetType() const { return m_Type; }
         
@@ -50,13 +54,27 @@ namespace Hazel
 	private:
 		MaterialPropertyType m_Type;
 		uint32_t m_Size = 0;
+		
+		// 使用std::variant存储不同类型的值
 		std::variant<
 			std::monostate,
 			float, glm::vec2, glm::vec3, glm::vec4,
 			int, bool,
-			Ref<Texture2D>, Ref<Texture3D>,
+			Ref<Texture2D>, //Ref<Texture3D>,
 			glm::mat4
 		> m_Value;
+	};
+
+	// 材质属性块 - 对应着色器中的一个常量缓冲区
+	struct MaterialPropertyBlock {
+		std::vector<uint8_t> RawData;  // 内存块，按照着色器布局优化
+		uint32_t Size;                 // 缓冲区大小
+		uint32_t BindPoint;            // 绑定点（寄存器号）
+		uint32_t BindSpace;            // 绑定空间
+		bool Dirty;                    // 脏标记，表示数据需要更新
+        
+		// 记录属性名称到原始数据偏移量的映射
+		std::unordered_map<std::string, uint32_t> PropertyOffsets;
 	};
 
 	// 材质基类
@@ -77,6 +95,13 @@ namespace Hazel
 		bool HasProperty(const std::string& name) const;
 		const Ref<Shader>& GetShader() const;
 		
+		// 同步属性到优化的内存布局
+		void SyncToRawData();
+        
+		// 获取原始数据，供渲染系统使用
+		const MaterialPropertyBlock* GetPropertyBlock(uint32_t bindPoint, uint32_t bindSpace = 0) const;
+		bool HasPropertyBlock(uint32_t bindPoint, uint32_t bindSpace = 0) const;
+		
 		// 序列化和反序列化
 		void SerializeToJSON(const std::string& filepath);
 		static Ref<Material> DeserializeFromJSON(const std::string& filepath);
@@ -87,6 +112,10 @@ namespace Hazel
         
 		Ref<Shader> m_Shader;
 		std::unordered_map<std::string, MaterialProperty> m_Properties;
+		
+		// 常量缓冲区块集合，按bindPoint组织
+		std::unordered_map<uint64_t, MaterialPropertyBlock> m_PropertyBlocks;
+		
 		//GraphicsPipelineDesc m_PipelineDesc;
 		//Ref<GraphicsPipeline> m_Pipeline;
 		
@@ -96,6 +125,15 @@ namespace Hazel
 		
 		// 根据反射数据创建属性
 		void CreatePropertyFromReflection(const std::string& name, uint32_t size);
+        
+		// 根据反射数据创建属性块
+		void CreatePropertyBlocks();
+        
+		// 标记属性为脏，需要更新
+		void MarkPropertyDirty(const std::string& name);
+        
+		// 计算属性块键值
+		uint64_t CalculateBlockKey(uint32_t bindPoint, uint32_t bindSpace) const;
 		
 		// 从属性大小推断着色器数据类型
 		ShaderDataType InferShaderDataTypeFromSize(uint32_t size);
