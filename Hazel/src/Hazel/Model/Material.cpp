@@ -1171,7 +1171,8 @@ namespace Hazel
 			propertyBlock.BindSpace = block.BindSpace;
 			propertyBlock.Size = block.Size;
 			propertyBlock.Dirty = true;
-			propertyBlock.RawData.resize(block.Size, 0); // 初始化为0
+			// 一个float占用4个字节，RawData大小为块大小除以4
+			propertyBlock.RawData.resize(block.Size / 4, 0); // 初始化为0
 
 			// 记录每个参数在块中的偏移
 			for (const auto& param : block.Parameters)

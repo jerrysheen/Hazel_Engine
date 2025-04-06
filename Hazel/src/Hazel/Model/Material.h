@@ -67,7 +67,7 @@ namespace Hazel
 
 	// 材质属性块 - 对应着色器中的一个常量缓冲区
 	struct MaterialPropertyBlock {
-		std::vector<uint8_t> RawData;  // 内存块，按照着色器布局优化
+		std::vector<float> RawData;  // 内存块，按照着色器布局优化
 		uint32_t Size;                 // 缓冲区大小
 		uint32_t BindPoint;            // 绑定点（寄存器号）
 		uint32_t BindSpace;            // 绑定空间

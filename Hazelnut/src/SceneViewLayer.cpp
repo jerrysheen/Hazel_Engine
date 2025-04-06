@@ -187,14 +187,25 @@ namespace Hazel
         XMMATRIX proj = XMLoadFloat4x4(&mProj);
         XMMATRIX worldViewProj = world * view * proj;
         XMStoreFloat4x4(&mWorld, XMMatrixTranspose(worldViewProj));
-        uint32_t size = sizeof(ObjectConstants);
+
+        //uint32_t size = sizeof(ObjectConstants);
+        //objectCB = ConstantBuffer::Create(size);
+        //objectCB->SetData(&mWorld, size);
+        //GfxViewManager::getInstance()->GetCbvHandle(objectCB);
+
+  //      // 直接使用mWorld中的数据，确保内存布局兼容
+        material->Set<glm::mat4>("gWorldViewProj", *reinterpret_cast<glm::mat4*>(&mWorld));
+        material->SyncToRawData();
+        auto propertyBlock = material->GetPropertyBlock(0, 0);
+		std::vector<float> rawData;
+        if (propertyBlock != nullptr) 
+        {
+            rawData = propertyBlock->RawData;
+        }
+        UINT32 size = rawData.size()* sizeof(float);
         objectCB = ConstantBuffer::Create(size);
-        objectCB->SetData(&mWorld, size);
+        objectCB->SetData(rawData.data(), size);
         GfxViewManager::getInstance()->GetCbvHandle(objectCB);
-
-        // mesh����, mesh����Ӧ�ü���ͨ�����ݣ�upload��ʱ�����һ��ת��ͺ��ˣ�
-
-
 
     }
 
@@ -412,7 +423,6 @@ namespace Hazel
         m_CommandList->IASetVertexBuffers(0, numViews, vertexBufferViews);
         m_CommandList->IASetIndexBuffer(&ibv);
         m_CommandList->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
 
         m_CommandList->SetGraphicsRootDescriptorTable(0, d3dCbvHeap->GetGPUDescriptorHandleForHeapStart());
 
