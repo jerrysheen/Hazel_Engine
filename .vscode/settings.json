@@ -103,5 +103,6 @@
         "xtr1common": "cpp",
         "xtree": "cpp",
         "xutility": "cpp"
-    }
+    },
+    "cmake.sourceDirectory": "F:/STWorkSation/GithubProject/Hazel_Engine/Hazel/vendor/glm/test/gtc"
 }
