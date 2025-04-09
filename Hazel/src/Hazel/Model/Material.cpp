@@ -1172,7 +1172,7 @@ namespace Hazel
 			propertyBlock.Size = block.Size;
 			propertyBlock.Dirty = true;
 			// 一个float占用4个字节，RawData大小为块大小除以4
-			propertyBlock.RawData.resize(block.Size / 4, 0); // 初始化为0
+			propertyBlock.RawData.resize(block.Size / sizeof(float), 0); // 初始化为0
 
 			// 记录每个参数在块中的偏移
 			for (const auto& param : block.Parameters)
@@ -1216,7 +1216,7 @@ namespace Hazel
 					continue;
 				
 				// 获取偏移量
-				uint32_t offset = param.Offset;
+				uint32_t offset = param.Offset / sizeof(float);
 				
 				// 根据属性类型复制数据
 				const auto& property = m_Properties[param.Name];
@@ -1226,43 +1226,60 @@ namespace Hazel
 				case MaterialPropertyType::Float:
 				{
 					float value = property.GetValue<float>();
-					memcpy(propertyBlock.RawData.data() + offset, &value, sizeof(float));
+					propertyBlock.RawData[offset] = value;
 					break;
 				}
 				case MaterialPropertyType::Float2:
 				{
 					const glm::vec2& value = property.GetValue<glm::vec2>();
-					memcpy(propertyBlock.RawData.data() + offset, &value, sizeof(glm::vec2));
+					// 明确地复制每个分量
+					propertyBlock.RawData[offset] = value.x;
+					propertyBlock.RawData[offset + 1] = value.y;
 					break;
 				}
 				case MaterialPropertyType::Float3:
 				{
 					const glm::vec3& value = property.GetValue<glm::vec3>();
-					memcpy(propertyBlock.RawData.data() + offset, &value, sizeof(glm::vec3));
+					// 明确地复制每个分量
+					propertyBlock.RawData[offset] = value.x;
+					propertyBlock.RawData[offset + 1] = value.y;
+					propertyBlock.RawData[offset + 2] = value.z;
 					break;
 				}
 				case MaterialPropertyType::Float4:
 				{
 					const glm::vec4& value = property.GetValue<glm::vec4>();
-					memcpy(propertyBlock.RawData.data() + offset, &value, sizeof(glm::vec4));
+					// 明确地复制每个分量
+					propertyBlock.RawData[offset] = value.x;
+					propertyBlock.RawData[offset + 1] = value.y;
+					propertyBlock.RawData[offset + 2] = value.z;
+					propertyBlock.RawData[offset + 3] = value.w;
 					break;
 				}
 				case MaterialPropertyType::Int:
 				{
 					int value = property.GetValue<int>();
-					memcpy(propertyBlock.RawData.data() + offset, &value, sizeof(int));
+					// 假设int和float大小相同
+					*reinterpret_cast<int*>(&propertyBlock.RawData[offset]) = value;
 					break;
 				}
 				case MaterialPropertyType::Bool:
 				{
 					bool value = property.GetValue<bool>();
-					memcpy(propertyBlock.RawData.data() + offset, &value, sizeof(bool));
+					// 将布尔值转换为0或1的float
+					propertyBlock.RawData[offset] = value ? 1.0f : 0.0f;
 					break;
 				}
 				case MaterialPropertyType::Matrix4:
 				{
 					const glm::mat4& value = property.GetValue<glm::mat4>();
-					memcpy(propertyBlock.RawData.data() + offset, &value, sizeof(glm::mat4));
+					// GLM矩阵是列主序的, 确保按照着色器期望的方式复制
+					for (int col = 0; col < 4; col++) {
+						for (int row = 0; row < 4; row++) {
+							// 按列主序排列 - 这通常是GLSL着色器的期望
+							propertyBlock.RawData[offset + col * 4 + row] = value[col][row];
+						}
+					}
 					break;
 				}
 				case MaterialPropertyType::Texture2D:

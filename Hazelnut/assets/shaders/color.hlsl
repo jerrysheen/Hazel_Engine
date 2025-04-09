@@ -44,7 +44,7 @@ VertexOut VS(VertexIn vin)
 float4 PS(VertexOut pin) : SV_Target
 {
 	float4 color = lightDir + pin.Color;
-    return color;
+    return baseColor;
 }
 
 

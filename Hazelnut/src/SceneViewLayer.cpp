@@ -195,6 +195,7 @@ namespace Hazel
 
   //      // 直接使用mWorld中的数据，确保内存布局兼容
         material->Set<glm::mat4>("gWorldViewProj", *reinterpret_cast<glm::mat4*>(&mWorld));
+        material->Set("baseColor", glm::vec4(1.0, 0.0, 0.0, 1.0));
         material->SyncToRawData();
         auto propertyBlock = material->GetPropertyBlock(0, 0);
 		std::vector<float> rawData;

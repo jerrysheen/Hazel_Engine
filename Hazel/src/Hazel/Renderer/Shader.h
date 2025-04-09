@@ -11,9 +11,10 @@ namespace Hazel {
 	// ShaderParameter类，表示着色器中的常量参数
 	struct ShaderParameter
 	{
+		// 这里的size 和 offset 是字节对齐的，CPU端如果需要填充数据，需要做一些转换。
 		std::string Name;
 		uint32_t Size;
-		uint32_t Offset;
+		uint32_t Offset; 
 		// 可以根据需要扩展更多属性，如类型、寄存器等
 	};
 
