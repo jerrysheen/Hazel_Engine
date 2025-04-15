@@ -1,4 +1,10 @@
 # Descriptor系统重构计划
+## 大致思路：
+DescritorAllocator是一个描述符分配器，它返回一个DescriptorAllocation，用来记录分配的结果。
+DescritorAllocator分配时，只需要传入我需要分配几个描述符。
+在DescriptorAllocation中， 记录一个DescritorHandle和一个count信息。
+DescriptorHandle记录这个Handle的GPU和CPU地址。
+
 
 ## 一、当前描述符系统分析
 
@@ -211,6 +217,10 @@ public:
     virtual DescriptorHandle CreateShaderResourceView(const Ref<TextureBuffer>& texture) = 0;
     virtual DescriptorHandle CreateConstantBufferView(const Ref<ConstantBuffer>& buffer) = 0;
     
+    // 批量创建连续的常量缓冲区视图
+    virtual DescriptorAllocation CreateConsecutiveConstantBufferViews(
+        const std::vector<Ref<ConstantBuffer>>& buffers) = 0;
+    
     // 内部缓存查找
     virtual DescriptorHandle GetCachedView(const boost::uuids::uuid& resourceId, DescriptorType type) = 0;
     
@@ -235,6 +245,8 @@ public:
     virtual DescriptorHandle CreateDepthStencilView(const Ref<TextureBuffer>& texture) override;
     virtual DescriptorHandle CreateShaderResourceView(const Ref<TextureBuffer>& texture) override;
     virtual DescriptorHandle CreateConstantBufferView(const Ref<ConstantBuffer>& buffer) override;
+    virtual DescriptorAllocation CreateConsecutiveConstantBufferViews(
+        const std::vector<Ref<ConstantBuffer>>& buffers) override;
     virtual DescriptorHandle GetCachedView(const boost::uuids::uuid& resourceId, DescriptorType type) override;
     virtual void* GetHeap(DescriptorHeapType type) const override;
     virtual void GarbageCollect() override;
@@ -248,11 +260,17 @@ private:
     std::unordered_map<boost::uuids::uuid, DescriptorHandle> m_SrvCache;
     std::unordered_map<boost::uuids::uuid, DescriptorHandle> m_CbvCache;
     
+    // 批量描述符分配缓存
+    std::unordered_map<size_t, DescriptorAllocation> m_BatchAllocationCache;
+    
     std::mutex m_Mutex;
     
     // 辅助方法
     void CreateDescriptorIfNeeded(const boost::uuids::uuid& resourceId, const Ref<TextureBuffer>& texture, DescriptorType type);
     void CreateCbvDescriptorIfNeeded(const boost::uuids::uuid& resourceId, const Ref<ConstantBuffer>& buffer);
+    
+    // 创建批量描述符的哈希ID
+    size_t CreateBatchId(const std::vector<boost::uuids::uuid>& resourceIds);
 };
 ```
 
@@ -446,7 +464,7 @@ classDiagram
         +Reset() void
         +GetHeapType() DescriptorHeapType
         +GetDescriptorSize() uint32_t
-    }
+    }z`
     
     class D3D12DescriptorAllocator {
         -m_Heap : ID3D12DescriptorHeap*
@@ -527,3 +545,389 @@ flowchart TD
     D --> O[使用描述符]
     N --> O
 ```
+
+## 七、应用层初始化设计
+
+### 7.1 Renderer初始化时的描述符系统创建
+
+```cpp
+// 在Renderer类的Initialize方法中初始化描述符系统
+class Renderer {
+public:
+    static void Initialize() {
+        // 创建图形设备和命令队列
+        GraphicsDevice::CreateInstance();
+        
+        // 创建并初始化描述符系统
+        InitializeDescriptorSystem();
+        
+        // 初始化其他渲染系统组件
+        // ...
+    }
+
+private:
+    static void InitializeDescriptorSystem() {
+        // 获取当前图形API类型
+        GraphicsAPI api = GraphicsDevice::Get().GetGraphicsAPI();
+        
+        // 使用工厂创建适合当前API的描述符系统
+        m_DescriptorHeapManager = DescriptorSystemFactory::CreateHeapManager(api);
+        m_ViewManager = DescriptorSystemFactory::CreateViewManager(api);
+        
+        // 初始化描述符堆管理器
+        DescriptorHeapConfig heapConfig;
+        heapConfig.cbvSrvUavHeapSize = 5000;  // 默认大小
+        heapConfig.samplerHeapSize = 1000;
+        heapConfig.rtvHeapSize = 100;
+        heapConfig.dsvHeapSize = 100;
+        
+        m_DescriptorHeapManager->Initialize(heapConfig);
+        
+        // 初始化视图管理器
+        m_ViewManager->Initialize(m_DescriptorHeapManager.get());
+        
+        // 注册资源管理器的回调，用于资源生命周期管理
+        ResourceManager::Get().RegisterResourceDestroyedCallback(
+            [this](const boost::uuids::uuid& resourceId) {
+                m_ViewManager->OnResourceDestroyed(resourceId);
+            }
+        );
+    }
+    
+    static Scope<IDescriptorHeapManager> m_DescriptorHeapManager;
+    static Scope<IGfxViewManager> m_ViewManager;
+};
+```
+
+### 7.2 描述符系统工厂
+
+```cpp
+// 描述符系统工厂类，根据图形API创建对应的实现
+class DescriptorSystemFactory {
+public:
+    static Scope<IDescriptorHeapManager> CreateHeapManager(GraphicsAPI api) {
+        switch (api) {
+            case GraphicsAPI::DirectX12:
+                return CreateScope<D3D12DescriptorHeapManager>(GraphicsDevice::Get().GetNativeDevice());
+            // 其他API支持
+            // case GraphicsAPI::Vulkan:
+            //    return CreateScope<VulkanDescriptorHeapManager>();
+            default:
+                HZ_CORE_ASSERT(false, "Unsupported Graphics API for descriptor heap manager!");
+                return nullptr;
+        }
+    }
+    
+    static Scope<IGfxViewManager> CreateViewManager(GraphicsAPI api) {
+        switch (api) {
+            case GraphicsAPI::DirectX12:
+                return CreateScope<D3D12GfxViewManager>();
+            // 其他API支持
+            // case GraphicsAPI::Vulkan:
+            //    return CreateScope<VulkanGfxViewManager>();
+            default:
+                HZ_CORE_ASSERT(false, "Unsupported Graphics API for view manager!");
+                return nullptr;
+        }
+    }
+};
+```
+
+### 7.3 描述符系统配置结构
+
+```cpp
+// 描述符堆配置结构
+struct DescriptorHeapConfig {
+    uint32_t cbvSrvUavHeapSize = 5000;  // CBV/SRV/UAV组合堆大小
+    uint32_t samplerHeapSize = 1000;    // 采样器堆大小
+    uint32_t rtvHeapSize = 100;         // 渲染目标堆大小
+    uint32_t dsvHeapSize = 100;         // 深度模板堆大小
+    bool enableGpuVisibleHeaps = true;  // 是否启用GPU可见堆
+};
+```
+
+### 7.4 视图管理器扩展接口
+
+```cpp
+// 扩展IGfxViewManager接口以支持资源生命周期管理
+class IGfxViewManager {
+public:
+    // ... 已有接口 ...
+    
+    // 资源销毁通知
+    virtual void OnResourceDestroyed(const boost::uuids::uuid& resourceId) = 0;
+    
+    // 重置每帧临时描述符
+    virtual void ResetPerFrameDescriptors() = 0;
+    
+    // 获取当前视图管理器实例
+    static IGfxViewManager& Get();
+};
+```
+
+### 7.5 应用层访问模式
+
+```cpp
+// 应用层代码调用示例
+void ApplicationCode::CreateTextureWithViews() {
+    // 创建纹理资源
+    TextureCreateInfo createInfo = { /* ... */ };
+    Ref<Texture2D> texture = Texture2D::Create(createInfo);
+    
+    // 获取或创建着色器资源视图
+    auto srvHandle = IGfxViewManager::Get().CreateShaderResourceView(texture);
+    
+    // 将视图绑定到渲染管线
+    cmdList->SetShaderResourceView(0, srvHandle);
+}
+```
+
+### 7.6 渲染器初始化流程图
+
+```mermaid
+flowchart TD
+    A[应用启动] --> B[Renderer::Initialize]
+    B --> C[创建图形设备]
+    C --> D[InitializeDescriptorSystem]
+    
+    D --> E[确定图形API类型]
+    E --> F[创建DescriptorHeapManager]
+    F --> G[创建GfxViewManager]
+    
+    G --> H[设置堆配置参数]
+    H --> I[初始化堆管理器]
+    I --> J[初始化视图管理器]
+    
+    J --> K[注册资源销毁回调]
+    K --> L[初始化其他渲染组件]
+    
+    L --> M[渲染系统就绪]
+```
+
+### 7.7 描述符系统动态扩展机制
+
+```cpp
+// D3D12DescriptorHeapManager中实现堆的动态扩展
+void D3D12DescriptorHeapManager::ExpandHeap(DescriptorHeapType type, uint32_t additionalSize) {
+    // 获取当前分配器
+    auto& currentAllocator = GetAllocator(type);
+    uint32_t currentSize = currentAllocator.GetTotalDescriptorCount();
+    
+    // 创建新的更大的分配器
+    uint32_t newSize = currentSize + additionalSize;
+    D3D12_DESCRIPTOR_HEAP_TYPE d3dType = ConvertToD3D12HeapType(type);
+    bool isShaderVisible = (type == DescriptorHeapType::CbvSrvUav || type == DescriptorHeapType::Sampler);
+    
+    auto newAllocator = std::make_unique<D3D12DescriptorAllocator>(
+        m_Device, d3dType, newSize, isShaderVisible);
+    
+    // 复制现有描述符到新堆
+    // ...
+    
+    // 替换现有分配器
+    // ...
+    
+    HZ_CORE_INFO("描述符堆已扩展: 类型={0}, 新大小={1}", (int)type, newSize);
+}
+```
+
+### 7.8 测试资源生命周期管理
+
+```cpp
+// 单元测试示例：确保资源销毁后释放描述符
+TEST_CASE("描述符系统资源生命周期测试") {
+    // 设置测试环境
+    Renderer::Initialize();
+    
+    // 创建测试纹理和SRV
+    auto texture = Texture2D::Create(TextureCreateInfo{...});
+    auto srvHandle = IGfxViewManager::Get().CreateShaderResourceView(texture);
+    
+    // 验证SRV被正确创建和缓存
+    REQUIRE(srvHandle.IsValid());
+    REQUIRE(IGfxViewManager::Get().GetCachedView(texture->GetUUID(), DescriptorType::SRV).IsValid());
+    
+    // 销毁纹理资源
+    texture.reset();
+    
+    // 验证SRV被正确清理
+    REQUIRE_FALSE(IGfxViewManager::Get().GetCachedView(texture->GetUUID(), DescriptorType::SRV).IsValid());
+    
+    // 清理测试环境
+    Renderer::Shutdown();
+}
+```
+
+### 7.9 批量描述符分配实现细节
+
+```cpp
+// D3D12GfxViewManager中的实现
+DescriptorAllocation D3D12GfxViewManager::CreateConsecutiveConstantBufferViews(
+    const std::vector<Ref<ConstantBuffer>>& buffers)
+{
+    std::lock_guard<std::mutex> lock(m_Mutex);
+    
+    if (buffers.empty())
+        return DescriptorAllocation{};
+    
+    // 1. 获取所有资源的UUID并生成批次ID
+    std::vector<boost::uuids::uuid> resourceIds;
+    for (const auto& buffer : buffers) {
+        resourceIds.push_back(buffer->GetUUID());
+    }
+    size_t batchId = CreateBatchId(resourceIds);
+    
+    // 2. 检查是否有缓存的分配结果
+    auto it = m_BatchAllocationCache.find(batchId);
+    if (it != m_BatchAllocationCache.end()) {
+        return it->second;
+    }
+    
+    // 3. 分配连续的描述符空间
+    auto& allocator = m_HeapManager.GetAllocator(DescriptorHeapType::CbvSrvUav);
+    DescriptorAllocation allocation = allocator.Allocate(buffers.size());
+    
+    if (!allocation.IsValid())
+        return allocation; // 分配失败
+    
+    // 4. 计算描述符大小
+    uint32_t descriptorSize = allocator.GetDescriptorSize();
+    
+    // 5. 创建CBV
+    D3D12_CPU_DESCRIPTOR_HANDLE cpuHandle = { allocation.baseHandle.cpuHandle };
+    
+    for (size_t i = 0; i < buffers.size(); i++) {
+        auto d3d12Resource = buffers[i]->GetNativeResource<ID3D12Resource*>();
+        
+        // 创建CBV描述符
+        D3D12_CONSTANT_BUFFER_VIEW_DESC cbvDesc = {};
+        cbvDesc.BufferLocation = d3d12Resource->GetGPUVirtualAddress();
+        cbvDesc.SizeInBytes = buffers[i]->GetSize();
+        
+        // 在当前描述符位置创建CBV
+        m_Device->CreateConstantBufferView(&cbvDesc, cpuHandle);
+        
+        // 移动到下一个描述符位置
+        cpuHandle.ptr += descriptorSize;
+    }
+    
+    // 6. 缓存分配结果
+    m_BatchAllocationCache[batchId] = allocation;
+    
+    return allocation;
+}
+
+size_t D3D12GfxViewManager::CreateBatchId(const std::vector<boost::uuids::uuid>& resourceIds)
+{
+    // 使用哈希组合器生成唯一ID
+    size_t seed = 0;
+    for (const auto& id : resourceIds) {
+        boost::hash_combine(seed, boost::hash_value(id));
+    }
+    return seed;
+}
+```
+
+### 7.10 批量描述符分配的使用方式
+
+```cpp
+// 材质批处理管理器示例
+class MaterialBatchManager {
+public:
+    // 注册材质批次
+    void RegisterMaterialBatch(const std::vector<Ref<Material>>& materials, const std::string& batchName) {
+        std::vector<Ref<ConstantBuffer>> constantBuffers;
+        
+        // 1. 获取所有材质的常量缓冲区
+        for (const auto& material : materials) {
+            constantBuffers.push_back(material->GetConstantBuffer());
+        }
+        
+        // 2. 创建连续的描述符分配
+        auto allocation = D3D12GfxViewManager::Get().CreateConsecutiveConstantBufferViews(constantBuffers);
+        
+        // 3. 存储分配信息
+        m_MaterialBatchAllocations[batchName] = allocation;
+    }
+    
+    // 设置材质批次到命令列表
+    void BindMaterialBatch(CommandList* cmdList, const std::string& batchName, uint32_t rootParameterIndex) {
+        auto it = m_MaterialBatchAllocations.find(batchName);
+        if (it != m_MaterialBatchAllocations.end()) {
+            auto& allocation = it->second;
+            
+            // 使用基础GPU句柄绑定整个描述符表
+            D3D12_GPU_DESCRIPTOR_HANDLE gpuHandle = { allocation.baseHandle.gpuHandle };
+            cmdList->SetGraphicsRootDescriptorTable(rootParameterIndex, gpuHandle);
+        }
+    }
+    
+private:
+    std::unordered_map<std::string, DescriptorAllocation> m_MaterialBatchAllocations;
+};
+```
+
+### 7.11 描述符表使用场景实例
+
+下面是一个典型场景，使用描述符表来处理材质系统：
+
+```cpp
+// 1. 定义根签名参数
+CD3DX12_DESCRIPTOR_RANGE cbvRange;
+// 指定这是一个CBV范围，最多包含16个CBV，从寄存器b0开始
+cbvRange.Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 16, 0);
+
+CD3DX12_ROOT_PARAMETER rootParams[1];
+// 将CBV范围作为描述符表
+rootParams[0].InitAsDescriptorTable(1, &cbvRange);
+
+// 2. 创建根签名
+CD3DX12_ROOT_SIGNATURE_DESC rootSigDesc(1, rootParams);
+// ... 创建根签名的其余代码 ...
+
+// 3. 在着色器中使用连续的寄存器
+/*
+    HLSL代码示例:
+    
+    cbuffer MaterialParams : register(b0)
+    {
+        float4 BaseColor;
+        float Roughness;
+        float Metallic;
+    };
+    
+    cbuffer InstanceParams : register(b1)
+    {
+        matrix World;
+        matrix WorldInvTranspose;
+    };
+*/
+
+// 4. 在应用程序中注册材质批次
+MaterialBatchManager batchManager;
+
+std::vector<Ref<Material>> opaqueMaterials = gatherOpaqueMaterials();
+batchManager.RegisterMaterialBatch(opaqueMaterials, "Opaque");
+
+// 5. 渲染时绑定描述符表
+void RenderScene() {
+    auto cmdList = commandQueue->GetCommandList();
+    
+    // 设置根签名
+    cmdList->SetGraphicsRootSignature(rootSignature);
+    
+    // 绑定整个材质批次的描述符表
+    batchManager.BindMaterialBatch(cmdList, "Opaque", 0);
+    
+    // 渲染使用这些材质的所有对象
+    // 由于描述符是连续分配的，可以批量处理相同材质的对象
+    for (auto& renderItem : renderQueue) {
+        cmdList->DrawIndexedInstanced(/* ... */);
+    }
+}
+```
+
+这种方式的优势是：
+1. 只需设置一次描述符表，就能使用多个常量缓冲区
+2. 提高渲染效率，减少API调用
+3. 支持材质批处理，减少渲染状态切换
