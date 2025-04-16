@@ -1561,6 +1561,9 @@
     <ClInclude Include="src\Platform\D3D12\D3D12VertexArray.h">
       <Filter>src\Platform\D3D12</Filter>
     </ClInclude>
+    <ClInclude Include="src\Hazel\Core\Singleton.h">
+      <Filter>src\Hazel\Core</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Hazel\Core\Application.cpp">
