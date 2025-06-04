@@ -182,6 +182,7 @@
     <ClInclude Include="src\Hazel\Renderer\Buffer.h" />
     <ClInclude Include="src\Hazel\Renderer\Camera.h" />
     <ClInclude Include="src\Hazel\Renderer\GraphicsContext.h" />
+    <ClInclude Include="src\Hazel\Renderer\GraphicsPipeline.h" />
     <ClInclude Include="src\Hazel\Renderer\OrthographicCamera.h" />
     <ClInclude Include="src\Hazel\Renderer\OrthographicCameraController.h" />
     <ClInclude Include="src\Hazel\Renderer\PerspectiveCameraController.h" />
@@ -198,10 +199,11 @@
     <ClInclude Include="src\Hazel\Scene\Scene.h" />
     <ClInclude Include="src\Hazel\Utility\Random.h" />
     <ClInclude Include="src\Hazel\Utility\Unique.h" />
-    <ClInclude Include="src\Platform\D3D12\D3D12CommandList.h" />
     <ClInclude Include="src\Platform\D3D12\D3D12Buffer.h" />
+    <ClInclude Include="src\Platform\D3D12\D3D12CommandList.h" />
     <ClInclude Include="src\Platform\D3D12\D3D12ConstantBuffer.h" />
     <ClInclude Include="src\Platform\D3D12\D3D12GfxDescHeap.h" />
+    <ClInclude Include="src\Platform\D3D12\D3D12GraphicsPipeline.h" />
     <ClInclude Include="src\Platform\D3D12\D3D12RenderAPI.h" />
     <ClInclude Include="src\Platform\D3D12\D3D12RenderAPIManager.h" />
     <ClInclude Include="src\Platform\D3D12\D3D12RenderTarget.h" />
@@ -215,6 +217,7 @@
     <ClInclude Include="src\Platform\OpenGL\OpenGLBuffer.h" />
     <ClInclude Include="src\Platform\OpenGL\OpenGLContext.h" />
     <ClInclude Include="src\Platform\OpenGL\OpenGLFramebuffer.h" />
+    <ClInclude Include="src\Platform\OpenGL\OpenGLGraphicsPipeline.h" />
     <ClInclude Include="src\Platform\OpenGL\OpenGLRenderAPI.h" />
     <ClInclude Include="src\Platform\OpenGL\OpenGLShader.h" />
     <ClInclude Include="src\Platform\OpenGL\OpenGLTexture2D.h" />
@@ -664,6 +667,7 @@
     <ClCompile Include="src\Hazel\Model\Mesh.cpp" />
     <ClCompile Include="src\Hazel\Renderer\Buffer.cpp" />
     <ClCompile Include="src\Hazel\Renderer\Camera.cpp" />
+    <ClCompile Include="src\Hazel\Renderer\GraphicsPipeline.cpp" />
     <ClCompile Include="src\Hazel\Renderer\OrthographicCamera.cpp" />
     <ClCompile Include="src\Hazel\Renderer\OrthographicCameraController.cpp" />
     <ClCompile Include="src\Hazel\Renderer\PerspectiveCameraController.cpp" />
@@ -677,10 +681,11 @@
     <ClCompile Include="src\Hazel\Scene\Entity.cpp" />
     <ClCompile Include="src\Hazel\Scene\Scene.cpp" />
     <ClCompile Include="src\Hazel\Utility\Random.cpp" />
-    <ClCompile Include="src\Platform\D3D12\D3D12CommandList.cpp" />
     <ClCompile Include="src\Platform\D3D12\D3D12Buffer.cpp" />
+    <ClCompile Include="src\Platform\D3D12\D3D12CommandList.cpp" />
     <ClCompile Include="src\Platform\D3D12\D3D12ConstantBuffer.cpp" />
     <ClCompile Include="src\Platform\D3D12\D3D12GfxDescHeap.cpp" />
+    <ClCompile Include="src\Platform\D3D12\D3D12GraphicsPipeline.cpp" />
     <ClCompile Include="src\Platform\D3D12\D3D12RenderAPI.cpp" />
     <ClCompile Include="src\Platform\D3D12\D3D12RenderAPIManager.cpp" />
     <ClCompile Include="src\Platform\D3D12\D3D12RenderTarget.cpp" />
@@ -693,6 +698,7 @@
     <ClCompile Include="src\Platform\OpenGL\OpenGLBuffer.cpp" />
     <ClCompile Include="src\Platform\OpenGL\OpenGLContext.cpp" />
     <ClCompile Include="src\Platform\OpenGL\OpenGLFramebuffer.cpp" />
+    <ClCompile Include="src\Platform\OpenGL\OpenGLGraphicsPipeline.cpp" />
     <ClCompile Include="src\Platform\OpenGL\OpenGLRenderAPI.cpp" />
     <ClCompile Include="src\Platform\OpenGL\OpenGLShader.cpp" />
     <ClCompile Include="src\Platform\OpenGL\OpenGLTexture2D.cpp" />

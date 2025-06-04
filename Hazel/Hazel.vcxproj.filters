@@ -108,6 +108,9 @@
     <ClInclude Include="src\Hazel\Core\MouseButtonCode.h">
       <Filter>src\Hazel\Core</Filter>
     </ClInclude>
+    <ClInclude Include="src\Hazel\Core\Singleton.h">
+      <Filter>src\Hazel\Core</Filter>
+    </ClInclude>
     <ClInclude Include="src\Hazel\Core\Timestep.h">
       <Filter>src\Hazel\Core</Filter>
     </ClInclude>
@@ -192,6 +195,9 @@
     <ClInclude Include="src\Hazel\Renderer\GraphicsContext.h">
       <Filter>src\Hazel\Renderer</Filter>
     </ClInclude>
+    <ClInclude Include="src\Hazel\Renderer\GraphicsPipeline.h">
+      <Filter>src\Hazel\Renderer</Filter>
+    </ClInclude>
     <ClInclude Include="src\Hazel\Renderer\OrthographicCamera.h">
       <Filter>src\Hazel\Renderer</Filter>
     </ClInclude>
@@ -240,10 +246,19 @@
     <ClInclude Include="src\Hazel\Utility\Unique.h">
       <Filter>src\Hazel\Utility</Filter>
     </ClInclude>
+    <ClInclude Include="src\Platform\D3D12\D3D12Buffer.h">
+      <Filter>src\Platform\D3D12</Filter>
+    </ClInclude>
     <ClInclude Include="src\Platform\D3D12\D3D12CommandList.h">
       <Filter>src\Platform\D3D12</Filter>
     </ClInclude>
+    <ClInclude Include="src\Platform\D3D12\D3D12ConstantBuffer.h">
+      <Filter>src\Platform\D3D12</Filter>
+    </ClInclude>
     <ClInclude Include="src\Platform\D3D12\D3D12GfxDescHeap.h">
+      <Filter>src\Platform\D3D12</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Platform\D3D12\D3D12GraphicsPipeline.h">
       <Filter>src\Platform\D3D12</Filter>
     </ClInclude>
     <ClInclude Include="src\Platform\D3D12\D3D12RenderAPI.h">
@@ -264,6 +279,9 @@
     <ClInclude Include="src\Platform\D3D12\D3D12TextureBuffer.h">
       <Filter>src\Platform\D3D12</Filter>
     </ClInclude>
+    <ClInclude Include="src\Platform\D3D12\D3D12VertexArray.h">
+      <Filter>src\Platform\D3D12</Filter>
+    </ClInclude>
     <ClInclude Include="src\Platform\D3D12\MathHelper.h">
       <Filter>src\Platform\D3D12</Filter>
     </ClInclude>
@@ -280,6 +298,9 @@
       <Filter>src\Platform\OpenGL</Filter>
     </ClInclude>
     <ClInclude Include="src\Platform\OpenGL\OpenGLFramebuffer.h">
+      <Filter>src\Platform\OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Platform\OpenGL\OpenGLGraphicsPipeline.h">
       <Filter>src\Platform\OpenGL</Filter>
     </ClInclude>
     <ClInclude Include="src\Platform\OpenGL\OpenGLRenderAPI.h">
@@ -1554,16 +1575,6 @@
     <ClInclude Include="vendor\stb_image\stb_image.h">
       <Filter>vendor\stb_image</Filter>
     </ClInclude>
-    <ClInclude Include="src\Platform\D3D12\D3D12Buffer.h" />
-    <ClInclude Include="src\Platform\D3D12\D3D12ConstantBuffer.h">
-      <Filter>src\Platform\D3D12</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Platform\D3D12\D3D12VertexArray.h">
-      <Filter>src\Platform\D3D12</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Hazel\Core\Singleton.h">
-      <Filter>src\Hazel\Core</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Hazel\Core\Application.cpp">
@@ -1635,6 +1646,9 @@
     <ClCompile Include="src\Hazel\Renderer\Camera.cpp">
       <Filter>src\Hazel\Renderer</Filter>
     </ClCompile>
+    <ClCompile Include="src\Hazel\Renderer\GraphicsPipeline.cpp">
+      <Filter>src\Hazel\Renderer</Filter>
+    </ClCompile>
     <ClCompile Include="src\Hazel\Renderer\OrthographicCamera.cpp">
       <Filter>src\Hazel\Renderer</Filter>
     </ClCompile>
@@ -1674,10 +1688,19 @@
     <ClCompile Include="src\Hazel\Utility\Random.cpp">
       <Filter>src\Hazel\Utility</Filter>
     </ClCompile>
+    <ClCompile Include="src\Platform\D3D12\D3D12Buffer.cpp">
+      <Filter>src\Platform\D3D12</Filter>
+    </ClCompile>
     <ClCompile Include="src\Platform\D3D12\D3D12CommandList.cpp">
       <Filter>src\Platform\D3D12</Filter>
     </ClCompile>
+    <ClCompile Include="src\Platform\D3D12\D3D12ConstantBuffer.cpp">
+      <Filter>src\Platform\D3D12</Filter>
+    </ClCompile>
     <ClCompile Include="src\Platform\D3D12\D3D12GfxDescHeap.cpp">
+      <Filter>src\Platform\D3D12</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Platform\D3D12\D3D12GraphicsPipeline.cpp">
       <Filter>src\Platform\D3D12</Filter>
     </ClCompile>
     <ClCompile Include="src\Platform\D3D12\D3D12RenderAPI.cpp">
@@ -1698,6 +1721,9 @@
     <ClCompile Include="src\Platform\D3D12\D3D12TextureBuffer.cpp">
       <Filter>src\Platform\D3D12</Filter>
     </ClCompile>
+    <ClCompile Include="src\Platform\D3D12\D3D12VertexArray.cpp">
+      <Filter>src\Platform\D3D12</Filter>
+    </ClCompile>
     <ClCompile Include="src\Platform\D3D12\MathHelper.cpp">
       <Filter>src\Platform\D3D12</Filter>
     </ClCompile>
@@ -1711,6 +1737,9 @@
       <Filter>src\Platform\OpenGL</Filter>
     </ClCompile>
     <ClCompile Include="src\Platform\OpenGL\OpenGLFramebuffer.cpp">
+      <Filter>src\Platform\OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Platform\OpenGL\OpenGLGraphicsPipeline.cpp">
       <Filter>src\Platform\OpenGL</Filter>
     </ClCompile>
     <ClCompile Include="src\Platform\OpenGL\OpenGLRenderAPI.cpp">
@@ -1745,13 +1774,6 @@
     </ClCompile>
     <ClCompile Include="vendor\stb_image\stb_image.cpp">
       <Filter>vendor\stb_image</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Platform\D3D12\D3D12Buffer.cpp" />
-    <ClCompile Include="src\Platform\D3D12\D3D12ConstantBuffer.cpp">
-      <Filter>src\Platform\D3D12</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Platform\D3D12\D3D12VertexArray.cpp">
-      <Filter>src\Platform\D3D12</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
