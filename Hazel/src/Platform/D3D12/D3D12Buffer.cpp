@@ -3,6 +3,7 @@
 #include "Platform/D3D12/D3D12RenderAPIManager.h"
 #include "Hazel/Core/Application.h"
 #include "Hazel/Gfx/CommandPool.h"
+#include "Hazel/RHI/Interface/IGfxViewManager.h"
 
 namespace Hazel
 {
@@ -10,10 +11,10 @@ namespace Hazel
 		: mUploadBuffer(std::get<Microsoft::WRL::ComPtr<ID3D12Resource>>(m_BufferResource)), mMappedData(nullptr)
 	{
         m_UUID = Unique::GetUUID();
-		//ÔÚÕâÀï½øÐÐbuffer³õÊ¼»¯£¬ È»ºó½«ÄÚÈÝ»»³ÉSharedpointer°É
+		//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½bufferï¿½ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½ È»ï¿½ï¿½ï¿½ï¿½ï¿½Ý»ï¿½ï¿½ï¿½Sharedpointerï¿½ï¿½
 		elementSize = d3dUtil::CalcConstantBufferByteSize(elementSize);
         m_BufferSize = elementSize;
-        // todo:: Õâ¸öµØ·½¿Ï¶¨ÐèÒªÐÞ¸Ä£¬ ²»ÒÀÀµapplication¡£¡£¡£
+        // todo:: ï¿½ï¿½ï¿½ï¿½Ø·ï¿½ï¿½Ï¶ï¿½ï¿½ï¿½Òªï¿½Þ¸Ä£ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½applicationï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         D3D12RenderAPIManager* renderAPIManager = dynamic_cast<D3D12RenderAPIManager*>(RenderAPIManager::getInstance()->GetManager().get());
         Microsoft::WRL::ComPtr<ID3D12Device> device = renderAPIManager->GetD3DDevice();
         
@@ -33,6 +34,10 @@ namespace Hazel
 
     D3D12Buffer::~D3D12Buffer()
     {
+        // é€šçŸ¥ViewManagerè¯¥èµ„æºå³å°†é”€æ¯
+        auto& viewManager = IGfxViewManager::Get();
+        viewManager.OnResourceDestroyed(m_UUID);
+        
         if (mUploadBuffer != nullptr)
             mUploadBuffer->Unmap(0, nullptr);
 
@@ -41,12 +46,12 @@ namespace Hazel
 
     void D3D12Buffer::SetData(void* srcData, int length)
     {
-        // È·±£Ô´Êý¾ÝÖ¸ÕëºÍÄ¿±ê»º´æÇøÒÑÕýÈ·Ó³Éä
+        // È·ï¿½ï¿½Ô´ï¿½ï¿½ï¿½ï¿½Ö¸ï¿½ï¿½ï¿½Ä¿ï¿½ê»ºï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È·Ó³ï¿½ï¿½
         if (srcData && mMappedData) {
             memcpy(mMappedData, srcData, length);
         }
         else {
-            // ´¦Àí´íÎóÇé¿ö£¬ÀýÈçÎÞÐ§µÄÖ¸Õë
+            // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð§ï¿½ï¿½Ö¸ï¿½ï¿½
             std::cerr << "Invalid source or destination pointer." << std::endl;
         }
     }
@@ -73,7 +78,7 @@ namespace Hazel
         const UINT vbByteSize = (UINT)size;
         VertexBufferGPU = d3dUtil::CreateDefaultBuffer(device.Get(),
             m_CommandList.Get(), vertices, vbByteSize, VertexBufferUploader);
-        // ´ËÊ±¿ÉÄÜÎª¿Õ
+        // ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½Îªï¿½ï¿½
 
         CommandPool::getInstance()->RecycleCommand(cmdList);
         ID3D12CommandList* rawCommandList = m_CommandList.Get();
@@ -86,7 +91,7 @@ namespace Hazel
     {
     }
 
-    // bind unbind ¿ÉÄÜÒªÏëÒ»ÏëÔõÃ´×ö
+    // bind unbind ï¿½ï¿½ï¿½ï¿½Òªï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½Ã´ï¿½ï¿½
     void D3D12VertexBuffer::Bind() const
     {
     }
@@ -95,15 +100,15 @@ namespace Hazel
     {
     }
 
-    // todo: ²ð·ÖÊäÈë²Û
+    // todo: ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     //typedef struct D3D12_INPUT_ELEMENT_DESC {
-    //    LPCSTR                     SemanticName;          // ÓïÒåÃû³Æ, Ò»°ãPOSITIONµÈÊÇ¹æ¶¨Ð´ËÀµÄ¡£
-    //    UINT                       SemanticIndex;         // ÓïÒåË÷Òý, Texcoord0, Texcoord1,ÓïÒåÃû³Æ¾ÍÊÇ0£¬1
-    //    DXGI_FORMAT                Format;                // Êý¾Ý¸ñÊ½, float3/ float4
-    //    UINT                       InputSlot;             // ÊäÈë²ÛË÷Òý£¬ Ïàµ±ÓÚ¿ÉÒÔÊµÏÖ²ð·Öposition£¬ºÍÆäËûnormal tangentµÄ¹¦ÄÜ£¬Ö®ºó¿ÉÒÔÊµÏÖÒ»ÏÂ£¬ÏÖÔÚÏÈÐ´µ½Ò»Æð¡£
-    //    UINT                       AlignedByteOffset;     // ¶ÔÆë×Ö½ÚÆ«ÒÆÁ¿
-    //    D3D12_INPUT_CLASSIFICATION InputSlotClass;        // ÊäÈë²Û·ÖÀà
-    //    UINT                       InstanceDataStepRate;  // ÊµÀýÊý¾Ý²½½øÂÊ
+    //    LPCSTR                     SemanticName;          // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½, Ò»ï¿½ï¿½POSITIONï¿½ï¿½ï¿½Ç¹æ¶¨Ð´ï¿½ï¿½ï¿½Ä¡ï¿½
+    //    UINT                       SemanticIndex;         // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½, Texcoord0, Texcoord1,ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ¾ï¿½ï¿½ï¿½0ï¿½ï¿½1
+    //    DXGI_FORMAT                Format;                // ï¿½ï¿½ï¿½Ý¸ï¿½Ê½, float3/ float4
+    //    UINT                       InputSlot;             // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½àµ±ï¿½Ú¿ï¿½ï¿½ï¿½Êµï¿½Ö²ï¿½ï¿½positionï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½normal tangentï¿½Ä¹ï¿½ï¿½Ü£ï¿½Ö®ï¿½ï¿½ï¿½ï¿½ï¿½Êµï¿½ï¿½Ò»ï¿½Â£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð´ï¿½ï¿½Ò»ï¿½ï¿½
+    //    UINT                       AlignedByteOffset;     // ï¿½ï¿½ï¿½ï¿½ï¿½Ö½ï¿½Æ«ï¿½ï¿½ï¿½ï¿½
+    //    D3D12_INPUT_CLASSIFICATION InputSlotClass;        // ï¿½ï¿½ï¿½ï¿½Û·ï¿½ï¿½ï¿½
+    //    UINT                       InstanceDataStepRate;  // Êµï¿½ï¿½ï¿½ï¿½ï¿½Ý²ï¿½ï¿½ï¿½ï¿½ï¿½
     //} D3D12_INPUT_ELEMENT_DESC;
     //void D3D12VertexBuffer::SetLayout(const BufferLayout& layout)
     //{
@@ -137,7 +142,7 @@ namespace Hazel
         const UINT indexSize = (UINT)size;
         IndexBufferGPU = d3dUtil::CreateDefaultBuffer(device.Get(),
             m_CommandList.Get(), indices, size, IndexBufferUploader);
-        // ´ËÊ±¿ÉÄÜÎª¿Õ
+        // ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½Îªï¿½ï¿½
         //VertexByteStride = m_Layout.GetStride();
         IndexBufferByteSize = size;
 

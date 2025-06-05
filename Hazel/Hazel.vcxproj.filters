@@ -31,6 +31,12 @@
     <Filter Include="src\Hazel\Model">
       <UniqueIdentifier>{30D582B3-9C60-F077-A571-736C117C4C78}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Hazel\RHI">
+      <UniqueIdentifier>{22DC5F1C-8E9C-DB52-57D7-24D0C356202F}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Hazel\RHI\Interface">
+      <UniqueIdentifier>{82562E10-EE8D-76A7-F797-DACA634E9DA0}</UniqueIdentifier>
+    </Filter>
     <Filter Include="src\Hazel\Renderer">
       <UniqueIdentifier>{9669EB43-824D-AC99-EBAD-A6ECD7B0961B}</UniqueIdentifier>
     </Filter>
@@ -186,6 +192,21 @@
     <ClInclude Include="src\Hazel\Model\Mesh.h">
       <Filter>src\Hazel\Model</Filter>
     </ClInclude>
+    <ClInclude Include="src\Hazel\RHI\Interface\DescriptorTypes.h">
+      <Filter>src\Hazel\RHI\Interface</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Hazel\RHI\Interface\IDescritorAllocator.h">
+      <Filter>src\Hazel\RHI\Interface</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Hazel\RHI\Interface\IDescritorHeapManager.h">
+      <Filter>src\Hazel\RHI\Interface</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Hazel\RHI\Interface\IGfxViewManager.h">
+      <Filter>src\Hazel\RHI\Interface</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Hazel\RHI\Interface\PerFrameDescriptorAllocator.h">
+      <Filter>src\Hazel\RHI\Interface</Filter>
+    </ClInclude>
     <ClInclude Include="src\Hazel\Renderer\Buffer.h">
       <Filter>src\Hazel\Renderer</Filter>
     </ClInclude>
@@ -256,6 +277,9 @@
       <Filter>src\Platform\D3D12</Filter>
     </ClInclude>
     <ClInclude Include="src\Platform\D3D12\D3D12GfxDescHeap.h">
+      <Filter>src\Platform\D3D12</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Platform\D3D12\D3D12GfxViewManager.h">
       <Filter>src\Platform\D3D12</Filter>
     </ClInclude>
     <ClInclude Include="src\Platform\D3D12\D3D12GraphicsPipeline.h">
@@ -1640,6 +1664,12 @@
     <ClCompile Include="src\Hazel\Model\Mesh.cpp">
       <Filter>src\Hazel\Model</Filter>
     </ClCompile>
+    <ClCompile Include="src\Hazel\RHI\Interface\IGfxViewManager.cpp">
+      <Filter>src\Hazel\RHI\Interface</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Hazel\RHI\Interface\ViewManagerExample.cpp">
+      <Filter>src\Hazel\RHI\Interface</Filter>
+    </ClCompile>
     <ClCompile Include="src\Hazel\Renderer\Buffer.cpp">
       <Filter>src\Hazel\Renderer</Filter>
     </ClCompile>
@@ -1698,6 +1728,9 @@
       <Filter>src\Platform\D3D12</Filter>
     </ClCompile>
     <ClCompile Include="src\Platform\D3D12\D3D12GfxDescHeap.cpp">
+      <Filter>src\Platform\D3D12</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Platform\D3D12\D3D12GfxViewManager.cpp">
       <Filter>src\Platform\D3D12</Filter>
     </ClCompile>
     <ClCompile Include="src\Platform\D3D12\D3D12GraphicsPipeline.cpp">

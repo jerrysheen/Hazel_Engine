@@ -91,7 +91,8 @@ project "Hazel"
 			"HZ_PLATFORM_WINDOWS",
 			"HZ_BUILD_DLL",
 			"GLFW_INCLUDE_NONE"
-		} 
+		}
+		buildoptions { "/source-charset:utf-8", "/execution-charset:utf-8" }
 
 	filter "configurations:Debug"
 		defines "HZ_DEBUG"

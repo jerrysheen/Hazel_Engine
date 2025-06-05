@@ -21,7 +21,7 @@ namespace Hazel {
         // 初始化
         virtual void Initialize() = 0;
         
-        // 资源视图创建（非连续）
+        // 资源视图创建 - 传入资源对象，内部自动提取UUID
         virtual DescriptorHandle CreateRenderTargetView(const Ref<TextureBuffer>& texture) = 0;
         virtual DescriptorHandle CreateDepthStencilView(const Ref<TextureBuffer>& texture) = 0;
         virtual DescriptorHandle CreateShaderResourceView(const Ref<TextureBuffer>& texture) = 0;
@@ -41,7 +41,7 @@ namespace Hazel {
         virtual void EndFrame() = 0;
         virtual PerFrameDescriptorAllocator& GetFrameAllocator(DescriptorHeapType type) = 0;
         
-        // 资源生命周期管理
+        // 资源生命周期管理 - 统一使用UUID
         virtual void OnResourceDestroyed(const boost::uuids::uuid& resourceId) = 0;
         virtual DescriptorHandle GetCachedView(const boost::uuids::uuid& resourceId, DescriptorType type) = 0;
         virtual void GarbageCollect() = 0;

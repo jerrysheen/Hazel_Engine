@@ -17,7 +17,7 @@ namespace Hazel {
         // IGfxViewManager interface implementation
         virtual void Initialize() override;
         
-        // Resource view creation (non-consecutive)
+        // Resource view creation - 传入资源对象，内部自动提取UUID
         virtual DescriptorHandle CreateRenderTargetView(const Ref<TextureBuffer>& texture) override;
         virtual DescriptorHandle CreateDepthStencilView(const Ref<TextureBuffer>& texture) override;
         virtual DescriptorHandle CreateShaderResourceView(const Ref<TextureBuffer>& texture) override;
@@ -38,6 +38,7 @@ namespace Hazel {
         virtual PerFrameDescriptorAllocator& GetFrameAllocator(DescriptorHeapType type) override;
         
         // Resource lifecycle management
+        // 传入ID是因为，避免销毁的时候还引用了Buffer等导致销毁问题。
         virtual void OnResourceDestroyed(const boost::uuids::uuid& resourceId) override;
         virtual DescriptorHandle GetCachedView(const boost::uuids::uuid& resourceId, DescriptorType type) override;
         virtual void GarbageCollect() override;

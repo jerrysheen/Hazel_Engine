@@ -29,24 +29,82 @@ namespace Hazel {
     }
 
     DescriptorHandle D3D12GfxViewManager::CreateRenderTargetView(const Ref<TextureBuffer>& texture) {
+        // 自动提取资源UUID
+        boost::uuids::uuid resourceId = texture->GetUUID();
+        
+        // 检查缓存
+        DescriptorHandle cachedView = GetCachedView(resourceId, DescriptorType::RTV);
+        if (cachedView.IsValid()) {
+            return cachedView;
+        }
+        
         // TODO: Implement RTV creation
-        // For now, return empty handle
-        return DescriptorHandle{};
+        // 1. 从heap分配器分配descriptor
+        // 2. 使用texture的原生资源创建RTV
+        // 3. 缓存结果
+        DescriptorHandle newView{}; // TODO: 实际创建逻辑
+        
+        // 缓存新创建的视图
+        m_ViewCache[resourceId][DescriptorType::RTV] = newView;
+        
+        return newView;
     }
 
     DescriptorHandle D3D12GfxViewManager::CreateDepthStencilView(const Ref<TextureBuffer>& texture) {
+        // 自动提取资源UUID
+        boost::uuids::uuid resourceId = texture->GetUUID();
+        
+        // 检查缓存
+        DescriptorHandle cachedView = GetCachedView(resourceId, DescriptorType::DSV);
+        if (cachedView.IsValid()) {
+            return cachedView;
+        }
+        
         // TODO: Implement DSV creation
-        return DescriptorHandle{};
+        DescriptorHandle newView{}; // TODO: 实际创建逻辑
+        
+        // 缓存新创建的视图
+        m_ViewCache[resourceId][DescriptorType::DSV] = newView;
+        
+        return newView;
     }
 
     DescriptorHandle D3D12GfxViewManager::CreateShaderResourceView(const Ref<TextureBuffer>& texture) {
+        // 自动提取资源UUID
+        boost::uuids::uuid resourceId = texture->GetUUID();
+        
+        // 检查缓存
+        DescriptorHandle cachedView = GetCachedView(resourceId, DescriptorType::SRV);
+        if (cachedView.IsValid()) {
+            return cachedView;
+        }
+        
         // TODO: Implement SRV creation
-        return DescriptorHandle{};
+        DescriptorHandle newView{}; // TODO: 实际创建逻辑
+        
+        // 缓存新创建的视图
+        m_ViewCache[resourceId][DescriptorType::SRV] = newView;
+        
+        return newView;
     }
 
     DescriptorHandle D3D12GfxViewManager::CreateConstantBufferView(const Ref<ConstantBuffer>& buffer) {
+        // 自动提取资源UUID
+        boost::uuids::uuid resourceId = buffer->GetUUID();
+        
+        // 检查缓存
+        DescriptorHandle cachedView = GetCachedView(resourceId, DescriptorType::CBV);
+        if (cachedView.IsValid()) {
+            return cachedView;
+        }
+        
         // TODO: Implement CBV creation
-        return DescriptorHandle{};
+        DescriptorHandle newView{}; // TODO: 实际创建逻辑
+        
+        // 缓存新创建的视图
+        m_ViewCache[resourceId][DescriptorType::CBV] = newView;
+        
+        return newView;
     }
 
     DescriptorAllocation D3D12GfxViewManager::AllocateDescriptors(uint32_t count, DescriptorHeapType type) {
@@ -56,10 +114,15 @@ namespace Hazel {
 
     void D3D12GfxViewManager::CreateShaderResourceView(const Ref<TextureBuffer>& texture, const DescriptorHandle& targetHandle) {
         // TODO: Implement SRV creation at specific handle
+        // 在指定的targetHandle位置创建SRV，不需要缓存因为是用户管理的descriptor
+        // 可以考虑添加日志：哪个资源在哪个位置创建了视图
+        HZ_CORE_TRACE("Creating SRV for resource {} at handle {}", boost::uuids::to_string(texture->GetUUID()), targetHandle.cpuHandle);
     }
 
     void D3D12GfxViewManager::CreateConstantBufferView(const Ref<ConstantBuffer>& buffer, const DescriptorHandle& targetHandle) {
         // TODO: Implement CBV creation at specific handle
+        // 在指定的targetHandle位置创建CBV，不需要缓存因为是用户管理的descriptor
+        HZ_CORE_TRACE("Creating CBV for resource {} at handle {}", boost::uuids::to_string(buffer->GetUUID()), targetHandle.cpuHandle);
     }
 
     DescriptorAllocation D3D12GfxViewManager::CreateConsecutiveShaderResourceViews(
