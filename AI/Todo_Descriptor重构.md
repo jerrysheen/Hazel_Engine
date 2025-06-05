@@ -11,7 +11,6 @@ ViewManager持有一个MultiFrameDescriptorManager，来管理多帧需要的临
 
 ```mermaid
 classDiagram
-    %% 架构核心层次
     class DescriptorHandle {
         +uint64_t cpuHandle
         +uint64_t gpuHandle
@@ -64,7 +63,6 @@ classDiagram
         +CreateViewManager(api) IGfxViewManager*
     }
     
-    %% 关系
     IGfxViewManager --> IDescriptorHeapManager : 使用
     IDescriptorHeapManager --> IDescriptorAllocator : 管理
     IGfxViewManager --> MultiFrameDescriptorManager : 包含

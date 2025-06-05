@@ -104,5 +104,12 @@
         "xtree": "cpp",
         "xutility": "cpp"
     },
-    "cmake.sourceDirectory": "F:/STWorkSation/GithubProject/Hazel_Engine/Hazel/vendor/glm/test/gtc"
+    "workbench.activityBar.orientation": "vertical",
+    "cmake.sourceDirectory": "F:/STWorkSation/GithubProject/Hazel_Engine/Hazel/vendor/glm/test/gtc",
+    
+    // Mermaid support settings
+    "markdown.mermaid.enabled": true,
+    "mermaid.theme": "default",
+    "markdown-mermaid.lightModeTheme": "default",
+    "markdown-mermaid.darkModeTheme": "dark"
 }
