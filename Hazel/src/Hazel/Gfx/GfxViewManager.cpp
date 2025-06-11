@@ -3,14 +3,14 @@
 
 namespace Hazel 
 {
-    /// 初始化静态成员
+    /// 锟斤拷始锟斤拷锟斤拷态锟斤拷员
     std::shared_ptr<GfxViewManager> GfxViewManager::instance = nullptr;
     std::mutex GfxViewManager::mutex;
 
     void GfxViewManager::Init()
     {
-        // 针对第一种heap，我只需要创建DESCRIPTOR_TYPE_CBV， 但是它本质上会创建D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV
-        // 三种类型的desc都可以容纳在这个heap里面。
+        // 锟斤拷缘锟揭伙拷锟絟eap锟斤拷锟斤拷只锟斤拷要锟斤拷锟斤拷DESCRIPTOR_TYPE_CBV锟斤拷 锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟较会创锟斤拷D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV
+        // 锟斤拷锟斤拷锟斤拷锟酵碉拷desc锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟絟eap锟斤拷锟芥。
         m_SrvHeap = GfxDescHeap::Create(DescriptorType::DESCRIPTOR_TYPE_SRV);
         m_RtvHeap = GfxDescHeap::Create(DescriptorType::DESCRIPTOR_TYPE_RTV);
         m_DsvHeap = GfxDescHeap::Create(DescriptorType::DESCRIPTOR_TYPE_DSV);

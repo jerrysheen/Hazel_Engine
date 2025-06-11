@@ -18,15 +18,15 @@ namespace Hazel {
         virtual void Initialize() override;
         
         // Resource view creation - 传入资源对象，内部自动提取UUID
-        virtual DescriptorHandle CreateRenderTargetView(const Ref<TextureBuffer>& texture) override;
-        virtual DescriptorHandle CreateDepthStencilView(const Ref<TextureBuffer>& texture) override;
-        virtual DescriptorHandle CreateShaderResourceView(const Ref<TextureBuffer>& texture) override;
-        virtual DescriptorHandle CreateConstantBufferView(const Ref<ConstantBuffer>& buffer) override;
+        virtual DescriptorAllocation CreateRenderTargetView(const Ref<TextureBuffer>& texture) override;
+        virtual DescriptorAllocation CreateDepthStencilView(const Ref<TextureBuffer>& texture) override;
+        virtual DescriptorAllocation CreateShaderResourceView(const Ref<TextureBuffer>& texture) override;
+        virtual DescriptorAllocation CreateConstantBufferView(const Ref<ConstantBuffer>& buffer) override;
         
         // Consecutive descriptor allocation and creation
         virtual DescriptorAllocation AllocateDescriptors(uint32_t count, DescriptorHeapType type) override;
-        virtual void CreateShaderResourceView(const Ref<TextureBuffer>& texture, const DescriptorHandle& targetHandle) override;
-        virtual void CreateConstantBufferView(const Ref<ConstantBuffer>& buffer, const DescriptorHandle& targetHandle) override;
+        virtual void CreateShaderResourceView(const Ref<TextureBuffer>& texture, const DescriptorAllocation& targetHandle) override;
+        virtual void CreateConstantBufferView(const Ref<ConstantBuffer>& buffer, const DescriptorAllocation& targetHandle) override;
         
         // Batch consecutive view creation
         virtual DescriptorAllocation CreateConsecutiveShaderResourceViews(
@@ -40,7 +40,7 @@ namespace Hazel {
         // Resource lifecycle management
         // 传入ID是因为，避免销毁的时候还引用了Buffer等导致销毁问题。
         virtual void OnResourceDestroyed(const boost::uuids::uuid& resourceId) override;
-        virtual DescriptorHandle GetCachedView(const boost::uuids::uuid& resourceId, DescriptorType type) override;
+        virtual DescriptorAllocation GetCachedView(const boost::uuids::uuid& resourceId, DescriptorType type) override;
         virtual void GarbageCollect() override;
         
         // Get heap
@@ -53,13 +53,13 @@ namespace Hazel {
         std::unique_ptr<IDescriptorHeapManager> m_HeapManager;
         
         // Cached views for resource reuse
-        std::unordered_map<boost::uuids::uuid, std::unordered_map<DescriptorType, DescriptorHandle>, boost::hash<boost::uuids::uuid>> m_ViewCache;
+        std::unordered_map<boost::uuids::uuid, std::unordered_map<DescriptorType, DescriptorAllocation>, boost::hash<boost::uuids::uuid>> m_ViewCache;
         
         // Frame allocators for temporary descriptors
         std::unordered_map<DescriptorHeapType, std::unique_ptr<PerFrameDescriptorAllocator>> m_FrameAllocators;
         
         // Helper functions
-        DescriptorHandle CreateViewInternal(const void* resource, DescriptorType type, const void* viewDesc = nullptr);
+        DescriptorAllocation CreateViewInternal(const void* resource, DescriptorType type, const void* viewDesc = nullptr);
         void InitializeFrameAllocators();
     };
 

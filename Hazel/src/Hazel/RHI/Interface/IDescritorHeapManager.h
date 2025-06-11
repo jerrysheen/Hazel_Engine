@@ -1,6 +1,7 @@
 #pragma once
 
 #include "IDescritorAllocator.h"
+#include "DescriptorTypes.h"
 
 namespace Hazel {
 
@@ -14,8 +15,8 @@ namespace Hazel {
         // 获取分配器
         virtual IDescriptorAllocator& GetAllocator(DescriptorHeapType type) = 0;
         
-        // 创建特定类型的视图
-        virtual DescriptorHandle CreateView(DescriptorType type, const void* resourcePtr, const void* viewDesc = nullptr) = 0;
+        // 创建特定类型的视图 - 使用抽象的ViewDescription
+        virtual DescriptorHandle CreateView(DescriptorType type, const void* resourcePtr, const ViewDescription* viewDesc = nullptr) = 0;
         
         // 复制描述符
         virtual void CopyDescriptors(

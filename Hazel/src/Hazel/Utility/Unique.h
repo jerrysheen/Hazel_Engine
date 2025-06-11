@@ -12,7 +12,7 @@ namespace Hazel
 
     public :
 
-        // ¾²Ì¬·½·¨£¬Ö±½ÓÍ¨¹ýÀàÃûµ÷ÓÃ
+        // ï¿½ï¿½Ì¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö±ï¿½ï¿½Í¨ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         static boost::uuids::uuid GetUUID() {
             static boost::uuids::random_generator generator;
             return generator();

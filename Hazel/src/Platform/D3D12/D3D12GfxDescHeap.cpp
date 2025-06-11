@@ -30,7 +30,7 @@ namespace Hazel
 			break;
 		case DescriptorType::DESCRIPTOR_TYPE_UAV:
 		case DescriptorType::DESCRIPTOR_TYPE_SRV:
-			m_DescriptorCount = 1; // Ä¬ÈÏÓÐÒ»¸ö£¬Æ¥ÅäimguiÖÐÐèÒªÓÐÒ»¸ödescriptor£¿
+			m_DescriptorCount = 1; // Ä¬ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½Æ¥ï¿½ï¿½imguiï¿½ï¿½ï¿½ï¿½Òªï¿½ï¿½Ò»ï¿½ï¿½descriptorï¿½ï¿½
 			cbvHeapDesc.NumDescriptors = 10;
 			cbvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
 			cbvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
@@ -64,33 +64,33 @@ namespace Hazel
 
 	Ref<GfxDesc> D3D12GfxDescHeap::GetOrCreateDesc(const Ref<TextureBuffer> textureBuffer, const DescriptorType& decritorType)
 	{
-		// ÏÈtry get, Õâ±ßÎÒheapÀïÓÐÒ»¸ömap£¬È¡µ½desc·µ»Ø
-		// ¼ÓÁËÒ»²ã£¬ Õâ±ß»áÈ¡µ½Ò»¸ö std::map<DescriptorType, Ref<GfxDesc>>£¬È»ºó¸ù¾ÝÕâ¸ömapÔÙÈ¥È¡¡£
+		// ï¿½ï¿½try get, ï¿½ï¿½ï¿½ï¿½ï¿½heapï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½mapï¿½ï¿½È¡ï¿½ï¿½descï¿½ï¿½ï¿½ï¿½
+		// ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ã£¬ ï¿½ï¿½ß»ï¿½È¡ï¿½ï¿½Ò»ï¿½ï¿½ std::map<DescriptorType, Ref<GfxDesc>>ï¿½ï¿½È»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½mapï¿½ï¿½È¥È¡ï¿½ï¿½
 		boost::uuids::uuid keyToSearch = textureBuffer->GetUUID();
 		auto it = m_DescMap.find(keyToSearch);
 		if (it != m_DescMap.end()) {
-			// ÕÒµ½ÁËuuid£¬ ¼ÌÐøÕÒ std::map<DescriptorType, Ref<GfxDesc>>
+			// ï¿½Òµï¿½ï¿½ï¿½uuidï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ std::map<DescriptorType, Ref<GfxDesc>>
 			std::map<DescriptorType, Ref<GfxDesc>>  descMap = it->second;
 			auto it = descMap.find(decritorType);
 			if (it != descMap.end()) {
-				// ÕÒµ½ÁË¶ÔÓ¦µÄDesc£¬ Ö±½Óreturn¡£
+				// ï¿½Òµï¿½ï¿½Ë¶ï¿½Ó¦ï¿½ï¿½Descï¿½ï¿½ Ö±ï¿½ï¿½returnï¿½ï¿½
 				return it->second;
 			}
 			else 
 			{
-				// Ö»ÊÇÃ»ÓÐdesc£¬ uuidÊÇÓÐµÄ¡£
+				// Ö»ï¿½ï¿½Ã»ï¿½ï¿½descï¿½ï¿½ uuidï¿½ï¿½ï¿½ÐµÄ¡ï¿½
 			}
 		}
 		else 
 		{
 			m_DescMap[keyToSearch] = std::map<DescriptorType, Ref<GfxDesc>>();
 		}
-		// ÏÖÔÚÒ»¶¨ÓÐuuid£¬ µ«ÊÇÃ»ÓÐ¶ÔÓ¦µÄdesc£¬ ¼ÌÐø´´½¨Ö®Â·¡£¡£
+		// ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½uuidï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ã»ï¿½Ð¶ï¿½Ó¦ï¿½ï¿½descï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö®Â·ï¿½ï¿½ï¿½ï¿½
 
 		Ref<GfxDesc> newDesc = std::make_shared<GfxDesc>();
 		D3D12_CPU_DESCRIPTOR_HANDLE handle;
 		D3D12_GPU_DESCRIPTOR_HANDLE gpuHandle;
-		// È»ºóÓÃÕâ¸öhandle´´½¨ÃèÊö·û¾ÍºÃÁË¡£¡£
+		// È»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½handleï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Íºï¿½ï¿½Ë¡ï¿½ï¿½ï¿½
 		auto d3dTextureResource = textureBuffer->getResource<Microsoft::WRL::ComPtr<ID3D12Resource>>();
 		D3D12RenderAPIManager* renderAPIManager = dynamic_cast<D3D12RenderAPIManager*>(RenderAPIManager::getInstance()->GetManager().get());
 		Microsoft::WRL::ComPtr<ID3D12Device> device = renderAPIManager->GetD3DDevice();
@@ -109,7 +109,7 @@ namespace Hazel
 			srvDesc.Format = d3dTextureResource->GetDesc().Format;
 			srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
 			srvDesc.Texture2D.MipLevels = d3dTextureResource->GetDesc().MipLevels;
-			srvDesc.Texture2D.MostDetailedMip = 0; // ×îÏêÏ¸µÄMIP¼¶±ð
+			srvDesc.Texture2D.MostDetailedMip = 0; // ï¿½ï¿½ï¿½ï¿½Ï¸ï¿½ï¿½MIPï¿½ï¿½ï¿½ï¿½
 			srvDesc.Texture2D.PlaneSlice = 0;
 			srvDesc.Texture2D.ResourceMinLODClamp = 0.0f;
 			device->CreateShaderResourceView(d3dTextureResource.Get(), &srvDesc, handle);
@@ -121,10 +121,10 @@ namespace Hazel
 		case DescriptorType::DESCRIPTOR_TYPE_RTV:
 			descriptorSize = device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
 			handle = { m_HeapLocal->GetCPUDescriptorHandleForHeapStart().ptr + descriptorSize * m_DescriptorCount };
-			rtvDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM; // È·±£¸ñÊ½ÓëÎÆÀíµÄ¸ñÊ½ÏàÆ¥Åä
-			rtvDesc.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE2D; // 2DÎÆÀí
-			rtvDesc.Texture2D.MipSlice = 0; // Í¨³£Ê¹ÓÃµÚ0²ãmip
-			// ´´½¨äÖÈ¾Ä¿±êÊÓÍ¼
+			rtvDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM; // È·ï¿½ï¿½ï¿½ï¿½Ê½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¸ï¿½Ê½ï¿½ï¿½Æ¥ï¿½ï¿½
+			rtvDesc.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE2D; // 2Dï¿½ï¿½ï¿½ï¿½
+			rtvDesc.Texture2D.MipSlice = 0; // Í¨ï¿½ï¿½Ê¹ï¿½Ãµï¿½0ï¿½ï¿½mip
+			// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È¾Ä¿ï¿½ï¿½ï¿½ï¿½Í¼
 			device->CreateRenderTargetView(d3dTextureResource.Get(), &rtvDesc, handle);
 			m_DescMap[keyToSearch][decritorType] = newDesc;
 			m_DescriptorCount++;
@@ -135,12 +135,12 @@ namespace Hazel
 			descriptorSize = device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_DSV);
 			handle = { m_HeapLocal->GetCPUDescriptorHandleForHeapStart().ptr + descriptorSize * m_DescriptorCount };
 
-			dsvDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT; // Í¨³£ÓÃÓÚÉî¶ÈÄ£°åµÄ¸ñÊ½
-			dsvDesc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D; // 2DÉî¶ÈÄ£°å
-			dsvDesc.Texture2D.MipSlice = 0; // µÚ0²ãmip
-			dsvDesc.Flags = D3D12_DSV_FLAG_NONE; // ¿ÉÒÔÉèÖÃÎª D3D12_DSV_FLAG_READ_ONLY_DEPTH »ò D3D12_DSV_FLAG_READ_ONLY_STENCIL
+			dsvDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT; // Í¨ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä£ï¿½ï¿½Ä¸ï¿½Ê½
+			dsvDesc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D; // 2Dï¿½ï¿½ï¿½Ä£ï¿½ï¿½
+			dsvDesc.Texture2D.MipSlice = 0; // ï¿½ï¿½0ï¿½ï¿½mip
+			dsvDesc.Flags = D3D12_DSV_FLAG_NONE; // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Îª D3D12_DSV_FLAG_READ_ONLY_DEPTH ï¿½ï¿½ D3D12_DSV_FLAG_READ_ONLY_STENCIL
 
-			// ´´½¨Éî¶ÈÄ£°åÊÓÍ¼
+			// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä£ï¿½ï¿½ï¿½ï¿½Í¼
 			device->CreateDepthStencilView(d3dTextureResource.Get(), &dsvDesc, handle);
 			m_DescMap[keyToSearch][decritorType] = newDesc;
 			m_DescriptorCount++;
@@ -156,34 +156,34 @@ namespace Hazel
 	Ref<GfxDesc> D3D12GfxDescHeap::GetOrCreateDesc(const Ref<ConstantBuffer> constantBuffer)
 	{
 		DescriptorType decritorType = DescriptorType::DESCRIPTOR_TYPE_CBV;
-		// ÏÈtry get, Õâ±ßÎÒheapÀïÓÐÒ»¸ömap£¬È¡µ½desc·µ»Ø
-		// ¼ÓÁËÒ»²ã£¬ Õâ±ß»áÈ¡µ½Ò»¸ö std::map<DescriptorType, Ref<GfxDesc>>£¬È»ºó¸ù¾ÝÕâ¸ömapÔÙÈ¥È¡¡£
+		// ï¿½ï¿½try get, ï¿½ï¿½ï¿½ï¿½ï¿½heapï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½mapï¿½ï¿½È¡ï¿½ï¿½descï¿½ï¿½ï¿½ï¿½
+		// ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ã£¬ ï¿½ï¿½ß»ï¿½È¡ï¿½ï¿½Ò»ï¿½ï¿½ std::map<DescriptorType, Ref<GfxDesc>>ï¿½ï¿½È»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½mapï¿½ï¿½È¥È¡ï¿½ï¿½
 		boost::uuids::uuid keyToSearch = constantBuffer->GetUUID();
 		auto it = m_DescMap.find(keyToSearch);
 		if (it != m_DescMap.end()) {
-			// ÕÒµ½ÁËuuid£¬ ¼ÌÐøÕÒ std::map<DescriptorType, Ref<GfxDesc>>
+			// ï¿½Òµï¿½ï¿½ï¿½uuidï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ std::map<DescriptorType, Ref<GfxDesc>>
 			std::map<DescriptorType, Ref<GfxDesc>>  descMap = it->second;
 			auto it = descMap.find(decritorType);
 			if (it != descMap.end()) {
-				// ÕÒµ½ÁË¶ÔÓ¦µÄDesc£¬ Ö±½Óreturn¡£
+				// ï¿½Òµï¿½ï¿½Ë¶ï¿½Ó¦ï¿½ï¿½Descï¿½ï¿½ Ö±ï¿½ï¿½returnï¿½ï¿½
 				return it->second;
 			}
 			else
 			{
-				// Ö»ÊÇÃ»ÓÐdesc£¬ uuidÊÇÓÐµÄ¡£
-				// todo Õâ¸öµØ·½Âß¼­ËÆºõÓÐÎÊÌâ
+				// Ö»ï¿½ï¿½Ã»ï¿½ï¿½descï¿½ï¿½ uuidï¿½ï¿½ï¿½ÐµÄ¡ï¿½
+				// todo ï¿½ï¿½ï¿½ï¿½Ø·ï¿½ï¿½ß¼ï¿½ï¿½Æºï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 			}
 		}
 		else
 		{
 			m_DescMap[keyToSearch] = std::map<DescriptorType, Ref<GfxDesc>>();
 		}
-		// ÏÖÔÚÒ»¶¨ÓÐuuid£¬ µ«ÊÇÃ»ÓÐ¶ÔÓ¦µÄdesc£¬ ¼ÌÐø´´½¨Ö®Â·¡£¡£
+		// ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½uuidï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ã»ï¿½Ð¶ï¿½Ó¦ï¿½ï¿½descï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö®Â·ï¿½ï¿½ï¿½ï¿½
 
 		Ref<GfxDesc> newDesc = std::make_shared<GfxDesc>();
 		D3D12_CPU_DESCRIPTOR_HANDLE handle;
 		D3D12_GPU_DESCRIPTOR_HANDLE gpuHandle;
-		// È»ºóÓÃÕâ¸öhandle´´½¨ÃèÊö·û¾ÍºÃÁË¡£¡£
+		// È»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½handleï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Íºï¿½ï¿½Ë¡ï¿½ï¿½ï¿½
 		auto constantResource = constantBuffer->getResource<Microsoft::WRL::ComPtr<ID3D12Resource>>();
 		D3D12RenderAPIManager* renderAPIManager = dynamic_cast<D3D12RenderAPIManager*>(RenderAPIManager::getInstance()->GetManager().get());
 		Microsoft::WRL::ComPtr<ID3D12Device> device = renderAPIManager->GetD3DDevice();
@@ -203,8 +203,8 @@ namespace Hazel
 		device->CreateConstantBufferView(
 			&cbvDesc,
 			handle);
-		// Ôö¼ÓheapµØÖ·£¬ todo£¬Õâ¸öÓ¦¸Ã¸Ä³ÉÐ´ËÀµÄÔö¼ÓÊýÁ¿£¬ ×Ô¶¯·ÖÅäÒ»¸öÊýÁ¿£¬±ÈÈçÏÖÔÚÒÑ¾­ÓÐ2¸ö£¬Õâ¸öÊÇµÚÈý¸ö£¬ÍâÃæÈ¡Ó¦¸ÃÓÃ²»µ½£¬
-		// ÒòÎªcpu ºÍgpuµØÖ·×Ô¶¯·ÖÅäÁËÒÑ¾­¡£
+		// ï¿½ï¿½ï¿½ï¿½heapï¿½ï¿½Ö·ï¿½ï¿½ todoï¿½ï¿½ï¿½ï¿½ï¿½Ó¦ï¿½Ã¸Ä³ï¿½Ð´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ô¶ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ñ¾ï¿½ï¿½ï¿½2ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Çµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È¡Ó¦ï¿½ï¿½ï¿½Ã²ï¿½ï¿½ï¿½ï¿½ï¿½
+		// ï¿½ï¿½Îªcpu ï¿½ï¿½gpuï¿½ï¿½Ö·ï¿½Ô¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ñ¾ï¿½ï¿½ï¿½
 		m_DescriptorCount++;
 		m_DescMap[keyToSearch][decritorType] = newDesc;
 		newDesc->GetCPUHandlerVariant() = handle;

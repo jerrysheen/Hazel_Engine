@@ -104,7 +104,7 @@ namespace Hazel
 //        meshRenderer = m_SkyBox.GetComponent<MeshRendererComponent>();
 //
 //#pragma region Diffuse Irradiance
-//        // onAttachµÄÊ±ºò£¬°ÑirrandianceMap¸ø°ó¶¨ºÃ
+//        // onAttachï¿½ï¿½Ê±ï¿½ò£¬°ï¿½irrandianceMapï¿½ï¿½ï¿½ó¶¨ºï¿½
 //        glm::mat4 captureViews[] =
 //        {
 //            glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f,  0.0f,  0.0f), glm::vec3(0.0f, -1.0f,  0.0f)),
@@ -133,7 +133,7 @@ namespace Hazel
 //        }
 //        //glBindFramebuffer(GL_FRAMEBUFFER, 0);
 //        RendererCommand::SetViewPort(0, 0, m_fbSpec.width, m_fbSpec.height);
-//        // ÖØÐÂ°ó¶¨Ò»´Îºó£¬äÖÈ¾µÄÍ¼Æ¬²»»á±»Çåµô
+//        // ï¿½ï¿½ï¿½Â°ï¿½Ò»ï¿½Îºï¿½ï¿½ï¿½È¾ï¿½ï¿½Í¼Æ¬ï¿½ï¿½ï¿½á±»ï¿½ï¿½ï¿½
 //        m_FrameBuffer->RebindColorAndDepthAttachment(m_OpaqueTexture->GetRendererID(), m_DepthTexture->GetRendererID(), m_fbSpec);
 //        // 
 //#pragma region Diffuse Irradiance
@@ -347,7 +347,7 @@ namespace Hazel
             //    meshRenderer.material->shader->SetFloat3("u_CameraPos", m_CameraController.GetCamera().GetCamPos());
 
             //    //meshRenderer.material->tex3D->Bind(0);
-            //    // ²âÊÔÉú³ÉµÄirradiance map
+            //    // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Éµï¿½irradiance map
             //    glBindTextureUnit(0, m_IrradianceMap->GetRendererID());
             //    meshRenderer.material->shader->SetInt("u_SkyboxTexture", 0);
 
@@ -359,7 +359,7 @@ namespace Hazel
             //}
             //    //// Lighting config
 
-            //    //// transform ÀïÃæÓÐ translate ºÍ scaleÁË
+            //    //// transform ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ translate ï¿½ï¿½ scaleï¿½ï¿½
             //    //model->shader->SetMat4("u_ModelMatrix", *model->GetModelMatrix());
             //    //model->shader->SetMat4("u_ViewProjection", m_CameraController.GetCamera().GetViewProjectionMatrix());
             //    //model->shader->SetFloat3("u_CameraPos", m_CameraController.GetCamera().GetCamPos());
@@ -516,7 +516,7 @@ namespace Hazel
         ImGuiStyle& style = ImGui::GetStyle();
         style.Colors[ImGuiCol_WindowBg] = ImVec4(0.3f, 0.3f, 0.3f, 1.0f);
         style.WindowRounding = 0.25;
-        // Õâ¸öµØ·½Ó¦¸Ã²»ÄÜÃ¿Ò»Ö¡resize£¬ resizeÖ®ºóÏàµ±ÓÚÇå¿ÕÁËÆÁÄ»¡£
+        // ï¿½ï¿½ï¿½ï¿½Ø·ï¿½Ó¦ï¿½Ã²ï¿½ï¿½ï¿½Ã¿Ò»Ö¡resizeï¿½ï¿½ resizeÖ®ï¿½ï¿½ï¿½àµ±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä»ï¿½ï¿½
         //ImVec2 viewPortSize = ImGui::GetContentRegionAvail();
         ////HZ_CORE_INFO("Viewport size X: {0};  : {1}", viewPortSize.x, viewPortSize.y);
         //if (m_viewPortPanelSize != *((glm::vec2*)&viewPortSize)) 

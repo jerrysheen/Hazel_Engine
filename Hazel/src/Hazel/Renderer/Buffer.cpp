@@ -33,7 +33,7 @@ namespace Hazel {
 		return nullptr;
 	}	
 
-	// 创建一个ConstantBuffer, 其实只需要传入一个T，计算这个T的size就可以了，然后内部和一个cpu端的buffer绑定
+	// 锟斤拷锟斤拷一锟斤拷ConstantBuffer, 锟斤拷实只锟斤拷要锟斤拷锟斤拷一锟斤拷T锟斤拷锟斤拷锟斤拷锟斤拷锟絋锟斤拷size锟酵匡拷锟斤拷锟剿ｏ拷然锟斤拷锟节诧拷锟斤拷一锟斤拷cpu锟剿碉拷buffer锟斤拷
 
 	Ref<ConstantBuffer> ConstantBuffer::Create(uint32_t bufferSize)
 	{

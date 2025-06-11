@@ -8,8 +8,8 @@
 
 namespace Hazel {
 
-	// TextureBuffer °üº¬ rendertarget ºÍ rendertexture, ĞèÒªÈ¥°üº¬texture2dÂğ£¬ÒòÎª¿´ÆğÀ´»áÓĞµãÆæ¹Ö£¿
-	// Õâ¸öµØ·½¾Í²»°üÀ¨texture2dÁË£¬¶îÍâĞ´Ò»Ì×texture2d£¬texture2d¾ÍÊÇĞ´ËÀÖ»ÓĞshader¿É¶ÁµÄtexture¡£
+	// TextureBuffer ï¿½ï¿½ï¿½ï¿½ rendertarget ï¿½ï¿½ rendertexture, ï¿½ï¿½ÒªÈ¥ï¿½ï¿½ï¿½ï¿½texture2dï¿½ï¿½ï¿½ï¿½Îªï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ğµï¿½ï¿½ï¿½Ö£ï¿½
+	// ï¿½ï¿½ï¿½ï¿½Ø·ï¿½ï¿½Í²ï¿½ï¿½ï¿½ï¿½ï¿½texture2dï¿½Ë£ï¿½ï¿½ï¿½ï¿½ï¿½Ğ´Ò»ï¿½ï¿½texture2dï¿½ï¿½texture2dï¿½ï¿½ï¿½ï¿½Ğ´ï¿½ï¿½Ö»ï¿½ï¿½shaderï¿½É¶ï¿½ï¿½ï¿½textureï¿½ï¿½
 	class TextureBuffer
 	{
 	public:
@@ -38,7 +38,7 @@ namespace Hazel {
 		template<typename T>
 		T getCpuHandle() const {
 			if constexpr (std::is_same_v<T, uint32_t> || std::is_same_v<T, CD3DX12_CPU_DESCRIPTOR_HANDLE>) {
-				return std::get<T>(m_CpuHandle);  // ³¢ÊÔ»ñÈ¡ T ÀàĞÍµÄÖµ
+				return std::get<T>(m_CpuHandle);  // ï¿½ï¿½ï¿½Ô»ï¿½È¡ T ï¿½ï¿½ï¿½Íµï¿½Öµ
 			}
 			else {
 				static_assert(false, "T must be either uint32_t or CD3DX12_CPU_DESCRIPTOR_HANDLE");
@@ -48,23 +48,18 @@ namespace Hazel {
 		template<typename T>
 		T getResource() const {
 			if constexpr (std::is_same_v<T, uint32_t> || std::is_same_v<T, Microsoft::WRL::ComPtr<ID3D12Resource>>) {
-				return std::get<T>(m_BufferResource);  // ³¢ÊÔ»ñÈ¡ T ÀàĞÍµÄÖµ
+				return std::get<T>(m_BufferResource);  // ï¿½ï¿½ï¿½Ô»ï¿½È¡ T ï¿½ï¿½ï¿½Íµï¿½Öµ
 			}
 			else {
 				static_assert(false, "T must be either uint32_t or ID3D12Resource");
 			}
 		}
 
-
+		virtual void* GetNativeResource() const = 0;
 		std::variant<uint32_t, CD3DX12_CPU_DESCRIPTOR_HANDLE> m_CpuHandle;
 
 		std::variant<uint32_t, Microsoft::WRL::ComPtr<ID3D12Resource>> m_BufferResource;
-		//Microsoft::WRL::ComPtr<ID3D12Resource> m_BufferResource;
 	protected:
-		// ÏÈÏëÒ»ÏÂÔÚTextureBuffer²ã£¬ĞèÒª×öÄÄĞ©²Ù×÷µÄ
-		// Ê×ÏÈÉÏ²ã»á´´½¨Ò»¸öTextureBuffer£¬È»ºóÕâ¸ötexturebufferÓĞ¶ÔÓ¦µÄ×ÊÔ´ÒÔ¼°ÃèÊö·û¡£
-		// ÉÏ²ã»¹Òª×öµÄÒ»¸ö²Ù×÷ÊÇbind£¬commandlist.settextureÀàËÆÓÚÕâÖÖ²Ù×÷£¬ÄÇÃ´Ò²¾ÍÊÇËµtextureBufferĞèÒªÓĞÒ»¸ö×ÊÔ´ÃèÊö·û£¬À´½øĞĞ°ó¶¨²Ù×÷£¬ÔÚ°ó¶¨µÄÊ±ºòÖ»ĞèÒª½«¶ÔÓ¦µÄÃèÊö·ûµÄµØÖ·´«µİ¹ıÀ´¾ÍºÃÁË¡£
-		// Ò²¾ÍÊÇËµ£¬ÖÁÉÙÔÚtextureBuffer²ã£¬ÎÒĞèÒª³ÖÓĞ¶ÔÓ¦µÄ×ÊÔ´£¬ÒÔ¼°ÃèÊö·û¡£
 		boost::uuids::uuid m_UUID;
 		TextureRenderUsage m_TextureRenderUsage;
 	};

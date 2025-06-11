@@ -105,7 +105,7 @@
         "xutility": "cpp"
     },
     "workbench.activityBar.orientation": "vertical",
-    "cmake.sourceDirectory": "F:/STWorkSation/GithubProject/Hazel_Engine/Hazel/vendor/glm/test/gtc",
+    "cmake.sourceDirectory": "D:/GitHubST/Hazel_Engine/Hazel/vendor/spdlog/bench",
     
     // Mermaid support settings
     "markdown.mermaid.enabled": true,

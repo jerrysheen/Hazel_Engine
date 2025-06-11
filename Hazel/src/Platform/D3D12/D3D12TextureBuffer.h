@@ -28,6 +28,10 @@ namespace Hazel
 		
 
 		virtual const TextureBufferSpecification& GetSpecification() const override { return m_Spec; };
+		
+		// 实现GetNativeResource接口
+		virtual void* GetNativeResource() const override { return m_BufferResourceLocal.Get(); }
+		
 	private:
 		TextureBufferSpecification m_Spec;
 		Microsoft::WRL::ComPtr<ID3D12Resource> m_BufferResourceLocal;

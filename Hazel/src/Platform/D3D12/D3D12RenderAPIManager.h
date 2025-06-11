@@ -90,7 +90,7 @@ namespace Hazel {
 		bool      m4xMsaaState = false;    // 4X MSAA enabled
 		UINT      m4xMsaaQuality = 0;      // quality level of 4X MSAA
 
-		// Used to keep track of the “delta-time?and game time (?.4).
+		// Used to keep track of the ï¿½delta-time?and game time (?.4).
 
 		Microsoft::WRL::ComPtr<IDXGIFactory4> mdxgiFactory;
 		Microsoft::WRL::ComPtr<IDXGISwapChain3> mSwapChain;
@@ -135,7 +135,7 @@ namespace Hazel {
 
 		UINT64                       g_fenceLastSignaledValue = 0;
 		static int const                    NUM_BACK_BUFFERS = 3;
-		// Õâ±ßÓÐÈý¸öFrameContext£¬ÀïÃæÖ÷ÒªÊÇÓÐÈý¸öCommandAllocator£¬Ö÷ÒªÊÇÎªÁË´¦Àí¶àÖ¡µÄ²Ù×÷£¬
+		// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½FrameContextï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Òªï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½CommandAllocatorï¿½ï¿½ï¿½ï¿½Òªï¿½ï¿½Îªï¿½Ë´ï¿½ï¿½ï¿½ï¿½Ö¡ï¿½Ä²ï¿½ï¿½ï¿½ï¿½ï¿½
 		FrameContext                 g_frameContext[NUM_BACK_BUFFERS] = {};
 		HANDLE  g_fenceEvent;
 		HANDLE g_hSwapChainWaitableObject = nullptr;

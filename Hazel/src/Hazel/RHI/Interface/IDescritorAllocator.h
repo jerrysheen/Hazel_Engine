@@ -16,17 +16,39 @@ namespace Hazel {
     
     struct DescriptorAllocation {
         DescriptorHandle baseHandle;  // 基础句柄
-        uint32_t count = 0;           // 分配的描述符数量
+        uint32_t count = 1;           // 分配的描述符数量，默认为1支持单个描述符
         uint32_t heapIndex = 0;       // 所属堆的索引
         uint32_t descriptorSize = 0;  // 单个描述符的大小
         
         bool IsValid() const { return baseHandle.IsValid() && count > 0; }
         
-        // 获取指定偏移量的句柄
-        DescriptorHandle GetHandle(uint32_t index) const;
+        // 获取指定偏移量的句柄（按需计算，简单直接）
+        DescriptorHandle GetHandle(uint32_t index = 0) const;
         
         // 从当前分配中切片出一部分
         DescriptorAllocation Slice(uint32_t offset, uint32_t newCount) const;
+        
+        // 判断是否为单个描述符分配
+        bool IsSingle() const { return count == 1; }
+        
+        // 隐式转换为单个句柄（当count=1时）
+        operator DescriptorHandle() const {
+            return (count == 1 && IsValid()) ? baseHandle : DescriptorHandle{};
+        }
+        
+        // === 便利的GPU绑定接口 ===
+        
+        // 获取用于GPU绑定的起始CPU句柄
+        uint64_t GetCPUDescriptorTableStart() const { return baseHandle.cpuHandle; }
+        
+        // 获取用于GPU绑定的起始GPU句柄  
+        uint64_t GetGPUDescriptorTableStart() const { return baseHandle.gpuHandle; }
+        
+        // 获取描述符表大小（用于绑定）
+        uint32_t GetDescriptorTableSize() const { return count; }
+        
+        // 检查是否支持GPU访问
+        bool HasGPUHandle() const { return baseHandle.gpuHandle != 0; }
     };
     
     class IDescriptorAllocator {

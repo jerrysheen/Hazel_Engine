@@ -2,7 +2,7 @@
 #include "D3D12GfxViewManager.h"
 #include "D3D12RenderAPIManager.h"
 #include "Hazel/Core/Application.h"
-
+#include "D3D12DescriptorHeapManager.h"
 namespace Hazel {
 
     D3D12GfxViewManager::D3D12GfxViewManager() {
@@ -19,8 +19,10 @@ namespace Hazel {
     void D3D12GfxViewManager::Initialize() {
         // Initialize heap manager
         // TODO: Create D3D12DescriptorHeapManager implementation
-        // m_HeapManager = std::make_unique<D3D12DescriptorHeapManager>(m_Device);
-        // m_HeapManager->Initialize();
+        // 创建堆管理器
+        m_HeapManager = std::make_unique<D3D12DescriptorHeapManager>(m_Device);
+        m_HeapManager->Initialize();
+    
         
         // Initialize frame allocators
         InitializeFrameAllocators();
@@ -28,12 +30,14 @@ namespace Hazel {
         HZ_CORE_INFO("D3D12GfxViewManager initialized");
     }
 
-    DescriptorHandle D3D12GfxViewManager::CreateRenderTargetView(const Ref<TextureBuffer>& texture) {
+
+
+    DescriptorAllocation D3D12GfxViewManager::CreateRenderTargetView(const Ref<TextureBuffer>& texture) {
         // 自动提取资源UUID
         boost::uuids::uuid resourceId = texture->GetUUID();
         
         // 检查缓存
-        DescriptorHandle cachedView = GetCachedView(resourceId, DescriptorType::RTV);
+        DescriptorAllocation cachedView = GetCachedView(resourceId, DescriptorType::RTV);
         if (cachedView.IsValid()) {
             return cachedView;
         }
@@ -42,26 +46,28 @@ namespace Hazel {
         // 1. 从heap分配器分配descriptor
         // 2. 使用texture的原生资源创建RTV
         // 3. 缓存结果
-        DescriptorHandle newView{}; // TODO: 实际创建逻辑
-        
+        DescriptorAllocation newView{}; // TODO: 实际创建逻辑
+
+		m_HeapManager->CreateView(DescriptorType::RTV, texture->getResource<Microsoft::WRL::ComPtr<ID3D12Resource>>().Get());
+
         // 缓存新创建的视图
         m_ViewCache[resourceId][DescriptorType::RTV] = newView;
         
         return newView;
     }
 
-    DescriptorHandle D3D12GfxViewManager::CreateDepthStencilView(const Ref<TextureBuffer>& texture) {
+    DescriptorAllocation D3D12GfxViewManager::CreateDepthStencilView(const Ref<TextureBuffer>& texture) {
         // 自动提取资源UUID
         boost::uuids::uuid resourceId = texture->GetUUID();
         
         // 检查缓存
-        DescriptorHandle cachedView = GetCachedView(resourceId, DescriptorType::DSV);
+        DescriptorAllocation cachedView = GetCachedView(resourceId, DescriptorType::DSV);
         if (cachedView.IsValid()) {
             return cachedView;
         }
         
         // TODO: Implement DSV creation
-        DescriptorHandle newView{}; // TODO: 实际创建逻辑
+        DescriptorAllocation newView{}; // TODO: 实际创建逻辑
         
         // 缓存新创建的视图
         m_ViewCache[resourceId][DescriptorType::DSV] = newView;
@@ -69,18 +75,18 @@ namespace Hazel {
         return newView;
     }
 
-    DescriptorHandle D3D12GfxViewManager::CreateShaderResourceView(const Ref<TextureBuffer>& texture) {
+    DescriptorAllocation D3D12GfxViewManager::CreateShaderResourceView(const Ref<TextureBuffer>& texture) {
         // 自动提取资源UUID
         boost::uuids::uuid resourceId = texture->GetUUID();
         
         // 检查缓存
-        DescriptorHandle cachedView = GetCachedView(resourceId, DescriptorType::SRV);
+        DescriptorAllocation cachedView = GetCachedView(resourceId, DescriptorType::SRV);
         if (cachedView.IsValid()) {
             return cachedView;
         }
         
         // TODO: Implement SRV creation
-        DescriptorHandle newView{}; // TODO: 实际创建逻辑
+        DescriptorAllocation newView{}; // TODO: 实际创建逻辑
         
         // 缓存新创建的视图
         m_ViewCache[resourceId][DescriptorType::SRV] = newView;
@@ -88,18 +94,18 @@ namespace Hazel {
         return newView;
     }
 
-    DescriptorHandle D3D12GfxViewManager::CreateConstantBufferView(const Ref<ConstantBuffer>& buffer) {
+    DescriptorAllocation D3D12GfxViewManager::CreateConstantBufferView(const Ref<ConstantBuffer>& buffer) {
         // 自动提取资源UUID
         boost::uuids::uuid resourceId = buffer->GetUUID();
         
         // 检查缓存
-        DescriptorHandle cachedView = GetCachedView(resourceId, DescriptorType::CBV);
+        DescriptorAllocation cachedView = GetCachedView(resourceId, DescriptorType::CBV);
         if (cachedView.IsValid()) {
             return cachedView;
         }
         
         // TODO: Implement CBV creation
-        DescriptorHandle newView{}; // TODO: 实际创建逻辑
+        DescriptorAllocation newView{}; // TODO: 实际创建逻辑
         
         // 缓存新创建的视图
         m_ViewCache[resourceId][DescriptorType::CBV] = newView;
@@ -112,17 +118,17 @@ namespace Hazel {
         return DescriptorAllocation{};
     }
 
-    void D3D12GfxViewManager::CreateShaderResourceView(const Ref<TextureBuffer>& texture, const DescriptorHandle& targetHandle) {
+    void D3D12GfxViewManager::CreateShaderResourceView(const Ref<TextureBuffer>& texture, const DescriptorAllocation& targetHandle) {
         // TODO: Implement SRV creation at specific handle
         // 在指定的targetHandle位置创建SRV，不需要缓存因为是用户管理的descriptor
         // 可以考虑添加日志：哪个资源在哪个位置创建了视图
-        HZ_CORE_TRACE("Creating SRV for resource {} at handle {}", boost::uuids::to_string(texture->GetUUID()), targetHandle.cpuHandle);
+        HZ_CORE_TRACE("Creating SRV for resource {} at handle {}", boost::uuids::to_string(texture->GetUUID()), targetHandle.baseHandle.cpuHandle);
     }
 
-    void D3D12GfxViewManager::CreateConstantBufferView(const Ref<ConstantBuffer>& buffer, const DescriptorHandle& targetHandle) {
+    void D3D12GfxViewManager::CreateConstantBufferView(const Ref<ConstantBuffer>& buffer, const DescriptorAllocation& targetHandle) {
         // TODO: Implement CBV creation at specific handle
         // 在指定的targetHandle位置创建CBV，不需要缓存因为是用户管理的descriptor
-        HZ_CORE_TRACE("Creating CBV for resource {} at handle {}", boost::uuids::to_string(buffer->GetUUID()), targetHandle.cpuHandle);
+        HZ_CORE_TRACE("Creating CBV for resource {} at handle {}", boost::uuids::to_string(buffer->GetUUID()), targetHandle.baseHandle.cpuHandle);
     }
 
     DescriptorAllocation D3D12GfxViewManager::CreateConsecutiveShaderResourceViews(
@@ -153,7 +159,7 @@ namespace Hazel {
         m_ViewCache.erase(resourceId);
     }
 
-    DescriptorHandle D3D12GfxViewManager::GetCachedView(const boost::uuids::uuid& resourceId, DescriptorType type) {
+    DescriptorAllocation D3D12GfxViewManager::GetCachedView(const boost::uuids::uuid& resourceId, DescriptorType type) {
         auto resourceIt = m_ViewCache.find(resourceId);
         if (resourceIt != m_ViewCache.end()) {
             auto typeIt = resourceIt->second.find(type);
@@ -161,7 +167,7 @@ namespace Hazel {
                 return typeIt->second;
             }
         }
-        return DescriptorHandle{};
+        return DescriptorAllocation{};
     }
 
     void D3D12GfxViewManager::GarbageCollect() {
@@ -173,9 +179,9 @@ namespace Hazel {
         return nullptr;
     }
 
-    DescriptorHandle D3D12GfxViewManager::CreateViewInternal(const void* resource, DescriptorType type, const void* viewDesc) {
+    DescriptorAllocation D3D12GfxViewManager::CreateViewInternal(const void* resource, DescriptorType type, const void* viewDesc) {
         // TODO: Implement internal view creation
-        return DescriptorHandle{};
+        return DescriptorAllocation{};
     }
 
     void D3D12GfxViewManager::InitializeFrameAllocators() {

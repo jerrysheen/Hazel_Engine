@@ -210,6 +210,8 @@
     <ClInclude Include="src\Platform\D3D12\D3D12Buffer.h" />
     <ClInclude Include="src\Platform\D3D12\D3D12CommandList.h" />
     <ClInclude Include="src\Platform\D3D12\D3D12ConstantBuffer.h" />
+    <ClInclude Include="src\Platform\D3D12\D3D12DescriptorAllocator.h" />
+    <ClInclude Include="src\Platform\D3D12\D3D12DescriptorHeapManager.h" />
     <ClInclude Include="src\Platform\D3D12\D3D12GfxDescHeap.h" />
     <ClInclude Include="src\Platform\D3D12\D3D12GfxViewManager.h" />
     <ClInclude Include="src\Platform\D3D12\D3D12GraphicsPipeline.h" />
@@ -695,6 +697,8 @@
     <ClCompile Include="src\Platform\D3D12\D3D12Buffer.cpp" />
     <ClCompile Include="src\Platform\D3D12\D3D12CommandList.cpp" />
     <ClCompile Include="src\Platform\D3D12\D3D12ConstantBuffer.cpp" />
+    <ClCompile Include="src\Platform\D3D12\D3D12DescriptorAllocator.cpp" />
+    <ClCompile Include="src\Platform\D3D12\D3D12DescriptorHeapManager.cpp" />
     <ClCompile Include="src\Platform\D3D12\D3D12GfxDescHeap.cpp" />
     <ClCompile Include="src\Platform\D3D12\D3D12GfxViewManager.cpp" />
     <ClCompile Include="src\Platform\D3D12\D3D12GraphicsPipeline.cpp" />

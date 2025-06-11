@@ -202,6 +202,8 @@ namespace Hazel {
 			}
 		}
 
+		virtual void* GetNativeResource() const = 0;
+
 	protected:
 
 		std::variant<uint32_t, CD3DX12_CPU_DESCRIPTOR_HANDLE> m_CpuHandle;

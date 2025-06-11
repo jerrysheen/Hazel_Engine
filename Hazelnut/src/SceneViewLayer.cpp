@@ -9,7 +9,7 @@
 #include "Platform/D3D12/D3D12Shader.h"
 #include "Platform/D3D12/D3D12VertexArray.h"
 #include "Hazel/Renderer/VertexArray.h"
-
+#include "Hazel/RHI/Interface/IGfxViewManager.h"
 
 
 
@@ -33,6 +33,7 @@ namespace Hazel
         HRESULT hr = S_OK;
         assert(SUCCEEDED(hr));
 
+		IGfxViewManager& gfxViewManager = IGfxViewManager::Get();
 
         D3D12_COMMAND_QUEUE_DESC queueDesc = {};
         queueDesc.Type = D3D12_COMMAND_LIST_TYPE_DIRECT;
@@ -188,10 +189,6 @@ namespace Hazel
         XMMATRIX worldViewProj = world * view * proj;
         XMStoreFloat4x4(&mWorld, XMMatrixTranspose(worldViewProj));
 
-        //uint32_t size = sizeof(ObjectConstants);
-        //objectCB = ConstantBuffer::Create(size);
-        //objectCB->SetData(&mWorld, size);
-        //GfxViewManager::getInstance()->GetCbvHandle(objectCB);
 
   //      // 直接使用mWorld中的数据，确保内存布局兼容
         material->Set<glm::mat4>("gWorldViewProj", *reinterpret_cast<glm::mat4*>(&mWorld));
@@ -207,7 +204,7 @@ namespace Hazel
         objectCB = ConstantBuffer::Create(size);
         objectCB->SetData(rawData.data(), size);
         GfxViewManager::getInstance()->GetCbvHandle(objectCB);
-
+        gfxViewManager.CreateConstantBufferView(objectCB);
     }
 
     void SceneViewLayer::OnDetach()

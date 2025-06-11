@@ -1,0 +1,2 @@
+[*.{cs,cpp,js,html,xml}]  # 根据项目类型调整扩展名
+charset = utf-8
