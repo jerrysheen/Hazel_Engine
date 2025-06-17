@@ -5,7 +5,8 @@
 #include "Hazel/Gfx/GfxViewManager.h"
 #include "Platform/D3D12/d3dx12.h"
 #include "Platform/D3D12/d3dUtil.h"
-
+#include "Hazel/RHI/Interface/IGfxViewManager.h"
+#include "Hazel/RHI/Interface/DescriptorTypes.h"
 
 namespace Hazel 
 {
@@ -38,7 +39,7 @@ namespace Hazel
 
 	D3D12CommandList::~D3D12CommandList()
 	{
-		//COMPtrÎö¹¹µÄÊ±ºò×Ô¶¯»áÈ¥Release();
+		//COMPtrï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½ï¿½Ô¶ï¿½ï¿½ï¿½È¥Release();
 		//m_CommandAllocatorLocal->Release();
 		//m_CommandListLocal->Release();
 	}
@@ -53,11 +54,14 @@ namespace Hazel
 		ThrowIfFailed(m_CommandListLocal->Reset(m_CommandAllocatorLocal.Get(), nullptr));
 
 	}
-	void D3D12CommandList::ClearRenderTargetView(const Ref<GfxDesc>& desc, const glm::vec4& color)
+	void D3D12CommandList::ClearRenderTargetView(const Ref<TextureBuffer>& textureBuffer, const glm::vec4& color)
 	{
-		auto handle = desc->GetCPUDescHandle<D3D12_CPU_DESCRIPTOR_HANDLE>();
-		//m_CommandListLocal->ClearRenderTargetView(handle, Colors::Azure, 0, nullptr);
-		m_CommandListLocal->ClearRenderTargetView(handle, &color[0], 0, nullptr);
+		auto uuid = textureBuffer->GetUUID();
+		IGfxViewManager& viewManager = IGfxViewManager::Get();
+		auto descAllocation = viewManager.GetCachedView(uuid, DescriptorType::RTV);
+		// ç›´æŽ¥æž„é€  D3D12_CPU_DESCRIPTOR_HANDLE
+    	D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle{ descAllocation.baseHandle.cpuHandle };
+		m_CommandListLocal->ClearRenderTargetView(rtvHandle, &color[0], 0, nullptr);
 
 	}
 
@@ -96,23 +100,23 @@ namespace Hazel
 		}
 		CD3DX12_RESOURCE_BARRIER barrierToSRV = CD3DX12_RESOURCE_BARRIER::Transition(
 			bufferResource.Get(),
-			fromState, // äÖÈ¾½áÊøÊ±ÊÇ Render Target ×´Ì¬
-			toState // ÇÐ»»µ½ÎÆÀí×ÊÔ´×´Ì¬
+			fromState, // ï¿½ï¿½È¾ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½ Render Target ×´Ì¬
+			toState // ï¿½Ð»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô´×´Ì¬
 		);
 
 		m_CommandListLocal->ResourceBarrier(1, &barrierToSRV);
 
-		// ÕâÀïÓ¦¸ÃÉèÖÃÒ»¸öÍ¬²½µã¡£¡£¡£
+		// ï¿½ï¿½ï¿½ï¿½Ó¦ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½Í¬ï¿½ï¿½ï¿½ã¡£ï¿½ï¿½ï¿½ï¿½
 
 	}
 
-	void D3D12CommandList::BindCbvHeap(const Ref<GfxDescHeap>& cbvHeap)
-	{
-		auto d3dCbvHeap = cbvHeap->getHeap<Microsoft::WRL::ComPtr<ID3D12DescriptorHeap>>();
-		ID3D12DescriptorHeap* descriptorHeaps[] = { d3dCbvHeap.Get()};
-		m_CommandListLocal->SetDescriptorHeaps(_countof(descriptorHeaps), descriptorHeaps);
+	//void D3D12CommandList::BindCbvHeap(const Ref<GfxDescHeap>& cbvHeap)
+	//{
+	//	auto d3dCbvHeap = cbvHeap->getHeap<Microsoft::WRL::ComPtr<ID3D12DescriptorHeap>>();
+	//	ID3D12DescriptorHeap* descriptorHeaps[] = { d3dCbvHeap.Get()};
+	//	m_CommandListLocal->SetDescriptorHeaps(_countof(descriptorHeaps), descriptorHeaps);
 
-	}
+	//}
 
 	void D3D12CommandList::Close()
 	{

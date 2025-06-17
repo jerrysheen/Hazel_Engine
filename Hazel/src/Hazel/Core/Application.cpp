@@ -8,9 +8,9 @@
 
 namespace Hazel{
 
-	// Õâ¸öthis¾ÍÊÇÍ¬Ò»¸öº¯ÊýÏÂÃæºÍÏÖÔÚÕâ¸öº¯Êý°ó¶¨µÄÄÇ¸ö¶«Î÷£¬Ò²¾ÍÊÇ
-	// EventFn/EventCallbackFn °ó¶¨ÁË£¬EVentFn¾ÍÊÇÎÒÏÖÔÚÕâ¸öº¯Êý¡£²¢ÇÒÓÐÒ»¸öplaceholderÊÇºóÐø
-	// ÔÚEventFn/EventCallbackFnÖÐÀ´Ê¹ÓÃµÄ 
+	// ï¿½ï¿½ï¿½thisï¿½ï¿½ï¿½ï¿½Í¬Ò»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ó¶¨µï¿½ï¿½Ç¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò²ï¿½ï¿½ï¿½ï¿½
+	// EventFn/EventCallbackFn ï¿½ï¿½ï¿½Ë£ï¿½EVentFnï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½placeholderï¿½Çºï¿½ï¿½ï¿½
+	// ï¿½ï¿½EventFn/EventCallbackFnï¿½ï¿½ï¿½ï¿½Ê¹ï¿½Ãµï¿½ 
 #define BIND_EVENT_FN(x) std::bind(&Application::x, this, std::placeholders::_1)
 	
 	Application* Application::s_Instance = nullptr;
@@ -24,13 +24,13 @@ namespace Hazel{
 		m_Window = Scope<Window>(Window::Create(props));
 		m_Window->SetEventCallback(BIND_EVENT_FN(OnEvent));
 		
-		// ³õÊ¼»¯RenderAPI, ÆäÊµÕâ¸öÀàÓÐµã¿í·º£¿ 
-		// ÏÈÕâÃ´Ð´°É£¬Õâ¸öµØ·½ÐèÇó±È½Ï¼òµ¥£¬¾ÍÊÇÒªÔÚ±ðµÄµØ·½ÄÜ¼òµ¥È¡µ½devices£¬
+		// ï¿½ï¿½Ê¼ï¿½ï¿½RenderAPI, ï¿½ï¿½Êµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ðµï¿½ï¿½ï¿½ï¿½ï¿½ 
+		// ï¿½ï¿½ï¿½ï¿½Ã´Ð´ï¿½É£ï¿½ï¿½ï¿½ï¿½ï¿½Ø·ï¿½ï¿½ï¿½ï¿½ï¿½È½Ï¼òµ¥£ï¿½ï¿½ï¿½ï¿½ï¿½Òªï¿½Ú±ï¿½ÄµØ·ï¿½ï¿½Ü¼ï¿½È¡ï¿½ï¿½devicesï¿½ï¿½
 		//m_RenderAPIManager = Ref<RenderAPIManager>(RenderAPIManager::Create());
 		RenderAPIManager::Register<D3D12RenderAPIManager>();
 		RenderAPIManager::getInstance();
 		CommandPool::getInstance()->Init();
-		GfxViewManager::getInstance()->Init();
+		//GfxViewManager::getInstance()->Init();
 
 		m_Window->SetBackGroundColor();
 		m_ImGuiLayer = new ImGuiLayer();
@@ -58,7 +58,7 @@ namespace Hazel{
 		layer->OnAttach();
 	}
 
-	// window ºÍevent ÍêÈ«·ÖÀëÁË£¬Ö»ÓÐeventÏà»¥Á¬½Ó
+	// window ï¿½ï¿½event ï¿½ï¿½È«ï¿½ï¿½ï¿½ï¿½ï¿½Ë£ï¿½Ö»ï¿½ï¿½eventï¿½à»¥ï¿½ï¿½ï¿½ï¿½
 	void Application::OnEvent(Event& e)
 	{
 		
@@ -93,7 +93,7 @@ namespace Hazel{
 				for (Layer* layer : m_LayerStack)
 					layer->OnUpdate(0.01f);
 			}
-			// Ã¿Ò»²ãÉÏÈç¹ûÓÐImGui²ã£¬¾ÍäÖÈ¾£¿
+			// Ã¿Ò»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ImGuiï¿½ã£¬ï¿½ï¿½ï¿½ï¿½È¾ï¿½ï¿½
 			m_ImGuiLayer->Begin();
 			for (Layer* layer : m_LayerStack)
 				layer->OnImGuiRender();
@@ -124,7 +124,7 @@ namespace Hazel{
 		}
 		m_Minimized = false;
 		//Renderer::OnWindowResize(e.GetWidth(), e.GetHeight());
-		// todo: renderAPIµÄwindow resize
+		// todo: renderAPIï¿½ï¿½window resize
 		// since we want all other layout know this event;
 		return false;
 	}

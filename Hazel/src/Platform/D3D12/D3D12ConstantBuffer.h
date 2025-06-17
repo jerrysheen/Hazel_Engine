@@ -10,6 +10,7 @@ namespace Hazel
 		D3D12ConstantBuffer(uint32_t elementSize);
 		virtual ~D3D12ConstantBuffer();
 		virtual void SetData(void* srcData, int length) override;
+		virtual void* GetNativeResource() const override { return mUploadBuffer.Get(); }
 	private:
 		Microsoft::WRL::ComPtr<ID3D12Resource>& mUploadBuffer;
 		BYTE* mMappedData = nullptr;

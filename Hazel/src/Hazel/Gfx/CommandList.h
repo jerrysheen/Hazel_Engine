@@ -2,7 +2,7 @@
 #include "Hazel/Gfx/GfxDesc.h"
 #include "Hazel/Gfx/Color.h"
 #include "Hazel/Renderer/TextureStruct.h"
-
+#include "Hazel/Renderer/TextureBuffer.h"
 
 namespace Hazel 
 {
@@ -23,9 +23,9 @@ namespace Hazel
 		static Ref<CommandList> Create();
 
 		virtual void Reset() = 0;
-		virtual void ClearRenderTargetView(const Ref<GfxDesc>& desc, const glm::vec4& color) = 0;
+		virtual void ClearRenderTargetView(const Ref<TextureBuffer>& buffer, const glm::vec4& color) = 0;
 		virtual void ChangeResourceState(const Ref<TextureBuffer>& texture, const TextureRenderUsage& fromFormat, const TextureRenderUsage& toFormat) = 0;
-		virtual void BindCbvHeap(const Ref<GfxDescHeap>& cbvHeap) = 0;
+		//virtual void BindCbvHeap(const Ref<GfxDescHeap>& cbvHeap) = Â·0;
 		virtual void Close() = 0;
 		virtual void Release() = 0;
 		virtual void Execute(ID3D12CommandQueue* & queue, ID3D12Fence* fence) = 0;
@@ -33,7 +33,7 @@ namespace Hazel
 		template<typename T>
 		T getCommandAllocator() const {
 			if constexpr (std::is_same_v<T, uint32_t> || std::is_same_v<T,Microsoft::WRL::ComPtr<ID3D12CommandAllocator >>) {
-				return std::get<T>(m_CommandAllocator);  // ³¢ÊÔ»ñÈ¡ T ÀàÐÍµÄÖµ
+				return std::get<T>(m_CommandAllocator);  // ï¿½ï¿½ï¿½Ô»ï¿½È¡ T ï¿½ï¿½ï¿½Íµï¿½Öµ
 			}
 			else {
 				static_assert(false, "T must be either uint32_t or ID3D12CommandAllocator");
@@ -43,7 +43,7 @@ namespace Hazel
 		template<typename T>
 		T getCommandList() const {
 			if constexpr (std::is_same_v<T, uint32_t> || std::is_same_v < T, Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList>>) {
-				return std::get<T>(m_CommandList);  // ³¢ÊÔ»ñÈ¡ T ÀàÐÍµÄÖµ
+				return std::get<T>(m_CommandList);  // ï¿½ï¿½ï¿½Ô»ï¿½È¡ T ï¿½ï¿½ï¿½Íµï¿½Öµ
 			}
 			else {
 				static_assert(false, "T must be either Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList>");

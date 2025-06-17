@@ -13,9 +13,9 @@ namespace Hazel
 		D3D12CommandList();
 		virtual ~D3D12CommandList();
 		virtual void Reset() override;
-		virtual void ClearRenderTargetView(const Ref<GfxDesc>& desc, const glm::vec4& color) override;
+		virtual void ClearRenderTargetView(const Ref<TextureBuffer>& buffer, const glm::vec4& color) override;
 		virtual void ChangeResourceState(const Ref<TextureBuffer>& texture, const TextureRenderUsage& fromFormat, const TextureRenderUsage& toFormat) override;
-		virtual void BindCbvHeap(const Ref<GfxDescHeap>& cbvHeap) override;
+		//virtual void BindCbvHeap(const Ref<GfxDescHeap>& cbvHeap) override;
 		virtual void Close() override;
 		virtual void Release() override;
 		virtual void Execute(ID3D12CommandQueue*& queue, ID3D12Fence* fence) override;

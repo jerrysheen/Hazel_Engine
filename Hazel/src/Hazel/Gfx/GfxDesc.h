@@ -6,90 +6,90 @@
 #include "Platform/D3D12/d3dUtil.h"
 namespace Hazel 
 {
-	enum DescriptorType
-	{
-		DESCRIPTOR_TYPE_CBV,
-		DESCRIPTOR_TYPE_SRV,
-		DESCRIPTOR_TYPE_UAV,
-		DESCRIPTOR_TYPE_SAMPLER,
-		DESCRIPTOR_TYPE_RTV,
-		DESCRIPTOR_TYPE_DSV,
-		DESCRIPTOR_TYPE_NUM
-	};
+	//enum DescriptorType
+	//{
+	//	DESCRIPTOR_TYPE_CBV,
+	//	DESCRIPTOR_TYPE_SRV,
+	//	DESCRIPTOR_TYPE_UAV,
+	//	DESCRIPTOR_TYPE_SAMPLER,
+	//	DESCRIPTOR_TYPE_RTV,
+	//	DESCRIPTOR_TYPE_DSV,
+	//	DESCRIPTOR_TYPE_NUM
+	//};
 
 
-	class GfxDesc
-	{
-	public:
-		GfxDesc();
-		~GfxDesc() {};
-		//void OnUpdate() {};
-		//static Ref<GfxDesc> Create(const DescriptorType& type);
-
-		//virtual void Reset() = 0;
-		template<typename T>
-		T GetCPUDescHandle() const {
-			if constexpr (std::is_same_v<T, uint32_t> || std::is_same_v<T, D3D12_CPU_DESCRIPTOR_HANDLE>) {
-				return std::get<T>(m_CPUHandle);  // ³¢ÊÔ»ñÈ¡ T ÀàÐÍµÄÖµ
-			}
-			else {
-				static_assert(false, "T must be either uint32_t or D3D12_CPU_DESCRIPTOR_HANDLE");
-			}
-		}
-
-		template<typename T>
-		T GetGPUDescHandle() const {
-			if constexpr (std::is_same_v<T, uint32_t> || std::is_same_v<T, D3D12_GPU_DESCRIPTOR_HANDLE>) {
-				return std::get<T>(m_GPUHandle);  // ³¢ÊÔ»ñÈ¡ T ÀàÐÍµÄÖµ
-			}
-			else {
-				static_assert(false, "T must be either uint32_t or D3D12_GPU_DESCRIPTOR_HANDLE");
-			}
-		}
-
-		inline std::variant<uint32_t, D3D12_CPU_DESCRIPTOR_HANDLE>& GetCPUHandlerVariant() { return m_CPUHandle; };
-		inline std::variant<uint32_t, D3D12_GPU_DESCRIPTOR_HANDLE>& GetGPUHandlerVariant() { return m_GPUHandle; };
-	protected:
-		// ²»Ò»¶¨¶¼ÓÐCPU GPU handle£¬ÏñUAV SRVÕâÖÖ¶¼ÓÐ
-		// RTV DSV ¾ÍÃ»ÓÐ£¬ÒªÓÃrt×öÌùÍ¼£¬¾ÍµÃÇÐ»»³ÉUAV£¬ Õâ¸öµØ·½Ó¦¸Ã×öÒ»¸ö±£»¤¡£¡£
-		std::variant<uint32_t, D3D12_CPU_DESCRIPTOR_HANDLE> m_CPUHandle;
-		std::variant<uint32_t, D3D12_GPU_DESCRIPTOR_HANDLE> m_GPUHandle;
-	};
-
-
-	class GfxDescHeap
-	{
-	public:
-		GfxDescHeap() 
-		{
-#ifdef RENDER_API_OPENGL
-			m_Heap = 0;
-#elif RENDER_API_DIRECTX12 // RENDER_API_OPENGL
-			m_Heap = Microsoft::WRL::ComPtr<ID3D12DescriptorHeap>{};
-#endif // DEBUG
-		};
-		virtual ~GfxDescHeap() {};
-		virtual void OnUpdate() {};
-		static Ref<GfxDescHeap> Create(const DescriptorType &type);
-
-		virtual Ref<GfxDesc> GetOrCreateDesc(const Ref<TextureBuffer> textureBuffer, const DescriptorType& type) = 0;
-		virtual Ref<GfxDesc> GetOrCreateDesc(const Ref<ConstantBuffer> constantBuffer) = 0;
-		DescriptorType m_Type;
-		int m_DescriptorCount = 0;
-
-		template<typename T>
-		T getHeap() const {
-			if constexpr (std::is_same_v<T, uint32_t> || 
-				std::is_same_v<T, Microsoft::WRL::ComPtr<ID3D12DescriptorHeap >>) {
-				return std::get<T>(m_Heap);  // ³¢ÊÔ»ñÈ¡ T ÀàÐÍµÄÖµ
-			}
-			else {
-				static_assert(false, "T must be either uint32_t or CD3DX12_CPU_DESCRIPTOR_HANDLE");
-			}
-		}
-	protected:
-
-		std::variant<uint32_t, Microsoft::WRL::ComPtr<ID3D12DescriptorHeap>> m_Heap;
-	};
+//	class GfxDesc
+//	{
+//	public:
+//		GfxDesc();
+//		~GfxDesc() {};
+//		//void OnUpdate() {};
+//		//static Ref<GfxDesc> Create(const DescriptorType& type);
+//
+//		//virtual void Reset() = 0;
+//		template<typename T>
+//		T GetCPUDescHandle() const {
+//			if constexpr (std::is_same_v<T, uint32_t> || std::is_same_v<T, D3D12_CPU_DESCRIPTOR_HANDLE>) {
+//				return std::get<T>(m_CPUHandle);  // ï¿½ï¿½ï¿½Ô»ï¿½È¡ T ï¿½ï¿½ï¿½Íµï¿½Öµ
+//			}
+//			else {
+//				static_assert(false, "T must be either uint32_t or D3D12_CPU_DESCRIPTOR_HANDLE");
+//			}
+//		}
+//
+//		template<typename T>
+//		T GetGPUDescHandle() const {
+//			if constexpr (std::is_same_v<T, uint32_t> || std::is_same_v<T, D3D12_GPU_DESCRIPTOR_HANDLE>) {
+//				return std::get<T>(m_GPUHandle);  // ï¿½ï¿½ï¿½Ô»ï¿½È¡ T ï¿½ï¿½ï¿½Íµï¿½Öµ
+//			}
+//			else {
+//				static_assert(false, "T must be either uint32_t or D3D12_GPU_DESCRIPTOR_HANDLE");
+//			}
+//		}
+//
+//		inline std::variant<uint32_t, D3D12_CPU_DESCRIPTOR_HANDLE>& GetCPUHandlerVariant() { return m_CPUHandle; };
+//		inline std::variant<uint32_t, D3D12_GPU_DESCRIPTOR_HANDLE>& GetGPUHandlerVariant() { return m_GPUHandle; };
+//	protected:
+//		// ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½CPU GPU handleï¿½ï¿½ï¿½ï¿½UAV SRVï¿½ï¿½ï¿½Ö¶ï¿½ï¿½ï¿½
+//		// RTV DSV ï¿½ï¿½Ã»ï¿½Ð£ï¿½Òªï¿½ï¿½rtï¿½ï¿½ï¿½ï¿½Í¼ï¿½ï¿½ï¿½Íµï¿½ï¿½Ð»ï¿½ï¿½ï¿½UAVï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ø·ï¿½Ó¦ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+//		std::variant<uint32_t, D3D12_CPU_DESCRIPTOR_HANDLE> m_CPUHandle;
+//		std::variant<uint32_t, D3D12_GPU_DESCRIPTOR_HANDLE> m_GPUHandle;
+//	};
+//
+//
+//	class GfxDescHeap
+//	{
+//	public:
+//		GfxDescHeap() 
+//		{
+//#ifdef RENDER_API_OPENGL
+//			m_Heap = 0;
+//#elif RENDER_API_DIRECTX12 // RENDER_API_OPENGL
+//			m_Heap = Microsoft::WRL::ComPtr<ID3D12DescriptorHeap>{};
+//#endif // DEBUG
+//		};
+//		virtual ~GfxDescHeap() {};
+//		virtual void OnUpdate() {};
+//		static Ref<GfxDescHeap> Create(const DescriptorType &type);
+//
+//		virtual Ref<GfxDesc> GetOrCreateDesc(const Ref<TextureBuffer> textureBuffer, const DescriptorType& type) = 0;
+//		virtual Ref<GfxDesc> GetOrCreateDesc(const Ref<ConstantBuffer> constantBuffer) = 0;
+//		DescriptorType m_Type;
+//		int m_DescriptorCount = 0;
+//
+//		template<typename T>
+//		T getHeap() const {
+//			if constexpr (std::is_same_v<T, uint32_t> || 
+//				std::is_same_v<T, Microsoft::WRL::ComPtr<ID3D12DescriptorHeap >>) {
+//				return std::get<T>(m_Heap);  // ï¿½ï¿½ï¿½Ô»ï¿½È¡ T ï¿½ï¿½ï¿½Íµï¿½Öµ
+//			}
+//			else {
+//				static_assert(false, "T must be either uint32_t or CD3DX12_CPU_DESCRIPTOR_HANDLE");
+//			}
+//		}
+//	protected:
+//
+//		std::variant<uint32_t, Microsoft::WRL::ComPtr<ID3D12DescriptorHeap>> m_Heap;
+//	};
 
 }

@@ -27,11 +27,11 @@ namespace Hazel {
 		DXGI_FORMAT GetLayOutFormat(const ShaderDataType& type);
 
 		uint32_t m_RendererID;
-		// VertexBuffer里面的数据回头是可以分成多个Slot，反正D3D12支持，分成position only + 必然的数据，更加cache友好。
+		// VertexBuffer锟斤拷锟斤拷锟斤拷锟斤拷莼锟酵凤拷强锟斤拷苑殖啥锟斤拷Slot锟斤拷锟斤拷锟斤拷D3D12支锟街ｏ拷锟街筹拷position only + 锟斤拷然锟斤拷锟斤拷锟捷ｏ拷锟斤拷锟斤拷cache锟窖好★拷
 		std::vector<Ref<VertexBuffer>> m_VertexBuffers;
 		Ref<IndexBuffer> m_IndexBuffer;
 
-		//// Inputlay 声明在 VertexArray里面。
+		//// Inputlay 锟斤拷锟斤拷锟斤拷 VertexArray锟斤拷锟芥。
 		//std::vector<D3D12_INPUT_ELEMENT_DESC> m_D3DInputLayout;
 		UINT VertexByteStride = 0;
 

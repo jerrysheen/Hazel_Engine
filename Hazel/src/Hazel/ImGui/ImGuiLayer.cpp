@@ -16,7 +16,8 @@
 
 #include <GLFW/glfw3.h>
 #include <glad/glad.h>
-#include "Hazel/Gfx/GfxViewManager.h"
+#include "Hazel/RHI/Interface/IGfxViewManager.h"
+#include "Hazel/RHI/Interface/DescriptorTypes.h"
 
 
 namespace Hazel {
@@ -101,15 +102,13 @@ namespace Hazel {
 		//	g_pd3dSrvDescHeap->GetCPUDescriptorHandleForHeapStart(),
 		//	g_pd3dSrvDescHeap->GetGPUDescriptorHandleForHeapStart());
 		ImGui_ImplWin32_Init(Application::Get().GetWindow().GetNativeWindow());
-		//if (D3D12RenderAPIManager* renderAPIManager = dynamic_cast<D3D12RenderAPIManager*>(basePtr)) {
-		//	derivedPtr->show();
 		renderAPIManager = dynamic_cast<D3D12RenderAPIManager*>(RenderAPIManager::getInstance()->GetManager().get());
-		//ID3D12DescriptorHeap* srvDescHeap = renderAPIManager->GetCbvHeap().Get();
-		ID3D12DescriptorHeap* srvDescHeap = GfxViewManager::getInstance()->GetSrvHeap()->getHeap< Microsoft::WRL::ComPtr<ID3D12DescriptorHeap>>().Get();
+		IGfxViewManager& gfxViewManager = IGfxViewManager::Get();
+		ID3D12DescriptorHeap* srvHeap = static_cast<ID3D12DescriptorHeap*>(gfxViewManager.GetHeap(DescriptorHeapType::CbvSrvUav));
 		ImGui_ImplDX12_Init(renderAPIManager->GetD3DDevice().Get(), NUM_FRAMES_IN_FLIGHT,
-			renderAPIManager->GetBackBufferFormat(), srvDescHeap,
-			srvDescHeap->GetCPUDescriptorHandleForHeapStart(),
-			srvDescHeap->GetGPUDescriptorHandleForHeapStart());
+			renderAPIManager->GetBackBufferFormat(), srvHeap,
+			srvHeap->GetCPUDescriptorHandleForHeapStart(),
+			srvHeap->GetGPUDescriptorHandleForHeapStart());
 #endif
 
 	}
@@ -174,12 +173,12 @@ namespace Hazel {
 		ImGui::Render();
 
 
-		// utf-8£¿ 
-		// ¿ÉÒÔÀí½âÎªÕâ¸öÀàËÆÓÚUI²ã£¬Ã¿Ò»¸öEditorLayerÀïÃæ£¬ÎÒ°ÑÄÚÈÝ¶¼¼Óµ½ImguiÀïÃæ£¬È»ºóÔÚÕâ¸öµØ·½Í³Ò»°´ÕÕ²ã¼¶×öÒ»¸öäÖÈ¾¡£
-		// EditorLayer²ãÀïÃæ×Ô¼ºµÄäÖÈ¾ÄÚÈÝ£¬ÎÒ¿ÉÒÔ²»¹Ü£¬µ«ÊÇ×îºó»ù±¾ÉÏ¶¼ÊÇÒ»¸öRenderTextureµÄÐÎÊ½¡£
-		// Ò²¾ÍÊÇËµ£¬ÎÒÔÚÕâ¸öµØ·½ÐèÒª½Ó¹Ü swapbufferµÄ²Ù×÷¡£
+		// utf-8ï¿½ï¿½ 
+		// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Îªï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½UIï¿½ã£¬Ã¿Ò»ï¿½ï¿½EditorLayerï¿½ï¿½ï¿½æ£¬ï¿½Ò°ï¿½ï¿½ï¿½ï¿½Ý¶ï¿½ï¿½Óµï¿½Imguiï¿½ï¿½ï¿½æ£¬È»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ø·ï¿½Í³Ò»ï¿½ï¿½ï¿½Õ²ã¼¶ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½È¾ï¿½ï¿½
+		// EditorLayerï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô¼ï¿½ï¿½ï¿½ï¿½ï¿½È¾ï¿½ï¿½ï¿½Ý£ï¿½ï¿½Ò¿ï¿½ï¿½Ô²ï¿½ï¿½Ü£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ï¶ï¿½ï¿½ï¿½Ò»ï¿½ï¿½RenderTextureï¿½ï¿½ï¿½ï¿½Ê½ï¿½ï¿½
+		// Ò²ï¿½ï¿½ï¿½ï¿½Ëµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ø·ï¿½ï¿½ï¿½Òªï¿½Ó¹ï¿½ swapbufferï¿½Ä²ï¿½ï¿½ï¿½ï¿½ï¿½
 		
-		// 2024-06-02 ÎÒÕâ¸öµØ·½ÏÈ³¢ÊÔ½ÓÈë£¬ È»ºóÔÙ°Ñ¹¦ÄÜÌæ»»Ò»ÏÂ¡£
+		// 2024-06-02 ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ø·ï¿½ï¿½È³ï¿½ï¿½Ô½ï¿½ï¿½ë£¬ È»ï¿½ï¿½ï¿½Ù°Ñ¹ï¿½ï¿½ï¿½ï¿½æ»»Ò»ï¿½Â¡ï¿½
 
 		renderAPIManager->ResetCommandList();
 
@@ -194,7 +193,7 @@ namespace Hazel {
 		mCommandList->RSSetScissorRects(1, renderAPIManager->GetCurrentScissorRect());
 
 		// Clear the back buffer and depth buffer.
-		// ¸Ð¾õ¶ÔÕâ¸ö backbufferviewµÄ»ñÈ¡»¹ÊÇÓÐÒÉ»ó¡£
+		// ï¿½Ð¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ backbufferviewï¿½Ä»ï¿½È¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½É»ï¿½
 		mCommandList->ClearRenderTargetView(renderAPIManager->CurrentBackBufferView(), Colors::LightSteelBlue, 0, nullptr);
 
 		// Specify the buffers we are going to render to.
@@ -202,8 +201,10 @@ namespace Hazel {
 		mCommandList->OMSetRenderTargets(1, &renderAPIManager->CurrentBackBufferView(), false, nullptr);
 
 		//ID3D12DescriptorHeap* descriptorHeaps[] = { renderAPIManager->GetCbvHeap().Get()};
-		auto d3dCbvHeap = GfxViewManager::getInstance()->GetSrvHeap()->getHeap< Microsoft::WRL::ComPtr<ID3D12DescriptorHeap>>();
-		ID3D12DescriptorHeap* descriptorHeaps[] = { d3dCbvHeap.Get() };
+		IGfxViewManager& gfxViewManager = IGfxViewManager::Get();
+		ID3D12DescriptorHeap* cbxHeap = static_cast<ID3D12DescriptorHeap*>(gfxViewManager.GetHeap(DescriptorHeapType::CbvSrvUav));
+
+		ID3D12DescriptorHeap* descriptorHeaps[] = { cbxHeap };
 		mCommandList->SetDescriptorHeaps(_countof(descriptorHeaps), descriptorHeaps);
 		ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), mCommandList.Get());
 		// Indicate a state transition on the resource usage.

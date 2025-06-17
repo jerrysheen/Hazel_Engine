@@ -82,6 +82,9 @@
     <Filter Include="vendor\stb_image">
       <UniqueIdentifier>{0DA0BA59-F998-D9AB-22CB-BE300E23B9B7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="SampleCode">
+      <UniqueIdentifier>{38e8dd7f-0382-4196-8f19-b9f66b888f2e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Hazel.h">
@@ -1673,9 +1676,6 @@
     <ClCompile Include="src\Hazel\RHI\Interface\IGfxViewManager.cpp">
       <Filter>src\Hazel\RHI\Interface</Filter>
     </ClCompile>
-    <ClCompile Include="src\Hazel\RHI\Interface\ViewManagerExample.cpp">
-      <Filter>src\Hazel\RHI\Interface</Filter>
-    </ClCompile>
     <ClCompile Include="src\Hazel\Renderer\Buffer.cpp">
       <Filter>src\Hazel\Renderer</Filter>
     </ClCompile>
@@ -1819,6 +1819,12 @@
     </ClCompile>
     <ClCompile Include="src\Platform\D3D12\D3D12DescriptorHeapManager.cpp">
       <Filter>src\Platform\D3D12</Filter>
+    </ClCompile>
+    <ClCompile Include="SampleCode\Gfx\RHI\unified_usage_example.cpp">
+      <Filter>SampleCode</Filter>
+    </ClCompile>
+    <ClCompile Include="SampleCode\Gfx\RHI\ViewManagerExample.cpp">
+      <Filter>SampleCode</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

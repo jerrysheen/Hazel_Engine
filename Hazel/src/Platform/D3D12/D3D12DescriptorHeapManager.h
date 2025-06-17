@@ -18,7 +18,7 @@ namespace Hazel {
         // IDescriptorHeapManager interface implementation
         virtual void Initialize() override;
         virtual IDescriptorAllocator& GetAllocator(DescriptorHeapType type) override;
-        virtual DescriptorHandle CreateView(DescriptorType type, const void* resourcePtr, const ViewDescription* viewDesc = nullptr) override;
+        virtual DescriptorAllocation CreateView(DescriptorType type, const void* resourcePtr, const ViewDescription* viewDesc = nullptr) override;
         virtual void CopyDescriptors(
             uint32_t numDescriptors,
             const DescriptorHandle* srcHandles,

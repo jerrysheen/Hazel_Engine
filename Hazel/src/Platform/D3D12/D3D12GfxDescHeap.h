@@ -7,30 +7,30 @@
 
 namespace Hazel
 {
-	class D3D12GfxDescHeap : public GfxDescHeap
-	{
-	public:
-		D3D12GfxDescHeap(const DescriptorType& type);
-		virtual ~D3D12GfxDescHeap();
-		//virtual void Reset() override;
-		virtual Ref<GfxDesc> GetOrCreateDesc(const Ref<TextureBuffer> textureBuffer, const DescriptorType& type) override;
-		virtual Ref<GfxDesc> GetOrCreateDesc(const Ref<ConstantBuffer> constantBuffer) override;
-
-	private:
-		// Õë¶ÔD3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV ÕâÖÖÀàÐÍ£¬¿ÉÄÜ»á´æÔÚÒ»¶Ô¶àµÄÇé¿ö¡£¡£
-		// ÏÖÔÚÓ¦¸Ã²»ÐèÒªÁË£¬×ÊÔ´ºÍheap¶¼ÊÇÒ»Ò»¶ÔÓ¦µÄ
-		std::map<boost::uuids::uuid, std::map<DescriptorType, Ref<GfxDesc>>> m_DescMap;
-		Microsoft::WRL::ComPtr<ID3D12DescriptorHeap>& m_HeapLocal;
-	};
-
-
-
-
-	//class D3D12GfxDesc : public GfxDesc
+	//class D3D12GfxDescHeap : public GfxDescHeap
 	//{
 	//public:
-	//	D3D12GfxDesc(const DescriptorType& type, const GfxDescHeap& heap);
-	//	virtual ~D3D12GfxDesc();
+	//	D3D12GfxDescHeap(const DescriptorType& type);
+	//	virtual ~D3D12GfxDescHeap();
 	//	//virtual void Reset() override;
+	//	virtual Ref<GfxDesc> GetOrCreateDesc(const Ref<TextureBuffer> textureBuffer, const DescriptorType& type) override;
+	//	virtual Ref<GfxDesc> GetOrCreateDesc(const Ref<ConstantBuffer> constantBuffer) override;
+
+	//private:
+	//	// ï¿½ï¿½ï¿½D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í£ï¿½ï¿½ï¿½ï¿½Ü»ï¿½ï¿½ï¿½ï¿½Ò»ï¿½Ô¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	//	// ï¿½ï¿½ï¿½ï¿½Ó¦ï¿½Ã²ï¿½ï¿½ï¿½Òªï¿½Ë£ï¿½ï¿½ï¿½Ô´ï¿½ï¿½heapï¿½ï¿½ï¿½ï¿½Ò»Ò»ï¿½ï¿½Ó¦ï¿½ï¿½
+	//	std::map<boost::uuids::uuid, std::map<DescriptorType, Ref<GfxDesc>>> m_DescMap;
+	//	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap>& m_HeapLocal;
 	//};
+
+
+
+
+	////class D3D12GfxDesc : public GfxDesc
+	////{
+	////public:
+	////	D3D12GfxDesc(const DescriptorType& type, const GfxDescHeap& heap);
+	////	virtual ~D3D12GfxDesc();
+	////	//virtual void Reset() override;
+	////};
 }

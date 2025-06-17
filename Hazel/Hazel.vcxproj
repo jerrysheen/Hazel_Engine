@@ -655,6 +655,8 @@
     <ClInclude Include="vendor\stb_image\stb_image.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="SampleCode\Gfx\RHI\unified_usage_example.cpp" />
+    <ClCompile Include="SampleCode\Gfx\RHI\ViewManagerExample.cpp" />
     <ClCompile Include="src\Hazel\Core\Application.cpp" />
     <ClCompile Include="src\Hazel\Core\Layer.cpp" />
     <ClCompile Include="src\Hazel\Core\LayerStack.cpp" />
@@ -677,7 +679,6 @@
     <ClCompile Include="src\Hazel\Model\Material.cpp" />
     <ClCompile Include="src\Hazel\Model\Mesh.cpp" />
     <ClCompile Include="src\Hazel\RHI\Interface\IGfxViewManager.cpp" />
-    <ClCompile Include="src\Hazel\RHI\Interface\ViewManagerExample.cpp" />
     <ClCompile Include="src\Hazel\Renderer\Buffer.cpp" />
     <ClCompile Include="src\Hazel\Renderer\Camera.cpp" />
     <ClCompile Include="src\Hazel\Renderer\GraphicsPipeline.cpp" />

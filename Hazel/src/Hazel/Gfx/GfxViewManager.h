@@ -5,55 +5,55 @@
 #include "Hazel/Renderer/Buffer.h"
 
 namespace Hazel {
-    // viewManagerÓÃÀ´¹ÜÀí¸÷ÖÖdescriptorÒÔ¼°descriptorHeap¡£
-    // ÔÚÕâÒ»²ã£¬¿ÉÒÔÓÃuuidÀ´Ñ°ÕÒµ½Ä³Ò»¸ö×ÊÔ´¶ÔÓ¦µÄÄ³ÖÖÃèÊö·½Ê½¡£
-    // Õâ¸ö²»ÓÃ×ö³ÉÒ»¸ö×ÓÀà£¬ÎÒµÄRHI²ã²»ĞèÒª·ÃÎÊheap£¬Ô­ÔòÉÏËùÓĞµÄheap
-    // ·ÃÎÊ¶¼ÊÇÔÚRrenderAPI²ã£¬Í¨¹ı×ÊÔ´µÄUUID½øĞĞ²éÕÒºÍ·ÃÎÊµÄ¡£
-    // ºÃ°ÉÕâÃ´Ğ´Ò²¿ÉÒÔ£¬ ÎÒ¿´Õâ¸öµØ·½ÒÀ¾ÉÊÇÒ»¸ö¸¸Ààµ¥Àı³ÖÓĞ¾ßÌåµÄheapÒÔ¼°desc.
-    // ÄÇÃ´ÎÒÉÏ²ã¾ÍÊÇ×öºÃ¹ÜÀí¾Í¿ÉÒÔÁË£¬´´½¨¼¸¸ö¾ßÌåµÄheap£¬È»ºóÃ¿¸öheapÌá¹©²éÕÒ·½Ê½£¬²éÕÒ·½Ê½Ó¦¸Ã¾ÍÊÇmap<uuid, offset> µÃµ½Ò»¸ö¾ßÌåµÄµØÖ·¡£
-    class GfxViewManager {
-    private:
-        static Ref<GfxViewManager> instance;
-        static std::mutex mutex;
+    //// viewManagerï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½descriptorï¿½Ô¼ï¿½descriptorHeapï¿½ï¿½
+    //// ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ã£¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½uuidï¿½ï¿½Ñ°ï¿½Òµï¿½Ä³Ò»ï¿½ï¿½ï¿½ï¿½Ô´ï¿½ï¿½Ó¦ï¿½ï¿½Ä³ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê½ï¿½ï¿½
+    //// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½à£¬ï¿½Òµï¿½RHIï¿½ã²»ï¿½ï¿½Òªï¿½ï¿½ï¿½ï¿½heapï¿½ï¿½Ô­ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ğµï¿½heap
+    //// ï¿½ï¿½ï¿½Ê¶ï¿½ï¿½ï¿½ï¿½ï¿½RrenderAPIï¿½ã£¬Í¨ï¿½ï¿½ï¿½ï¿½Ô´ï¿½ï¿½UUIDï¿½ï¿½ï¿½Ğ²ï¿½ï¿½ÒºÍ·ï¿½ï¿½ÊµÄ¡ï¿½
+    //// ï¿½Ã°ï¿½ï¿½ï¿½Ã´Ğ´Ò²ï¿½ï¿½ï¿½Ô£ï¿½ ï¿½Ò¿ï¿½ï¿½ï¿½ï¿½ï¿½Ø·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½àµ¥ï¿½ï¿½ï¿½ï¿½ï¿½Ğ¾ï¿½ï¿½ï¿½ï¿½heapï¿½Ô¼ï¿½desc.
+    //// ï¿½ï¿½Ã´ï¿½ï¿½ï¿½Ï²ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ã¹ï¿½ï¿½ï¿½Í¿ï¿½ï¿½ï¿½ï¿½Ë£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½heapï¿½ï¿½È»ï¿½ï¿½Ã¿ï¿½ï¿½heapï¿½á¹©ï¿½ï¿½ï¿½Ò·ï¿½Ê½ï¿½ï¿½ï¿½ï¿½ï¿½Ò·ï¿½Ê½Ó¦ï¿½Ã¾ï¿½ï¿½ï¿½map<uuid, offset> ï¿½Ãµï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Äµï¿½Ö·ï¿½ï¿½
+    //class GfxViewManager {
+    //private:
+    //    static Ref<GfxViewManager> instance;
+    //    static std::mutex mutex;
 
-        // Ë½ÓĞ¹¹Ôìº¯ÊıºÍÎö¹¹º¯Êı
-        GfxViewManager() {}
-        ~GfxViewManager() { std::cout << "GfxDescManager Destroyed\n"; }
+    //    // Ë½ï¿½Ğ¹ï¿½ï¿½ìº¯ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    //    GfxViewManager() {}
+    //    ~GfxViewManager() { std::cout << "GfxDescManager Destroyed\n"; }
 
-    public:
-        // É¾³ı¿½±´¹¹Ôìº¯ÊıºÍ¸³Öµ²Ù×÷·û
-        GfxViewManager(const GfxViewManager&) = delete;
-        GfxViewManager& operator=(const GfxViewManager&) = delete;
+    //public:
+    //    // É¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ìº¯ï¿½ï¿½ï¿½Í¸ï¿½Öµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    //    GfxViewManager(const GfxViewManager&) = delete;
+    //    GfxViewManager& operator=(const GfxViewManager&) = delete;
 
-        // getInstance ·½·¨
-        static Ref<GfxViewManager> getInstance() {
-            std::lock_guard<std::mutex> lock(mutex);
-            if (!instance) {
-                instance = Ref<GfxViewManager>(new GfxViewManager(), [](GfxViewManager* p) {
-                    delete p;
-                    });
-            }
-            return instance;
-        }
+    //    // getInstance ï¿½ï¿½ï¿½ï¿½
+    //    static Ref<GfxViewManager> getInstance() {
+    //        std::lock_guard<std::mutex> lock(mutex);
+    //        if (!instance) {
+    //            instance = Ref<GfxViewManager>(new GfxViewManager(), [](GfxViewManager* p) {
+    //                delete p;
+    //                });
+    //        }
+    //        return instance;
+    //    }
 
-        void Init();
-        
-        // ´´½¨»òÕß»ñÈ¡TextureBufferµÄÃèÊö·û¡£
-        Ref<GfxDesc> GetRtvHandle(const Ref<TextureBuffer> textureBuffer);
-        Ref<GfxDesc> GetSrvHandle(const Ref<TextureBuffer> textureBuffer);
-        Ref<GfxDesc> GetDsvHandle(const Ref<TextureBuffer> textureBuffer);
-        Ref<GfxDesc> GetCbvHandle(const Ref<ConstantBuffer> constantBuffer);
+    //    void Init();
+    //    
+    //    // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ß»ï¿½È¡TextureBufferï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    //    Ref<GfxDesc> GetRtvHandle(const Ref<TextureBuffer> textureBuffer);
+    //    Ref<GfxDesc> GetSrvHandle(const Ref<TextureBuffer> textureBuffer);
+    //    Ref<GfxDesc> GetDsvHandle(const Ref<TextureBuffer> textureBuffer);
+    //    Ref<GfxDesc> GetCbvHandle(const Ref<ConstantBuffer> constantBuffer);
 
-        inline Ref<GfxDescHeap> GetSrvHeap() { return m_SrvHeap; };
+    //    inline Ref<GfxDescHeap> GetSrvHeap() { return m_SrvHeap; };
 
-        // ÓÃÀ´´æ·ÅÖ÷Ñ­»·ÀïÃæµÄ×ÊÔ´£¬ºÍimgui¸ôÀë¿ª¡£
-        inline Ref<GfxDescHeap> GetCbvHeap() { return m_CbvHeap; };
-    private:
-        Ref<GfxDescHeap> m_RtvHeap;
-        Ref<GfxDescHeap> m_SrvHeap;
-        Ref<GfxDescHeap> m_DsvHeap;
-        Ref<GfxDescHeap> m_CbvHeap;
+    //    // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ñ­ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô´ï¿½ï¿½ï¿½ï¿½imguiï¿½ï¿½ï¿½ë¿ªï¿½ï¿½
+    //    inline Ref<GfxDescHeap> GetCbvHeap() { return m_CbvHeap; };
+    //private:
+    //    Ref<GfxDescHeap> m_RtvHeap;
+    //    Ref<GfxDescHeap> m_SrvHeap;
+    //    Ref<GfxDescHeap> m_DsvHeap;
+    //    Ref<GfxDescHeap> m_CbvHeap;
 
-    };
+    //};
 
 }

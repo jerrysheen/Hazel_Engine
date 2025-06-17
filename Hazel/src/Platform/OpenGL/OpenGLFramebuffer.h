@@ -2,6 +2,7 @@
 
 #include "Hazel/Renderer/TextureBuffer.h"
 #include "glm/gtc/type_ptr.hpp"
+#include <any>
 
 namespace Hazel 
 {
@@ -28,7 +29,7 @@ namespace Hazel
 		virtual uint32_t GetDepthAttachmentRendererID() const override { return m_DepthAttachment; }
 		virtual std::any GetRendererID() const override { return m_RendererID; }
 
-
+		virtual void* GetNativeResource() const override { return const_cast<uint32_t*>(&m_NativeRendererID); }
 	private:
 
 		std::any m_RendererID = 0;

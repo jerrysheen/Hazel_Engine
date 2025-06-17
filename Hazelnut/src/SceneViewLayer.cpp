@@ -203,8 +203,7 @@ namespace Hazel
         UINT32 size = rawData.size()* sizeof(float);
         objectCB = ConstantBuffer::Create(size);
         objectCB->SetData(rawData.data(), size);
-        GfxViewManager::getInstance()->GetCbvHandle(objectCB);
-        gfxViewManager.CreateConstantBufferView(objectCB);
+		gfxViewManager.CreateConstantBufferView(objectCB);
     }
 
     void SceneViewLayer::OnDetach()
@@ -214,50 +213,6 @@ namespace Hazel
 
     void SceneViewLayer::OnUpdate(Timestep ts)
     {
-
-        
-        ////boost::uuids::random_generator generator;
-
-        ////// ����UUID
-        ////boost::uuids::uuid id = generator();
-
-        ////// ���UUID
-        ////HZ_CORE_INFO("UUID: {0}", id);
-        ////cout << id << endl;
-        //// 
-        ////Culling result = Camera.Cull(Scene);
-        ////
-        ////Camera.Render(result);
-        ////defaultRenderer.AddRenderPass(opaquePass);
-        ////Camera.BindRenderer(defaultRenderer);
-        ////Camera* sceneCamera = new Camera(60, 1920, 1080, 0.1f, 1000.0f);
-        ////Scene* scene = new Scene();
-        //////sceneCamera->BindRenderer(defaultRenderer);
-        ////RenderNode* node = Culling::Cull(sceneCamera, scene);
-        ////RenderingData* renderingData = new RenderingData();
-        ////sceneCamera->Render(node, renderingData);
-        //// 
-        //// ������colorattachment��Ϊbackbuffer�����
- 
-        //// 
-        //// 
-        //// m_textureID = Camera.GetColorAttachment();
-        //// 
-        //// �ο�unity����дһ��ɡ�
-        //// ÿ��camera����һ��renderer��renderer������renderfeature��һ��renderfeatureִ��һ�λ��ơ�
-        //// ÿ��renderpass�������Լ���Ӧ��rendertarget���Լ����Ե���Ⱦ״̬��
-        //// ����ҵ�������������һ��cameraColorAttachment�� ����������ط��һ�Ҫȥ������Щrt�Ĺ�����
-        //// �ҿ�����Ҫ�ع�һ����ײ��Ǹ����롣������imgui�㡣 ��renderapi manager����Ū�� �ײ㲻��Ҫ�����������
-        //// ��һ��layer����һ��rt�� ���е�������ʵ���ǵ��������������л��Ƶġ�
-
-        //// ��ν��sceneview����Ӧ�ø�ʲô��������ڲ�Ӧ�óе��κ���Ⱦ���߼������˵sceneview������һ��scene��Ȼ��������һЩgameobject
-        //// ��ô��Ӧ�þ��������scene��������gameobject���ҵĻ���Ӧ��������ط��������� ��ʵ�о�Ҳ��Ӧ�á��� ��������ôд�ɡ�
-        //// ��������Ⱦ�߼��϶�Ҫ����ϸ�֣������󵽵ľ�������ط���mtextureID�ĸ�ֵӦ������postRender�ĵط�������ط�һ����Ⱦ�����ݶ��Ѿ��������ˡ�
-        //// ����ط��Ķ��̣߳� ��һ��profiler���棬�൱���������߳��ύһ��pass�����߳����������ִ��������ݣ������������������Ȳ�����feedback�Ķ�����
-        //// ��ôGPUֻ��Ҫ����command����ִ�оͺ��ˣ��������ǻῴ�����߳� -> ��Ⱦ�߳� -> GPU �����ӵ�һ�����̡�
-
-        //// ������ط�������һ����Ⱦ����
-
         D3D12RenderAPIManager* renderAPIManager = dynamic_cast<D3D12RenderAPIManager*>(RenderAPIManager::getInstance()->GetManager().get());
         Microsoft::WRL::ComPtr<ID3D12Device> device = renderAPIManager->GetD3DDevice();
 
@@ -270,7 +225,7 @@ namespace Hazel
 
         Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> m_CommandList = cmdList->getCommandList<Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList>>();
         Microsoft::WRL::ComPtr<ID3D12CommandAllocator> m_CommandAllocator = cmdList->getCommandAllocator<Microsoft::WRL::ComPtr<ID3D12CommandAllocator>>();
-        
+
         ThrowIfFailed(m_CommandAllocator->Reset());
         // A command list can be reset after it has been added to the command queue via ExecuteCommandList.
         // Reusing the command list reuses memory.
@@ -279,28 +234,28 @@ namespace Hazel
         m_CommandList->RSSetViewports(1, &mScreenViewport);
         m_CommandList->RSSetScissorRects(1, &mScissorRect);
         // ������Դ�����л���
-        if (m_BackBuffer->GetTextureRenderUsage() == TextureRenderUsage::RENDER_TEXTURE) 
+        if (m_BackBuffer->GetTextureRenderUsage() == TextureRenderUsage::RENDER_TEXTURE)
         {
             cmdList->ChangeResourceState(m_BackBuffer, TextureRenderUsage::RENDER_TEXTURE, TextureRenderUsage::RENDER_TARGET);
         }
 
-        Ref<GfxDesc> renderTargetHandle = GfxViewManager::getInstance()->GetRtvHandle(m_BackBuffer);
-        Ref<GfxDesc> deptgBufferHandle = GfxViewManager::getInstance()->GetDsvHandle(m_DepthBuffer);
+        IGfxViewManager& gfxViewManager = IGfxViewManager::Get();
+        DescriptorAllocation renderTargetHandle = gfxViewManager.CreateRenderTargetView(m_BackBuffer);
+        DescriptorAllocation deptgBufferHandle = gfxViewManager.CreateDepthStencilView(m_DepthBuffer);
 
 
 
-        auto depthHandle = deptgBufferHandle->GetCPUDescHandle<D3D12_CPU_DESCRIPTOR_HANDLE>();
-        auto rtDescHandle = renderTargetHandle->GetCPUDescHandle<D3D12_CPU_DESCRIPTOR_HANDLE>();
+        D3D12_CPU_DESCRIPTOR_HANDLE depthHandle = D3D12_CPU_DESCRIPTOR_HANDLE{ deptgBufferHandle.baseHandle.cpuHandle };
+        D3D12_CPU_DESCRIPTOR_HANDLE rtDescHandle = D3D12_CPU_DESCRIPTOR_HANDLE{ renderTargetHandle.baseHandle.cpuHandle };
 
-        cmdList->ClearRenderTargetView(renderTargetHandle, Color::White);
+        cmdList->ClearRenderTargetView(m_BackBuffer, Color::White);
         m_CommandList->ClearDepthStencilView(depthHandle, D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
         m_CommandList->OMSetRenderTargets(1, &rtDescHandle, true, &depthHandle);
-        
-        
+
+
         //����ط��Ǽ���ʹ�õ���heap������ʹ�õ���CBV���ͼ������heap��
-        auto gfxViewManager = GfxViewManager::getInstance();
-        auto d3dCbvHeap = gfxViewManager->GetCbvHeap()->getHeap<Microsoft::WRL::ComPtr<ID3D12DescriptorHeap>>();
-        ID3D12DescriptorHeap* descriptorHeaps[] = { d3dCbvHeap.Get() };
+        auto d3dCbvHeap = static_cast<ID3D12DescriptorHeap*>(gfxViewManager.GetHeap(DescriptorHeapType::CbvSrvUav));
+        ID3D12DescriptorHeap* descriptorHeaps[] = { d3dCbvHeap };
         m_CommandList->SetDescriptorHeaps(_countof(descriptorHeaps), descriptorHeaps);
 
         m_CommandList->SetGraphicsRootSignature(mRootSignature.Get());
@@ -322,7 +277,7 @@ namespace Hazel
         if (tangentBufferIter != mesh->meshData->GetVertexBuffers().end()) {
             tangentBuffer = dynamic_cast<D3D12VertexBuffer*>(tangentBufferIter->second.get());
         }
-        
+
         D3D12VertexBuffer* texcoordBuffer = nullptr;
         auto texcoordBufferIter = mesh->meshData->GetVertexBuffers().find(VertexProperty::TexCoord0);
         if (texcoordBufferIter != mesh->meshData->GetVertexBuffers().end()) {
@@ -334,17 +289,17 @@ namespace Hazel
         if (texcoord1BufferIter != mesh->meshData->GetVertexBuffers().end()) {
             texcoord1Buffer = dynamic_cast<D3D12VertexBuffer*>(texcoord1BufferIter->second.get());
         }
-        
+
         D3D12VertexBuffer* colorBuffer = nullptr;
         auto colorBufferIter = mesh->meshData->GetVertexBuffers().find(VertexProperty::VertexColor);
         if (colorBufferIter != mesh->meshData->GetVertexBuffers().end()) {
             colorBuffer = dynamic_cast<D3D12VertexBuffer*>(colorBufferIter->second.get());
         }
-        
-        
 
-        
-        
+
+
+
+
         D3D12IndexBuffer* indexBuffer = dynamic_cast<D3D12IndexBuffer*>(mesh->meshData->GetIndexBuffer().get());
         // Create vertex buffer views for each vertex property
         D3D12_VERTEX_BUFFER_VIEW positionVBV;
@@ -430,8 +385,10 @@ namespace Hazel
 
         cmdList->ChangeResourceState(m_BackBuffer, TextureRenderUsage::RENDER_TARGET, TextureRenderUsage::RENDER_TEXTURE);
 
-        Ref<GfxDesc> renderTargetSrvDesc = gfxViewManager->GetSrvHandle(m_BackBuffer);
-        my_texture_srv_gpu_handle = renderTargetSrvDesc->GetGPUDescHandle<D3D12_GPU_DESCRIPTOR_HANDLE>();
+        DescriptorAllocation rtAllocation = gfxViewManager.CreateShaderResourceView(m_BackBuffer);
+        D3D12_GPU_DESCRIPTOR_HANDLE gpuHandle = D3D12_GPU_DESCRIPTOR_HANDLE{rtAllocation.baseHandle.gpuHandle};
+
+        my_texture_srv_gpu_handle = gpuHandle;
 
 
         CommandPool::getInstance()->RecycleCommand(cmdList);

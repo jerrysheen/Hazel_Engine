@@ -48,7 +48,7 @@ namespace Hazel {
         // 3. 缓存结果
         DescriptorAllocation newView{}; // TODO: 实际创建逻辑
 
-		m_HeapManager->CreateView(DescriptorType::RTV, texture->getResource<Microsoft::WRL::ComPtr<ID3D12Resource>>().Get());
+        newView = m_HeapManager->CreateView(DescriptorType::RTV, texture.get());
 
         // 缓存新创建的视图
         m_ViewCache[resourceId][DescriptorType::RTV] = newView;
@@ -68,7 +68,7 @@ namespace Hazel {
         
         // TODO: Implement DSV creation
         DescriptorAllocation newView{}; // TODO: 实际创建逻辑
-        
+        newView = m_HeapManager->CreateView(DescriptorType::DSV, texture.get());
         // 缓存新创建的视图
         m_ViewCache[resourceId][DescriptorType::DSV] = newView;
         
@@ -87,7 +87,8 @@ namespace Hazel {
         
         // TODO: Implement SRV creation
         DescriptorAllocation newView{}; // TODO: 实际创建逻辑
-        
+		newView = m_HeapManager->CreateView(DescriptorType::SRV, texture->getResource<Microsoft::WRL::ComPtr<ID3D12Resource>>().Get());
+
         // 缓存新创建的视图
         m_ViewCache[resourceId][DescriptorType::SRV] = newView;
         
@@ -106,7 +107,8 @@ namespace Hazel {
         
         // TODO: Implement CBV creation
         DescriptorAllocation newView{}; // TODO: 实际创建逻辑
-        
+
+        newView = m_HeapManager->CreateView(DescriptorType::CBV, buffer.get());
         // 缓存新创建的视图
         m_ViewCache[resourceId][DescriptorType::CBV] = newView;
         
@@ -176,6 +178,8 @@ namespace Hazel {
 
     void* D3D12GfxViewManager::GetHeap(DescriptorHeapType type) const {
         // TODO: Return D3D12 descriptor heap for the given type
+		auto* handler = m_HeapManager.get()->GetHeap(type);
+        if (handler) return handler;
         return nullptr;
     }
 

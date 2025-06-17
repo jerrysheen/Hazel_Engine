@@ -34,7 +34,7 @@ namespace Hazel {
         return *it->second;
     }
 
-    DescriptorHandle D3D12DescriptorHeapManager::CreateView(DescriptorType type, const void* resourcePtr, const ViewDescription* viewDesc) {
+    DescriptorAllocation D3D12DescriptorHeapManager::CreateView(DescriptorType type, const void* resourcePtr, const ViewDescription* viewDesc) {
         // 获取对应的堆类型
         DescriptorHeapType heapType = GetHeapTypeForDescriptorType(type);
         
@@ -44,7 +44,7 @@ namespace Hazel {
         
         if (!allocation.IsValid()) {
             HZ_CORE_ERROR("Failed to allocate descriptor for view creation");
-            return DescriptorHandle{};
+            return DescriptorAllocation{};
         }
         
         // 创建视图
@@ -53,7 +53,7 @@ namespace Hazel {
         
         CreateViewInternal(type, resourcePtr, cpuHandle, viewDesc);
         
-        return allocation.baseHandle;
+        return allocation;
     }
 
     void D3D12DescriptorHeapManager::CopyDescriptors(
@@ -94,6 +94,7 @@ namespace Hazel {
     void D3D12DescriptorHeapManager::CreateViewInternal(DescriptorType type, const void* resourcePtr, const D3D12_CPU_DESCRIPTOR_HANDLE& destHandle, const ViewDescription* viewDesc) {
         switch (type) {
             case DescriptorType::SRV: {
+                // todo 感觉可以修改？
                 const TextureBuffer* texture = static_cast<const TextureBuffer*>(resourcePtr);
                 ID3D12Resource* d3dResource = static_cast<ID3D12Resource*>(texture->GetNativeResource());
                 

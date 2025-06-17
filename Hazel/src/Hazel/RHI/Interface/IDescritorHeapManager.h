@@ -16,7 +16,7 @@ namespace Hazel {
         virtual IDescriptorAllocator& GetAllocator(DescriptorHeapType type) = 0;
         
         // 创建特定类型的视图 - 使用抽象的ViewDescription
-        virtual DescriptorHandle CreateView(DescriptorType type, const void* resourcePtr, const ViewDescription* viewDesc = nullptr) = 0;
+        virtual DescriptorAllocation CreateView(DescriptorType type, const void* resourcePtr, const ViewDescription* viewDesc = nullptr) = 0;
         
         // 复制描述符
         virtual void CopyDescriptors(

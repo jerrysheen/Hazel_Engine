@@ -9,10 +9,10 @@ namespace Hazel
 		: mUploadBuffer(std::get<Microsoft::WRL::ComPtr<ID3D12Resource>>(m_BufferResource)), mMappedData(nullptr)
 	{
         m_UUID = Unique::GetUUID();
-		//ÔÚÕâÀï½øÐÐbuffer³õÊ¼»¯£¬ È»ºó½«ÄÚÈÝ»»³ÉSharedpointer°É
+		//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½bufferï¿½ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½ È»ï¿½ï¿½ï¿½ï¿½ï¿½Ý»ï¿½ï¿½ï¿½Sharedpointerï¿½ï¿½
 		elementSize = d3dUtil::CalcConstantBufferByteSize(elementSize);
         m_BufferSize = elementSize;
-        // todo:: Õâ¸öµØ·½¿Ï¶¨ÐèÒªÐÞ¸Ä£¬ ²»ÒÀÀµapplication¡£¡£¡£
+        // todo:: ï¿½ï¿½ï¿½ï¿½Ø·ï¿½ï¿½Ï¶ï¿½ï¿½ï¿½Òªï¿½Þ¸Ä£ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½applicationï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         D3D12RenderAPIManager* renderAPIManager = dynamic_cast<D3D12RenderAPIManager*>(RenderAPIManager::getInstance()->GetManager().get());
         Microsoft::WRL::ComPtr<ID3D12Device> device = renderAPIManager->GetD3DDevice();
         
@@ -40,12 +40,12 @@ namespace Hazel
 
     void D3D12ConstantBuffer::SetData(void* srcData, int length)
     {
-        // È·±£Ô´Êý¾ÝÖ¸ÕëºÍÄ¿±ê»º´æÇøÒÑÕýÈ·Ó³Éä
+        // È·ï¿½ï¿½Ô´ï¿½ï¿½ï¿½ï¿½Ö¸ï¿½ï¿½ï¿½Ä¿ï¿½ê»ºï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È·Ó³ï¿½ï¿½
         if (srcData && mMappedData) {
             memcpy(mMappedData, srcData, length);
         }
         else {
-            // ´¦Àí´íÎóÇé¿ö£¬ÀýÈçÎÞÐ§µÄÖ¸Õë
+            // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð§ï¿½ï¿½Ö¸ï¿½ï¿½
             std::cerr << "Invalid source or destination pointer." << std::endl;
         }
     }
