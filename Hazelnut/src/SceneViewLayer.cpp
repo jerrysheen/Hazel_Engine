@@ -25,7 +25,7 @@ namespace Hazel
 
     void SceneViewLayer::OnAttach()
     {
-
+        my_texture_srv_gpu_handle.ptr = -1;
         //�������Ż���
         D3D12RenderAPIManager* renderAPIManager = dynamic_cast<D3D12RenderAPIManager*>(RenderAPIManager::getInstance()->GetManager().get());
         Microsoft::WRL::ComPtr<ID3D12Device> device = renderAPIManager->GetD3DDevice();
@@ -83,7 +83,7 @@ namespace Hazel
 
         // Create a single descriptor table of CBVs.
         CD3DX12_DESCRIPTOR_RANGE cbvTable;
-        cbvTable.Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 2, 0);
+        cbvTable.Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 0);
         slotRootParameter[0].InitAsDescriptorTable(1, &cbvTable);
 
         // A root signature is an array of root parameters.
@@ -377,6 +377,7 @@ namespace Hazel
         m_CommandList->IASetIndexBuffer(&ibv);
         m_CommandList->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
+        auto Allocation = gfxViewManager.CreateConstantBufferView(objectCB);
         m_CommandList->SetGraphicsRootDescriptorTable(0, d3dCbvHeap->GetGPUDescriptorHandleForHeapStart());
 
         m_CommandList->DrawInstanced(
@@ -385,11 +386,12 @@ namespace Hazel
 
         cmdList->ChangeResourceState(m_BackBuffer, TextureRenderUsage::RENDER_TARGET, TextureRenderUsage::RENDER_TEXTURE);
 
-        DescriptorAllocation rtAllocation = gfxViewManager.CreateShaderResourceView(m_BackBuffer);
-        D3D12_GPU_DESCRIPTOR_HANDLE gpuHandle = D3D12_GPU_DESCRIPTOR_HANDLE{rtAllocation.baseHandle.gpuHandle};
-
-        my_texture_srv_gpu_handle = gpuHandle;
-
+        if (my_texture_srv_gpu_handle.ptr == -1) 
+        {
+            DescriptorAllocation rtAllocation = gfxViewManager.CreateImGuiSRV(m_BackBuffer);
+            D3D12_GPU_DESCRIPTOR_HANDLE gpuHandle = D3D12_GPU_DESCRIPTOR_HANDLE{ rtAllocation.baseHandle.gpuHandle };
+            my_texture_srv_gpu_handle = gpuHandle;
+        }
 
         CommandPool::getInstance()->RecycleCommand(cmdList);
         

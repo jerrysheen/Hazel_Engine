@@ -32,6 +32,7 @@ namespace Hazel
 
 		inline static Application& Get() { return *s_Instance; }
 		inline void SetApplicationRunning(const bool& run) { m_Running = run; }
+		inline ImGuiLayer* GetImGuiLayer() { return m_ImGuiLayer; }
 		inline void SetApplicationMinimized(const bool& isMinimized) { m_Minimized = isMinimized; }
 		inline void SetApplicationMaximized(const bool& isMaximized) { m_Maximized = isMaximized; }
 		inline int GetWindowWidth() { return m_WindowWidth; }

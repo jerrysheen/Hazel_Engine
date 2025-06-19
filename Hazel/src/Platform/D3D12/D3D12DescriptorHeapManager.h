@@ -25,6 +25,15 @@ namespace Hazel {
             const DescriptorHandle& dstHandleStart) override;
         virtual void* GetHeap(DescriptorHeapType type) const override;
 
+        // ImGui 专用方法
+        IDescriptorAllocator& GetImGuiAllocator() { return GetAllocator(DescriptorHeapType::ImGuiSrvUav); }
+        void* GetImGuiHeap() const { return GetHeap(DescriptorHeapType::ImGuiSrvUav); }
+        
+        // 为 ImGui 创建 SRV
+        DescriptorAllocation CreateImGuiSRV(const void* resourcePtr, const ViewDescription* viewDesc = nullptr) {
+            return CreateViewOnHeap(DescriptorType::SRV, resourcePtr, DescriptorHeapType::ImGuiSrvUav, viewDesc);
+        }
+
     private:
         Microsoft::WRL::ComPtr<ID3D12Device> m_Device;
         
@@ -43,6 +52,9 @@ namespace Hazel {
         
         // 格式转换
         DXGI_FORMAT ConvertFormat(ViewDescription::TextureFormat format) const;
+
+        // 在指定堆上创建视图
+        DescriptorAllocation CreateViewOnHeap(DescriptorType descriptorType, const void* resourcePtr, DescriptorHeapType heapType, const ViewDescription* viewDesc = nullptr);
     };
 
 } // namespace Hazel 

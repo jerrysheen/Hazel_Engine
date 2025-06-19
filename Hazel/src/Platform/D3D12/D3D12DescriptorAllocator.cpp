@@ -141,6 +141,7 @@ namespace Hazel {
     D3D12_DESCRIPTOR_HEAP_TYPE D3D12DescriptorAllocator::GetD3D12HeapType() const {
         switch (m_HeapType) {
             case DescriptorHeapType::CbvSrvUav: return D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
+            case DescriptorHeapType::ImGuiSrvUav: return D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;  // ImGui 使用同样的D3D12堆类型
             case DescriptorHeapType::Rtv:       return D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
             case DescriptorHeapType::Dsv:       return D3D12_DESCRIPTOR_HEAP_TYPE_DSV;
             case DescriptorHeapType::Sampler:   return D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER;
@@ -151,8 +152,10 @@ namespace Hazel {
     }
 
     D3D12_DESCRIPTOR_HEAP_FLAGS D3D12DescriptorAllocator::GetD3D12HeapFlags() const {
-        // CBV/SRV/UAV 和 Sampler 堆需要 GPU 访问
-        if (m_HeapType == DescriptorHeapType::CbvSrvUav || m_HeapType == DescriptorHeapType::Sampler) {
+        // CBV/SRV/UAV、ImGui SRV/UAV 和 Sampler 堆需要 GPU 访问
+        if (m_HeapType == DescriptorHeapType::CbvSrvUav || 
+            m_HeapType == DescriptorHeapType::ImGuiSrvUav ||
+            m_HeapType == DescriptorHeapType::Sampler) {
             return D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
         }
         return D3D12_DESCRIPTOR_HEAP_FLAG_NONE;

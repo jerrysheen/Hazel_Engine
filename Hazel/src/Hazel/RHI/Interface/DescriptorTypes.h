@@ -12,10 +12,11 @@ namespace Hazel {
     };
 
     enum class DescriptorHeapType {
-        CbvSrvUav,  // 组合堆
-        Sampler,    // 采样器堆
-        Rtv,        // 渲染目标堆
-        Dsv         // 深度模板堆
+        CbvSrvUav,      // 组合堆
+        Sampler,        // 采样器堆
+        Rtv,            // 渲染目标堆
+        Dsv,            // 深度模板堆
+        ImGuiSrvUav     // ImGui专用SRV/UAV堆
     };
 
     // 抽象的视图描述结构

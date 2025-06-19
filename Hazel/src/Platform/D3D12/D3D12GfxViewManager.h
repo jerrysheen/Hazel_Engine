@@ -46,6 +46,11 @@ namespace Hazel {
         // Get heap
         virtual void* GetHeap(DescriptorHeapType type) const override;
 
+        // ImGui 专用接口
+        IDescriptorAllocator& GetImGuiAllocator() const;
+        void* GetImGuiHeap() const;
+        DescriptorAllocation CreateImGuiSRV(const Ref<TextureBuffer>& texture, const ViewDescription* viewDesc = nullptr);
+
     private:
         Microsoft::WRL::ComPtr<ID3D12Device> m_Device;
         

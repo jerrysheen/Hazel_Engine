@@ -104,11 +104,12 @@ namespace Hazel {
 		ImGui_ImplWin32_Init(Application::Get().GetWindow().GetNativeWindow());
 		renderAPIManager = dynamic_cast<D3D12RenderAPIManager*>(RenderAPIManager::getInstance()->GetManager().get());
 		IGfxViewManager& gfxViewManager = IGfxViewManager::Get();
-		ID3D12DescriptorHeap* srvHeap = static_cast<ID3D12DescriptorHeap*>(gfxViewManager.GetHeap(DescriptorHeapType::CbvSrvUav));
+		// 使用 ImGui 专用堆而不是共享的 CbvSrvUav 堆
+		ID3D12DescriptorHeap* imguiSrvHeap = static_cast<ID3D12DescriptorHeap*>(gfxViewManager.GetHeap(DescriptorHeapType::ImGuiSrvUav));
 		ImGui_ImplDX12_Init(renderAPIManager->GetD3DDevice().Get(), NUM_FRAMES_IN_FLIGHT,
-			renderAPIManager->GetBackBufferFormat(), srvHeap,
-			srvHeap->GetCPUDescriptorHandleForHeapStart(),
-			srvHeap->GetGPUDescriptorHandleForHeapStart());
+			renderAPIManager->GetBackBufferFormat(), imguiSrvHeap,
+			imguiSrvHeap->GetCPUDescriptorHandleForHeapStart(),
+			imguiSrvHeap->GetGPUDescriptorHandleForHeapStart());
 #endif
 
 	}
@@ -202,9 +203,10 @@ namespace Hazel {
 
 		//ID3D12DescriptorHeap* descriptorHeaps[] = { renderAPIManager->GetCbvHeap().Get()};
 		IGfxViewManager& gfxViewManager = IGfxViewManager::Get();
-		ID3D12DescriptorHeap* cbxHeap = static_cast<ID3D12DescriptorHeap*>(gfxViewManager.GetHeap(DescriptorHeapType::CbvSrvUav));
+		// 使用 ImGui 专用堆
+		ID3D12DescriptorHeap* imguiHeap = static_cast<ID3D12DescriptorHeap*>(gfxViewManager.GetHeap(DescriptorHeapType::ImGuiSrvUav));
 
-		ID3D12DescriptorHeap* descriptorHeaps[] = { cbxHeap };
+		ID3D12DescriptorHeap* descriptorHeaps[] = { imguiHeap };
 		mCommandList->SetDescriptorHeaps(_countof(descriptorHeaps), descriptorHeaps);
 		ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), mCommandList.Get());
 		// Indicate a state transition on the resource usage.

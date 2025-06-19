@@ -2,6 +2,7 @@
 #include "D3D12DescriptorHeapManager.h"
 #include "Hazel/Renderer/TextureBuffer.h"
 #include "Hazel/Renderer/Buffer.h"
+#include <string>
 
 namespace Hazel {
 
@@ -19,12 +20,17 @@ namespace Hazel {
         m_Allocators[DescriptorHeapType::Rtv] = std::make_unique<D3D12DescriptorAllocator>(DescriptorHeapType::Rtv, 512);
         m_Allocators[DescriptorHeapType::Dsv] = std::make_unique<D3D12DescriptorAllocator>(DescriptorHeapType::Dsv, 256);
         m_Allocators[DescriptorHeapType::Sampler] = std::make_unique<D3D12DescriptorAllocator>(DescriptorHeapType::Sampler, 256);
+        // 添加 ImGui 专用堆 - 主要用于纹理SRV，所以分配适量的大小
+        m_Allocators[DescriptorHeapType::ImGuiSrvUav] = std::make_unique<D3D12DescriptorAllocator>(DescriptorHeapType::ImGuiSrvUav, 512);
         
         // 初始化所有分配器
         for (auto& [type, allocator] : m_Allocators) {
             allocator->Initialize(m_Device);
         }
         
+        auto& allocator = GetAllocator(DescriptorHeapType::ImGuiSrvUav);
+        allocator.Allocate(1);
+
         HZ_CORE_INFO("D3D12DescriptorHeapManager initialized with {0} heap types", m_Allocators.size());
     }
 
@@ -94,12 +100,20 @@ namespace Hazel {
     void D3D12DescriptorHeapManager::CreateViewInternal(DescriptorType type, const void* resourcePtr, const D3D12_CPU_DESCRIPTOR_HANDLE& destHandle, const ViewDescription* viewDesc) {
         switch (type) {
             case DescriptorType::SRV: {
-                // todo 感觉可以修改？
                 const TextureBuffer* texture = static_cast<const TextureBuffer*>(resourcePtr);
                 ID3D12Resource* d3dResource = static_cast<ID3D12Resource*>(texture->GetNativeResource());
                 
+                // 设置调试名称 - 包含CPU handle地址
+                wchar_t debugName[64];
+                swprintf_s(debugName, L"SRV_CPUHandle_%llX", destHandle.ptr);
+                d3dResource->SetName(debugName);
+                
                 D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = ConvertToD3D12SRVDesc(viewDesc);
                 m_Device->CreateShaderResourceView(d3dResource, &srvDesc, destHandle);
+                
+                // 调试日志
+                HZ_CORE_INFO("Created SRV - CPU Handle: {0}, Resource: {1}", 
+                    destHandle.ptr, reinterpret_cast<uintptr_t>(d3dResource));
                 break;
             }
             
@@ -107,8 +121,16 @@ namespace Hazel {
                 const TextureBuffer* texture = static_cast<const TextureBuffer*>(resourcePtr);
                 ID3D12Resource* d3dResource = static_cast<ID3D12Resource*>(texture->GetNativeResource());
                 
+                // 设置调试名称
+                wchar_t debugName[64];
+                swprintf_s(debugName, L"RTV_CPUHandle_%llX", destHandle.ptr);
+                d3dResource->SetName(debugName);
+                
                 D3D12_RENDER_TARGET_VIEW_DESC rtvDesc = ConvertToD3D12RTVDesc(viewDesc);
                 m_Device->CreateRenderTargetView(d3dResource, &rtvDesc, destHandle);
+                
+                HZ_CORE_INFO("Created RTV - CPU Handle: {0}, Resource: {1}", 
+                    destHandle.ptr, reinterpret_cast<uintptr_t>(d3dResource));
                 break;
             }
             
@@ -116,8 +138,16 @@ namespace Hazel {
                 const TextureBuffer* texture = static_cast<const TextureBuffer*>(resourcePtr);
                 ID3D12Resource* d3dResource = static_cast<ID3D12Resource*>(texture->GetNativeResource());
                 
+                // 设置调试名称
+                wchar_t debugName[64];
+                swprintf_s(debugName, L"DSV_CPUHandle_%llX", destHandle.ptr);
+                d3dResource->SetName(debugName);
+                
                 D3D12_DEPTH_STENCIL_VIEW_DESC dsvDesc = ConvertToD3D12DSVDesc(viewDesc);
                 m_Device->CreateDepthStencilView(d3dResource, &dsvDesc, destHandle);
+                
+                HZ_CORE_INFO("Created DSV - CPU Handle: {0}, Resource: {1}", 
+                    destHandle.ptr, reinterpret_cast<uintptr_t>(d3dResource));
                 break;
             }
             
@@ -125,8 +155,18 @@ namespace Hazel {
                 const ConstantBuffer* buffer = static_cast<const ConstantBuffer*>(resourcePtr);
                 ID3D12Resource* d3dResource = static_cast<ID3D12Resource*>(buffer->GetNativeResource());
                 
+                // 设置调试名称
+                wchar_t debugName[64];
+                swprintf_s(debugName, L"CBV_CPUHandle_%llX", destHandle.ptr);
+                d3dResource->SetName(debugName);
+                
                 D3D12_CONSTANT_BUFFER_VIEW_DESC cbvDesc = ConvertToD3D12CBVDesc(viewDesc, d3dResource);
                 m_Device->CreateConstantBufferView(&cbvDesc, destHandle);
+                
+                // CBV特殊调试信息 - 显示GPU虚拟地址
+                HZ_CORE_INFO("Created CBV - CPU Handle: {0}, Resource: {1}, GPU VAddr: {2}, Size: {3}", 
+                    destHandle.ptr, reinterpret_cast<uintptr_t>(d3dResource), 
+                    cbvDesc.BufferLocation, cbvDesc.SizeInBytes);
                 break;
             }
             
@@ -289,6 +329,25 @@ namespace Hazel {
             default:
                 return DXGI_FORMAT_UNKNOWN;
         }
+    }
+
+    DescriptorAllocation D3D12DescriptorHeapManager::CreateViewOnHeap(DescriptorType descriptorType, const void* resourcePtr, DescriptorHeapType heapType, const ViewDescription* viewDesc) {
+        // 获取指定堆类型的分配器
+        auto& allocator = GetAllocator(heapType);
+        DescriptorAllocation allocation = allocator.Allocate(1);
+        
+        if (!allocation.IsValid()) {
+            HZ_CORE_ERROR("Failed to allocate descriptor for view creation on specific heap");
+            return DescriptorAllocation{};
+        }
+        
+        // 创建视图
+        D3D12_CPU_DESCRIPTOR_HANDLE cpuHandle;
+        cpuHandle.ptr = allocation.baseHandle.cpuHandle;
+        
+        CreateViewInternal(descriptorType, resourcePtr, cpuHandle, viewDesc);
+        
+        return allocation;
     }
 
 } // namespace Hazel 

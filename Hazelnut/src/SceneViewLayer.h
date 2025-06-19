@@ -42,6 +42,7 @@ namespace Hazel
 		CD3DX12_CPU_DESCRIPTOR_HANDLE srvHandle;
 		D3D12_CPU_DESCRIPTOR_HANDLE my_texture_srv_cpu_handle;
 		D3D12_GPU_DESCRIPTOR_HANDLE my_texture_srv_gpu_handle;
+		bool m_TextureRegisteredToImGui = false;
 
 		std::vector<D3D12_INPUT_ELEMENT_DESC> mInputLayout;
 		ComPtr<ID3D12PipelineState> mPSO = nullptr;
