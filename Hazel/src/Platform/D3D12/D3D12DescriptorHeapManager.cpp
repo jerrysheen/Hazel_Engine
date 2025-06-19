@@ -28,6 +28,7 @@ namespace Hazel {
             allocator->Initialize(m_Device);
         }
         
+        // todo : 主要是为了Imgui，自己有个占位符， 所以这边写死一个占位符。
         auto& allocator = GetAllocator(DescriptorHeapType::ImGuiSrvUav);
         allocator.Allocate(1);
 

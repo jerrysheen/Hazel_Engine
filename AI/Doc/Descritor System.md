@@ -1,6 +1,14 @@
 # Descriptor系统重构设计文档
 
 ## 一、概述
+所有外部通过gfxViewmanager去申请desc， 
+viewmanager里面有heapmanager，其实是存储了不同的allocator，这些allocator负责具体的分配，
+其实就是viewDescHeap； 
+Allocation代表一次分配， 去对应的heap里面拿到可用的位置，可能是一个desc，也可能是一堆desc
+FrameAllocation用于每帧的临时分配，便于数据组织之后传到这个地方去。
+
+
+
 
 基于现有RHI层接口设计，Descriptor系统采用分层架构，提供了统一的跨平台抽象，支持高效的描述符分配和管理。系统通过清晰的接口分层，实现了描述符的创建、缓存、帧级管理和资源生命周期跟踪。
 
