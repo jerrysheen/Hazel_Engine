@@ -2,7 +2,6 @@
 #include <Hazel/Gfx/RenderStruct.h>
 #include <Hazel/Renderer/TextureBuffer.h>
 #include <Hazel/Gfx/Culling.h>
-#include "Hazel/Gfx/CommandPool.h"
 #include "Hazel/Gfx/GfxViewManager.h"
 #include "Hazel/Gfx/GfxDesc.h"
 #include "Platform/D3D12/D3D12Buffer.h"
@@ -10,7 +9,7 @@
 #include "Platform/D3D12/D3D12VertexArray.h"
 #include "Hazel/Renderer/VertexArray.h"
 #include "Hazel/RHI/Interface/IGfxViewManager.h"
-
+#include "Hazel/Gfx/ScopedCommandList.h"
 
 
 namespace Hazel
@@ -51,13 +50,6 @@ namespace Hazel
         m_BackBuffer = TextureBuffer::Create(spec);
         m_DepthBuffer = TextureBuffer::Create({ 800, 600, TextureType::TEXTURE2D, TextureFormat::DEPTH24STENCIL8, TextureRenderUsage::RENDER_TARGET, MultiSample::NONE });
 
-        Ref<CommandList> cmdList = CommandPool::getInstance()->GetCommand();
-        cmdList->Reset();
-
-
-        Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> m_CommandList = cmdList->getCommandList<Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList>>();
-        ID3D12CommandList* rawCommandList = m_CommandList.Get();
-        //��Ӳдд���� ���ƺ��滹Ҫ�ٿ��Ƕ�ƽ̨�����⣬Ҳ������һ��������ֱ��ת��ȥ��
         m_ColorShader = Shader::Create("assets/shaders/color.hlsl");
 
 		material = Material::CreateFromMeta("assets/Materials/TestMat.meta");
@@ -148,12 +140,10 @@ namespace Hazel
 
 
 
-        // Execute the initialization commands.
-        //cmdList->Close();
-        CommandPool::getInstance()->RecycleCommand(cmdList);
 
-        mCommandQueue->ExecuteCommandLists(1, (ID3D12CommandList* const*)&rawCommandList);
-        renderAPIManager->FlushCommandQueue();
+        // No need to execute command list here - initialization commands are immediate
+        // mCommandQueue->ExecuteCommandLists(1, (ID3D12CommandList* const*)&rawCommandList);
+        // renderAPIManager->FlushCommandQueue();
         //FlushCommandQueue();
 
         mScreenViewport.TopLeftX = 0;
@@ -221,15 +211,31 @@ namespace Hazel
         assert(SUCCEEDED(hr));
 
 
-        Ref<CommandList> cmdList = CommandPool::getInstance()->GetCommand();
-
-        Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> m_CommandList = cmdList->getCommandList<Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList>>();
-        Microsoft::WRL::ComPtr<ID3D12CommandAllocator> m_CommandAllocator = cmdList->getCommandAllocator<Microsoft::WRL::ComPtr<ID3D12CommandAllocator>>();
-
-        ThrowIfFailed(m_CommandAllocator->Reset());
+		ScopedCommandList cmdList(CommandListType::Graphics);
+        Ref<CommandList> m_cmdList = cmdList.Get();
+        
+        // 添加空指针检查
+        if (!m_cmdList) {
+            HZ_CORE_ERROR("Failed to get CommandList from ScopedCommandList");
+            return;
+        }
+        
+        void* nativeCommandList = m_cmdList->GetNativeCommandList();
+        void* nativeAllocator = m_cmdList->GetNativeAllocator();
+        
+        if (!nativeCommandList || !nativeAllocator) {
+            HZ_CORE_ERROR("Failed to get native D3D12 objects");
+            return;
+        }
+        
+        Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> m_CommandList = static_cast<ID3D12GraphicsCommandList*>(nativeCommandList);
+        ID3D12CommandAllocator* rawAllocator = static_cast<ID3D12CommandAllocator*>(nativeAllocator);
+        
+        ThrowIfFailed(rawAllocator->Reset());
         // A command list can be reset after it has been added to the command queue via ExecuteCommandList.
         // Reusing the command list reuses memory.
-        ThrowIfFailed(m_CommandList->Reset(m_CommandAllocator.Get(), mPSO.Get()));
+        ThrowIfFailed(m_CommandList->Reset(rawAllocator, mPSO.Get()));
+
 
         m_CommandList->RSSetViewports(1, &mScreenViewport);
         m_CommandList->RSSetScissorRects(1, &mScissorRect);
@@ -392,8 +398,7 @@ namespace Hazel
             D3D12_GPU_DESCRIPTOR_HANDLE gpuHandle = D3D12_GPU_DESCRIPTOR_HANDLE{ rtAllocation.baseHandle.gpuHandle };
             my_texture_srv_gpu_handle = gpuHandle;
         }
-
-        CommandPool::getInstance()->RecycleCommand(cmdList);
+        cmdList->Close();
         
         ID3D12CommandList* rawCommandList = m_CommandList.Get();
         mCommandQueue->ExecuteCommandLists(1, (ID3D12CommandList* const*)&rawCommandList);
@@ -492,7 +497,7 @@ namespace Hazel
         ImGuiStyle& style = ImGui::GetStyle();
         style.Colors[ImGuiCol_WindowBg] = ImVec4(0.3f, 0.3f, 0.3f, 1.0f);
         style.WindowRounding = 0.25;
-        // ����ط�Ӧ�ò���ÿһ֡resize�� resize֮���൱���������Ļ��
+        // ����طӦ�ò���ÿһ֡resize�� resize֮���൱���������Ļ��
         //ImVec2 viewPortSize = ImGui::GetContentRegionAvail();
         ////HZ_CORE_INFO("Viewport size X: {0};  : {1}", viewPortSize.x, viewPortSize.y);
         //if (m_viewPortPanelSize != *((glm::vec2*)&viewPortSize)) 

@@ -1,6 +1,7 @@
 #pragma once
 #include "Hazel/Graphics/RenderAPIManager.h"
 #include "Hazel/Renderer/Buffer.h"
+#include "Hazel/Gfx/CommandList.h"
 
 #include "Platform/D3D12/d3dUtil.h"
 #include "Platform/D3D12/d3dx12.h"
@@ -56,6 +57,11 @@ namespace Hazel {
 		
 		// 新增：设置当前活跃的CommandList (简化版本)
 		void SetCurrentCommandList(Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> cmdList);
+		
+		// === 新CommandList系统接口 ===
+		// 委托给CommandListManager的接口
+		Ref<CommandList> AcquireCommandList(CommandListType type = CommandListType::Graphics);
+		void ReleaseCommandList(Ref<CommandList> commandList);
 
 		inline  void UpdateBackBufferIndex() { mCurrBackBufferIndex = (mCurrBackBufferIndex + 1) % SwapChainBufferCount;; }
 		inline  int GetNumFrameInFlight() { return NUM_BACK_BUFFERS; }

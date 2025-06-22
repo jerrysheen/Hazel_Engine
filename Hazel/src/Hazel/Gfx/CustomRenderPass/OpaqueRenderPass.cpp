@@ -1,7 +1,6 @@
 #include "hzpch.h"
 #include "Hazel/Gfx/CustomRenderPass/OpaqueRenderPass.h"
 #include "Hazel/Gfx/CommandList.h"
-#include "Hazel/Gfx/CommandPool.h"
 
 namespace Hazel
 {

@@ -1,0 +1,130 @@
+// CommandList使用示例
+
+#include "Hazel/RHI/Interface/ICommandListManager.h"
+#include "Hazel/Gfx/ScopedCommandList.h"
+
+namespace Hazel {
+
+    // === 示例1：使用RAII管理CommandList（推荐方式）===
+    void ExampleRAIIUsage() {
+        // 自动管理生命周期，作用域结束时自动释放
+        ScopedCommandList cmd(CommandListType::Graphics);
+        
+        cmd->SetDebugName("Example RAII Usage");
+        cmd->Reset();
+        
+        // 进行渲染操作...
+        // cmd->ClearRenderTargetView(backBuffer, Color::Blue);
+        // cmd->DrawIndexed(...);
+        
+        cmd->Close();
+        cmd->ExecuteAsync();
+        
+        // cmd会在作用域结束时自动释放
+    }
+
+    // === 示例2：手动管理CommandList ===
+    void ExampleManualUsage() {
+        auto& manager = ICommandListManager::Get();
+        
+        // 获取CommandList
+        auto cmd = manager.AcquireCommandList(CommandListType::Graphics);
+        
+        cmd->SetDebugName("Example Manual Usage");
+        cmd->Reset();
+        
+        // 进行渲染操作...
+        
+        cmd->Close();
+        cmd->Execute();
+        
+        // 手动释放
+        manager.ReleaseCommandList(cmd);
+    }
+
+    // === 示例3：高性能场景，直接使用句柄 ===
+    void ExampleHighPerformance() {
+        auto& manager = ICommandListManager::Get();
+        
+        // 直接获取原生句柄，避免封装开销
+        auto handle = manager.AcquireHandle(CommandListType::Graphics);
+        
+        // 直接使用原生D3D12对象
+        auto* d3dCmdList = static_cast<Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList>*>(handle.commandList);
+        auto* d3dAllocator = static_cast<Microsoft::WRL::ComPtr<ID3D12CommandAllocator>*>(handle.commandAllocator);
+        
+        // 使用原生API进行高性能操作...
+        
+        manager.ReleaseHandle(handle);
+    }
+
+    // === 示例4：批量操作 ===
+    void ExampleBatchUsage() {
+        auto& manager = ICommandListManager::Get();
+        
+        // 批量获取CommandList
+        auto cmdLists = manager.AcquireBatch(CommandListType::Graphics, 4);
+        
+        // 并行处理
+        for (auto& cmd : cmdLists) {
+            cmd->Reset();
+            // 进行渲染操作...
+            cmd->Close();
+        }
+        
+        // 批量释放
+        manager.ReleaseBatch(cmdLists);
+    }
+
+    // === 示例5：异步执行 ===
+    void ExampleAsyncUsage() {
+        ScopedCommandList cmd(CommandListType::Graphics);
+        
+        cmd->Reset();
+        // 进行渲染操作...
+        cmd->Close();
+        
+        // 异步执行，带回调
+        cmd->ExecuteAsync([](){ 
+            std::cout << "CommandList execution completed!" << std::endl; 
+        });
+        
+        // 等待完成
+        cmd->WaitForCompletion();
+    }
+
+    // === 示例6：帧管理 ===
+    void ExampleFrameManagement() {
+        auto& manager = ICommandListManager::Get();
+        
+        // 帧开始
+        manager.BeginFrame(getCurrentFrameId());
+        
+        // 进行渲染操作...
+        {
+            ScopedCommandList cmd(CommandListType::Graphics);
+            // 渲染操作...
+        }
+        
+        // 帧结束
+        manager.EndFrame();
+    }
+
+    // === 示例7：现有代码迁移 ===
+    void ExampleMigration() {
+        // 旧代码：
+        // auto cmdList = CommandPool::getInstance()->GetCommand();
+        // auto d3dCmdList = cmdList->getCommandList<Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList>>();
+        
+        // 新代码：
+        ScopedCommandList cmd(CommandListType::Graphics);
+        auto* d3dCmdList = static_cast<Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList>*>(
+            cmd->GetNativeCommandList());
+        
+        // 或者使用高级接口：
+        // cmd->Reset();
+        // cmd->ClearRenderTargetView(...);
+        // cmd->Close();
+    }
+
+} // namespace Hazel 

@@ -3,57 +3,86 @@
 #include "Hazel/Gfx/Color.h"
 #include "Hazel/Renderer/TextureStruct.h"
 #include "Hazel/Renderer/TextureBuffer.h"
+#include "Hazel/RHI/Interface/ICommandListAllocator.h"
+#include <atomic>
+#include <functional>
 
 namespace Hazel 
 {
+	// CommandList执行状态
+	enum class ExecutionState {
+		Idle,
+		Recording,
+		Closed,
+		Executing,
+		Completed,
+		Error
+	};
+
 	class CommandList 
 	{
 	public:
-		CommandList() {
-#ifdef RENDER_API_OPENGL
-			m_CommandAllocator = 0;
-			m_CommandList = 0;
-#elif RENDER_API_DIRECTX12 // RENDER_API_OPENGL
-			m_CommandAllocator = Microsoft::WRL::ComPtr<ID3D12CommandAllocator>{};
-			m_CommandList = Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList>{};
-#endif // DEBUG
-		};
-		virtual ~CommandList() {};
-		virtual void OnUpdate() {};
-		static Ref<CommandList> Create();
-
+		CommandList();
+		virtual ~CommandList() = default;
+		
+		// 工厂方法
+		static Ref<CommandList> Create(CommandListType type = CommandListType::Graphics);
+		
+		// 基本操作
 		virtual void Reset() = 0;
-		virtual void ClearRenderTargetView(const Ref<TextureBuffer>& buffer, const glm::vec4& color) = 0;
-		virtual void ChangeResourceState(const Ref<TextureBuffer>& texture, const TextureRenderUsage& fromFormat, const TextureRenderUsage& toFormat) = 0;
-		//virtual void BindCbvHeap(const Ref<GfxDescHeap>& cbvHeap) = ·0;
 		virtual void Close() = 0;
-		virtual void Release() = 0;
-		virtual void Execute(ID3D12CommandQueue* & queue, ID3D12Fence* fence) = 0;
+		virtual void Execute() = 0;
+		
+		// 渲染操作
+		virtual void ClearRenderTargetView(const Ref<TextureBuffer>& buffer, const glm::vec4& color) = 0;
+		virtual void ChangeResourceState(const Ref<TextureBuffer>& texture, 
+		                               const TextureRenderUsage& fromFormat, 
+		                               const TextureRenderUsage& toFormat) = 0;
+		
+		// 状态管理
+		ExecutionState GetState() const { return m_state.load(); }
+		CommandListType GetType() const { return m_type; }
+		uint64_t GetId() const { return m_id; }
+		
+		// 异步执行支持
+		void ExecuteAsync(std::function<void()> callback = nullptr);
+		bool IsCompleted() const { return m_state.load() == ExecutionState::Completed; }
+		void WaitForCompletion();
+		
+		// 调试和性能分析
+		void SetDebugName(const std::string& name) { m_debugName = name; }
+		const std::string& GetDebugName() const { return m_debugName; }
+		
+		// 统计信息
+		uint32_t GetCommandCount() const { return m_commandCount; }
+		double GetLastExecutionTime() const { return m_lastExecutionTime; }
+		
+		// 获取原生句柄 - 简化版本，直接返回指针
+		CommandListHandle GetNativeHandle() const { return m_nativeHandle; }
+		void* GetNativeCommandList() const { return m_nativeHandle.commandList; }
+		void* GetNativeAllocator() const { return m_nativeHandle.commandAllocator; }
+		
+		// 设置原生句柄（由管理器调用）
+		void SetNativeHandle(const CommandListHandle& handle) { m_nativeHandle = handle; }
 
-		template<typename T>
-		T getCommandAllocator() const {
-			if constexpr (std::is_same_v<T, uint32_t> || std::is_same_v<T,Microsoft::WRL::ComPtr<ID3D12CommandAllocator >>) {
-				return std::get<T>(m_CommandAllocator);  // ���Ի�ȡ T ���͵�ֵ
-			}
-			else {
-				static_assert(false, "T must be either uint32_t or ID3D12CommandAllocator");
-			}
-		}
-
-		template<typename T>
-		T getCommandList() const {
-			if constexpr (std::is_same_v<T, uint32_t> || std::is_same_v < T, Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList>>) {
-				return std::get<T>(m_CommandList);  // ���Ի�ȡ T ���͵�ֵ
-			}
-			else {
-				static_assert(false, "T must be either Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList>");
-			}
-		}
 	protected:
-
-		std::variant<uint32_t, Microsoft::WRL::ComPtr<ID3D12CommandAllocator>> m_CommandAllocator;
-		std::variant<uint32_t, Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList>> m_CommandList;
-
+		std::atomic<ExecutionState> m_state{ExecutionState::Idle};
+		CommandListType m_type = CommandListType::Graphics;
+		uint64_t m_id;
+		std::string m_debugName;
+		uint32_t m_commandCount = 0;
+		double m_lastExecutionTime = 0.0;
+		
+		// 原生句柄
+		CommandListHandle m_nativeHandle;
+		
+		// 回调函数
+		std::function<void()> m_completionCallback;
+		
+	private:
+		static std::atomic<uint64_t> s_nextId;
+		
+		friend class ICommandListManager;
 	};
 
 }

@@ -2,8 +2,8 @@
 #include "D3D12Buffer.h"
 #include "Platform/D3D12/D3D12RenderAPIManager.h"
 #include "Hazel/Core/Application.h"
-#include "Hazel/Gfx/CommandPool.h"
 #include "Hazel/RHI/Interface/IGfxViewManager.h"
+#include "Hazel/Gfx/ScopedCommandList.h"
 
 namespace Hazel
 {
@@ -64,23 +64,18 @@ namespace Hazel
         D3D12RenderAPIManager* renderAPIManager = dynamic_cast<D3D12RenderAPIManager*>(RenderAPIManager::getInstance()->GetManager().get());
         Microsoft::WRL::ComPtr<ID3D12CommandQueue> commandQueue = renderAPIManager->GetCommandQueue();
         Microsoft::WRL::ComPtr<ID3D12Device> device = renderAPIManager->GetD3DDevice();
-        Ref<CommandList> cmdList = CommandPool::getInstance()->GetCommand();
-
-        Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> m_CommandList = cmdList->getCommandList<Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList>>();
-        Microsoft::WRL::ComPtr<ID3D12CommandAllocator> m_CommandAllocator = cmdList->getCommandAllocator<Microsoft::WRL::ComPtr<ID3D12CommandAllocator>>();
-
-        ThrowIfFailed(m_CommandAllocator->Reset());
-        // A command list can be reset after it has been added to the command queue via ExecuteCommandList.
-        // Reusing the command list reuses memory.
-        ThrowIfFailed(m_CommandList->Reset(m_CommandAllocator.Get(), NULL));
-
-
+        
+        
+        ScopedCommandList cmd(CommandListType::Graphics);
+        cmd->Reset();
+        Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> m_CommandList =
+            static_cast<ID3D12GraphicsCommandList*>(cmd.GetNativeCommandList());
         const UINT vbByteSize = (UINT)size;
         VertexBufferGPU = d3dUtil::CreateDefaultBuffer(device.Get(),
             m_CommandList.Get(), vertices, vbByteSize, VertexBufferUploader);
         // ��ʱ����Ϊ��
 
-        CommandPool::getInstance()->RecycleCommand(cmdList);
+        cmd->Close();
         ID3D12CommandList* rawCommandList = m_CommandList.Get();
         commandQueue->ExecuteCommandLists(1, (ID3D12CommandList* const*)&rawCommandList);
 		renderAPIManager->FlushCommandQueue();
@@ -128,15 +123,11 @@ namespace Hazel
         D3D12RenderAPIManager* renderAPIManager = dynamic_cast<D3D12RenderAPIManager*>(RenderAPIManager::getInstance()->GetManager().get());
         Microsoft::WRL::ComPtr<ID3D12CommandQueue> commandQueue = renderAPIManager->GetCommandQueue();
         Microsoft::WRL::ComPtr<ID3D12Device> device = renderAPIManager->GetD3DDevice();
-        Ref<CommandList> cmdList = CommandPool::getInstance()->GetCommand();
 
-        Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> m_CommandList = cmdList->getCommandList<Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList>>();
-        Microsoft::WRL::ComPtr<ID3D12CommandAllocator> m_CommandAllocator = cmdList->getCommandAllocator<Microsoft::WRL::ComPtr<ID3D12CommandAllocator>>();
-
-        ThrowIfFailed(m_CommandAllocator->Reset());
-        // A command list can be reset after it has been added to the command queue via ExecuteCommandList.
-        // Reusing the command list reuses memory.
-        ThrowIfFailed(m_CommandList->Reset(m_CommandAllocator.Get(), NULL));
+        ScopedCommandList cmd(CommandListType::Graphics);
+        cmd->Reset();
+        Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> m_CommandList =
+            static_cast<ID3D12GraphicsCommandList*>(cmd.GetNativeCommandList());
 
 
         const UINT indexSize = (UINT)size;
@@ -146,7 +137,7 @@ namespace Hazel
         //VertexByteStride = m_Layout.GetStride();
         IndexBufferByteSize = size;
 
-        CommandPool::getInstance()->RecycleCommand(cmdList);
+		cmd->Close();
         ID3D12CommandList* rawCommandList = m_CommandList.Get();
         commandQueue->ExecuteCommandLists(1, (ID3D12CommandList* const*)&rawCommandList);
         renderAPIManager->FlushCommandQueue();

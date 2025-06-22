@@ -3,7 +3,6 @@
 
 #include "Hazel/Core/Log.h"
 #include "Glfw/glfw3.h"
-#include "Hazel/Gfx/CommandPool.h"
 #include "Hazel/Gfx/GfxViewManager.h"
 
 namespace Hazel{
@@ -29,7 +28,6 @@ namespace Hazel{
 		//m_RenderAPIManager = Ref<RenderAPIManager>(RenderAPIManager::Create());
 		RenderAPIManager::Register<D3D12RenderAPIManager>();
 		RenderAPIManager::getInstance();
-		CommandPool::getInstance()->Init();
 		//GfxViewManager::getInstance()->Init();
 
 		m_Window->SetBackGroundColor();
