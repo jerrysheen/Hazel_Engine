@@ -1608,6 +1608,15 @@
     <ClInclude Include="src\Platform\D3D12\D3D12DescriptorHeapManager.h">
       <Filter>src\Platform\D3D12</Filter>
     </ClInclude>
+    <ClInclude Include="src\Hazel\RHI\Interface\IGraphicsPipeline.h">
+      <Filter>src\Hazel\RHI\Interface</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Hazel\RHI\Interface\IPipelineStateManager.h">
+      <Filter>src\Hazel\RHI\Interface</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Hazel\RHI\Interface\PipelineTypes.h">
+      <Filter>src\Hazel\RHI\Interface</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Hazel\Core\Application.cpp">
@@ -1825,6 +1834,12 @@
     </ClCompile>
     <ClCompile Include="SampleCode\Gfx\RHI\ViewManagerExample.cpp">
       <Filter>SampleCode</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Hazel\RHI\Interface\DescriptorAllocation.cpp">
+      <Filter>src\Hazel\RHI\Interface</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Hazel\RHI\Interface\IPipelineStateManager.cpp">
+      <Filter>src\Hazel\RHI\Interface</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

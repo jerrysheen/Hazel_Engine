@@ -10,18 +10,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="87d2635b-8e6c-42ef-9c96-e41dcd29765c" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/Hazel/Hazel.vcxproj" beforeDir="false" afterPath="$PROJECT_DIR$/Hazel/Hazel.vcxproj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Hazel/Hazel.vcxproj.filters" beforeDir="false" afterPath="$PROJECT_DIR$/Hazel/Hazel.vcxproj.filters" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Hazel/src/Hazel/Gfx/GfxViewManager.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Hazel/src/Hazel/Gfx/GfxViewManager.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Hazel/src/Hazel/RHI/Interface/IGfxViewManager.h" beforeDir="false" afterPath="$PROJECT_DIR$/Hazel/src/Hazel/RHI/Interface/IGfxViewManager.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Hazel/src/Hazel/Renderer/Buffer.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Hazel/src/Hazel/Renderer/Buffer.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Hazel/src/Hazel/Renderer/TextureBuffer.h" beforeDir="false" afterPath="$PROJECT_DIR$/Hazel/src/Hazel/Renderer/TextureBuffer.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Hazel/src/Hazel/Utility/Unique.h" beforeDir="false" afterPath="$PROJECT_DIR$/Hazel/src/Hazel/Utility/Unique.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Hazel/src/Platform/D3D12/D3D12GfxDescHeap.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Hazel/src/Platform/D3D12/D3D12GfxDescHeap.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.Hazel/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Hazel/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Hazel/src/Platform/D3D12/D3D12DescriptorHeapManager.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Hazel/src/Platform/D3D12/D3D12DescriptorHeapManager.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Hazel/src/Platform/D3D12/D3D12GfxViewManager.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Hazel/src/Platform/D3D12/D3D12GfxViewManager.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Hazel/src/Platform/D3D12/D3D12RenderAPIManager.h" beforeDir="false" afterPath="$PROJECT_DIR$/Hazel/src/Platform/D3D12/D3D12RenderAPIManager.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Hazelnut/src/EditorLayer.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Hazelnut/src/EditorLayer.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Hazelnut/src/EditorLayer.h" beforeDir="false" afterPath="$PROJECT_DIR$/Hazelnut/src/EditorLayer.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Hazelnut/src/SceneViewLayer.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Hazelnut/src/SceneViewLayer.cpp" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -32,6 +23,18 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
+  <component name="HighlightingSettingsPerFile">
+    <setting file="mock://D:/GitHubST/Hazel_Engine/.vscode/settings.json" root0="FORCE_HIGHLIGHTING" />
+    <setting file="mock://D:/GitHubST/Hazel_Engine/.vscode/settings.json" root0="FORCE_HIGHLIGHTING" />
+    <setting file="mock://D:/GitHubST/Hazel_Engine/Hazel/SampleCode/Gfx/RHI/unified_usage_example.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock://D:/GitHubST/Hazel_Engine/Hazel/SampleCode/Gfx/RHI/unified_usage_example.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock://D:/GitHubST/Hazel_Engine/Hazelnut/src/SceneViewLayer.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock://D:/GitHubST/Hazel_Engine/Hazelnut/src/SceneViewLayer.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock://D:/GitHubST/Hazel_Engine/Hazelnut/src/SceneViewLayer.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock://D:/GitHubST/Hazel_Engine/Hazelnut/src/SceneViewLayer.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock://D:/GitHubST/Hazel_Engine/Hazelnut/src/SceneViewLayer.cpp" root0="SKIP_HIGHLIGHTING" />
+  </component>
+  <component name="MetaFilesCheckinStateConfiguration" checkMetaFiles="true" />
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 3
 }</component>
@@ -194,13 +197,26 @@
       <updated>1749089765484</updated>
       <workItem from="1749089766973" duration="735000" />
       <workItem from="1749390852945" duration="88000" />
+      <workItem from="1750306459750" duration="2275000" />
     </task>
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
   </component>
+  <component name="UnityCheckinConfiguration" checkUnsavedScenes="true" />
   <component name="UnityProjectConfiguration" hasMinimizedUI="false" />
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
   <component name="VcsManagerConfiguration">
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="true" />
   </component>

@@ -46,7 +46,16 @@ namespace Hazel {
 		inline  D3D12_RECT* GetCurrentScissorRect() { return &mScissorRect; }
 		inline  Microsoft::WRL::ComPtr<IDXGISwapChain> GetSwapChain() { return mSwapChain; }
 		inline  Microsoft::WRL::ComPtr<ID3D12CommandQueue> GetCommandQueue() { return mCommandQueue; }
-		inline Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> GetCmdList() { return mCommandList; }
+		
+		// === 改进的CommandList管理 ===
+		// 向后兼容 - 返回当前活跃的CommandList
+		inline Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> GetCmdList() { return GetCurrentCommandList(); }
+		
+		// 新增：获取当前活跃的CommandList
+		Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> GetCurrentCommandList();
+		
+		// 新增：设置当前活跃的CommandList (简化版本)
+		void SetCurrentCommandList(Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> cmdList);
 
 		inline  void UpdateBackBufferIndex() { mCurrBackBufferIndex = (mCurrBackBufferIndex + 1) % SwapChainBufferCount;; }
 		inline  int GetNumFrameInFlight() { return NUM_BACK_BUFFERS; }
@@ -90,7 +99,7 @@ namespace Hazel {
 		bool      m4xMsaaState = false;    // 4X MSAA enabled
 		UINT      m4xMsaaQuality = 0;      // quality level of 4X MSAA
 
-		// Used to keep track of the �delta-time?and game time (?.4).
+		// Used to keep track of thedelta-time?and game time (?.4).
 
 		Microsoft::WRL::ComPtr<IDXGIFactory4> mdxgiFactory;
 		Microsoft::WRL::ComPtr<IDXGISwapChain3> mSwapChain;
@@ -102,8 +111,9 @@ namespace Hazel {
 		Microsoft::WRL::ComPtr<ID3D12CommandQueue> mCommandQueue;
 		//Microsoft::WRL::ComPtr<ID3D12CommandAllocator> mDirectCmdListAlloc;
 		
-		
-		Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> mCommandList;
+		// === CommandList状态管理 ===
+		Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> mCommandList;       // 主CommandList
+		Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> mCurrentCommandList; // 当前活跃的CommandList
 
 		static const int SwapChainBufferCount = 3;
 		int mCurrBackBufferIndex = 0;
@@ -135,7 +145,7 @@ namespace Hazel {
 
 		UINT64                       g_fenceLastSignaledValue = 0;
 		static int const                    NUM_BACK_BUFFERS = 3;
-		// ���������FrameContext��������Ҫ��������CommandAllocator����Ҫ��Ϊ�˴����֡�Ĳ�����
+		// FrameContextҪCommandAllocatorҪΪ˴֡Ĳ
 		FrameContext                 g_frameContext[NUM_BACK_BUFFERS] = {};
 		HANDLE  g_fenceEvent;
 		HANDLE g_hSwapChainWaitableObject = nullptr;

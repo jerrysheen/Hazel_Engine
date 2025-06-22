@@ -5,7 +5,7 @@
 
 namespace Hazel 
 {
-    /// ³õÊ¼»¯¾²Ì¬³ÉÔ±
+    /// ï¿½ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½Ì¬ï¿½ï¿½Ô±
     std::shared_ptr<CommandPool> CommandPool::instance = nullptr;
     std::mutex CommandPool::mutex;
 

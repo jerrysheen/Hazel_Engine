@@ -8,6 +8,9 @@ namespace Hazel
 	D3D12RenderAPIManager::D3D12RenderAPIManager()
 	{
 		InitDirect3D();
+		
+		// åˆå§‹åŒ–å½“å‰CommandListä¸ºä¸»CommandList
+		mCurrentCommandList = mCommandList;
 
 		// Do the initial resize code.
 		//OnResize();
@@ -16,7 +19,6 @@ namespace Hazel
 	D3D12RenderAPIManager::~D3D12RenderAPIManager()
 	{
 	}
-
 
 	ID3D12Resource* D3D12RenderAPIManager::GetCurrentBackBuffer()const
 	{
@@ -64,7 +66,6 @@ namespace Hazel
 
 		return frameCtx;
 	}
-
 
 	void D3D12RenderAPIManager::OnResize()
 	{
@@ -195,7 +196,7 @@ namespace Hazel
 	//	//Draw();
 	//}
 
-	// resetµÄÊ±ºò ÈÃcurrent buffer + 1 ÁË¡£¡£¡£
+	// resetæ—¶ï¼Œ current buffer + 1 Ë¡ã€‚ã€‚ã€‚
 	void D3D12RenderAPIManager::ResetCommandList()
 	{
 		FrameContext* frameCtx = WaitForNextFrameResources();
@@ -393,34 +394,8 @@ namespace Hazel
 
 	void D3D12RenderAPIManager::CreateSwapChain()
 	{
-		//// Release the previous swapchain we will be recreating.
-		//mSwapChain.Reset();
-
-		//DXGI_SWAP_CHAIN_DESC sd;
-		//sd.BufferDesc.Width = mClientWidth;
-		//sd.BufferDesc.Height = mClientHeight;
-		//sd.BufferDesc.RefreshRate.Numerator = 60;
-		//sd.BufferDesc.RefreshRate.Denominator = 1;
-		//sd.BufferDesc.Format = mBackBufferFormat;
-		//sd.BufferDesc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
-		//sd.BufferDesc.Scaling = DXGI_MODE_SCALING_UNSPECIFIED;
-		//sd.SampleDesc.Count = m4xMsaaState ? 4 : 1;
-		//sd.SampleDesc.Quality = m4xMsaaState ? (m4xMsaaQuality - 1) : 0;
-		//sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-		//sd.BufferCount = SwapChainBufferCount;
-		//sd.OutputWindow = WindowsDXGIWindow::Get().GetDXGIWindowInstance();
-		//sd.Windowed = true;
-		//sd.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
-		//sd.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
-
-		//// Note: Swap chain uses queue to perform flush.
-		//ThrowIfFailed(mdxgiFactory->CreateSwapChain(
-		//	mCommandQueue.Get(),
-		//	&sd,
-		//	mSwapChain.GetAddressOf()));
-		
-		// ¸ÄÓÃimguiµÄÄ£Ê½È¥´´½¨£¬Éæ¼°µ½swapchain1ºÍsawapchain4.
-			// Setup swap chain
+		// åˆå§‹åŒ–imguiæ¨¡å¼å»æ¶‰åŠçš„swapchain1sawapchain4.
+		// Setup swap chain
 		DXGI_SWAP_CHAIN_DESC1 sd;
 		{
 			ZeroMemory(&sd, sizeof(sd));
@@ -449,8 +424,8 @@ namespace Hazel
 
 	void D3D12RenderAPIManager::CreateHeaps()
 	{
-		// ÓÃÀ´´æ´¢Õı³£µÄRender Target£¬¸÷ÖÖäÖÈ¾Ïà¹ØµÄ¶¼ÔÚÕâÀï´´½¨£¬
-		// Ä¬ÈÏÓĞÊ®¸ö£¬ todo£º ¼ÇÂ¼¿ÕÏĞµÄbackbuffer¡£
+		// å­˜å‚¨Render Targetå’Œæ·±åº¦ç¼“å†²çš„æè¿°ç¬¦å †
+		// é»˜è®¤åä¸ª todo è®°å½•æ‰€æœ‰çš„backbuffer
 		D3D12_DESCRIPTOR_HEAP_DESC rtvHeapDesc;
 		rtvHeapDesc.NumDescriptors = 10;
 		rtvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
@@ -461,9 +436,8 @@ namespace Hazel
 		mRtvHeap->SetName(L"RTV Heap");
 
 
-		// ÓÃÀ´´´½¨backbuffer¡¢swapchainÏà¹ØµÄrt£¬×¨ÃÅÓÃÀ´×öbackbufferäÖÈ¾µÄ¡£
-		// ¹Ì¶¨ÊıÁ¿ÎªÈı¸ö¡£
-		// ImguiÀïÃæ£¬´´½¨ÁËÈı·İRenderTargetDescriptor£¬×¢ÒâÕâ¸öµØ·½ºÍÎÒÃÇµÄÊµÏÖ²»Ò»Ñù¡£
+		// ä¸ºbackbufferå’Œswapchainåˆ†é…rtæè¿°ç¬¦å †ï¼Œbackbufferçš„æè¿°ç¬¦æ˜¯å›ºå®šçš„
+		// Imguiæ¨¡å¼ï¼Œä¸éœ€è¦å…³æ³¨RenderTargetDescriptorï¼Œæ³¨æ„è¿™é‡Œæ˜¯å®ç°çš„ä¸€éƒ¨åˆ†
 		D3D12_DESCRIPTOR_HEAP_DESC backBufferHeapDesc;
 		backBufferHeapDesc.NumDescriptors = SwapChainBufferCount;
 		backBufferHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
@@ -493,11 +467,11 @@ namespace Hazel
 
 
 
-		// mSrvHeap´´½¨srv£¬ srv¾ÍÊÇshaderÖĞÄÜ·ÃÎÊµ½µÄ×ÊÔ´µÄviewµÄheap
+		// mSrvHeapæ˜¯srv  srvç”¨äºshaderè®¿é—®çš„èµ„æºå’Œviewçš„heap
 		D3D12_DESCRIPTOR_HEAP_DESC srvHeapDesc = {};
 		srvHeapDesc.NumDescriptors = 1;
 		srvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
-		srvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE; // ±ØĞëÊÇ GPU ¿É¼ûµÄ
+		srvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE; // ä»…GPUè®¿é—®
 		ThrowIfFailed(md3dDevice->CreateDescriptorHeap(&srvHeapDesc, IID_PPV_ARGS(mSrvHeap.GetAddressOf())));
 		mSrvHeap->SetName(L"SRV Heap");
 
@@ -512,6 +486,24 @@ namespace Hazel
 		cbvHeapDesc.NodeMask = 0;
 		ThrowIfFailed(md3dDevice->CreateDescriptorHeap(&cbvHeapDesc, IID_PPV_ARGS(mCbvHeap.GetAddressOf())));
 		mCbvHeap->SetName(L"mCbvHeap");
+	}
+
+	// === æ–°å¢çš„CommandListç®¡ç†åŠŸèƒ½ ===
+	Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> D3D12RenderAPIManager::GetCurrentCommandList()
+	{
+		// å¦‚æœæ²¡æœ‰è®¾ç½®å½“å‰CommandListï¼Œè¿”å›ä¸»CommandList
+		return mCurrentCommandList ? mCurrentCommandList : mCommandList;
+	}
+
+	void D3D12RenderAPIManager::SetCurrentCommandList(Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> cmdList)
+	{
+		// è®¾ç½®å½“å‰æ´»è·ƒçš„CommandList
+		mCurrentCommandList = cmdList;
+		
+		// å¦‚æœä¼ å…¥nullptrï¼Œåˆ™å›é€€åˆ°ä¸»CommandList
+		if (!mCurrentCommandList) {
+			mCurrentCommandList = mCommandList;
+		}
 	}
 
 }

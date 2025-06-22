@@ -13,8 +13,8 @@ namespace Hazel {
 		std::string Title;
 		unsigned int Width;
 		unsigned int Height;
-		// struct的constructor，与class只有成员默认private和public的区别
-		// sturuct 默认是public的
+		// struct锟斤拷constructor锟斤拷锟斤拷class只锟叫筹拷员默锟斤拷private锟斤拷public锟斤拷锟斤拷锟斤拷
+		// sturuct 默锟斤拷锟斤拷public锟斤拷
 		WindowProps(const std::string& title = "Hazel Engine",
 			unsigned int width = 1280,
 			unsigned int height = 720)
@@ -31,7 +31,7 @@ namespace Hazel {
 	public:
 		using EventCallbackFn = std::function<void(Event&)>;
 
-		// 都是一些interface， 需要在每个platform去实作
+		// 锟斤拷锟斤拷一些interface锟斤拷 锟斤拷要锟斤拷每锟斤拷platform去实锟斤拷
 		virtual ~Window() {}
 
 		virtual void OnUpdate() = 0;
@@ -47,7 +47,7 @@ namespace Hazel {
 
 		virtual void* GetNativeWindow() const = 0;
 
-		// 也需要不同的平台去实际implement
+		// 也锟斤拷要锟斤拷同锟斤拷平台去实锟斤拷implement
 		static Window* Create(const WindowProps& props = WindowProps());
 	};
 

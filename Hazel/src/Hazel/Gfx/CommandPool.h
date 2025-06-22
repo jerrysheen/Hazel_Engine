@@ -9,7 +9,7 @@ namespace Hazel {
             static Ref<CommandPool> instance;
             static std::mutex mutex;
             
-            // Ë½ÓÐ¹¹Ôìº¯ÊýºÍÎö¹¹º¯Êý
+            // Ë½ï¿½Ð¹ï¿½ï¿½ìº¯ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
             CommandPool() 
             {
                 //Init(); 
@@ -19,11 +19,11 @@ namespace Hazel {
             std::stack<Ref<CommandList>> m_IdleCommandListStack;
             //std::stack<Ref<CommandList>> m_BusyCommandListStack;
         public:
-            // É¾³ý¿½±´¹¹Ôìº¯ÊýºÍ¸³Öµ²Ù×÷·û
+            // É¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ìº¯ï¿½ï¿½ï¿½Í¸ï¿½Öµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
             CommandPool(const CommandPool&) = delete;
             CommandPool& operator=(const CommandPool&) = delete;
 
-            // getInstance ·½·¨
+            // getInstance ï¿½ï¿½ï¿½ï¿½
             static Ref<CommandPool> getInstance() {
                 std::lock_guard<std::mutex> lock(mutex);
                 if (!instance) {

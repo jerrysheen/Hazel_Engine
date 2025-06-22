@@ -1,4 +1,10 @@
 # 哈泽尔引擎渲染硬件接口（RHI）实现计划
+6.20 todo：
+Graphics Pipeline 抽象
+Resource Binding 系统
+
+
+
 
 ## 现状分析
 目前的SceneViewLayer.cpp直接使用了大量D3D12特定的API，包括：
