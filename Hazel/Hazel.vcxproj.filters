@@ -34,6 +34,9 @@
     <Filter Include="src\Hazel\RHI">
       <UniqueIdentifier>{22DC5F1C-8E9C-DB52-57D7-24D0C356202F}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Hazel\RHI\Core">
+      <UniqueIdentifier>{BAE57131-A6C9-3287-0F2A-2DDAFB2C1D09}</UniqueIdentifier>
+    </Filter>
     <Filter Include="src\Hazel\RHI\Interface">
       <UniqueIdentifier>{82562E10-EE8D-76A7-F797-DACA634E9DA0}</UniqueIdentifier>
     </Filter>
@@ -81,9 +84,6 @@
     </Filter>
     <Filter Include="vendor\stb_image">
       <UniqueIdentifier>{0DA0BA59-F998-D9AB-22CB-BE300E23B9B7}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="SampleCode">
-      <UniqueIdentifier>{38e8dd7f-0382-4196-8f19-b9f66b888f2e}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -156,12 +156,6 @@
     <ClInclude Include="src\Hazel\Gfx\CustomRenderPass\OpaqueRenderPass.h">
       <Filter>src\Hazel\Gfx\CustomRenderPass</Filter>
     </ClInclude>
-    <ClInclude Include="src\Hazel\Gfx\GfxDesc.h">
-      <Filter>src\Hazel\Gfx</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Hazel\Gfx\GfxViewManager.h">
-      <Filter>src\Hazel\Gfx</Filter>
-    </ClInclude>
     <ClInclude Include="src\Hazel\Gfx\RenderPass.h">
       <Filter>src\Hazel\Gfx</Filter>
     </ClInclude>
@@ -175,6 +169,9 @@
       <Filter>src\Hazel\Gfx</Filter>
     </ClInclude>
     <ClInclude Include="src\Hazel\Gfx\RendererConstant.h">
+      <Filter>src\Hazel\Gfx</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Hazel\Gfx\ScopedCommandList.h">
       <Filter>src\Hazel\Gfx</Filter>
     </ClInclude>
     <ClInclude Include="src\Hazel\Graphics\RenderAPI.h">
@@ -192,7 +189,19 @@
     <ClInclude Include="src\Hazel\Model\Mesh.h">
       <Filter>src\Hazel\Model</Filter>
     </ClInclude>
+    <ClInclude Include="src\Hazel\RHI\Core\CommandList.h">
+      <Filter>src\Hazel\RHI\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Hazel\RHI\Core\ScopedCommandList.h">
+      <Filter>src\Hazel\RHI\Core</Filter>
+    </ClInclude>
     <ClInclude Include="src\Hazel\RHI\Interface\DescriptorTypes.h">
+      <Filter>src\Hazel\RHI\Interface</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Hazel\RHI\Interface\ICommandListAllocator.h">
+      <Filter>src\Hazel\RHI\Interface</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Hazel\RHI\Interface\ICommandListManager.h">
       <Filter>src\Hazel\RHI\Interface</Filter>
     </ClInclude>
     <ClInclude Include="src\Hazel\RHI\Interface\IDescritorAllocator.h">
@@ -204,7 +213,19 @@
     <ClInclude Include="src\Hazel\RHI\Interface\IGfxViewManager.h">
       <Filter>src\Hazel\RHI\Interface</Filter>
     </ClInclude>
+    <ClInclude Include="src\Hazel\RHI\Interface\IGraphicsPipeline.h">
+      <Filter>src\Hazel\RHI\Interface</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Hazel\RHI\Interface\IPipelineStateManager.h">
+      <Filter>src\Hazel\RHI\Interface</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Hazel\RHI\Interface\PerFrameCommandListAllocator.h">
+      <Filter>src\Hazel\RHI\Interface</Filter>
+    </ClInclude>
     <ClInclude Include="src\Hazel\RHI\Interface\PerFrameDescriptorAllocator.h">
+      <Filter>src\Hazel\RHI\Interface</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Hazel\RHI\Interface\PipelineTypes.h">
       <Filter>src\Hazel\RHI\Interface</Filter>
     </ClInclude>
     <ClInclude Include="src\Hazel\Renderer\Buffer.h">
@@ -273,16 +294,28 @@
     <ClInclude Include="src\Platform\D3D12\D3D12CommandList.h">
       <Filter>src\Platform\D3D12</Filter>
     </ClInclude>
+    <ClInclude Include="src\Platform\D3D12\D3D12CommandListAllocator.h">
+      <Filter>src\Platform\D3D12</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Platform\D3D12\D3D12CommandListManager.h">
+      <Filter>src\Platform\D3D12</Filter>
+    </ClInclude>
     <ClInclude Include="src\Platform\D3D12\D3D12ConstantBuffer.h">
       <Filter>src\Platform\D3D12</Filter>
     </ClInclude>
-    <ClInclude Include="src\Platform\D3D12\D3D12GfxDescHeap.h">
+    <ClInclude Include="src\Platform\D3D12\D3D12DescriptorAllocator.h">
+      <Filter>src\Platform\D3D12</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Platform\D3D12\D3D12DescriptorHeapManager.h">
       <Filter>src\Platform\D3D12</Filter>
     </ClInclude>
     <ClInclude Include="src\Platform\D3D12\D3D12GfxViewManager.h">
       <Filter>src\Platform\D3D12</Filter>
     </ClInclude>
     <ClInclude Include="src\Platform\D3D12\D3D12GraphicsPipeline.h">
+      <Filter>src\Platform\D3D12</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Platform\D3D12\D3D12PipelineStateManager.h">
       <Filter>src\Platform\D3D12</Filter>
     </ClInclude>
     <ClInclude Include="src\Platform\D3D12\D3D12RenderAPI.h">
@@ -301,6 +334,9 @@
       <Filter>src\Platform\D3D12</Filter>
     </ClInclude>
     <ClInclude Include="src\Platform\D3D12\D3D12TextureBuffer.h">
+      <Filter>src\Platform\D3D12</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Platform\D3D12\D3D12Utils.h">
       <Filter>src\Platform\D3D12</Filter>
     </ClInclude>
     <ClInclude Include="src\Platform\D3D12\D3D12VertexArray.h">
@@ -1599,40 +1635,6 @@
     <ClInclude Include="vendor\stb_image\stb_image.h">
       <Filter>vendor\stb_image</Filter>
     </ClInclude>
-    <ClInclude Include="src\Platform\D3D12\D3D12DescriptorAllocator.h">
-      <Filter>src\Platform\D3D12</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Platform\D3D12\D3D12DescriptorHeapManager.h">
-      <Filter>src\Platform\D3D12</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Hazel\RHI\Interface\IGraphicsPipeline.h">
-      <Filter>src\Hazel\RHI\Interface</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Hazel\RHI\Interface\IPipelineStateManager.h">
-      <Filter>src\Hazel\RHI\Interface</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Hazel\RHI\Interface\PipelineTypes.h">
-      <Filter>src\Hazel\RHI\Interface</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Platform\D3D12\D3D12PipelineStateManager.h" />
-    <ClInclude Include="src\Platform\D3D12\D3D12CommandListAllocator.h">
-      <Filter>src\Platform\D3D12</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Platform\D3D12\D3D12CommandListManager.h">
-      <Filter>src\Platform\D3D12</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Hazel\Gfx\ScopedCommandList.h">
-      <Filter>src\Hazel\Gfx</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Hazel\RHI\Interface\ICommandListAllocator.h">
-      <Filter>src\Hazel\RHI\Interface</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Hazel\RHI\Interface\ICommandListManager.h">
-      <Filter>src\Hazel\RHI\Interface</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Hazel\RHI\Interface\PerFrameCommandListAllocator.h">
-      <Filter>src\Hazel\RHI\Interface</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Hazel\Core\Application.cpp">
@@ -1662,12 +1664,6 @@
     <ClCompile Include="src\Hazel\Gfx\CustomRenderPass\OpaqueRenderPass.cpp">
       <Filter>src\Hazel\Gfx\CustomRenderPass</Filter>
     </ClCompile>
-    <ClCompile Include="src\Hazel\Gfx\GfxDesc.cpp">
-      <Filter>src\Hazel\Gfx</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Hazel\Gfx\GfxViewManager.cpp">
-      <Filter>src\Hazel\Gfx</Filter>
-    </ClCompile>
     <ClCompile Include="src\Hazel\Gfx\RenderPass.cpp">
       <Filter>src\Hazel\Gfx</Filter>
     </ClCompile>
@@ -1695,7 +1691,22 @@
     <ClCompile Include="src\Hazel\Model\Mesh.cpp">
       <Filter>src\Hazel\Model</Filter>
     </ClCompile>
+    <ClCompile Include="src\Hazel\RHI\Core\CommandList.cpp">
+      <Filter>src\Hazel\RHI\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Hazel\RHI\Interface\DescriptorAllocation.cpp">
+      <Filter>src\Hazel\RHI\Interface</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Hazel\RHI\Interface\ICommandListManager.cpp">
+      <Filter>src\Hazel\RHI\Interface</Filter>
+    </ClCompile>
     <ClCompile Include="src\Hazel\RHI\Interface\IGfxViewManager.cpp">
+      <Filter>src\Hazel\RHI\Interface</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Hazel\RHI\Interface\IPipelineStateManager.cpp">
+      <Filter>src\Hazel\RHI\Interface</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Hazel\RHI\Interface\PerFrameCommandListAllocator.cpp">
       <Filter>src\Hazel\RHI\Interface</Filter>
     </ClCompile>
     <ClCompile Include="src\Hazel\Renderer\Buffer.cpp">
@@ -1752,16 +1763,28 @@
     <ClCompile Include="src\Platform\D3D12\D3D12CommandList.cpp">
       <Filter>src\Platform\D3D12</Filter>
     </ClCompile>
+    <ClCompile Include="src\Platform\D3D12\D3D12CommandListAllocator.cpp">
+      <Filter>src\Platform\D3D12</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Platform\D3D12\D3D12CommandListManager.cpp">
+      <Filter>src\Platform\D3D12</Filter>
+    </ClCompile>
     <ClCompile Include="src\Platform\D3D12\D3D12ConstantBuffer.cpp">
       <Filter>src\Platform\D3D12</Filter>
     </ClCompile>
-    <ClCompile Include="src\Platform\D3D12\D3D12GfxDescHeap.cpp">
+    <ClCompile Include="src\Platform\D3D12\D3D12DescriptorAllocator.cpp">
+      <Filter>src\Platform\D3D12</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Platform\D3D12\D3D12DescriptorHeapManager.cpp">
       <Filter>src\Platform\D3D12</Filter>
     </ClCompile>
     <ClCompile Include="src\Platform\D3D12\D3D12GfxViewManager.cpp">
       <Filter>src\Platform\D3D12</Filter>
     </ClCompile>
     <ClCompile Include="src\Platform\D3D12\D3D12GraphicsPipeline.cpp">
+      <Filter>src\Platform\D3D12</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Platform\D3D12\D3D12PipelineStateManager.cpp">
       <Filter>src\Platform\D3D12</Filter>
     </ClCompile>
     <ClCompile Include="src\Platform\D3D12\D3D12RenderAPI.cpp">
@@ -1835,37 +1858,6 @@
     </ClCompile>
     <ClCompile Include="vendor\stb_image\stb_image.cpp">
       <Filter>vendor\stb_image</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Platform\D3D12\D3D12DescriptorAllocator.cpp">
-      <Filter>src\Platform\D3D12</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Platform\D3D12\D3D12DescriptorHeapManager.cpp">
-      <Filter>src\Platform\D3D12</Filter>
-    </ClCompile>
-    <ClCompile Include="SampleCode\Gfx\RHI\unified_usage_example.cpp">
-      <Filter>SampleCode</Filter>
-    </ClCompile>
-    <ClCompile Include="SampleCode\Gfx\RHI\ViewManagerExample.cpp">
-      <Filter>SampleCode</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Hazel\RHI\Interface\DescriptorAllocation.cpp">
-      <Filter>src\Hazel\RHI\Interface</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Hazel\RHI\Interface\IPipelineStateManager.cpp">
-      <Filter>src\Hazel\RHI\Interface</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Platform\D3D12\D3D12PipelineStateManager.cpp" />
-    <ClCompile Include="src\Platform\D3D12\D3D12CommandListAllocator.cpp">
-      <Filter>src\Platform\D3D12</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Platform\D3D12\D3D12CommandListManager.cpp">
-      <Filter>src\Platform\D3D12</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Hazel\RHI\Interface\ICommandListManager.cpp">
-      <Filter>src\Hazel\RHI\Interface</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Hazel\RHI\Interface\PerFrameCommandListAllocator.cpp">
-      <Filter>src\Hazel\RHI\Interface</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

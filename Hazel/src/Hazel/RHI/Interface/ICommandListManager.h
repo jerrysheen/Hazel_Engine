@@ -1,7 +1,7 @@
 #pragma once
 
 #include "ICommandListAllocator.h"
-#include "Hazel/Gfx/CommandList.h"
+#include "Hazel/RHI/Core/CommandList.h"
 #include <memory>
 #include <functional>
 #include <vector>

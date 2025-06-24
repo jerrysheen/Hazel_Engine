@@ -4,6 +4,8 @@
 #include "Hazel/Core/Log.h"
 #include <future>
 #include <chrono>
+#include "D3D12Utils.h"
+using namespace Hazel::D3D12Utils;
 
 namespace Hazel {
 
@@ -248,6 +250,15 @@ namespace Hazel {
             Microsoft::WRL::ComPtr<ID3D12CommandAllocator>(d3dAllocator),
             Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList>(d3dCommandList)
         );
+
+        // 🔥 关键修复：确保CommandList处于Closed状态
+        // 因为从分配器获取的CommandList应该是Closed状态的
+        HRESULT hr = d3dCommandList->Close();
+        if (hr != E_INVALIDARG) { // E_INVALIDARG表示已经是Closed状态
+            if (FAILED(hr)) {
+                HZ_CORE_ERROR("[D3D12CommandListManager] Failed to close command list: {}", HRESULTToString(hr));
+            }
+        }
 
         return commandList;
     }

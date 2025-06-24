@@ -169,8 +169,6 @@
     <ClInclude Include="src\Hazel\Gfx\CommandQueue.h" />
     <ClInclude Include="src\Hazel\Gfx\Culling.h" />
     <ClInclude Include="src\Hazel\Gfx\CustomRenderPass\OpaqueRenderPass.h" />
-    <ClInclude Include="src\Hazel\Gfx\GfxDesc.h" />
-    <ClInclude Include="src\Hazel\Gfx\GfxViewManager.h" />
     <ClInclude Include="src\Hazel\Gfx\RenderPass.h" />
     <ClInclude Include="src\Hazel\Gfx\RenderStruct.h" />
     <ClInclude Include="src\Hazel\Gfx\RenderTarget.h" />
@@ -182,6 +180,8 @@
     <ClInclude Include="src\Hazel\ImGui\ImGuiLayer.h" />
     <ClInclude Include="src\Hazel\Model\Material.h" />
     <ClInclude Include="src\Hazel\Model\Mesh.h" />
+    <ClInclude Include="src\Hazel\RHI\Core\CommandList.h" />
+    <ClInclude Include="src\Hazel\RHI\Core\ScopedCommandList.h" />
     <ClInclude Include="src\Hazel\RHI\Interface\DescriptorTypes.h" />
     <ClInclude Include="src\Hazel\RHI\Interface\ICommandListAllocator.h" />
     <ClInclude Include="src\Hazel\RHI\Interface\ICommandListManager.h" />
@@ -192,6 +192,7 @@
     <ClInclude Include="src\Hazel\RHI\Interface\IPipelineStateManager.h" />
     <ClInclude Include="src\Hazel\RHI\Interface\PerFrameCommandListAllocator.h" />
     <ClInclude Include="src\Hazel\RHI\Interface\PerFrameDescriptorAllocator.h" />
+    <ClInclude Include="src\Hazel\RHI\Interface\PipelineTypes.h" />
     <ClInclude Include="src\Hazel\Renderer\Buffer.h" />
     <ClInclude Include="src\Hazel\Renderer\Camera.h" />
     <ClInclude Include="src\Hazel\Renderer\GraphicsContext.h" />
@@ -207,7 +208,6 @@
     <ClInclude Include="src\Hazel\Renderer\TextureBuffer.h" />
     <ClInclude Include="src\Hazel\Renderer\TextureStruct.h" />
     <ClInclude Include="src\Hazel\Renderer\VertexArray.h" />
-    <ClInclude Include="src\Hazel\RHI\Interface\PipelineTypes.h" />
     <ClInclude Include="src\Hazel\Scene\Component.h" />
     <ClInclude Include="src\Hazel\Scene\Entity.h" />
     <ClInclude Include="src\Hazel\Scene\Scene.h" />
@@ -220,7 +220,6 @@
     <ClInclude Include="src\Platform\D3D12\D3D12ConstantBuffer.h" />
     <ClInclude Include="src\Platform\D3D12\D3D12DescriptorAllocator.h" />
     <ClInclude Include="src\Platform\D3D12\D3D12DescriptorHeapManager.h" />
-    <ClInclude Include="src\Platform\D3D12\D3D12GfxDescHeap.h" />
     <ClInclude Include="src\Platform\D3D12\D3D12GfxViewManager.h" />
     <ClInclude Include="src\Platform\D3D12\D3D12GraphicsPipeline.h" />
     <ClInclude Include="src\Platform\D3D12\D3D12PipelineStateManager.h" />
@@ -230,6 +229,7 @@
     <ClInclude Include="src\Platform\D3D12\D3D12Shader.h" />
     <ClInclude Include="src\Platform\D3D12\D3D12Texture2D.h" />
     <ClInclude Include="src\Platform\D3D12\D3D12TextureBuffer.h" />
+    <ClInclude Include="src\Platform\D3D12\D3D12Utils.h" />
     <ClInclude Include="src\Platform\D3D12\D3D12VertexArray.h" />
     <ClInclude Include="src\Platform\D3D12\MathHelper.h" />
     <ClInclude Include="src\Platform\D3D12\d3dUtil.h" />
@@ -664,8 +664,6 @@
     <ClInclude Include="vendor\stb_image\stb_image.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="SampleCode\Gfx\RHI\unified_usage_example.cpp" />
-    <ClCompile Include="SampleCode\Gfx\RHI\ViewManagerExample.cpp" />
     <ClCompile Include="src\Hazel\Core\Application.cpp" />
     <ClCompile Include="src\Hazel\Core\Layer.cpp" />
     <ClCompile Include="src\Hazel\Core\LayerStack.cpp" />
@@ -675,8 +673,6 @@
     <ClCompile Include="src\Hazel\Gfx\Commandqueue.cpp" />
     <ClCompile Include="src\Hazel\Gfx\Culling.cpp" />
     <ClCompile Include="src\Hazel\Gfx\CustomRenderPass\OpaqueRenderPass.cpp" />
-    <ClCompile Include="src\Hazel\Gfx\GfxDesc.cpp" />
-    <ClCompile Include="src\Hazel\Gfx\GfxViewManager.cpp" />
     <ClCompile Include="src\Hazel\Gfx\RenderPass.cpp" />
     <ClCompile Include="src\Hazel\Gfx\RenderTarget.cpp" />
     <ClCompile Include="src\Hazel\Gfx\Renderer.cpp" />
@@ -686,9 +682,14 @@
     <ClCompile Include="src\Hazel\ImGui\ImGuiLayer.cpp" />
     <ClCompile Include="src\Hazel\Model\Material.cpp" />
     <ClCompile Include="src\Hazel\Model\Mesh.cpp" />
+    <ClCompile Include="src\Hazel\RHI\Core\CommandList.cpp">
+      <ObjectFileName>$(IntDir)\CommandList1.obj</ObjectFileName>
+    </ClCompile>
     <ClCompile Include="src\Hazel\RHI\Interface\DescriptorAllocation.cpp" />
     <ClCompile Include="src\Hazel\RHI\Interface\ICommandListManager.cpp" />
     <ClCompile Include="src\Hazel\RHI\Interface\IGfxViewManager.cpp" />
+    <ClCompile Include="src\Hazel\RHI\Interface\IPipelineStateManager.cpp" />
+    <ClCompile Include="src\Hazel\RHI\Interface\PerFrameCommandListAllocator.cpp" />
     <ClCompile Include="src\Hazel\Renderer\Buffer.cpp" />
     <ClCompile Include="src\Hazel\Renderer\Camera.cpp" />
     <ClCompile Include="src\Hazel\Renderer\GraphicsPipeline.cpp" />
@@ -702,8 +703,6 @@
     <ClCompile Include="src\Hazel\Renderer\Texture.cpp" />
     <ClCompile Include="src\Hazel\Renderer\TextureBuffer.cpp" />
     <ClCompile Include="src\Hazel\Renderer\VertexArray.cpp" />
-    <ClCompile Include="src\Hazel\RHI\Interface\IPipelineStateManager.cpp" />
-    <ClCompile Include="src\Hazel\RHI\Interface\PerFrameCommandListAllocator.cpp" />
     <ClCompile Include="src\Hazel\Scene\Entity.cpp" />
     <ClCompile Include="src\Hazel\Scene\Scene.cpp" />
     <ClCompile Include="src\Hazel\Utility\Random.cpp" />
@@ -714,7 +713,6 @@
     <ClCompile Include="src\Platform\D3D12\D3D12ConstantBuffer.cpp" />
     <ClCompile Include="src\Platform\D3D12\D3D12DescriptorAllocator.cpp" />
     <ClCompile Include="src\Platform\D3D12\D3D12DescriptorHeapManager.cpp" />
-    <ClCompile Include="src\Platform\D3D12\D3D12GfxDescHeap.cpp" />
     <ClCompile Include="src\Platform\D3D12\D3D12GfxViewManager.cpp" />
     <ClCompile Include="src\Platform\D3D12\D3D12GraphicsPipeline.cpp" />
     <ClCompile Include="src\Platform\D3D12\D3D12PipelineStateManager.cpp" />

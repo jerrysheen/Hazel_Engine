@@ -3,7 +3,6 @@
 
 #include "Hazel/Core/Log.h"
 #include "Glfw/glfw3.h"
-#include "Hazel/Gfx/GfxViewManager.h"
 
 namespace Hazel{
 

@@ -2,7 +2,6 @@
 #include "D3D12CommandList.h"
 #include "Platform/D3D12/D3D12RenderAPIManager.h"
 #include "Hazel.h"
-#include "Hazel/Gfx/GfxViewManager.h"
 #include "Platform/D3D12/d3dx12.h"
 #include "Platform/D3D12/d3dUtil.h"
 #include "Hazel/RHI/Interface/IGfxViewManager.h"

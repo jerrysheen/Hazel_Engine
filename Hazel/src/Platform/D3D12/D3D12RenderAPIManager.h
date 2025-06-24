@@ -1,7 +1,7 @@
 #pragma once
 #include "Hazel/Graphics/RenderAPIManager.h"
 #include "Hazel/Renderer/Buffer.h"
-#include "Hazel/Gfx/CommandList.h"
+#include "Hazel/RHI/Core/CommandList.h"
 
 #include "Platform/D3D12/d3dUtil.h"
 #include "Platform/D3D12/d3dx12.h"

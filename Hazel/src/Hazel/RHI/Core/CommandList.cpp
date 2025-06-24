@@ -45,4 +45,4 @@ namespace Hazel
 		}
 	}
 
-} // namespace Hazel
+} // namespace Hazel 

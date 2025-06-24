@@ -1,5 +1,5 @@
 #pragma once
-#include "Hazel/Gfx/CommandList.h"
+#include "Hazel/RHI/Core/CommandList.h"
 #include "Platform/D3D12/d3dx12.h"
 #include "Platform/D3D12/d3dUtil.h"
 #include "Hazel/Renderer/TextureStruct.h"

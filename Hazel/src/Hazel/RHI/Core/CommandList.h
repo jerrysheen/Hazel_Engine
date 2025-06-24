@@ -1,8 +1,8 @@
 #pragma once
+#include "Hazel/RHI/Interface/ICommandListAllocator.h"
 #include "Hazel/Gfx/Color.h"
 #include "Hazel/Renderer/TextureStruct.h"
 #include "Hazel/Renderer/TextureBuffer.h"
-#include "Hazel/RHI/Interface/ICommandListAllocator.h"
 #include <atomic>
 #include <functional>
 
@@ -84,4 +84,4 @@ namespace Hazel
 		friend class ICommandListManager;
 	};
 
-}
+} 

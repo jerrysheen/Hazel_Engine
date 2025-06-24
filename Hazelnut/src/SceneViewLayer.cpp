@@ -2,15 +2,13 @@
 #include <Hazel/Gfx/RenderStruct.h>
 #include <Hazel/Renderer/TextureBuffer.h>
 #include <Hazel/Gfx/Culling.h>
-#include "Hazel/Gfx/GfxViewManager.h"
-#include "Hazel/Gfx/GfxDesc.h"
 #include "Platform/D3D12/D3D12Buffer.h"
 #include "Platform/D3D12/D3D12Shader.h"
 #include "Platform/D3D12/D3D12VertexArray.h"
 #include "Hazel/Renderer/VertexArray.h"
 #include "Hazel/RHI/Interface/IGfxViewManager.h"
-#include "Hazel/Gfx/ScopedCommandList.h"
 
+#include "Hazel/RHI/Core/CommandList.h"
 
 namespace Hazel
 {
@@ -206,6 +204,10 @@ namespace Hazel
         D3D12RenderAPIManager* renderAPIManager = dynamic_cast<D3D12RenderAPIManager*>(RenderAPIManager::getInstance()->GetManager().get());
         Microsoft::WRL::ComPtr<ID3D12Device> device = renderAPIManager->GetD3DDevice();
 
+        auto& manager = ICommandListManager::Get();
+        manager.BeginFrame(getCurrentFrameId());
+        currentFrameID++;
+
         ID3D12Fence* fence = NULL;
         HRESULT hr = device->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&fence));
         assert(SUCCEEDED(hr));
@@ -213,7 +215,7 @@ namespace Hazel
 
 		ScopedCommandList cmdList(CommandListType::Graphics);
         Ref<CommandList> m_cmdList = cmdList.Get();
-        
+
         // 添加空指针检查
         if (!m_cmdList) {
             HZ_CORE_ERROR("Failed to get CommandList from ScopedCommandList");
@@ -230,7 +232,6 @@ namespace Hazel
         
         Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> m_CommandList = static_cast<ID3D12GraphicsCommandList*>(nativeCommandList);
         ID3D12CommandAllocator* rawAllocator = static_cast<ID3D12CommandAllocator*>(nativeAllocator);
-        
         ThrowIfFailed(rawAllocator->Reset());
         // A command list can be reset after it has been added to the command queue via ExecuteCommandList.
         // Reusing the command list reuses memory.
@@ -404,6 +405,7 @@ namespace Hazel
         mCommandQueue->ExecuteCommandLists(1, (ID3D12CommandList* const*)&rawCommandList);
         
 		renderAPIManager->FlushCommandQueue();
+		manager.EndFrame();
     }
 
     void SceneViewLayer::OnImGuiRender()

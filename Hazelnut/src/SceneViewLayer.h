@@ -31,7 +31,7 @@ namespace Hazel
 		void OnEvent(Event& e) override;
 
 	private:
-
+		inline uint64_t getCurrentFrameId() { return currentFrameID; };
 		Window& m_window;
 		Ref<Material> material;
 		Ref<Shader> m_ColorShader;
@@ -60,7 +60,7 @@ namespace Hazel
 		Microsoft::WRL::ComPtr<ID3D12CommandQueue> mCommandQueue;
 		D3D12_VIEWPORT mScreenViewport;
 		D3D12_RECT mScissorRect;
-
+		uint64_t currentFrameID = 0;
 		//std::unique_ptr<UploadBuffer<ObjectConstants>> mObjectCB = nullptr;
 
 		Ref<ConstantBuffer> objectCB;

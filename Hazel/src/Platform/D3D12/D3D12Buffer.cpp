@@ -3,8 +3,9 @@
 #include "Platform/D3D12/D3D12RenderAPIManager.h"
 #include "Hazel/Core/Application.h"
 #include "Hazel/RHI/Interface/IGfxViewManager.h"
-#include "Hazel/Gfx/ScopedCommandList.h"
 
+#include "Hazel/RHI/Core/ScopedCommandList.h"
+#include "Hazel/RHI/Core/CommandList.h"
 namespace Hazel
 {
 	D3D12Buffer::D3D12Buffer(uint32_t elementSize)

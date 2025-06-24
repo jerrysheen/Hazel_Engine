@@ -1,7 +1,6 @@
 #include "hzpch.h"
 #include "Platform/D3D12/D3D12TextureBuffer.h"
 #include "Hazel/Core/Application.h"
-#include "Hazel/Gfx/GfxViewManager.h"
 #include "glm/gtc/type_ptr.hpp"
 
 namespace Hazel 
@@ -30,17 +29,17 @@ namespace Hazel
 	{
         D3D12_RESOURCE_DESC bufferDesc = {};
         bufferDesc.Dimension = GetResourceDimension();
-        bufferDesc.Width = m_Spec.width;       // ÉèÖÃÑÕÉ«»º³åÇøµÄ¿í¶È
-        bufferDesc.Height = m_Spec.height;     // ÉèÖÃÑÕÉ«»º³åÇøµÄ¸ß¶È
+        bufferDesc.Width = m_Spec.width;       // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½É«ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¿ï¿½ï¿½
+        bufferDesc.Height = m_Spec.height;     // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½É«ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¸ß¶ï¿½
         bufferDesc.DepthOrArraySize = 1;
-        bufferDesc.MipLevels = GetMipMapLevel();       // ²»ÐèÒª¶à¼¶Ï¸»¯
-        bufferDesc.Format = GetTextureFormat(); // ÑÕÉ«¸ñÊ½
+        bufferDesc.MipLevels = GetMipMapLevel();       // ï¿½ï¿½ï¿½ï¿½Òªï¿½à¼¶Ï¸ï¿½ï¿½
+        bufferDesc.Format = GetTextureFormat(); // ï¿½ï¿½É«ï¿½ï¿½Ê½
         bufferDesc.SampleDesc.Count = GetMSAASamplerCount();  
         bufferDesc.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN;
-        //bufferDesc.Flags = GetTextureFormat() == DXGI_FORMAT_R8G8B8A8_UNORM ? D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET : D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL; // ÉùÃ÷  ÕâÊÇÒ»¸öäÖÈ¾Ä¿±ê
-        bufferDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET; // ÉùÃ÷  ÕâÊÇÒ»¸öäÖÈ¾Ä¿±ê
+        //bufferDesc.Flags = GetTextureFormat() == DXGI_FORMAT_R8G8B8A8_UNORM ? D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET : D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL; // ï¿½ï¿½ï¿½ï¿½  ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½È¾Ä¿ï¿½ï¿½
+        bufferDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET; // ï¿½ï¿½ï¿½ï¿½  ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½È¾Ä¿ï¿½ï¿½
 
-        // ÎªÑÕÉ«»º³åÇøÖ¸¶¨Çå³ýÖµ
+        // Îªï¿½ï¿½É«ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö¸ï¿½ï¿½ï¿½ï¿½ï¿½Öµ
         D3D12_CLEAR_VALUE clearValue = {};
         clearValue.Format = GetTextureFormat();;
         clearValue.Color[0] = 1.0f;
@@ -49,8 +48,8 @@ namespace Hazel
         clearValue.Color[3] = 1.0f;
 
 
-        // Õâ¸öµØ·½ÏÈ²»¾À½á deviceµÄÊÂÇéÁË¡£¡£¡£
-        // Ô­ÔòÉÏÕâ¸öµØ·½ÎÒ²»Ó¦¸ÃÕâÃ´»òdevices...
+        // ï¿½ï¿½ï¿½ï¿½Ø·ï¿½ï¿½È²ï¿½ï¿½ï¿½ï¿½ï¿½ deviceï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ë¡ï¿½ï¿½ï¿½ï¿½ï¿½
+        // Ô­ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ø·ï¿½ï¿½Ò²ï¿½Ó¦ï¿½ï¿½ï¿½ï¿½Ã´ï¿½ï¿½devices...
         D3D12RenderAPIManager* renderAPIManager = dynamic_cast<D3D12RenderAPIManager*>(RenderAPIManager::getInstance()->GetManager().get());
         Microsoft::WRL::ComPtr<ID3D12Device> device = renderAPIManager->GetD3DDevice();
         device->CreateCommittedResource
@@ -58,7 +57,7 @@ namespace Hazel
             &CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT),
             D3D12_HEAP_FLAG_NONE,
             &bufferDesc,
-            D3D12_RESOURCE_STATE_RENDER_TARGET, // ³õÊ¼×´Ì¬ÎªäÖÈ¾Ä¿±ê
+            D3D12_RESOURCE_STATE_RENDER_TARGET, // ï¿½ï¿½Ê¼×´Ì¬Îªï¿½ï¿½È¾Ä¿ï¿½ï¿½
             &clearValue,
             IID_PPV_ARGS(&m_BufferResourceLocal)
         );
@@ -70,17 +69,17 @@ namespace Hazel
     {
         D3D12_RESOURCE_DESC bufferDesc = {};
         bufferDesc.Dimension = GetResourceDimension();
-        bufferDesc.Width = m_Spec.width;       // ÉèÖÃÑÕÉ«»º³åÇøµÄ¿í¶È
-        bufferDesc.Height = m_Spec.height;     // ÉèÖÃÑÕÉ«»º³åÇøµÄ¸ß¶È
+        bufferDesc.Width = m_Spec.width;       // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½É«ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¿ï¿½ï¿½
+        bufferDesc.Height = m_Spec.height;     // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½É«ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¸ß¶ï¿½
         bufferDesc.DepthOrArraySize = 1;
-        bufferDesc.MipLevels = GetMipMapLevel();       // ²»ÐèÒª¶à¼¶Ï¸»¯
-        bufferDesc.Format = GetTextureFormat(); // ÑÕÉ«¸ñÊ½
+        bufferDesc.MipLevels = GetMipMapLevel();       // ï¿½ï¿½ï¿½ï¿½Òªï¿½à¼¶Ï¸ï¿½ï¿½
+        bufferDesc.Format = GetTextureFormat(); // ï¿½ï¿½É«ï¿½ï¿½Ê½
         bufferDesc.SampleDesc.Count = GetMSAASamplerCount();
         bufferDesc.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN;
-        //bufferDesc.Flags = GetTextureFormat() == DXGI_FORMAT_R8G8B8A8_UNORM ? D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET : D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL; // ÉùÃ÷  ÕâÊÇÒ»¸öäÖÈ¾Ä¿±ê
-        bufferDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL; // ÉùÃ÷  ÕâÊÇÒ»¸öäÖÈ¾Ä¿±ê
+        //bufferDesc.Flags = GetTextureFormat() == DXGI_FORMAT_R8G8B8A8_UNORM ? D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET : D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL; // ï¿½ï¿½ï¿½ï¿½  ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½È¾Ä¿ï¿½ï¿½
+        bufferDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL; // ï¿½ï¿½ï¿½ï¿½  ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½È¾Ä¿ï¿½ï¿½
 
-        // ÎªÑÕÉ«»º³åÇøÖ¸¶¨Çå³ýÖµ
+        // Îªï¿½ï¿½É«ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö¸ï¿½ï¿½ï¿½ï¿½ï¿½Öµ
         D3D12_CLEAR_VALUE clearValue = {};
         clearValue.Format = GetTextureFormat();;
         clearValue.Color[0] = 1.0f;
@@ -89,8 +88,8 @@ namespace Hazel
         clearValue.Color[3] = 1.0f;
 
 
-        // Õâ¸öµØ·½ÏÈ²»¾À½á deviceµÄÊÂÇéÁË¡£¡£¡£
-        // Ô­ÔòÉÏÕâ¸öµØ·½ÎÒ²»Ó¦¸ÃÕâÃ´»òdevices...
+        // ï¿½ï¿½ï¿½ï¿½Ø·ï¿½ï¿½È²ï¿½ï¿½ï¿½ï¿½ï¿½ deviceï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ë¡ï¿½ï¿½ï¿½ï¿½ï¿½
+        // Ô­ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ø·ï¿½ï¿½Ò²ï¿½Ó¦ï¿½ï¿½ï¿½ï¿½Ã´ï¿½ï¿½devices...
         D3D12RenderAPIManager* renderAPIManager = dynamic_cast<D3D12RenderAPIManager*>(RenderAPIManager::getInstance()->GetManager().get());
         Microsoft::WRL::ComPtr<ID3D12Device> device = renderAPIManager->GetD3DDevice();
         device->CreateCommittedResource
@@ -98,7 +97,7 @@ namespace Hazel
             &CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT),
             D3D12_HEAP_FLAG_NONE,
             &bufferDesc,
-            D3D12_RESOURCE_STATE_DEPTH_WRITE, // ³õÊ¼×´Ì¬ÎªäÖÈ¾Ä¿±ê
+            D3D12_RESOURCE_STATE_DEPTH_WRITE, // ï¿½ï¿½Ê¼×´Ì¬Îªï¿½ï¿½È¾Ä¿ï¿½ï¿½
             &clearValue,
             IID_PPV_ARGS(&m_BufferResourceLocal)
         );
@@ -149,7 +148,7 @@ namespace Hazel
         return 1;
     }
 
-    // ºóÐøÊµÏÖ¡£
+    // ï¿½ï¿½ï¿½ï¿½Êµï¿½Ö¡ï¿½
     int D3D12TextureBuffer::GetMipMapLevel()
     {
         return 1;
