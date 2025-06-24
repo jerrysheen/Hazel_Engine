@@ -11,6 +11,8 @@ bin-int/
 *.vcxproj.vspscc
 *.vcproj
 *.vcproj.user
+*Runtime.json
+*Startup.json
 
 # Visual Studio cache/options files
 *.suo
