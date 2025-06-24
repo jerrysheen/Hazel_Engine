@@ -7,8 +7,9 @@
 #include "Platform/D3D12/D3D12VertexArray.h"
 #include "Hazel/Renderer/VertexArray.h"
 #include "Hazel/RHI/Interface/IGfxViewManager.h"
-
+#include "Hazel/RHI/Interface/ICommandListManager.h"
 #include "Hazel/RHI/Core/CommandList.h"
+#include "Hazel/RHI/Core/ScopedCommandList.h"
 
 namespace Hazel
 {
