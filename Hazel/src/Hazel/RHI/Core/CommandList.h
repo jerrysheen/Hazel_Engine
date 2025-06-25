@@ -8,6 +8,9 @@
 
 namespace Hazel 
 {
+	// 前向声明 - 避免循环依赖和减少编译时间
+	class IGraphicsPipeline;
+
 	// CommandList执行状态
 	enum class ExecutionState {
 		Idle,
@@ -27,10 +30,15 @@ namespace Hazel
 		// 工厂方法
 		static Ref<CommandList> Create(CommandListType type = CommandListType::Graphics);
 		
-		// 基本操作
-		virtual void Reset() = 0;
+		// 基本操作 - 添加PSO支持
+		virtual void Reset() = 0;  // 保持无参数版本用于向后兼容
+		virtual void Reset(Ref<IGraphicsPipeline> pipeline) = 0;  // 新增：支持PSO的版本
 		virtual void Close() = 0;
 		virtual void Execute() = 0;
+		
+		// 渲染管线操作 - 新增
+		virtual void SetPipelineState(Ref<IGraphicsPipeline> pipeline) = 0;
+		virtual Ref<IGraphicsPipeline> GetCurrentPipeline() const = 0;
 		
 		// 渲染操作
 		virtual void ClearRenderTargetView(const Ref<TextureBuffer>& buffer, const glm::vec4& color) = 0;
@@ -74,6 +82,9 @@ namespace Hazel
 		
 		// 原生句柄
 		CommandListHandle m_nativeHandle;
+		
+		// 当前绑定的管线状态 - 新增
+		Ref<IGraphicsPipeline> m_currentPipeline;
 		
 		// 回调函数
 		std::function<void()> m_completionCallback;

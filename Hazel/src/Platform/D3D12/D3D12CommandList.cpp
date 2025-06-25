@@ -1,6 +1,7 @@
 #include "hzpch.h"
 #include "D3D12CommandList.h"
 #include "Platform/D3D12/D3D12RenderAPIManager.h"
+#include "Platform/D3D12/D3D12GraphicsPipeline.h"
 #include "Hazel.h"
 #include "Platform/D3D12/d3dx12.h"
 #include "Platform/D3D12/d3dUtil.h"
@@ -26,13 +27,17 @@ namespace Hazel
 
 	D3D12CommandList::~D3D12CommandList()
 	{
-		//COMPtr������ʱ���Զ���ȥRelease();
-		//m_CommandAllocatorLocal->Release();
-		//m_CommandListLocal->Release();
+		//COMPtr在析构时会自动调用Release();
 	}
 
 
 	void D3D12CommandList::Reset()
+	{
+		// 调用带PSO参数的Reset，传入当前管线或nullptr
+		Reset(m_currentPipeline);
+	}
+
+	void D3D12CommandList::Reset(Ref<IGraphicsPipeline> pipeline)
 	{
 		if (!m_CommandAllocator || !m_CommandList) {
 			HZ_CORE_ERROR("[D3D12CommandList] Cannot reset: D3D12 objects not initialized");
@@ -46,15 +51,78 @@ namespace Hazel
 			return;
 		}
 
-		// Reset the command list
-		hr = m_CommandList->Reset(m_CommandAllocator.Get(), nullptr);
+		// 提取D3D12 PSO
+		ID3D12PipelineState* pso = ExtractD3D12PSO(pipeline);
+		
+		// Reset the command list with PSO
+		hr = m_CommandList->Reset(m_CommandAllocator.Get(), pso);
 		if (FAILED(hr)) {
 			HZ_CORE_ERROR("[D3D12CommandList] Failed to reset command list: {}",HRESULTToString(hr));
 			return;
 		}
 
+		// 更新当前管线
+		m_currentPipeline = pipeline;
 		m_state = ExecutionState::Recording;
 	}
+
+	void D3D12CommandList::SetPipelineState(Ref<IGraphicsPipeline> pipeline)
+	{
+		if (!m_CommandList) {
+			HZ_CORE_ERROR("[D3D12CommandList] Cannot set pipeline state: CommandList not initialized");
+			return;
+		}
+
+		if (!pipeline) {
+			HZ_CORE_WARN("[D3D12CommandList] Setting null pipeline state");
+			m_currentPipeline = nullptr;
+			return;
+		}
+
+		// 提取D3D12 PSO并设置
+		ID3D12PipelineState* pso = ExtractD3D12PSO(pipeline);
+		if (pso) {
+			m_CommandList->SetPipelineState(pso);
+			m_currentPipeline = pipeline;
+			
+			// 如果有根签名，也设置根签名
+			if (auto d3d12Pipeline = std::dynamic_pointer_cast<D3D12GraphicsPipeline>(pipeline)) {
+				ID3D12RootSignature* rootSignature = d3d12Pipeline->GetD3D12RootSignature();
+				if (rootSignature) {
+					m_CommandList->SetGraphicsRootSignature(rootSignature);
+				}
+			}
+		} else {
+			HZ_CORE_ERROR("[D3D12CommandList] Failed to extract D3D12 PSO from pipeline");
+		}
+	}
+
+	Ref<IGraphicsPipeline> D3D12CommandList::GetCurrentPipeline() const
+	{
+		return m_currentPipeline;
+	}
+
+	ID3D12PipelineState* D3D12CommandList::ExtractD3D12PSO(Ref<IGraphicsPipeline> pipeline) const
+	{
+		if (!pipeline) {
+			return nullptr;
+		}
+
+		// 尝试将IGraphicsPipeline转换为D3D12GraphicsPipeline
+		if (auto d3d12Pipeline = std::dynamic_pointer_cast<D3D12GraphicsPipeline>(pipeline)) {
+			return d3d12Pipeline->GetD3D12PipelineState();
+		}
+
+		// 如果转换失败，尝试通过GetNativeHandle获取
+		void* nativeHandle = pipeline->GetNativeHandle();
+		if (nativeHandle) {
+			return static_cast<ID3D12PipelineState*>(nativeHandle);
+		}
+
+		HZ_CORE_WARN("[D3D12CommandList] Could not extract D3D12 PSO from pipeline");
+		return nullptr;
+	}
+
 	void D3D12CommandList::ClearRenderTargetView(const Ref<TextureBuffer>& textureBuffer, const glm::vec4& color)
 	{
 		if (!m_CommandList) {

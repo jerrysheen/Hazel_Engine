@@ -10,6 +10,9 @@
 #include "Hazel/RHI/Interface/ICommandListManager.h"
 #include "Hazel/RHI/Core/CommandList.h"
 #include "Hazel/RHI/Core/ScopedCommandList.h"
+#include "Hazel/RHI/Interface/IPipelineStateManager.h"
+#include "Hazel/RHI/Interface/PipelineTypes.h"
+
 
 namespace Hazel
 {
@@ -52,8 +55,8 @@ namespace Hazel
         m_ColorShader = Shader::Create("assets/shaders/color.hlsl");
 
 		material = Material::CreateFromMeta("assets/Materials/TestMat.meta");
-		auto resourceBinding = material->GetShader()->GetReflection()->ReflectResourceBindings();
-		auto parameters = material->GetShader()->GetReflection()->ReflectRegisterBlocks();
+		//auto resourceBinding = material->GetShader()->GetReflection()->ReflectResourceBindings();
+		//auto parameters = material->GetShader()->GetReflection()->ReflectRegisterBlocks();
         
 
         std::string abpath = std::filesystem::current_path().u8string();
@@ -138,6 +141,15 @@ namespace Hazel
 
 
 
+		auto pipelineStateManager = IPipelineStateManager::Get();
+
+		GraphicsPipelineDesc desc = {};
+        desc.SetBlendState(BlendStateDesc::Opaque())
+            .SetDepthStencilState(DepthStencilStateDesc::Default())
+            .SetPrimitiveTopology(PrimitiveTopology::TriangleList)
+            .SetRasterizerState(RasterizerStateDesc::Default())
+            .SetShader(m_ColorShader);
+        auto pipelineState = pipelineStateManager.CreateGraphicsPipeline(desc);
 
 
         // No need to execute command list here - initialization commands are immediate

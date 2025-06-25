@@ -14,12 +14,17 @@ namespace Hazel
 		
 		// CommandList接口实现
 		virtual void Reset() override;
+		virtual void Reset(Ref<IGraphicsPipeline> pipeline) override;
 		virtual void Close() override;
 		virtual void Execute() override;
 		virtual void ClearRenderTargetView(const Ref<TextureBuffer>& buffer, const glm::vec4& color) override;
 		virtual void ChangeResourceState(const Ref<TextureBuffer>& texture, 
 		                               const TextureRenderUsage& fromFormat, 
 		                               const TextureRenderUsage& toFormat) override;
+		
+		// 新增：渲染管线操作
+		virtual void SetPipelineState(Ref<IGraphicsPipeline> pipeline) override;
+		virtual Ref<IGraphicsPipeline> GetCurrentPipeline() const override;
 		
 		// D3D12特定方法
 		Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> GetD3D12CommandList() const;
@@ -39,5 +44,8 @@ namespace Hazel
 		
 		// 同步原生句柄
 		void UpdateNativeHandle();
+		
+		// 辅助方法：将IGraphicsPipeline转换为D3D12 PSO
+		ID3D12PipelineState* ExtractD3D12PSO(Ref<IGraphicsPipeline> pipeline) const;
 	};
 }
