@@ -1,6 +1,7 @@
 #pragma once
 #include "hzpch.h"
 #include "Hazel/Renderer/Shader.h"
+#include "Hazel/Renderer/ShaderReflection.h"
 #include <d3d12.h>
 #include <d3dcompiler.h>
 using Microsoft::WRL::ComPtr;
