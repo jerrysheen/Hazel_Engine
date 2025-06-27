@@ -6,6 +6,7 @@
 #include "Platform/D3D12/D3D12Shader.h"
 #include "Platform/D3D12/D3D12VertexArray.h"
 #include "Hazel/Renderer/VertexArray.h"
+#include "Hazel/Asset/MaterialLibrary.h"
 #include "Hazel/RHI/Interface/IGfxViewManager.h"
 #include "Hazel/RHI/Interface/ICommandListManager.h"
 #include "Hazel/RHI/Core/CommandList.h"
@@ -54,7 +55,8 @@ namespace Hazel
 
         m_ColorShader = Shader::Create("assets/shaders/color.hlsl");
 
-		material = Material::CreateFromMeta("assets/Materials/TestMat.meta");
+		MaterialLibrary& materialLibrary = MaterialLibrary::Get();
+		material = materialLibrary.LoadMaterial("assets/Materials/TestMat.meta");
 		//auto resourceBinding = material->GetShader()->GetReflection()->ReflectResourceBindings();
 		//auto parameters = material->GetShader()->GetReflection()->ReflectRegisterBlocks();
         
@@ -141,7 +143,7 @@ namespace Hazel
 
 
 
-		auto pipelineStateManager = IPipelineStateManager::Get();
+		auto& pipelineStateManager = IPipelineStateManager::Get();
 
 		GraphicsPipelineDesc desc = {};
         desc.SetBlendState(BlendStateDesc::Opaque())

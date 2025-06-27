@@ -8,7 +8,7 @@
 #include "Platform/D3D12/d3dx12.h"
 #include "Platform/D3D12/d3dUtil.h"
 #include "Platform/D3D12/D3D12RenderAPIManager.h"
-#include "Hazel/Model/Material.h"
+#include "Hazel/Material/Material.h"
 // temp:
 #include "platform/D3D12/d3dUtil.h"
 namespace Hazel

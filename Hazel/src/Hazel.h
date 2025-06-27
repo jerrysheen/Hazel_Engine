@@ -29,7 +29,9 @@
 
 #include "Hazel/Model/Mesh.h"
 //#include "Hazel/Model/Model.h"
-#include "Hazel/Model/Material.h"
+#include "Hazel/Material/Material.h"
+
+#include "Hazel/RHI/Interface/IPipelineStateManager.h"
 
 #include "Hazel/Renderer/OrthographicCamera.h"
 #include "Hazel/Renderer/RenderTargetEnum.h"

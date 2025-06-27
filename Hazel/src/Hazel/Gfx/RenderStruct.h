@@ -1,5 +1,5 @@
 #pragma once
-#include "Hazel/Model/Material.h"
+#include "Hazel/Material/Material.h"
 //#include "Hazel/Model/Model.h"
 
 namespace Hazel 
