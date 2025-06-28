@@ -131,69 +131,6 @@ project "Hazel"
 		runtime "Release"
 		optimize "on"
 
-project "Sandbox"
-	location (projectdir .. "/Sandbox")
-	kind "ConsoleApp"
-	language "C++"
-	cppdialect "C++17"
-	staticruntime "on"
-
-	targetdir (projectdir .. "/bin/" .. outputdir .. "/%{prj.name}")
-	objdir (projectdir .. "/bin-int/" .. outputdir .. "/%{prj.name}")
-	
-	-- 设置调试时的工作目录为可执行文件所在目录
-	debugdir "%{cfg.targetdir}"
-	
-	-- 构建后复制资源文件到输出目录
-	postbuildcommands {
-		"{COPYDIR} \"%{wks.location}../../../Sandbox/assets\" \"%{cfg.targetdir}/assets\""
-	}
-
-	files
-	{
-		"%{prj.name}/src/**.h",
-		"%{prj.name}/src/**.cpp"
-	}
-
-	includedirs
-	{
-		"Hazel/vendor/spdlog/include",
-		"Hazel/src",
-		"Hazel/vendor",
-		"%{IncludeDir.glm}",
-		"%{IncludeDir.entt}",
-		"%{IncludeDir.boost}"
-	}
-
-	links
-	{
-		"Hazel"
-	}
-
-	filter "system:windows"
-		systemversion "latest"
-
-		defines
-		{
-			"HZ_PLATFORM_WINDOWS"
-		}
-
-	filter "configurations:Debug"
-		defines "HZ_DEBUG"
-		runtime "Debug"
-		staticruntime "on"
-		symbols "On"
-
-	filter "configurations:Release"
-		defines "HZ_RELEASE"
-		runtime "Release"
-		optimize "On"
-
-	filter "configurations:Dist"
-		defines "HZ_DIST"
-		runtime "Release"
-		optimize "On"
-
 project "Hazelnut"
 	location (projectdir .. "/Hazelnut")
 	kind "ConsoleApp"
