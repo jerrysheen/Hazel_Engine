@@ -15,3 +15,6 @@
 [submodule "Hazel/vendor/assimp"]
 	path = Hazel/vendor/assimp
 	url = https://github.com/AminAliari/assimp.git
+[submodule "Hazel/vendor/boost"]
+	path = Hazel/vendor/boost
+	url = https://github.com/jerrysheen/boost.git
