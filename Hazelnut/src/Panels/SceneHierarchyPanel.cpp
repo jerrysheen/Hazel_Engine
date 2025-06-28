@@ -1,7 +1,7 @@
 #include "SceneHierarchyPanel.h"
 
-#include <imgui/imgui.h>
-#include <imgui/imgui_internal.h>
+#include <imgui.h>
+#include <imgui_internal.h>
 #include "Hazel/Scene/Component.h"
 
 namespace Hazel {
@@ -180,7 +180,7 @@ namespace Hazel {
 		if (ImGui::BeginPopup("MyPopup")) {
 			if (ImGui::BeginMenu("Create Mesh")) {
 				if (ImGui::MenuItem("Create Cube")) {
-					// µ±Ñ¡Ïî2±»µã»÷Ê±µÄ´¦ÀíÂß¼­
+					// ï¿½ï¿½Ñ¡ï¿½ï¿½2ï¿½ï¿½ï¿½ï¿½ï¿½Ê±ï¿½Ä´ï¿½ï¿½ï¿½ï¿½ß¼ï¿½
 					m_MenuItem = MenuItem::MESH_CREATE_NEW_CUBE;
 					m_isMenuEnablede = false;
 
@@ -190,10 +190,10 @@ namespace Hazel {
 					m_MenuItem = MenuItem::MESH_CREATE_NEW_SPHERE;
 					m_isMenuEnablede = false;
 				}
-				// µ±Ñ¡Ïî1±»µã»÷Ê±µÄ´¦ÀíÂß¼­
+				// ï¿½ï¿½Ñ¡ï¿½ï¿½1ï¿½ï¿½ï¿½ï¿½ï¿½Ê±ï¿½Ä´ï¿½ï¿½ï¿½ï¿½ß¼ï¿½
 				ImGui::EndMenu();
 			}
-			// Ìí¼Ó¸ü¶àÑ¡Ïî...
+			// ï¿½ï¿½Ó¸ï¿½ï¿½ï¿½Ñ¡ï¿½ï¿½...
 			ImGui::EndPopup();
 		}
 	}

@@ -35,22 +35,22 @@ outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 
 -- Include directories relative to root folder (solution directory)
 IncludeDir = {}
-IncludeDir["GLFW"] = "Hazel/vendor/GLFW/include"
-IncludeDir["Glad"] = "Hazel/vendor/Glad/include"
-IncludeDir["ImGui"] = "Hazel/vendor/imgui"
-IncludeDir["glm"] = "Hazel/vendor/glm"
-IncludeDir["stb_image"] = "Hazel/vendor/stb_image"
-IncludeDir["assimp"] = "Hazel/vendor/assimp/include"
-IncludeDir["entt"] = "Hazel/vendor/entt/include"
-IncludeDir["boost"] = "Hazel/vendor/boost"
+IncludeDir["GLFW"] = "ThirdParty/Runtime/Graphics/GLFW/include"
+IncludeDir["Glad"] = "ThirdParty/Runtime/Graphics/GLAD/include"
+IncludeDir["ImGui"] = "ThirdParty/Editor/imgui"
+IncludeDir["glm"] = "ThirdParty/Runtime/Core/glm"
+IncludeDir["stb_image"] = "ThirdParty/Runtime/Asset/stb_image"
+IncludeDir["assimp"] = "ThirdParty/Runtime/Asset/assimp/include"
+IncludeDir["entt"] = "ThirdParty/Runtime/Core/entt/include"
+IncludeDir["boost"] = "ThirdParty/Runtime/Core/boost"
 
 group "Dependencies"
 	-- This include file include the GLFW premake5.lua.
-	include "Hazel/vendor/GLFW"
-	include "Hazel/vendor/Glad"
-	include "Hazel/vendor/imgui"
-	include "Hazel/vendor/assimp"
-	include "Hazel/vendor/boost"
+	include "ThirdParty/Runtime/Graphics/GLFW"
+	include "ThirdParty/Runtime/Graphics/GLAD"
+	include "ThirdParty/Editor/imgui"
+	include "ThirdParty/Runtime/Asset/assimp"
+	include "ThirdParty/Runtime/Core/boost"
 group ""
 
 
@@ -74,16 +74,16 @@ project "Hazel"
 		"%{prj.name}/src/**.h",
 		"%{prj.name}/src/**.cpp",
 		"%{prj.name}/src/**.cpp",
-		"%{prj.name}/vendor/stb_image/**.h",
-		"%{prj.name}/vendor/stb_image/**.cpp",
-		"%{prj.name}/vendor/glm/glm/**.hpp",
-		"%{prj.name}/vendor/glm/glm/**.inl",
+		"ThirdParty/Runtime/Asset/stb_image/**.h",
+		"ThirdParty/Runtime/Asset/stb_image/**.cpp",
+		"ThirdParty/Runtime/Core/glm/glm/**.hpp",
+		"ThirdParty/Runtime/Core/glm/glm/**.inl",
 	}
 
 	includedirs
 	{
 		"%{prj.name}/src",
-		"%{prj.name}/vendor/spdlog/include",
+		"ThirdParty/Runtime/Core/spdlog/include",
 		"%{IncludeDir.GLFW}",
 		"%{IncludeDir.Glad}",
 		"%{IncludeDir.ImGui}",
@@ -157,7 +157,7 @@ project "Hazelnut"
 
 	includedirs
 	{
-		"Hazel/vendor/spdlog/include",
+		"ThirdParty/Runtime/Core/spdlog/include",
 		"Hazel/src",
 		"Hazel/vendor",
 		"%{IncludeDir.glm}",

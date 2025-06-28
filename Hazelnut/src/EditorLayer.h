@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Hazel.h"
-#include "imgui/imgui.h"
+#include "imgui.h"
 #include "glm/gtc/type_ptr.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 #include "Panels/SceneHierarchyPanel.h"
