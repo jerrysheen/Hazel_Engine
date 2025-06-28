@@ -1,6 +1,27 @@
- workspace "Hazel"
+ -- 根据不同的生成器设置项目目录
+if _ACTION == "vs2022" then
+    projectdir = "Project/Windows/Visual Studio 2022"
+elseif _ACTION == "vs2019" then
+    projectdir = "Project/Windows/Visual Studio 2019"
+elseif _ACTION == "xcode4" then
+    projectdir = "Project/macOS/Xcode"
+elseif _ACTION == "gmake2" then
+    if os.host() == "linux" then
+        projectdir = "Project/Linux/Makefiles"
+    elseif os.host() == "macosx" then
+        projectdir = "Project/macOS/Makefiles"
+    else
+        projectdir = "Project/Unix/Makefiles"
+    end
+else
+    -- 默认情况
+    projectdir = "Project/Generated"
+end
+
+workspace "Hazel"
 	architecture "x64"
 	startproject "Hazelnut"
+	location (projectdir)
 
 	configurations
 	{
@@ -35,14 +56,14 @@ group ""
 
 
 project "Hazel"
-	location "Hazel"
+	location (projectdir .. "/Hazel")
 	kind "StaticLib"
 	language "C++"
 	cppdialect "C++17"
 	staticruntime "on"
 
-	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
-	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
+	targetdir (projectdir .. "/bin/" .. outputdir .. "/%{prj.name}")
+	objdir (projectdir .. "/bin-int/" .. outputdir .. "/%{prj.name}")
 	-- defines { "RENDER_API_OPENGL", "TRACE" }
 	defines { "RENDER_API_DIRECTX12", "TRACE" }
 	pchheader "hzpch.h"
@@ -111,14 +132,22 @@ project "Hazel"
 		optimize "on"
 
 project "Sandbox"
-	location "Sandbox"
+	location (projectdir .. "/Sandbox")
 	kind "ConsoleApp"
 	language "C++"
 	cppdialect "C++17"
 	staticruntime "on"
 
-	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
-	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
+	targetdir (projectdir .. "/bin/" .. outputdir .. "/%{prj.name}")
+	objdir (projectdir .. "/bin-int/" .. outputdir .. "/%{prj.name}")
+	
+	-- 设置调试时的工作目录为可执行文件所在目录
+	debugdir "%{cfg.targetdir}"
+	
+	-- 构建后复制资源文件到输出目录
+	postbuildcommands {
+		"{COPYDIR} \"%{wks.location}../../../Sandbox/assets\" \"%{cfg.targetdir}/assets\""
+	}
 
 	files
 	{
@@ -166,14 +195,22 @@ project "Sandbox"
 		optimize "On"
 
 project "Hazelnut"
-	location "Hazelnut"
+	location (projectdir .. "/Hazelnut")
 	kind "ConsoleApp"
 	language "C++"
 	cppdialect "C++17"
 	staticruntime "on"
 
-	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
-	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
+	targetdir (projectdir .. "/bin/" .. outputdir .. "/%{prj.name}")
+	objdir (projectdir .. "/bin-int/" .. outputdir .. "/%{prj.name}")
+	
+	-- 设置调试时的工作目录为可执行文件所在目录
+	debugdir "%{cfg.targetdir}"
+	
+	-- 构建后复制资源文件到输出目录
+	postbuildcommands {
+		"{COPYDIR} \"%{wks.location}../../../Hazelnut/assets\" \"%{cfg.targetdir}/assets\""
+	}
 
 	files
 	{
