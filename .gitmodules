@@ -1,20 +1,20 @@
-[submodule "Hazel/vendor/spdlog"]
-	path = Hazel/vendor/spdlog
+[submodule "ThirdParty/Runtime/Core/spdlog"]
+	path = ThirdParty/Runtime/Core/spdlog
 	url = https://github.com/gabime/spdlog
-[submodule "Hazel/vendor/GLFW"]
-	path = Hazel/vendor/GLFW
+[submodule "ThirdParty/Runtime/Graphics/GLFW"]
+	path = ThirdParty/Runtime/Graphics/GLFW
 	url = https://github.com/jerrysheen/glfw.git
 	branch = Dev
-[submodule "Hazel/vendor/imgui"]
-	path = Hazel/vendor/imgui
+[submodule "ThirdParty/Editor/imgui"]
+	path = ThirdParty/Editor/imgui
 	url = https://github.com/jerrysheen/imgui.git
 	branch = Dev
-[submodule "Hazel/vendor/glm"]
-	path = Hazel/vendor/glm
+[submodule "ThirdParty/Runtime/Core/glm"]
+	path = ThirdParty/Runtime/Core/glm
 	url = https://github.com/g-truc/glm
-[submodule "Hazel/vendor/assimp"]
-	path = Hazel/vendor/assimp
+[submodule "ThirdParty/Runtime/Asset/assimp"]
+	path = ThirdParty/Runtime/Asset/assimp
 	url = https://github.com/AminAliari/assimp.git
-[submodule "Hazel/vendor/boost"]
-	path = Hazel/vendor/boost
+[submodule "ThirdParty/Runtime/Core/boost"]
+	path = ThirdParty/Runtime/Core/boost
 	url = https://github.com/jerrysheen/boost.git
