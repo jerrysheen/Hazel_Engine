@@ -20,7 +20,7 @@ end
 
 workspace "Hazel"
 	architecture "x64"
-	startproject "Hazelnut"
+	startproject "Editor"
 	location (projectdir)
 
 	configurations
@@ -131,8 +131,8 @@ project "Hazel"
 		runtime "Release"
 		optimize "on"
 
-project "Hazelnut"
-	location (projectdir .. "/Hazelnut")
+project "Editor"
+	location (projectdir .. "/Editor")
 	kind "ConsoleApp"
 	language "C++"
 	cppdialect "C++17"
@@ -146,20 +146,20 @@ project "Hazelnut"
 	
 	-- 构建后复制资源文件到输出目录
 	postbuildcommands {
-		"{COPYDIR} \"%{wks.location}../../../Hazelnut/assets\" \"%{cfg.targetdir}/assets\""
+		"{COPYDIR} \"%{wks.location}../../../Resource\" \"%{cfg.targetdir}/Resource\""
 	}
 
 	files
 	{
-		"%{prj.name}/src/**.h",
-		"%{prj.name}/src/**.cpp"
+		"Editor/**.h",
+		"Editor/**.cpp"
 	}
 
 	includedirs
 	{
 		"ThirdParty/Runtime/Core/spdlog/include",
 		"Hazel/src",
-		"Hazel/vendor",
+		"Editor",
 		"%{IncludeDir.glm}",
 		"%{IncludeDir.assimp}",
 		"%{IncludeDir.GLFW}",

@@ -53,16 +53,16 @@ namespace Hazel
         m_BackBuffer = TextureBuffer::Create(spec);
         m_DepthBuffer = TextureBuffer::Create({ 800, 600, TextureType::TEXTURE2D, TextureFormat::DEPTH24STENCIL8, TextureRenderUsage::RENDER_TARGET, MultiSample::NONE });
 
-        m_ColorShader = Shader::Create("assets/shaders/color.hlsl");
+        m_ColorShader = Shader::Create("Resource/shaders/color.hlsl");
 
 		MaterialLibrary& materialLibrary = MaterialLibrary::Get();
-		material = materialLibrary.LoadMaterial("assets/Materials/TestMat.meta");
+		material = materialLibrary.LoadMaterial("Resource/Materials/TestMat.meta");
 		//auto resourceBinding = material->GetShader()->GetReflection()->ReflectResourceBindings();
 		//auto parameters = material->GetShader()->GetReflection()->ReflectRegisterBlocks();
         
 
         std::string abpath = std::filesystem::current_path().u8string();
-        std::string cubeModelPath = abpath + std::string("/assets/Resources/Models/Cube/Cube.obj");
+        std::string cubeModelPath = abpath + std::string("/Resource/Resources/Models/Cube/Cube.obj");
         mesh = Mesh::Create();
         mesh->LoadMesh(cubeModelPath);
 

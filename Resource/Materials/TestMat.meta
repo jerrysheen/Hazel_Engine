@@ -1,7 +1,7 @@
 {
   "name": "Color",
   "type": "PBR",
-  "shader": "assets/shaders/color.hlsl",
+  "shader": "Resource/shaders/color.hlsl",
   "properties": {
     "baseColor": { "type": "vec4", "value": [0.8, 0.2, 0.2,0.1] },
     "lightDir": { "type": "vec4", "value": [0.8, 0.2, 0.2,0.1] },

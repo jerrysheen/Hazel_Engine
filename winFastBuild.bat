@@ -16,8 +16,8 @@ set "ORIGINAL_DIR=%CD%"
 cd "Project\Windows\Visual Studio 2022"
 
 :: 检查可执行文件是否存在
-set "EXE_PATH=bin\Debug-windows-x86_64\Hazelnut\Hazelnut.exe"
-set "EXE_DIR=bin\Debug-windows-x86_64\Hazelnut"
+set "EXE_PATH=bin\Debug-windows-x86_64\Editor\Editor.exe"
+set "EXE_DIR=bin\Debug-windows-x86_64\Editor"
 
 if exist "%EXE_PATH%" (
     echo Executable found. Checking if rebuild is needed...
@@ -26,11 +26,11 @@ if exist "%EXE_PATH%" (
     msbuild Hazel.sln /p:Configuration=Debug /p:Platform=x64 /v:minimal /nologo
     
     if !ERRORLEVEL! == 0 (
-        echo Starting Hazelnut...
+        echo Starting Editor...
         
         :: 关键修改：切换到 exe 所在目录再运行
         cd "%EXE_DIR%"
-        "Hazelnut.exe"
+        "Editor.exe"
         
         :: 返回原始目录
         cd "%ORIGINAL_DIR%"
@@ -47,7 +47,7 @@ if exist "%EXE_PATH%" (
         
         :: 关键修改：切换到 exe 所在目录再运行
         cd "%EXE_DIR%"
-        "Hazelnut.exe"
+        "Editor.exe"
         
         :: 返回原始目录
         cd "%ORIGINAL_DIR%"
