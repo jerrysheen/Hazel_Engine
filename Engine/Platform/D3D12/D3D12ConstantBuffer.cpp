@@ -9,14 +9,15 @@ namespace Hazel
 		: mUploadBuffer(std::get<Microsoft::WRL::ComPtr<ID3D12Resource>>(m_BufferResource)), mMappedData(nullptr)
 	{
         m_UUID = Unique::GetUUID();
-		//���������buffer��ʼ���� Ȼ�����ݻ���Sharedpointer��
+		// 计算常量buffer对齐大小
 		elementSize = d3dUtil::CalcConstantBufferByteSize(elementSize);
         m_BufferSize = elementSize;
-        // todo:: ����ط��϶���Ҫ�޸ģ� ������application������
+        
+        // 获取D3D12设备
         D3D12RenderAPIManager* renderAPIManager = dynamic_cast<D3D12RenderAPIManager*>(RenderAPIManager::getInstance()->GetManager().get());
         Microsoft::WRL::ComPtr<ID3D12Device> device = renderAPIManager->GetD3DDevice();
         
-        
+        // 创建上传缓冲区
         ThrowIfFailed(device->CreateCommittedResource(
             &CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD),
             D3D12_HEAP_FLAG_NONE,
@@ -25,10 +26,9 @@ namespace Hazel
             nullptr,
             IID_PPV_ARGS(&mUploadBuffer)));
 
+        // 映射缓冲区
         ThrowIfFailed(mUploadBuffer->Map(0, nullptr, reinterpret_cast<void**>(&mMappedData)));
 	}
-
-
 
     D3D12ConstantBuffer::~D3D12ConstantBuffer()
     {
@@ -40,12 +40,12 @@ namespace Hazel
 
     void D3D12ConstantBuffer::SetData(void* srcData, int length)
     {
-        // ȷ��Դ����ָ���Ŀ�껺��������ȷӳ��
+        // 确保源数据指针和目标缓冲区都已正确映射
         if (srcData && mMappedData) {
             memcpy(mMappedData, srcData, length);
         }
         else {
-            // ������������������Ч��ָ��
+            // 处理无效输入：无效指针
             std::cerr << "Invalid source or destination pointer." << std::endl;
         }
     }

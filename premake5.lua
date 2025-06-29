@@ -67,13 +67,14 @@ project "Hazel"
 	-- defines { "RENDER_API_OPENGL", "TRACE" }
 	defines { "RENDER_API_DIRECTX12", "TRACE" }
 	pchheader "hzpch.h"
-	pchsource "Hazel/src/hzpch.cpp"
+	pchsource "Engine/hzpch.cpp"
 
 	files
 	{
 		"%{prj.name}/src/**.h",
 		"%{prj.name}/src/**.cpp",
 		"%{prj.name}/src/**.cpp",
+		"Engine/**.cpp",
 		"ThirdParty/Runtime/Asset/stb_image/**.h",
 		"ThirdParty/Runtime/Asset/stb_image/**.cpp",
 		"ThirdParty/Runtime/Core/glm/glm/**.hpp",
@@ -83,6 +84,7 @@ project "Hazel"
 	includedirs
 	{
 		"%{prj.name}/src",
+		"Engine/",
 		"ThirdParty/Runtime/Core/spdlog/include",
 		"%{IncludeDir.GLFW}",
 		"%{IncludeDir.Glad}",
@@ -111,7 +113,8 @@ project "Hazel"
 		{
 			"HZ_PLATFORM_WINDOWS",
 			"HZ_BUILD_DLL",
-			"GLFW_INCLUDE_NONE"
+			"GLFW_INCLUDE_NONE",
+			"RENDER_API_DIRECTX12"
 		}
 		buildoptions { "/source-charset:utf-8", "/execution-charset:utf-8" }
 
@@ -152,18 +155,24 @@ project "Editor"
 	files
 	{
 		"Editor/**.h",
-		"Editor/**.cpp"
+		"Editor/**.cpp",
+		"Engine/**.h",
+		"Engine/**.cpp",
+		"ThirdParty/Runtime/Asset/stb_image/**.h",
+		"ThirdParty/Runtime/Asset/stb_image/**.cpp",
 	}
 
 	includedirs
 	{
 		"ThirdParty/Runtime/Core/spdlog/include",
 		"Hazel/src",
+		"Engine/",
 		"Editor",
 		"%{IncludeDir.glm}",
 		"%{IncludeDir.assimp}",
 		"%{IncludeDir.GLFW}",
 		"%{IncludeDir.Glad}",
+		"%{IncludeDir.stb_image}",
 		"%{IncludeDir.ImGui}",
 		"%{IncludeDir.entt}",
 		"%{IncludeDir.boost}"
@@ -179,7 +188,9 @@ project "Editor"
 
 		defines
 		{
-			"HZ_PLATFORM_WINDOWS"
+			"HZ_PLATFORM_WINDOWS",
+			"GLFW_INCLUDE_NONE",
+			"RENDER_API_DIRECTX12"
 		}
 
 	filter "configurations:Debug"
