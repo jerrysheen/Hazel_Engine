@@ -1,5 +1,5 @@
 #pragma once
-#include "Hazel/Renderer/Texture.h"
+#include "Runtime/Graphics/Renderer/Texture.h"
 #include <d3d12.h>
 namespace Hazel 
 {

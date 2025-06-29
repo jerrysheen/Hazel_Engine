@@ -1,11 +1,11 @@
 #include "hzpch.h"
 #include "D3D12Buffer.h"
 #include "Platform/D3D12/D3D12RenderAPIManager.h"
-#include "Hazel/Core/Application.h"
-#include "Hazel/RHI/Interface/IGfxViewManager.h"
+#include "Runtime/Core/Application.h"
+#include "Runtime/Graphics/RHI/Interface/IGfxViewManager.h"
 
-#include "Hazel/RHI/Core/ScopedCommandList.h"
-#include "Hazel/RHI/Core/CommandList.h"
+#include "Runtime/Graphics/RHI/Core/ScopedCommandList.h"
+#include "Runtime/Graphics/RHI/Core/CommandList.h"
 namespace Hazel
 {
 	D3D12Buffer::D3D12Buffer(uint32_t elementSize)

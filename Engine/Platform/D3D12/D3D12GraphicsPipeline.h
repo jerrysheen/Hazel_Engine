@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Hazel/RHI/Interface/IGraphicsPipeline.h"
+#include "Runtime/Graphics/RHI/Interface/IGraphicsPipeline.h"
 #include "Platform/D3D12/d3dx12.h"
 #include "Platform/D3D12/d3dUtil.h"
 #include <d3d12.h>

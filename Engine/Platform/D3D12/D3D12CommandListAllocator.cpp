@@ -1,8 +1,8 @@
 #include "hzpch.h"
 #include "D3D12CommandListAllocator.h"
 #include "D3D12RenderAPIManager.h"
-#include "Hazel/Graphics/RenderAPIManager.h"
-#include "Hazel/Core/Log.h"
+#include "Runtime/Graphics/RenderAPIManager.h"
+#include "Runtime/Core/Log.h"
 #include "D3D12Utils.h"
 
 namespace Hazel {

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Hazel/RHI/Interface/PerFrameCommandListAllocator.h"
+#include "Runtime/Graphics/RHI/Interface/PerFrameCommandListAllocator.h"
 #include "Platform/D3D12/d3dx12.h"
 #include "Platform/D3D12/d3dUtil.h"
 #include <wrl/client.h>

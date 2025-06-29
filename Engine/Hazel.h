@@ -2,48 +2,48 @@
 
 // for use hazel application
 
-#include "Hazel/Core/Application.h"
-#include "Hazel/Core/Layer.h"
-#include "Hazel/Core/Log.h"
+#include "Runtime/Core/Application.h"
+#include "Runtime/Core/Layer.h"
+#include "Runtime/Core/Log.h"
 
-#include "Hazel/Core/Timestep.h"
+#include "Runtime/Core/Timestep.h"
 
-#include "Hazel/Core/Input.h"
-#include "Hazel/Core/KeyCode.h"
-#include "Hazel/Core/MouseButtonCode.h"
-#include "Hazel/Renderer/OrthographicCameraController.h"
-#include "Hazel/Renderer/PerspectiveCameraController.h"
+#include "Runtime/Core/Input.h"
+#include "Runtime/Core/KeyCode.h"
+#include "Runtime/Core/MouseButtonCode.h"
+#include "Runtime/Graphics/Renderer/OrthographicCameraController.h"
+#include "Runtime/Graphics/Renderer/PerspectiveCameraController.h"
 
 
-#include "Hazel/ImGui/ImGuiLayer.h"
+#include "ImGui/ImGuiLayer.h"
 
 // ---Renderer------------------------
-#include "Hazel/Renderer/Renderer3D.h"
-#include "Hazel/Renderer/RendererCommand.h"
+#include "Runtime/Graphics/Renderer/Renderer3D.h"
+#include "Runtime/Graphics/Renderer/RendererCommand.h"
 
-#include "Hazel/Renderer/Buffer.h"
-#include "Hazel/Renderer/Shader.h"
-#include "Hazel/Renderer/ShaderLibrary.h"
-#include "Hazel/Renderer/TextureBuffer.h"
-#include "Hazel/Renderer/VertexArray.h"
-#include "Hazel/Renderer/Texture.h"
+#include "Runtime/Graphics/Renderer/Buffer.h"
+#include "Runtime/Graphics/Renderer/Shader.h"
+#include "Runtime/Graphics/Renderer/ShaderLibrary.h"
+#include "Runtime/Graphics/Renderer/TextureBuffer.h"
+#include "Runtime/Graphics/Renderer/VertexArray.h"
+#include "Runtime/Graphics/Renderer/Texture.h"
 
-#include "Hazel/Model/Mesh.h"
+#include "Runtime/Graphics/Mesh/Mesh.h"
 //#include "Hazel/Model/Model.h"
-#include "Hazel/Material/Material.h"
+#include "Runtime/Graphics/Material/Material.h"
 
-#include "Hazel/RHI/Interface/IPipelineStateManager.h"
+#include "Runtime/Graphics/RHI/Interface/IPipelineStateManager.h"
 
-#include "Hazel/Renderer/OrthographicCamera.h"
-#include "Hazel/Renderer/RenderTargetEnum.h"
+#include "Runtime/Graphics/Renderer/OrthographicCamera.h"
+#include "Runtime/Graphics/Renderer/RenderTargetEnum.h"
 // -----------------------------------
 
 // ---Utility------------------------
-#include "Hazel/Utility/Random.h"
+#include "Runtime/Core/Utility/Random.h"
 // -----------------------------------
 
 // ---Scene------------------------
-#include "Hazel/Scene/Scene.h"
-#include "Hazel/Scene/Component.h"
-#include "Hazel/Scene/Entity.h"
+#include "Runtime/Scene/Scene.h"
+#include "Runtime/Scene/Component.h"
+#include "Runtime/Scene/Entity.h"
 // -----------------------------------

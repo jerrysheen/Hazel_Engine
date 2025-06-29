@@ -1,8 +1,8 @@
 #pragma once
-#include "Hazel/RHI/Core/CommandList.h"
+#include "Runtime/Graphics/RHI/Core/CommandList.h"
 #include "Platform/D3D12/d3dx12.h"
 #include "Platform/D3D12/d3dUtil.h"
-#include "Hazel/Renderer/TextureStruct.h"
+#include "Runtime/Graphics/Renderer/TextureStruct.h"
 
 namespace Hazel 
 {

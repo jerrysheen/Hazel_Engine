@@ -1,6 +1,6 @@
 #include "hzpch.h"
 #include "Platform/D3D12/D3D12TextureBuffer.h"
-#include "Hazel/Core/Application.h"
+#include "Runtime/Core/Application.h"
 #include "glm/gtc/type_ptr.hpp"
 
 namespace Hazel 

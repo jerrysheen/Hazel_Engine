@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Hazel/RHI/Interface/IGfxViewManager.h"
-#include "Hazel/RHI/Interface/DescriptorTypes.h"
+#include "Runtime/Graphics/RHI/Interface/IGfxViewManager.h"
+#include "Runtime/Graphics/RHI/Interface/DescriptorTypes.h"
 #include "Platform/D3D12/d3dx12.h"
 #include "Platform/D3D12/d3dUtil.h"
 #include <unordered_map>

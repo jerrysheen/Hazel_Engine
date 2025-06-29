@@ -15,17 +15,17 @@
 #include <vector>
 #include <unordered_map>
 #include <unordered_set>
-#include "Hazel/Core/Log.h"
+#include "Runtime/Core/Log.h"
 
 #include <any>
 #include <variant>
 #include <stack>
 #include <filesystem>
 #include <mutex>
-#include "Hazel/Debug/Instrumentor.h"
+#include "Runtime/Debug/Instrumentor.h"
 
 #include "boost/uuid/uuid.hpp"
-#include "Hazel/Utility/Unique.h"
+#include "Runtime/Core/Utility/Unique.h"
 
 
 #include "Platform/D3D12/d3dx12.h"

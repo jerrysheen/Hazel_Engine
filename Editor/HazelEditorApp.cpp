@@ -1,7 +1,7 @@
 #include "Hazel.h"
-#include "Hazel/Core/EntryPoint.h"
+#include "Runtime/Core/EntryPoint.h"
 #include "imgui.h"
-#include "Hazel/Events/Event.h"
+#include "Runtime/Core/Events/Event.h"
 
 #include "glm/gtc/matrix_transform.hpp"
 #include "glm/gtc/type_ptr.hpp"

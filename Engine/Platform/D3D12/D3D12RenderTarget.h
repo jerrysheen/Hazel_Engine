@@ -1,7 +1,7 @@
 #pragma once
 
 
-#include "Hazel/Gfx/RenderTarget.h"
+#include "Runtime/Graphics/RenderTarget.h"
 #include "Platform/D3D12/d3dx12.h"
 #include "Platform/D3D12/d3dUtil.h"
 #include "Platform/D3D12/D3D12RenderAPIManager.h"

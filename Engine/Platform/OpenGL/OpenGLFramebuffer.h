@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Hazel/Renderer/TextureBuffer.h"
+#include "Runtime/Graphics/Renderer/TextureBuffer.h"
 #include "glm/gtc/type_ptr.hpp"
 #include <any>
 

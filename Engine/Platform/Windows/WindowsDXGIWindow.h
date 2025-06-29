@@ -1,8 +1,8 @@
 #pragma once
 
-#include "Hazel/Core/Window.h"
-#include "Hazel/Renderer/GraphicsContext.h"
-#include "Hazel/Core/Application.h"
+#include "Runtime/Core/Window.h"
+#include "Runtime/Graphics/Renderer/GraphicsContext.h"
+#include "Runtime/Core/Application.h"
 
 
 namespace Hazel {

@@ -1,8 +1,8 @@
 #include "hzpch.h"
-#include "Hazel/Core/Window.h"
+#include "Runtime/Core/Window.h"
 #include "Platform/Windows/WindowsGLFWWindow.h"
 #include "Platform/Windows/WindowsDXGIWindow.h"
-#include "Hazel/Graphics/RenderAPI.h"
+#include "Runtime/Graphics/RenderAPI.h"
 namespace Hazel
 {
 	Window* Window::Create(const WindowProps& props)

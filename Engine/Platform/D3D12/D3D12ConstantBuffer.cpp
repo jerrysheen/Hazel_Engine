@@ -1,7 +1,7 @@
 #include "hzpch.h"
 #include "D3D12ConstantBuffer.h"
 #include "Platform/D3D12/D3D12RenderAPIManager.h"
-#include "Hazel/Core/Application.h"
+#include "Runtime/Core/Application.h"
 
 namespace Hazel
 {

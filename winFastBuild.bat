@@ -23,7 +23,7 @@ if exist "%EXE_PATH%" (
     echo Executable found. Checking if rebuild is needed...
     
     :: 快速检查（只在必要时编译）
-    msbuild Hazel.sln /p:Configuration=Debug /p:Platform=x64 /v:minimal /nologo
+    msbuild ShanEngine.sln /p:Configuration=Debug /p:Platform=x64 /v:minimal /nologo
     
     if !ERRORLEVEL! == 0 (
         echo Starting Editor...
@@ -40,10 +40,10 @@ if exist "%EXE_PATH%" (
     )
 ) else (
     echo Executable not found. Full build required...
-    msbuild Hazel.sln /p:Configuration=Debug /p:Platform=x64
+    msbuild ShanEngine.sln /p:Configuration=Debug /p:Platform=x64
     
     if !ERRORLEVEL! == 0 (
-        echo Build successful! Starting Hazelnut...
+        echo Build successful! Starting ShanEngine...
         
         :: 关键修改：切换到 exe 所在目录再运行
         cd "%EXE_DIR%"

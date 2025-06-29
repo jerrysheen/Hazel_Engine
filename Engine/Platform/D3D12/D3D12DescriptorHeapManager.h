@@ -1,12 +1,12 @@
 #pragma once
 
-#include "Hazel/RHI/Interface/IDescritorHeapManager.h"
+#include "Runtime/Graphics/RHI/Interface/IDescritorHeapManager.h"
 #include "D3D12DescriptorAllocator.h"
 #include "Platform/D3D12/d3dx12.h"
 #include "Platform/D3D12/d3dUtil.h"
 #include <unordered_map>
 #include <memory>
-#include "Hazel/RHI/Interface/DescriptorTypes.h"
+#include "Runtime/Graphics/RHI/Interface/DescriptorTypes.h"
 
 namespace Hazel {
 

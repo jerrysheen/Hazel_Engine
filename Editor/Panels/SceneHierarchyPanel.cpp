@@ -2,7 +2,7 @@
 
 #include <imgui.h>
 #include <imgui_internal.h>
-#include "Hazel/Scene/Component.h"
+#include "Runtime/Scene/Component.h"
 
 namespace Hazel {
 

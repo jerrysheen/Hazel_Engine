@@ -1,18 +1,18 @@
 #include "SceneViewLayer.h"
-#include <Hazel/Gfx/RenderStruct.h>
-#include <Hazel/Renderer/TextureBuffer.h>
-#include <Hazel/Gfx/Culling.h>
+#include <Runtime/Graphics/RenderStruct.h>
+#include <Runtime/Graphics/Renderer/TextureBuffer.h>
+#include <Runtime/Graphics/Culling.h>
 #include "Platform/D3D12/D3D12Buffer.h"
 #include "Platform/D3D12/D3D12Shader.h"
 #include "Platform/D3D12/D3D12VertexArray.h"
-#include "Hazel/Renderer/VertexArray.h"
-#include "Hazel/Asset/MaterialLibrary.h"
-#include "Hazel/RHI/Interface/IGfxViewManager.h"
-#include "Hazel/RHI/Interface/ICommandListManager.h"
-#include "Hazel/RHI/Core/CommandList.h"
-#include "Hazel/RHI/Core/ScopedCommandList.h"
-#include "Hazel/RHI/Interface/IPipelineStateManager.h"
-#include "Hazel/RHI/Interface/PipelineTypes.h"
+#include "Runtime/Graphics/Renderer/VertexArray.h"
+#include "Runtime/Asset/Core/MaterialLibrary.h"
+#include "Runtime/Graphics/RHI/Interface/IGfxViewManager.h"
+#include "Runtime/Graphics/RHI/Interface/ICommandListManager.h"
+#include "Runtime/Graphics/RHI/Core/CommandList.h"
+#include "Runtime/Graphics/RHI/Core/ScopedCommandList.h"
+#include "Runtime/Graphics/RHI/Interface/IPipelineStateManager.h"
+#include "Runtime/Graphics/RHI/Interface/PipelineTypes.h"
 
 
 namespace Hazel

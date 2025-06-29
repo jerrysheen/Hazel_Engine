@@ -18,7 +18,7 @@ else
     projectdir = "Project/Generated"
 end
 
-workspace "Hazel"
+workspace "ShanEngine"
 	architecture "x64"
 	startproject "Editor"
 	location (projectdir)
@@ -55,8 +55,8 @@ group ""
 
 
 
-project "Hazel"
-	location (projectdir .. "/Hazel")
+project "EngineCore"
+	location (projectdir .. "/EngineCore")
 	kind "StaticLib"
 	language "C++"
 	cppdialect "C++17"
@@ -95,8 +95,7 @@ project "Hazel"
 		"%{IncludeDir.entt}",
 		"%{IncludeDir.boost}"
 	}
--- ����о�����������MSVS linker��������additional dependencyһ����
--- ��Ϊhazel��һ��dll lib�� ����include��һ��static lib�� ����sanbox include��hazelһ��
+
 	links 
 	{ 
 		"GLFW",
@@ -114,7 +113,8 @@ project "Hazel"
 			"HZ_PLATFORM_WINDOWS",
 			"HZ_BUILD_DLL",
 			"GLFW_INCLUDE_NONE",
-			"RENDER_API_DIRECTX12"
+			"RENDER_API_DIRECTX12",
+			"NOMINMAX"
 		}
 		buildoptions { "/source-charset:utf-8", "/execution-charset:utf-8" }
 
@@ -165,7 +165,6 @@ project "Editor"
 	includedirs
 	{
 		"ThirdParty/Runtime/Core/spdlog/include",
-		"Hazel/src",
 		"Engine/",
 		"Editor",
 		"%{IncludeDir.glm}",
@@ -180,7 +179,7 @@ project "Editor"
 
 	links
 	{
-		"Hazel"
+		"EngineCore"
 	}
 
 	filter "system:windows"
@@ -190,7 +189,8 @@ project "Editor"
 		{
 			"HZ_PLATFORM_WINDOWS",
 			"GLFW_INCLUDE_NONE",
-			"RENDER_API_DIRECTX12"
+			"RENDER_API_DIRECTX12",
+			"NOMINMAX"
 		}
 
 	filter "configurations:Debug"

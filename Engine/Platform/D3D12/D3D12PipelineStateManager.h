@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Hazel/RHI/Interface/IPipelineStateManager.h"
+#include "Runtime/Graphics/RHI/Interface/IPipelineStateManager.h"
 #include "D3D12GraphicsPipeline.h"
 #include "Platform/D3D12/d3dx12.h"
 #include "Platform/D3D12/d3dUtil.h"

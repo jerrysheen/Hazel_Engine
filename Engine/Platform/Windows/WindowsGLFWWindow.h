@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Hazel/Core/Window.h"
-#include "Hazel/Renderer/GraphicsContext.h"
+#include "Runtime/Core/Window.h"
+#include "Runtime/Graphics/Renderer/GraphicsContext.h"
 
 #include <GLFW/glfw3.h>
 

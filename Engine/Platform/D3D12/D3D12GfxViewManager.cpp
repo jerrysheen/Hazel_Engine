@@ -1,11 +1,11 @@
 #include "hzpch.h"
 #include "D3D12GfxViewManager.h"
 #include "D3D12RenderAPIManager.h"
-#include "Hazel/Core/Application.h"
+#include "Runtime/Core/Application.h"
 #include "D3D12DescriptorHeapManager.h"
-#include "Hazel/Graphics/RenderAPIManager.h"
-#include "Hazel/RHI/Interface/IDescritorAllocator.h"
-#include "Hazel/RHI/Interface/DescriptorTypes.h"
+#include "Runtime/Graphics/RenderAPIManager.h"
+#include "Runtime/Graphics/RHI/Interface/IDescritorAllocator.h"
+#include "Runtime/Graphics/RHI/Interface/DescriptorTypes.h"
 #include <boost/uuid/uuid_io.hpp>
 namespace Hazel {
 

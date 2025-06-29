@@ -1,10 +1,10 @@
 #include "hzpch.h"
 #include "WindowsGLFWWindow.h"
-#include "Hazel/Core/Log.h"
-#include "Hazel/Events/ApplicationEvent.h"
-#include "Hazel/Events/MouseEvent.h"
-#include "Hazel/Events/Event.h"
-#include "Hazel/Events/KeyEvent.h"
+#include "Runtime/Core/Log.h"
+#include "Runtime/Core/Events/ApplicationEvent.h"
+#include "Runtime/Core/Events/MouseEvent.h"
+#include "Runtime/Core/Events/Event.h"
+#include "Runtime/Core/Events/KeyEvent.h"
 #include "Platform/OpenGL/OpenGLContext.h"
 #include <glad/glad.h>
 
@@ -59,7 +59,7 @@ namespace Hazel {
 		m_Context = new OpenGLContext(m_Window);
 		m_Context->Init();
 		
-		// Ö¸ÅÉÏÖÔÚµÄWindowProps¸øm_WindowÕâ¸ö´°¿Ú
+		// Ö¸ï¿½ï¿½ï¿½ï¿½ï¿½Úµï¿½WindowPropsï¿½ï¿½m_Windowï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		glfwSetWindowUserPointer(m_Window, &m_Data);
 		SetVSync(true);
 		// Set GLFW callbacks
@@ -180,7 +180,7 @@ namespace Hazel {
 		
 	void WindowsGLFWWindow::SetBackGroundColor()
 	{
-		// ÇÐ»»Ò»´ÎSwapbuffer, ²»È»Ö»ÉèÖÃÒ»´Î£¬»áµ¼ÖÂÑÕÉ«ÉÁË¸¡£
+		// ï¿½Ð»ï¿½Ò»ï¿½ï¿½Swapbuffer, ï¿½ï¿½È»Ö»ï¿½ï¿½ï¿½ï¿½Ò»ï¿½Î£ï¿½ï¿½áµ¼ï¿½ï¿½ï¿½ï¿½É«ï¿½ï¿½Ë¸ï¿½ï¿½
 		glClearColor(0.15f, 0.15f, 0.15f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
 		m_Context->SwapBuffers();
