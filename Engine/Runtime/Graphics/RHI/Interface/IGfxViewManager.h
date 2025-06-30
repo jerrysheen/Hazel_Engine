@@ -6,8 +6,8 @@
 #include "IDescritorAllocator.h"
 #include <vector>
 #include <boost/uuid/uuid.hpp>
-#include "Runtime/Graphics/Renderer/TextureBuffer.h"
-#include "Runtime/Graphics/Renderer/Buffer.h"
+#include "Runtime/Graphics/Texture/TextureBuffer.h"
+#include "Runtime/Graphics/RHI/Core/Buffer.h"
 
 
 namespace Hazel {

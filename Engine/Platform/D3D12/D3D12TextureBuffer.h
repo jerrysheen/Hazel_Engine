@@ -1,5 +1,5 @@
 #pragma once
-#include "Runtime/Graphics/Renderer/TextureBuffer.h"
+#include "Runtime/Graphics/Texture/TextureBuffer.h"
 #include "Platform/D3D12/d3dx12.h"
 #include "Platform/D3D12/d3dUtil.h"
 #include "Platform/D3D12/D3D12RenderAPIManager.h"

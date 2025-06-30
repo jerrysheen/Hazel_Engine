@@ -2,9 +2,9 @@
 
 #include "hzpch.h"
 #include "glm/glm.hpp"
-#include "Runtime/Graphics/Renderer/Texture.h"
-#include "Runtime/Graphics/Renderer/Shader.h"
-#include "Runtime/Graphics/Renderer/VertexArray.h"
+#include "Runtime/Graphics/Texture/Texture.h"
+#include "Runtime/Graphics/Shader/Shader.h"
+#include "Runtime/Graphics/RHI/Core/VertexArray.h"
 #include <assimp/Importer.hpp>      // C++ importer interface
 #include <assimp/scene.h>           // Output data structure
 #include <assimp/postprocess.h>     // Post processing flags

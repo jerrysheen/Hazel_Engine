@@ -1,5 +1,5 @@
 #pragma once
-#include "Runtime/Graphics/RenderPass.h"
+#include "Runtime/Graphics/Renderer/RenderPass.h"
 
 namespace Hazel 
 {

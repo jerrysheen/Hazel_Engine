@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Runtime/Graphics/RenderStruct.h"
+#include "Runtime/Graphics/Renderer/RenderStruct.h"
 namespace Hazel {
 
 	class RenderPass

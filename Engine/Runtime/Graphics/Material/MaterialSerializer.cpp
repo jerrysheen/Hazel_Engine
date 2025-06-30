@@ -2,8 +2,8 @@
 #include "MaterialSerializer.h"
 #include "Material.h"
 #include "MaterialProperty.h"
-#include "Runtime/Graphics/Renderer/Shader.h"
-#include "Runtime/Graphics/Renderer/Texture.h"
+#include "Runtime/Graphics/Shader/Shader.h"
+#include "Runtime/Graphics/Texture/Texture.h"
 #include <fstream>
 #include <sstream>
 #include <cstdio>

@@ -1,7 +1,7 @@
 #pragma once
 #include "hzpch.h"
-#include "Runtime/Graphics/Renderer/Shader.h"
-#include "Runtime/Graphics/Renderer/ShaderReflection.h"
+#include "Runtime/Graphics/Shader/Shader.h"
+#include "Runtime/Graphics/Shader/ShaderReflection.h"
 #include <d3d12.h>
 #include <d3dcompiler.h>
 using Microsoft::WRL::ComPtr;

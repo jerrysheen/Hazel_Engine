@@ -3,7 +3,7 @@
 #include <string>
 #include "Runtime/Core/Core.h"
 #include "glm/glm.hpp"
-#include "Buffer.h"
+#include "Runtime/Graphics/RHI/Core/Buffer.h"
 #include "ShaderReflection.h"
 
 namespace Hazel {

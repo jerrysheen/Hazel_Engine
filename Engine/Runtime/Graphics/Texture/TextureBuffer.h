@@ -3,7 +3,7 @@
 #include "hzpch.h"
 #include "Runtime/Core/Core.h"
 #include "glm/gtc/type_ptr.hpp"
-#include "Runtime/Graphics/Renderer/TextureStruct.h"
+#include "Runtime/Graphics/Texture/TextureStruct.h"
 
 
 namespace Hazel {

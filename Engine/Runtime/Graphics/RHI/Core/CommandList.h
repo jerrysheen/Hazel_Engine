@@ -1,8 +1,8 @@
 #pragma once
 #include "Runtime/Graphics/RHI/Interface/ICommandListAllocator.h"
-#include "Runtime/Graphics/Color.h"
-#include "Runtime/Graphics/Renderer/TextureStruct.h"
-#include "Runtime/Graphics/Renderer/TextureBuffer.h"
+#include "Runtime/Graphics/Utility/Color.h"
+#include "Runtime/Graphics/Texture/TextureStruct.h"
+#include "Runtime/Graphics/Texture/TextureBuffer.h"
 #include <atomic>
 #include <functional>
 

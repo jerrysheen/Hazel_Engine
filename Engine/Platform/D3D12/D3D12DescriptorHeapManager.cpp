@@ -1,7 +1,7 @@
 #include "hzpch.h"
 #include "D3D12DescriptorHeapManager.h"
-#include "Runtime/Graphics/Renderer/TextureBuffer.h"
-#include "Runtime/Graphics/Renderer/Buffer.h"
+#include "Runtime/Graphics/Texture/TextureBuffer.h"
+#include "Runtime/Graphics/RHI/Core/Buffer.h"
 #include <string>
 
 namespace Hazel {

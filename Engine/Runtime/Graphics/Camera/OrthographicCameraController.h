@@ -1,7 +1,7 @@
 #pragma once
 #include "Runtime/Core/Time/Timestep.h"
 #include "glm/glm.hpp"
-#include "Runtime/Graphics/Renderer/OrthographicCamera.h"
+#include "Runtime/Graphics/Camera/OrthographicCamera.h"
 
 #include "Runtime/Core/Events/Event.h"
 #include "Runtime/Core/Events/ApplicationEvent.h"

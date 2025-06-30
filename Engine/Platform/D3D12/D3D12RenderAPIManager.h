@@ -1,6 +1,6 @@
 #pragma once
 #include "Runtime/Graphics/RenderAPIManager.h"
-#include "Runtime/Graphics/Renderer/Buffer.h"
+#include "Runtime/Graphics/RHI/Core/Buffer.h"
 #include "Runtime/Graphics/RHI/Core/CommandList.h"
 
 #include "Platform/D3D12/d3dUtil.h"

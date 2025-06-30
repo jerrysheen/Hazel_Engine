@@ -1,11 +1,11 @@
 #include "SceneViewLayer.h"
-#include <Runtime/Graphics/RenderStruct.h>
-#include <Runtime/Graphics/Renderer/TextureBuffer.h>
-#include <Runtime/Graphics/Culling.h>
+#include <Runtime/Graphics/Renderer/RenderStruct.h>
+#include <Runtime/Graphics/Texture/TextureBuffer.h>
+#include <Runtime/Graphics/Culling/Culling.h>
 #include "Platform/D3D12/D3D12Buffer.h"
 #include "Platform/D3D12/D3D12Shader.h"
 #include "Platform/D3D12/D3D12VertexArray.h"
-#include "Runtime/Graphics/Renderer/VertexArray.h"
+#include "Runtime/Graphics/RHI/Core/VertexArray.h"
 #include "Runtime/Asset/Core/MaterialLibrary.h"
 #include "Runtime/Graphics/RHI/Interface/IGfxViewManager.h"
 #include "Runtime/Graphics/RHI/Interface/ICommandListManager.h"
@@ -521,7 +521,6 @@ namespace Hazel
         //{
         //    m_viewPortPanelSize = { viewPortSize.x, viewPortSize.y };
         //    m_FrameBuffer->Resize(m_viewPortPanelSize);
-        //    RendererCommand::SetViewPort(0,0,m_viewPortPanelSize.x, m_viewPortPanelSize.y);
         //    m_CameraController.ResetAspectRatio(m_viewPortPanelSize.x, m_viewPortPanelSize.y);
         //}
         uint32_t textureID = 0;

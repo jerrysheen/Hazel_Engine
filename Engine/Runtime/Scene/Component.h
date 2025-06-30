@@ -6,7 +6,7 @@
 #include "Runtime/Graphics/Mesh/Mesh.h"
 #include <Runtime/Graphics/Material/Material.h>
 //#include <Hazel/Model/Model.h>
-#include <Runtime/Graphics/Renderer/Camera.h>
+#include <Runtime/Graphics/Camera/Camera.h>
 
 
 namespace Hazel {

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Runtime/Core/Window/Window.h"
-#include "Runtime/Graphics/Renderer/GraphicsContext.h"
+#include "Runtime/Graphics/RHI/Core/GraphicsContext.h"
 #include "Runtime/Core/Application.h"
 
 

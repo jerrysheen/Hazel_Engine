@@ -1,12 +1,12 @@
 #pragma once
 
-#include "OrthographicCamera.h"
-#include "Runtime/Graphics/Renderer/Camera.h"
+#include "Runtime/Graphics/Camera/OrthographicCamera.h"
+#include "Runtime/Graphics/Camera/Camera.h"
 #include "glm/gtc/matrix_transform.hpp"
-#include "Texture.h"
+#include "Runtime/Graphics/Texture/Texture.h"
 #include "hzpch.h"
-#include "VertexArray.h"
-#include "Shader.h"
+#include "Runtime/Graphics/RHI/Core/VertexArray.h"
+#include "Runtime/Graphics/Shader/Shader.h"
 
 namespace Hazel {
 	

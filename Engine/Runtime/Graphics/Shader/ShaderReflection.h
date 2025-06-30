@@ -3,7 +3,7 @@
 #include <string>
 #include <vector>
 #include "Runtime/Core/Core.h"
-#include "Buffer.h"
+#include "Runtime/Graphics/RHI/Core/Buffer.h"
 
 namespace Hazel {
 	

@@ -2,7 +2,6 @@
 #include "Renderer3D.h"
 
 
-#include "RendererCommand.h"
 
 namespace Hazel {
 
@@ -126,7 +125,6 @@ namespace Hazel {
 		s_Data->TextureShader->SetMat4("u_Transform", transform);
 
 		s_Data->QuadVertexArray->Bind();
-		//RendererCommand::DrawIndexed(s_Data->QuadVertexArray);
 	}
 
 	void Renderer3D::DrawQuad(const glm::vec2& position, const glm::vec2& size, const Ref<Texture2D>& texture, float tilingFactor, const glm::vec4& tintColor)
@@ -197,7 +195,7 @@ namespace Hazel {
 			curr->TextureShader->SetFloat4("u_Color", *curr->Color);
 			curr->TextureShader->SetFloat("u_TilingFactor", 1.0f);
 			curr->WhiteTexture->Bind(0);
-			// transform ÀïÃæÓÐ translate ºÍ scaleÁË
+			// transform ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ translate ï¿½ï¿½ scaleï¿½ï¿½
 			glm::mat4 transform = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f))
 				* glm::scale(glm::mat4(1.0f), *curr->Scale);
 			curr->TextureShader->SetMat4("u_Transform", transform);
@@ -207,15 +205,6 @@ namespace Hazel {
 			curr->QuadVertexArray->Bind();
 			switch (curr->DrawType)
 			{
-			case Renderer3D::DRAW_TYPE::HZ_TRIANGLES:
-				RendererCommand::DrawIndexed(curr->QuadVertexArray);
-				break;
-			case Renderer3D::DRAW_TYPE::HZ_LINES:
-				RendererCommand::DrawLines(curr->QuadVertexArray);
-				break;
-			default:
-				RendererCommand::DrawIndexed(curr->QuadVertexArray);
-				break;
 			}
 		}
 	}

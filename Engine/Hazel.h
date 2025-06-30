@@ -11,22 +11,21 @@
 #include "Runtime/Core/Input/Input.h"
 #include "Runtime/Core/Input/KeyCode.h"
 #include "Runtime/Core/Input/MouseButtonCode.h"
-#include "Runtime/Graphics/Renderer/OrthographicCameraController.h"
-#include "Runtime/Graphics/Renderer/PerspectiveCameraController.h"
+#include "Runtime/Graphics/Camera/OrthographicCameraController.h"
+#include "Runtime/Graphics/Camera/PerspectiveCameraController.h"
 
 
 #include "ImGui/ImGuiLayer.h"
 
 // ---Renderer------------------------
 #include "Runtime/Graphics/Renderer/Renderer3D.h"
-#include "Runtime/Graphics/Renderer/RendererCommand.h"
 
-#include "Runtime/Graphics/Renderer/Buffer.h"
-#include "Runtime/Graphics/Renderer/Shader.h"
-#include "Runtime/Graphics/Renderer/ShaderLibrary.h"
-#include "Runtime/Graphics/Renderer/TextureBuffer.h"
-#include "Runtime/Graphics/Renderer/VertexArray.h"
-#include "Runtime/Graphics/Renderer/Texture.h"
+#include "Runtime/Graphics/RHI/Core/Buffer.h"
+#include "Runtime/Graphics/Shader/Shader.h"
+#include "Runtime/Graphics/Shader/ShaderLibrary.h"
+#include "Runtime/Graphics/Texture/TextureBuffer.h"
+#include "Runtime/Graphics/RHI/Core/VertexArray.h"
+#include "Runtime/Graphics/Texture/Texture.h"
 
 #include "Runtime/Graphics/Mesh/Mesh.h"
 //#include "Hazel/Model/Model.h"
@@ -34,8 +33,8 @@
 
 #include "Runtime/Graphics/RHI/Interface/IPipelineStateManager.h"
 
-#include "Runtime/Graphics/Renderer/OrthographicCamera.h"
-#include "Runtime/Graphics/Renderer/RenderTargetEnum.h"
+#include "Runtime/Graphics/Camera/OrthographicCamera.h"
+#include "Runtime/Graphics/RHI/Core/RenderTargetEnum.h"
 // -----------------------------------
 
 // ---Utility------------------------

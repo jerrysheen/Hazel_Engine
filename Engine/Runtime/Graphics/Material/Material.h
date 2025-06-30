@@ -2,7 +2,7 @@
 
 #include "hzpch.h"
 #include "MaterialProperty.h"
-#include "Runtime/Graphics/Renderer/Shader.h"
+#include "Runtime/Graphics/Shader/Shader.h"
 #include <unordered_map>
 
 namespace Hazel 

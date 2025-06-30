@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Runtime/Graphics/Renderer/Shader.h"
-#include "Runtime/Graphics/Renderer/ShaderReflection.h"
+#include "Runtime/Graphics/Shader/Shader.h"
+#include "Runtime/Graphics/Shader/ShaderReflection.h"
 #include <glm/glm.hpp>
 
 typedef unsigned int GLenum;

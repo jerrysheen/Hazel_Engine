@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Runtime/Graphics/Renderer/Texture.h"
+#include "Runtime/Graphics/Texture/Texture.h"
 #include <glad/glad.h>
 namespace Hazel {
 

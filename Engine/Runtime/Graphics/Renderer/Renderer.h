@@ -1,8 +1,8 @@
 #pragma once
 #include "hzpch.h"
 #include "Runtime/Graphics/RenderAPI.h"
-#include "Runtime/Graphics/RenderStruct.h"
-#include "Runtime/Graphics/RenderPass.h"
+#include "Runtime/Graphics/Renderer/RenderStruct.h"
+#include "Runtime/Graphics/Renderer/RenderPass.h"
 
 namespace Hazel {
 	

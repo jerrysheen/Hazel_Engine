@@ -2,7 +2,7 @@
 
 #include <glm/glm.hpp>
 
-#include "Runtime/Graphics/Renderer/VertexArray.h"
+#include "Runtime/Graphics/RHI/Core/VertexArray.h"
 
 namespace Hazel {
 	

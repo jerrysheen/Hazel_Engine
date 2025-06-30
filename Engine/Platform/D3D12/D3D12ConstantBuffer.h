@@ -1,6 +1,6 @@
 #pragma once
 #include "hzpch.h"
-#include "Runtime/Graphics/Renderer/Buffer.h"
+#include "Runtime/Graphics/RHI/Core/Buffer.h"
 
 namespace Hazel 
 {

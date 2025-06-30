@@ -1,9 +1,8 @@
 #pragma once
 
 #include "glm/glm.hpp"
-#include "Runtime/Graphics/RenderStruct.h"
-#include "Runtime/Graphics/Renderer.h"
-#include "Runtime/Graphics/RenderTarget.h"
+#include "Runtime/Graphics/Renderer/RenderStruct.h"
+#include "Runtime/Graphics/Renderer/Renderer.h"
 
 namespace Hazel {
 	class Camera {
@@ -62,8 +61,6 @@ namespace Hazel {
 		glm::vec3 m_Front = { 0, 0, 1 };
 		glm::vec3 m_up = { 0, 1.0f, 0.0f };
 
-		Ref<RenderTarget> m_CameraColorAttachment;
-		Ref<RenderTarget> m_CameraDepthAttachment;
 
 	};
 }

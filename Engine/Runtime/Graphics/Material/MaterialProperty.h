@@ -3,7 +3,7 @@
 #include "hzpch.h"
 #include <variant>
 #include <glm/glm.hpp>
-#include "Runtime/Graphics/Renderer/Texture.h"
+#include "Runtime/Graphics/Texture/Texture.h"
 
 namespace Hazel 
 {

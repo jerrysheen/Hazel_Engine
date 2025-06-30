@@ -2,7 +2,7 @@
 #include "Runtime/Graphics/RHI/Core/CommandList.h"
 #include "Platform/D3D12/d3dx12.h"
 #include "Platform/D3D12/d3dUtil.h"
-#include "Runtime/Graphics/Renderer/TextureStruct.h"
+#include "Runtime/Graphics/Texture/TextureStruct.h"
 
 namespace Hazel 
 {
