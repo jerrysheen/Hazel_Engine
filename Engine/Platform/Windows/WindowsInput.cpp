@@ -1,5 +1,5 @@
 #include "hzpch.h"
-#include "Runtime/Core/Input.h"
+#include "Runtime/Core/Input/Input.h"
 
 #include "Runtime/Core/Application.h"
 #include <GLFW/glfw3.h>

@@ -1,6 +1,6 @@
 #include "hzpch.h"
 #include "PerFrameCommandListAllocator.h"
-#include "Runtime/Core/Log.h"
+#include "Runtime/Core/Log/Log.h"
 
 namespace Hazel {
 

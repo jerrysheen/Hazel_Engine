@@ -4,13 +4,13 @@
 #include "Runtime/Core/Events/Event.h"
 #include "Runtime/Core/Events/ApplicationEvent.h"
 
-#include "Window.h"
+#include "Runtime/Core/Window/Window.h"
 #include "Runtime/Graphics/RenderAPIManager.h"
-#include "Runtime/Core/LayerStack.h"
+#include "Runtime/Core/Layer/LayerStack.h"
 
 #include "ImGui/ImGuiLayer.h"
 
-#include "Runtime/Core/Timestep.h"
+#include "Runtime/Core/Time/Timestep.h"
 
 
 namespace Hazel 

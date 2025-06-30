@@ -3,14 +3,14 @@
 // for use hazel application
 
 #include "Runtime/Core/Application.h"
-#include "Runtime/Core/Layer.h"
-#include "Runtime/Core/Log.h"
+#include "Runtime/Core/Layer/Layer.h"
+#include "Runtime/Core/Log/Log.h"
 
-#include "Runtime/Core/Timestep.h"
+#include "Runtime/Core/Time/Timestep.h"
 
-#include "Runtime/Core/Input.h"
-#include "Runtime/Core/KeyCode.h"
-#include "Runtime/Core/MouseButtonCode.h"
+#include "Runtime/Core/Input/Input.h"
+#include "Runtime/Core/Input/KeyCode.h"
+#include "Runtime/Core/Input/MouseButtonCode.h"
 #include "Runtime/Graphics/Renderer/OrthographicCameraController.h"
 #include "Runtime/Graphics/Renderer/PerspectiveCameraController.h"
 

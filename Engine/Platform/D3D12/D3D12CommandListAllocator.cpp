@@ -2,7 +2,7 @@
 #include "D3D12CommandListAllocator.h"
 #include "D3D12RenderAPIManager.h"
 #include "Runtime/Graphics/RenderAPIManager.h"
-#include "Runtime/Core/Log.h"
+#include "Runtime/Core/Log/Log.h"
 #include "D3D12Utils.h"
 
 namespace Hazel {

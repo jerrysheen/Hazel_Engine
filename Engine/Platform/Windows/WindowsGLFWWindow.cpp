@@ -1,6 +1,6 @@
 #include "hzpch.h"
 #include "WindowsGLFWWindow.h"
-#include "Runtime/Core/Log.h"
+#include "Runtime/Core/Log/Log.h"
 #include "Runtime/Core/Events/ApplicationEvent.h"
 #include "Runtime/Core/Events/MouseEvent.h"
 #include "Runtime/Core/Events/Event.h"

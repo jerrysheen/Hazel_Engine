@@ -1,7 +1,7 @@
 #include "hzpch.h"
 #include "Application.h"
 
-#include "Runtime/Core/Log.h"
+#include "Runtime/Core/Log/Log.h"
 #include "Glfw/glfw3.h"
 
 namespace Hazel{

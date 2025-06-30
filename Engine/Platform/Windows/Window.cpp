@@ -1,5 +1,5 @@
 #include "hzpch.h"
-#include "Runtime/Core/Window.h"
+#include "Runtime/Core/Window/Window.h"
 #include "Platform/Windows/WindowsGLFWWindow.h"
 #include "Platform/Windows/WindowsDXGIWindow.h"
 #include "Runtime/Graphics/RenderAPI.h"

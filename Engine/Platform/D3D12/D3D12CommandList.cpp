@@ -7,7 +7,7 @@
 #include "Platform/D3D12/d3dUtil.h"
 #include "Runtime/Graphics/RHI/Interface/IGfxViewManager.h"
 #include "Runtime/Graphics/RHI/Interface/DescriptorTypes.h"
-#include "Runtime/Core/Log.h"
+#include "Runtime/Core/Log/Log.h"
 #include "D3D12Utils.h"
 
 namespace Hazel 

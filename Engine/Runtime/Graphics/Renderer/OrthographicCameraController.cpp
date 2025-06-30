@@ -1,7 +1,7 @@
 #include "hzpch.h"
 #include "OrthographicCameraController.h"
-#include "Runtime/Core/Input.h"
-#include "Runtime/Core/KeyCode.h"
+#include "Runtime/Core/Input/Input.h"
+#include "Runtime/Core/Input/KeyCode.h"
 
 
 #include "memory.h"

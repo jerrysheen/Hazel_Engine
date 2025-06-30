@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Runtime/Core/Window.h"
+#include "Runtime/Core/Window/Window.h"
 #include "Runtime/Graphics/Renderer/GraphicsContext.h"
 #include "Runtime/Core/Application.h"
 
