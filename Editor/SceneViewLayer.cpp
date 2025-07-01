@@ -223,9 +223,9 @@ namespace Hazel
         manager.BeginFrame(getCurrentFrameId());
         currentFrameID++;
 
-        ID3D12Fence* fence = NULL;
-        HRESULT hr = device->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&fence));
-        assert(SUCCEEDED(hr));
+        //ID3D12Fence* fence = NULL;
+        //HRESULT hr = device->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&fence));
+        //assert(SUCCEEDED(hr));
 
 
 		ScopedCommandList cmdList(CommandListType::Graphics);
