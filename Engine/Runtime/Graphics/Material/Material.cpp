@@ -80,7 +80,7 @@ namespace Hazel
 			return;
 
 		// 获取寄存器块信息
-		const auto& registerBlocks = m_Shader->GetReflection()->ReflectRegisterBlocks();
+		const auto registerBlocks = m_Shader->GetReflection()->GetAllRegisterBlocks();
 		
 		for (const auto& block : registerBlocks)
 		{
@@ -204,7 +204,7 @@ namespace Hazel
 		m_Properties.clear();
 
 		// 从着色器反射数据中获取寄存器块信息
-		const auto& registerBlocks = m_Shader->GetReflection()->ReflectRegisterBlocks();
+		const auto registerBlocks = m_Shader->GetReflection()->GetAllRegisterBlocks();
 		
 		// 创建材质需要的所有属性
 		for (const auto& block : registerBlocks)
@@ -227,7 +227,7 @@ namespace Hazel
 			return;
 
 		// 尝试从Shader反射数据中找到此属性的更详细信息
-		const auto& registerBlocks = m_Shader->GetReflection()->ReflectRegisterBlocks();
+		const auto registerBlocks = m_Shader->GetReflection()->GetAllRegisterBlocks();
 		ShaderDataType dataType = ShaderDataType::None;
 		
 		// 如果找不到详细类型信息，则根据大小推断类型
@@ -275,7 +275,7 @@ namespace Hazel
 		m_PropertyBlocks.clear();
 
 		// 获取寄存器块信息
-		const auto& registerBlocks = m_Shader->GetReflection()->ReflectRegisterBlocks();
+		const auto registerBlocks = m_Shader->GetReflection()->GetAllRegisterBlocks();
 		
 		for (const auto& block : registerBlocks)
 		{
@@ -388,7 +388,7 @@ namespace Hazel
 	{
 		// Find parameter size from shader reflection
 		uint32_t paramSize = 0;
-		const auto& registerBlocks = m_Shader->GetReflection()->ReflectRegisterBlocks();
+		const auto registerBlocks = m_Shader->GetReflection()->GetAllRegisterBlocks();
 		
 		for (const auto& block : registerBlocks)
 		{

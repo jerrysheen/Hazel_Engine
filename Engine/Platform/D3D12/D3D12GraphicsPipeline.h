@@ -1,12 +1,15 @@
 #pragma once
 
 #include "Runtime/Graphics/RHI/Interface/IGraphicsPipeline.h"
+#include "Platform/D3D12/D3D12RootSignature.h"
 #include "Platform/D3D12/d3dx12.h"
 #include "Platform/D3D12/d3dUtil.h"
 #include <d3d12.h>
 #include <wrl/client.h>
+#include <memory>
 
 namespace Hazel {
+    class D3D12RootSignature;  // 前向声明
 
     class D3D12GraphicsPipeline : public IGraphicsPipeline {
     public:
@@ -22,7 +25,7 @@ namespace Hazel {
         
         // D3D12特定接口
         ID3D12PipelineState* GetD3D12PipelineState() const { return m_PipelineState.Get(); }
-        ID3D12RootSignature* GetD3D12RootSignature() const { return m_RootSignature.Get(); }
+        ID3D12RootSignature* GetD3D12RootSignature() const { return m_RootSignature ? m_RootSignature->GetRootSignature() : nullptr; }
         
     private:
         void CreateRootSignature();
@@ -44,7 +47,7 @@ namespace Hazel {
         
         GraphicsPipelineDesc m_Description;
         Microsoft::WRL::ComPtr<ID3D12PipelineState> m_PipelineState;
-        Microsoft::WRL::ComPtr<ID3D12RootSignature> m_RootSignature;
+        std::shared_ptr<D3D12RootSignature> m_RootSignature;
         PipelineStateHandle m_Handle;
         
         // D3D12设备引用

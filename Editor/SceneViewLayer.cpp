@@ -109,9 +109,6 @@ namespace Hazel
         D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc;
         ZeroMemory(&psoDesc, sizeof(D3D12_GRAPHICS_PIPELINE_STATE_DESC));
         
-        
-        D3D12VertexArray* vertexArray = dynamic_cast<D3D12VertexArray*>
-            (mesh->meshData.get());
 
         D3D12Shader* d3d12Shader = dynamic_cast<D3D12Shader*>(m_ColorShader.get());
 		mInputLayout = d3d12Shader->GetD3D12InputLayout();

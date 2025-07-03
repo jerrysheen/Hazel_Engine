@@ -2,6 +2,7 @@
 #include "D3D12GraphicsPipeline.h"
 #include "D3D12Shader.h"
 #include "D3D12RenderAPIManager.h"
+#include "D3D12RootSignature.h"
 
 namespace Hazel {
 
@@ -14,7 +15,7 @@ namespace Hazel {
         
         // 获取D3D12设备
         D3D12RenderAPIManager* renderAPIManager = dynamic_cast<D3D12RenderAPIManager*>(
-            RenderAPIManager::getInstance()->GetManager().get());
+            RenderAPIManager::getInstance().get());
         m_Device = renderAPIManager->GetD3DDevice();
         HZ_CORE_ASSERT(m_Device, "Failed to get D3D12 device");
         
@@ -43,11 +44,13 @@ namespace Hazel {
         
         // 获取当前命令列表并设置管线状态
         D3D12RenderAPIManager* renderAPIManager = static_cast<D3D12RenderAPIManager*>(
-            RenderAPIManager::getInstance()->GetManager().get());
+            RenderAPIManager::getInstance().get());
         auto cmdList = renderAPIManager->GetCmdList();
         if (cmdList) {
             cmdList->SetPipelineState(m_PipelineState.Get());
-            cmdList->SetGraphicsRootSignature(m_RootSignature.Get());
+            if (m_RootSignature) {
+                cmdList->SetGraphicsRootSignature(m_RootSignature->GetRootSignature());
+            }
         }
     }
 
@@ -58,7 +61,7 @@ namespace Hazel {
 
     bool D3D12GraphicsPipeline::IsValid() const
     {
-        return m_Handle.isValid && m_PipelineState && m_RootSignature;
+        return m_Handle.isValid && m_PipelineState && m_RootSignature && m_RootSignature->IsValid();
     }
 
     void D3D12GraphicsPipeline::CreateRootSignature()
@@ -67,71 +70,13 @@ namespace Hazel {
         auto d3d12Shader = std::static_pointer_cast<D3D12Shader>(m_Description.shader);
         auto reflection = d3d12Shader->GetReflection();
         
-        // 获取资源绑定信息
-        auto resourceBindings = reflection->ReflectResourceBindings();
+        // 使用新的D3D12RootSignature类
+        std::vector<Ref<ShaderReflection>> reflections = { reflection };
+        m_RootSignature = D3D12RootSignature::CreateFromShaderReflection(m_Device.Get(), reflections);
         
-        std::vector<CD3DX12_ROOT_PARAMETER> rootParameters;
-        std::vector<CD3DX12_DESCRIPTOR_RANGE> descriptorRanges;
-        
-        // 为每个资源绑定创建根参数
-        for (const auto& binding : resourceBindings) {
-            CD3DX12_DESCRIPTOR_RANGE range;
-            
-            switch (binding.Type) {
-                case ResourceType::ConstantBuffer:
-                    range.Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, binding.BindPoint, binding.BindSpace);
-                    break;
-                case ResourceType::ShaderResource:
-                    range.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, binding.BindPoint, binding.BindSpace);
-                    break;
-                case ResourceType::UnorderedAccess:
-                    range.Init(D3D12_DESCRIPTOR_RANGE_TYPE_UAV, 1, binding.BindPoint, binding.BindSpace);
-                    break;
-                case ResourceType::Sampler:
-                    range.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SAMPLER, 1, binding.BindPoint, binding.BindSpace);
-                    break;
-            }
-            
-            descriptorRanges.push_back(range);
-            
-            CD3DX12_ROOT_PARAMETER rootParam;
-            rootParam.InitAsDescriptorTable(1, &descriptorRanges.back());
-            rootParameters.push_back(rootParam);
+        if (!m_RootSignature || !m_RootSignature->IsValid()) {
+            HZ_CORE_ERROR("Failed to create root signature from shader reflection");
         }
-        
-        // 创建根签名描述
-        CD3DX12_ROOT_SIGNATURE_DESC rootSignatureDesc;
-        rootSignatureDesc.Init(
-            static_cast<UINT>(rootParameters.size()),
-            rootParameters.data(),
-            0, nullptr,
-            D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT
-        );
-        
-        // 序列化和创建根签名
-        Microsoft::WRL::ComPtr<ID3DBlob> signature;
-        Microsoft::WRL::ComPtr<ID3DBlob> error;
-        HRESULT hr = D3D12SerializeRootSignature(
-            &rootSignatureDesc,
-            D3D_ROOT_SIGNATURE_VERSION_1_0,
-            &signature,
-            &error
-        );
-        
-        if (FAILED(hr)) {
-            HZ_CORE_ERROR("Failed to serialize root signature: {0}", 
-                error ? (char*)error->GetBufferPointer() : "Unknown error");
-            return;
-        }
-        
-        hr = m_Device->CreateRootSignature(
-            0,
-            signature->GetBufferPointer(),
-            signature->GetBufferSize(),
-            IID_PPV_ARGS(&m_RootSignature)
-        );
-        
-        HZ_CORE_ASSERT(SUCCEEDED(hr), "Failed to create root signature");
     }
 
     void D3D12GraphicsPipeline::CreatePipelineState()
@@ -153,7 +98,7 @@ namespace Hazel {
         }
         
         // 根签名
-        psoDesc.pRootSignature = m_RootSignature.Get();
+        psoDesc.pRootSignature = m_RootSignature ? m_RootSignature->GetRootSignature() : nullptr;
         
         // 渲染状态
         psoDesc.RasterizerState = ConvertRasterizerState(m_Description.rasterizerState);

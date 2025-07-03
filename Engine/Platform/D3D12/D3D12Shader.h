@@ -12,41 +12,49 @@ namespace Hazel
 	class D3D12ShaderReflection : public ShaderReflection
 	{
 	public:
-		D3D12ShaderReflection(ID3DBlob* shaderBytecode);
+		D3D12ShaderReflection();
 		virtual ~D3D12ShaderReflection() override;
 
-		// 实现ShaderReflection接口
+		// 新增：Stage-based 接口实现
+		virtual std::vector<StageResourceInfo> ReflectStageResources() override;
+		virtual StageResourceInfo* GetStageResources(ShaderStage stage) const override;
+		virtual bool HasStage(ShaderStage stage) const override;
+		virtual std::vector<ShaderStage> GetAvailableStages() const override;
+
+		// InputLayout 接口实现（只属于顶点着色器）
 		virtual BufferLayout ReflectVertexInputLayout() override;
-		virtual std::vector<ShaderRegisterBlock> ReflectRegisterBlocks() override;
-		virtual std::vector<ResourceBinding> ReflectResourceBindings() override;
-
-		// 通过名称获取寄存器块
-		virtual Ref<ShaderRegisterBlock> GetRegisterBlockByName(const std::string& name) override;
 		
-		// 通过绑定点获取寄存器块
-		virtual Ref<ShaderRegisterBlock> GetRegisterBlockByBindPoint(uint32_t bindPoint, uint32_t space = 0) override;
-		
-		// 通过名称获取参数
-		virtual Ref<ShaderParameter> GetParameterByName(const std::string& name) override;
+		// Stage-specific 查询接口
+		virtual Ref<ShaderRegisterBlock> GetRegisterBlockByName(ShaderStage stage, const std::string& name) override;
+		virtual Ref<ShaderRegisterBlock> GetRegisterBlockByBindPoint(ShaderStage stage, uint32_t bindPoint, uint32_t space = 0) override;
+		virtual Ref<ShaderParameter> GetParameterByName(ShaderStage stage, const std::string& name) override;
 
-		// 合并另一个反射的数据（用于合并VS和PS的反射）
-		void MergeReflection(const Ref<D3D12ShaderReflection>& other);
+		// 新的核心方法：添加Stage反射（替换MergeReflection）
+		void AddStageReflection(ShaderStage stage, ID3DBlob* shaderBytecode);
+		
+		// 清除所有Stage数据
+		void Clear();
+		
+		// 获取特定Stage的原始D3D反射接口（用于高级操作）
+		ComPtr<ID3D12ShaderReflection> GetD3DReflection(ShaderStage stage) const;
 
 	private:
-		ComPtr<ID3D12ShaderReflection> m_Reflection;
-		BufferLayout m_InputLayout; // 缓存反射结果
-		std::vector<ShaderRegisterBlock> m_RegisterBlocks; // 缓存寄存器块
-		std::vector<ResourceBinding> m_ResourceBindings; // 缓存资源绑定
+		// Stage-based 数据存储
+		std::array<std::unique_ptr<StageResourceInfo>, static_cast<size_t>(ShaderStage::Count)> m_StageResources;
+		std::array<ComPtr<ID3D12ShaderReflection>, static_cast<size_t>(ShaderStage::Count)> m_D3DReflections;
+		
 
-		// 缓存的映射
-		std::unordered_map<std::string, size_t> m_RegisterBlockNameToIndex; // 寄存器块名称到索引的映射
-		std::unordered_map<uint64_t, size_t> m_RegisterBlockBindPointToIndex; // 寄存器块绑定点到索引的映射
-		std::unordered_map<std::string, ShaderParameter> m_ParameterCache; // 参数名称到参数的映射
 
-		// 是否已反射
-		bool m_HasReflectedInputLayout = false;
-		bool m_HasReflectedRegisterBlocks = false;
-		bool m_HasReflectedResourceBindings = false;
+		// 私有辅助方法
+		void ReflectStageShader(ShaderStage stage, ID3DBlob* shaderBytecode);
+		StageResourceInfo CreateStageResourceInfo(ShaderStage stage, ID3D12ShaderReflection* reflection);
+		
+
+		
+		// 计算绑定点键值
+		static uint64_t CalculateBindPointKey(uint32_t bindPoint, uint32_t space) {
+			return (static_cast<uint64_t>(space) << 32) | bindPoint;
+		}
 	};
 
 	class D3D12Shader : public Shader
